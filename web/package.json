@@ -1,43 +1,125 @@
 {
-  "name": "feeder",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.13",
-    "@types/react": "^17.0.20",
-    "@types/react-dom": "^17.0.9",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-scripts": "5.0.0",
-    "typescript": "^4.4.2",
-    "web-vitals": "^2.1.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "feeder-web",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@emotion/core": "^10.1.1",
+		"@emotion/is-prop-valid": "^0.8.8",
+		"@emotion/react": "^11.5.0",
+		"@emotion/styled": "^10.0.27",
+		"@mui/icons-material": "^5.6.1",
+		"@mui/material": "^5.6.1",
+		"@reach/dialog": "^0.16.2",
+		"@reach/menu-button": "^0.16.2",
+		"@sentry/cli": "^1.72.2",
+		"@sentry/react": "^6.18.2",
+		"@sentry/tracing": "^6.18.2",
+		"@testing-library/jest-dom": "^5.11.4",
+		"@testing-library/react": "^11.1.0",
+		"@testing-library/user-event": "^12.1.10",
+		"browser-image-compression": "^1.0.17",
+		"canvas-toBlob": "^1.0.0",
+		"date-fns": "^2.25.0",
+		"downshift": "^6.1.7",
+		"emotion-theming": "^10.0.27",
+		"formik": "^2.2.2",
+		"fuse.js": "^6.4.6",
+		"get-orientation": "^1.1.2",
+		"jwt-decode": "^3.1.2",
+		"ky": "^0.28.6",
+		"libreact": "^2.13.3",
+		"lodash-es": "^4.17.15",
+		"normalize-url": "4",
+		"query-string": "^7.1.0",
+		"react": "^17.0.2",
+		"react-datepicker": "^3.3.0",
+		"react-dom": "^17.0.2",
+		"react-draggable": "^4.4.4",
+		"react-dropzone": "^11.4.2",
+		"react-hot-toast": "^2.2.0",
+		"react-icons": "^4.3.1",
+		"react-query": "^2.26.2",
+		"react-scripts": "4.0.3",
+		"react-textarea-autosize": "^8.3.3",
+		"react-use-measure": "^2.0.4",
+		"react-virtualized-auto-sizer": "^1.0.6",
+		"react-window": "^1.8.6",
+		"store": "^2.0.12",
+		"styled-system": "^5.1.5",
+		"typescript": "^4.1.2",
+		"uuid": "^8.3.2",
+		"web-vitals": "^1.0.1",
+		"yup": "^0.32.11"
+	},
+	"devDependencies": {
+		"@emotion/eslint-plugin": "^11.0.0",
+		"@types/browser-image-compression": "^1.0.9",
+		"@types/jest": "^26.0.15",
+		"@types/lodash-es": "^4.17.3",
+		"@types/node": "^12.0.0",
+		"@types/query-string": "^6.3.0",
+		"@types/react": "^17.0.0",
+		"@types/react-datepicker": "^3.1.1",
+		"@types/react-dom": "^17.0.0",
+		"@types/react-dropzone": "^5.1.0",
+		"@types/react-email-editor": "^1.1.2",
+		"@types/react-router-dom": "^5.1.6",
+		"@types/react-virtualized-auto-sizer": "^1.0.1",
+		"@types/react-window": "^1.8.5",
+		"@types/store": "^2.0.2",
+		"@types/styled-system": "^5.1.10",
+		"@types/uuid": "^8.3.3",
+		"cra-build-watch": "^3.4.0",
+		"eslint-config-prettier": "^6.15.0",
+		"eslint-import-resolver-alias": "^1.1.2",
+		"eslint-plugin-emotion": "^10.0.27",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-jsx-a11y": "^6.4.1",
+		"eslint-plugin-no-loops": "^0.3.0",
+		"eslint-plugin-prettier": "^3.1.4",
+		"eslint-plugin-react": "^7.21.5",
+		"eslint-plugin-react-hooks": "4.2.0",
+		"lint-staged": "^10.5.1",
+		"prettier": "^2.1.2",
+		"react-query-devtools": "^2.6.3",
+		"react-router-dom": "^5.2.0",
+		"stylelint": "^13.7.2",
+		"stylelint-config-recommended": "^3.0.0"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"lint:prettier": "./node_modules/.bin/prettier --write ./src/**/*.{ts,tsx}",
+		"lint:es": "./node_modules/.bin/eslint ./src/**/*.{ts,tsx}",
+		"lint:css": "./node_modules/.bin/stylelint ./src/**/*.{ts,tsx}",
+		"lint:ts": "./node_modules/.bin/tsc",
+		"lint:all": "yarn lint:prettier && yarn lint:es && yarn lint:ts && yarn lint:css"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"proxy": "http://localhost:8080/",
+	"lint-staged": {
+		"{src/**,.storybook,.}/*.{js,jsx,ts,tsx,json,md}": [
+			"prettier --write",
+			"eslint --fix"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
 }
