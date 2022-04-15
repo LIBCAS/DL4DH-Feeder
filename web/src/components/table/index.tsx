@@ -100,8 +100,6 @@ const Table = <T extends TableItem>({
 	const gridRef = React.createRef<FixedSizeGrid>();
 	const scWidth = useMemo(() => getScrollBarWidth(), []);
 	const webHeaderHeight = useHeaderHeight();
-	console.log('webHeaderHeight');
-	console.log(webHeaderHeight);
 	const theme = useTheme();
 
 	const wrapperWidth = wrapperWidthAbs;

@@ -2,7 +2,12 @@ import {
 	ThemeProvider as EmotionThemeProvider,
 	useTheme as useEmotionTheme,
 } from 'emotion-theming';
+import {
+	createTheme,
+	ThemeProvider as MuiThemeProvider,
+} from '@material-ui/core/styles';
 import { FC } from 'react';
+import { DefaultTheme } from '@material-ui/styles';
 
 export const theme = {
 	colors: {
@@ -10,6 +15,7 @@ export const theme = {
 		primaryLight: '#f1f9ff',
 		secondary: '#1E2838',
 		border: '#BCE0FD',
+		inactive: '#BCE0FD',
 		text: '#0099ff',
 		textLight: '#7D7D7D',
 		error: '#F03738',
@@ -33,8 +39,72 @@ export type Theme = typeof theme;
 const useTheme = useEmotionTheme as () => Theme;
 export { useTheme };
 
+const muiTheme = createTheme({
+	palette: {
+		primary: {
+			main: theme.colors.primary,
+		},
+		secondary: {
+			main: theme.colors.primary,
+		},
+		text: {
+			primary: theme.colors.primary,
+			secondary: theme.colors.primary,
+			disabled: theme.colors.primary,
+			hint: theme.colors.primary,
+		},
+	},
+	overrides: {
+		MuiSelect: {
+			root: {
+				fontSize: 12,
+				minWidth: '120px!important',
+			},
+			select: {
+				root: { '&$focused': { backgroundColor: 'transparent' } },
+				input: {
+					'&$focused': { backgroundColor: 'red' },
+				},
+			},
+			selectMenu: {
+				input: {
+					'&$focused': { backgroundColor: 'red' },
+				},
+			},
+		},
+		MuiInput: {
+			root: { '&$focused': { backgroundColor: 'transparent' } },
+			underline: {
+				color: theme.colors.primary,
+				borderColor: theme.colors.primary,
+				borderBottom: `1px solid ${theme.colors.primary}!important`,
+			},
+		},
+		MuiMenu: {
+			list: {
+				paddingLeft: 8,
+				paddingRight: 8,
+				color: theme.colors.primary,
+				fontSize: 12,
+			},
+		},
+		MuiMenuItem: {
+			root: {
+				fontSize: 12,
+				paddingLeft: 8,
+				paddingRight: 8,
+			},
+			selected: {
+				color: theme.colors.primaryLight,
+			},
+		},
+	},
+});
+
 export const ThemeProvider: FC = ({ children }) => (
-	<EmotionThemeProvider theme={theme}>{children}</EmotionThemeProvider>
+	<MuiThemeProvider theme={muiTheme}>
+		<EmotionThemeProvider theme={theme}>{children}</EmotionThemeProvider>
+	</MuiThemeProvider>
 );
 
 export * from './GlobalStyles';

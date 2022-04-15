@@ -9,6 +9,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { parse } from 'query-string';
 import useMeasure from 'react-use-measure';
 import ListIcon from '@mui/icons-material/List';
+import { MenuItem, Select } from '@material-ui/core';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
@@ -17,9 +18,10 @@ import TextInput from 'components/form/input/TextInput';
 import Button, { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
-import SelectInput from 'components/form/select/SelectInput';
+import Tabs from 'components/tabs';
 
 import Results from 'modules/searchResult/index';
+import SearchResultLeftPanel from 'modules/searchResult/leftPanel';
 
 import { theme } from 'theme';
 
@@ -32,6 +34,8 @@ import {
 } from 'utils/useHeaderHeight';
 
 const collapseWidth = theme.breakpointsInt[2];
+
+type ViewModes = 'list' | 'graph' | 'tiles';
 
 const MainSearch: FC = () => {
 	const [ref, { width: viewportWidth }] = useMeasure({
@@ -46,6 +50,11 @@ const MainSearch: FC = () => {
 	const [toSearch, setToSearch] = useState('');
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 	const [rightCollapsed, setRightCollapsed] = useState(false);
+	const [pagesPublications, setPagesPublications] = useState<
+		'publications' | 'pages'
+	>('publications');
+	const [viewMode, setViewMode] = useState<ViewModes>('list');
+	const [sortOption, setSortOption] = useState<string>('A-ASC');
 	const { search } = useLocation();
 	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
 	console.log(parsed);
@@ -139,33 +148,43 @@ const MainSearch: FC = () => {
 					<Flex width={1} alignItems="center" justifyContent="flex-end" py={2}>
 						{/**MODES SWITCHES */}
 						{/*TODO: make TABS component*/}
+
 						<Flex
 							mx={3}
 							css={css`
 								border-right: 1px solid ${theme.colors.border};
 							`}
 						>
-							<IconButton
-								onClick={() => alert('mode switch')}
-								color="primary"
-								mx={2}
-							>
-								<GridViewIcon />
-							</IconButton>
-							<IconButton
-								onClick={() => alert('mode switch')}
-								color="primary"
-								mx={2}
-							>
-								<ListIcon />
-							</IconButton>
-							<IconButton
-								onClick={() => alert('mode switch')}
-								color="primary"
-								mx={2}
-							>
-								<EqualizerIcon />
-							</IconButton>
+							<Tabs
+								tabs={[
+									{
+										key: 'tiles',
+										jsx: (
+											<IconButton color="inherit" mx={2}>
+												<GridViewIcon />
+											</IconButton>
+										),
+									},
+									{
+										key: 'list',
+										jsx: (
+											<IconButton color="inherit" mx={2}>
+												<ListIcon />
+											</IconButton>
+										),
+									},
+									{
+										key: 'graph',
+										jsx: (
+											<IconButton color="inherit" mx={2}>
+												<EqualizerIcon />
+											</IconButton>
+										),
+									},
+								]}
+								setActiveTab={setViewMode}
+								activeTab={viewMode}
+							/>
 						</Flex>
 						{/**publikace / stranky */}
 						<Flex
@@ -179,24 +198,66 @@ const MainSearch: FC = () => {
 							<Text fontSize="sm" fontWeight="bold" ml={2}>
 								Zobrazení:
 							</Text>
-							<Button height={30} ml={2} variant="primary">
-								Publikace
-							</Button>
-							<Button height={30} ml={2} variant="outlined">
-								Stránky
-							</Button>
-						</Flex>
-						<Flex mx={3} alignItems="center">
-							<SelectInput
-								label="Razeni"
-								labelMinWidth="0px"
-								options={['m1', 'm2', 'm3', 'm4']}
-								value={''}
-								onSetValue={() => 'm1'}
-								id="sortopt"
-								borderless
+							<Tabs
+								tabs={[
+									{
+										key: 'publications',
+										jsx: (
+											<Button
+												height={30}
+												ml={2}
+												hoverDisable
+												variant={
+													pagesPublications === 'publications'
+														? 'primary'
+														: 'outlined'
+												}
+											>
+												Publikace
+											</Button>
+										),
+									},
+									{
+										key: 'pages',
+										jsx: (
+											<Button
+												height={30}
+												hoverDisable
+												ml={2}
+												variant={
+													pagesPublications === 'pages' ? 'primary' : 'outlined'
+												}
+											>
+												Stránky
+											</Button>
+										),
+									},
+								]}
+								setActiveTab={setPagesPublications}
+								activeTab={pagesPublications}
 							/>
-							<Button height={30} ml={2} variant="primary">
+						</Flex>
+						<Flex mr={3} alignItems="center">
+							<Text mr={2}>Řazení</Text>
+							<Select
+								labelId="sort-select-label"
+								id="sort-select"
+								value={sortOption}
+								onChange={e =>
+									setSortOption(e.target.value as unknown as string)
+								}
+							>
+								<MenuItem value={'A-ASC'}>Dle nazvu - ASC</MenuItem>
+								<MenuItem value={'A-DESC'}>Dle nazvu - DESC</MenuItem>
+								<MenuItem value={'B-ASC'}>Dle autora - ASC</MenuItem>
+								<MenuItem value={'B-DESC'}>Dle autora - DESC</MenuItem>
+								<MenuItem value={'C-ASC'}>C-ASC</MenuItem>
+								<MenuItem value={'C-DESC'}>C-ASC</MenuItem>
+								<MenuItem value={'D-ASC'}>D-ASC</MenuItem>
+								<MenuItem value={'D-DESC'}>D-ASC</MenuItem>
+							</Select>
+
+							<Button height={30} ml={3} variant="primary">
 								Exportovat
 							</Button>
 						</Flex>
@@ -214,13 +275,13 @@ const MainSearch: FC = () => {
 						alignItems="flex-start"
 						flexShrink={0}
 						width={leftCollapsed ? 10 : 300}
-						onClick={() => setLeftCollapsed(p => !p)}
+						// onClick={() => setLeftCollapsed(p => !p)}
 						css={css`
 							border-right: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;
 						`}
 					>
-						Menu left
+						<SearchResultLeftPanel />
 					</Flex>
 					<Flex width={1} bg="white">
 						<Results />
@@ -228,7 +289,7 @@ const MainSearch: FC = () => {
 					<Flex
 						flexShrink={0}
 						width={rightCollapsed ? 10 : 300}
-						onClick={() => setRightCollapsed(p => !p)}
+						// onClick={() => setRightCollapsed(p => !p)}
 						css={css`
 							border-left: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;

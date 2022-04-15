@@ -27,7 +27,7 @@ type Props = LayoutProps &
 	SpaceProps &
 	TypographyProps &
 	ButtonProps &
-	ColorProps;
+	ColorProps & { hoverDisable?: boolean };
 
 export const resetButtonStyle = css`
 	/* line-height: 1.5; */
@@ -87,6 +87,11 @@ const StyledButton = styled.button<Props>`
 			background: ${p.theme.colors.primary};
 			border: 1px solid ${p.theme.colors.primary};
 			font-weight: 700;
+		`}
+		${p =>
+		p.variant === 'primary' &&
+		!p.hoverDisable &&
+		css`
 			&:hover {
 				background-color: ${p.theme.colors.secondary};
 				border: 1px solid ${p.theme.colors.secondary};
@@ -102,6 +107,7 @@ const StyledButton = styled.button<Props>`
 			font-weight: 700;
 			color: ${p.theme.colors.primary};
 		`}
+		
 
 	${p =>
 		p.variant === 'confirm' &&
@@ -118,19 +124,7 @@ const StyledButton = styled.button<Props>`
 			border: 1px solid ${p.theme.colors.error};
 			font-weight: 700;
 		`}
-  	${p =>
-		p.sizeType === 'big' &&
-		css`
-			font-size: ${p.theme.fontSizes.xl}px;
-			padding-left: ${p.theme.space[4]}px;
-			padding-right: ${p.theme.space[4]}px;
-
-			@media screen and (max-width: ${p.theme.breakpoints[0]}) {
-				font-size: ${p.theme.fontSizes.lg}px;
-				padding: ${p.theme.space[2]}px ${p.theme.space[3]}px;
-			}
-		`}
-
+  	
 		${p =>
 		p.variant === 'text' &&
 		css`
@@ -158,7 +152,7 @@ StyledButton.defaultProps = {
 
 const Button = forwardRef<
 	HTMLButtonElement,
-	StyledButtonProps & { loading?: boolean }
+	StyledButtonProps & { loading?: boolean; hoverDisable?: boolean }
 >(({ children, loading, ...buttonProps }, ref) => (
 	<StyledButton {...buttonProps} ref={ref}>
 		{loading && (
