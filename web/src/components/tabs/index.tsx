@@ -1,11 +1,9 @@
-import { Dispatch, SetStateAction } from 'react';
-
 import { Flex } from 'components/styled';
 
 type Props<T extends string> = {
 	tabs: { jsx: JSX.Element; key: T }[];
 	activeTab: T;
-	setActiveTab: Dispatch<SetStateAction<T>>;
+	setActiveTab: (key: string) => void;
 };
 
 export const Tabs = <T extends string>({

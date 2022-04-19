@@ -172,15 +172,8 @@ const ListView: FC<{
 					<Table
 						data={items as unknown as TColumnsLayout[]}
 						isLoading={isLoading}
-						hasMore={hasMore}
 						renderRow={renderRow}
 						renderHeader={renderHeader}
-						changeLimit={setPageLimit}
-						changePage={filters.setPage}
-						page={filters.page}
-						pageLimit={state?.pageSize}
-						totalCount={count}
-						offset={offset}
 						marginTop={filterHeight}
 						minWidth={1500}
 					/>

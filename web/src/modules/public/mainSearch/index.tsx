@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { FC, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MdClear, MdMenu, MdSearch } from 'react-icons/md';
+import { MdClear, MdSearch } from 'react-icons/md';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GridViewIcon from '@mui/icons-material/GridView';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
@@ -51,11 +51,10 @@ const MainSearch: FC = () => {
 
 	const [toSearch, setToSearch] = useState('');
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
-	const [rightCollapsed, setRightCollapsed] = useState(false);
+	// const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
-	const [viewMode, setViewMode] = useState<ViewMode>('list');
 	const [sortOption, setSortOption] = useState<string>('A-ASC');
 	const { search } = useLocation();
 
@@ -78,7 +77,7 @@ const MainSearch: FC = () => {
 				padding-bottom: 0px !important;
 				overflow: hidden !important;
 			`}
-			overflow="hidden"
+			// overflow="hidden"
 		>
 			<Flex
 				id={HEADER_WRAPPER_ID}
@@ -87,6 +86,7 @@ const MainSearch: FC = () => {
 				justifyContent="space-between"
 				height={INIT_HEADER_HEIGHT}
 				bg="primaryLight"
+				overflow="hidden"
 			>
 				<Flex flexShrink={0} width={300}>
 					<NavLinkButton to="/" variant="text">
@@ -191,8 +191,10 @@ const MainSearch: FC = () => {
 										),
 									},
 								]}
-								setActiveTab={setViewMode}
-								activeTab={viewMode}
+								setActiveTab={vm =>
+									dispatch?.({ type: 'setViewMode', viewMode: vm as ViewMode })
+								}
+								activeTab={state.viewMode}
 							/>
 						</Flex>
 						{/**publikace / stranky */}
@@ -242,7 +244,9 @@ const MainSearch: FC = () => {
 										),
 									},
 								]}
-								setActiveTab={setPagesPublications}
+								setActiveTab={k =>
+									setPagesPublications(k as 'pages' | 'publications')
+								}
 								activeTab={pagesPublications}
 							/>
 						</Flex>
@@ -284,7 +288,7 @@ const MainSearch: FC = () => {
 						alignItems="flex-start"
 						flexShrink={0}
 						width={leftCollapsed ? 10 : 300}
-						// onClick={() => setLeftCollapsed(p => !p)}
+						onClick={() => setLeftCollapsed(p => !p)}
 						css={css`
 							border-right: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;
@@ -295,17 +299,17 @@ const MainSearch: FC = () => {
 					<Flex width={1} bg="white">
 						<Results />
 					</Flex>
-					<Flex
+					{/* <Flex
 						flexShrink={0}
 						width={rightCollapsed ? 10 : 300}
-						// onClick={() => setRightCollapsed(p => !p)}
+						onClick={() => setRightCollapsed(p => !p)}
 						css={css`
 							border-left: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;
 						`}
 					>
 						Menu Right
-					</Flex>
+					</Flex> */}
 				</Flex>
 			</SearchContextProvider>
 		</ResponsiveWrapper>

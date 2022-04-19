@@ -7,16 +7,18 @@ import {
 	ThemeProvider as MuiThemeProvider,
 } from '@material-ui/core/styles';
 import { FC } from 'react';
-import { DefaultTheme } from '@material-ui/styles';
 
 export const theme = {
 	colors: {
 		primary: '#0099ff',
+		//primary: '#aa0b00',
+		//primaryLight: '#d4adad',
 		primaryLight: '#f1f9ff',
 		secondary: '#1E2838',
 		border: '#BCE0FD',
 		inactive: '#BCE0FD',
 		text: '#0099ff',
+		//text: '#0F0000',
 		textLight: '#7D7D7D',
 		error: '#F03738',
 		success: '#3CC13B',

@@ -14,7 +14,7 @@ type Props = {
 	children: ((onRefresh: () => void) => ReactNode) | ReactNode;
 };
 
-const MyAccordion: FC<Props> = ({ label, isExpanded, onExpand, children }) => {
+const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
 	const [exp, setExp] = useState(isExpanded ?? false);
 	const [refresh, setRefresh] = useState(false);
 	const [height, setHeight] = useState(0);

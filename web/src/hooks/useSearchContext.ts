@@ -18,17 +18,21 @@ type State = {
 
 const initState: State = {
 	searchQuery: '',
-	viewMode: 'list',
+	viewMode: 'tiles',
 	pageSize: 15,
 	offset: 0,
 };
 
-type Actions = { type: 'setPageSize'; pageSize: number };
+type Actions =
+	| { type: 'setPageSize'; pageSize: number }
+	| { type: 'setViewMode'; viewMode: ViewMode };
 
 const reducer = (state: State, action: Actions) => {
 	switch (action.type) {
 		case 'setPageSize':
 			return { ...state, pageSize: action.pageSize };
+		case 'setViewMode':
+			return { ...state, viewMode: action.viewMode };
 		default:
 			return state;
 	}

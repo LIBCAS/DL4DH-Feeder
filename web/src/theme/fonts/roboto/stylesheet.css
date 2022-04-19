@@ -94,3 +94,10 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'RobotoCondensed-bold';
+    src: url('RobotoCondensed-Bold.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+

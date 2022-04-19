@@ -5,13 +5,18 @@ import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
 import { ArrowLeftIcon, ArrowRightIcon } from 'assets';
+import { theme } from 'theme';
 
 import Store from 'utils/Store';
 
 const pageLimitOptions = [15, 30, 50, 100, -1];
 const nameFromOption = (n: number) => (n !== -1 ? n : 'Všetko');
 
-const selectStyle = { fontFamily: 'Roboto', fontSize: '16px' };
+const selectStyle = {
+	fontFamily: 'Roboto',
+	fontSize: '16px',
+	color: theme.colors.primary,
+};
 
 type Props = {
 	changeLimit: (newLimit: number) => void;
@@ -45,7 +50,6 @@ const Pagination: FC<Props> = ({
 			width="100%"
 			justifyContent="space-between"
 			alignItems={['flex-end', 'center']}
-			mt={2}
 			style={{ opacity: 0.5 }}
 			flexDirection={['column', 'row']}
 		>

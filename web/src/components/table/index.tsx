@@ -1,22 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from '@emotion/core';
-import React, {
-	CSSProperties,
-	SetStateAction,
-	useCallback,
-	useMemo,
-	useState,
-} from 'react';
+import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import useMeasure from 'react-use-measure';
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
-import { MdFullscreen, MdFullscreenExit } from 'react-icons/md';
 import { Checkbox } from '@material-ui/core';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import { NavLinkButton } from 'components/styled/Button';
 
 import { Loader } from 'modules/loader';
 
@@ -25,7 +18,6 @@ import { getScrollBarWidth } from 'utils';
 import { ThreeDotsIcon } from 'assets';
 
 import useHeaderHeight from 'utils/useHeaderHeight';
-import { isIntern } from 'utils/FEVersion';
 
 import Pagination from './Pagination';
 
@@ -60,14 +52,9 @@ type Props<T extends TableItem> = {
 		collapsed: boolean,
 		setSortColumn?: (key: string) => void,
 	) => React.ReactNode;
-	page?: number;
-	pageLimit?: number;
-	changeLimit: (limit: number) => void;
-	changePage: (page: number) => void;
-	totalCount: number;
+
 	isLoading?: boolean;
-	hasMore?: boolean;
-	offset: number;
+
 	marginTop?: number;
 	hideEditButton?: boolean;
 	maxTableWidth?: number;
@@ -82,21 +69,14 @@ const Table = <T extends TableItem>({
 	minWidth = 1000,
 	headerHeight = 50,
 	rowHeight = 48,
-	page = 0,
-	pageLimit = 15,
-	changeLimit,
-	changePage,
-	totalCount,
 	isLoading,
-	hasMore,
-	offset,
 	marginTop,
 	hideEditButton,
 	maxTableWidth,
 }: Props<T>) => {
 	const [wrapperRef, { width: wrapperWidthAbs, height: wrapperHeight }] =
 		useMeasure({
-			debounce: 1,
+			debounce: 100,
 		});
 
 	const gridRef = React.createRef<FixedSizeGrid>();
@@ -108,7 +88,7 @@ const Table = <T extends TableItem>({
 
 	const wrapperWidth = wrapperWidthAbs;
 	const tableHeight = useMemo(
-		() => (wrapperHeight - 10 < 400 ? 400 : wrapperHeight - 50),
+		() => (wrapperHeight - 10 < 400 ? 400 : wrapperHeight - 100),
 		[wrapperHeight],
 	);
 
@@ -124,12 +104,12 @@ const Table = <T extends TableItem>({
 				css={css`
 					width: ${wrapperWidth < minWidth
 						? `${minWidth}px !important`
-						: `${wrapperWidth - hasVerticalScroll * scWidth - 3}px !important`};
-					border-top: 1px solid ${theme.colors.lightGrey};
+						: `${wrapperWidth - hasVerticalScroll * scWidth - 4}px !important`};
+					border-top: 1px solid ${theme.colors.border};
 
 					&:hover,
 					&:hover .table-row-edit-button {
-						background-color: ${theme.colors.lightGrey};
+						background-color: ${theme.colors.primaryLight};
 					}
 				`}
 			>
@@ -149,12 +129,38 @@ const Table = <T extends TableItem>({
 							position: sticky;
 							right: 0;
 							background-color: rgba(255, 255, 255, 0.95);
-							border-left: 1px solid ${theme.colors.lightGrey};
+							// border-left: 1px solid ${theme.colors.lightGrey};
 							/* border-right: 1px solid ${theme.colors.lightGrey}; */
 						`}
 					>
 						<NavLinkButton variant="text" to={`/reading/${data[rowIndex].id}`}>
-							<ThreeDotsIcon color="primary" />
+							<div
+								css={css`
+									margin-right: 2px;
+									width: 1px;
+									height: 1px;
+									border-radius: 100%;
+									border: 2px solid ${theme.colors.primary};
+								`}
+							/>
+							<div
+								css={css`
+									margin-right: 2px;
+									width: 1px;
+									height: 1px;
+									border-radius: 100%;
+									border: 2px solid ${theme.colors.primary};
+								`}
+							/>
+							<div
+								css={css`
+									margin-right: 2px;
+									width: 1px;
+									height: 1px;
+									border-radius: 100%;
+									border: 2px solid ${theme.colors.primary};
+								`}
+							/>
 						</NavLinkButton>
 					</Flex>
 				)}
@@ -233,7 +239,7 @@ const Table = <T extends TableItem>({
 			<div
 				ref={wrapperRef}
 				style={{
-					height: `calc(90vh - ${webHeaderHeight + (marginTop ?? 0)}px)`,
+					height: `calc(100vh - ${webHeaderHeight + (marginTop ?? 0) + 100}px)`,
 					maxWidth: maxTableWidth ? `${maxTableWidth}px` : 'unset',
 				}}
 			>
@@ -288,7 +294,7 @@ const Table = <T extends TableItem>({
 										height={tableHeight}
 										columnCount={1}
 										rowCount={data.length}
-										columnWidth={wrapperWidth - scWidth - 3}
+										columnWidth={wrapperWidth - (scWidth + 30)}
 										rowHeight={rowHeight}
 										width={wrapperWidth}
 									>
@@ -298,24 +304,7 @@ const Table = <T extends TableItem>({
 							)}
 						</>
 					)}
-					<Flex
-						width={1}
-						height={1}
-						css={css`
-							border-top: 1px solid ${theme.colors.lightGrey};
-						`}
-					/>
 				</div>
-				<Pagination
-					page={page}
-					changePage={changePage}
-					changeLimit={changeLimit}
-					pageLimit={pageLimit}
-					totalCount={totalCount}
-					hasMore={hasMore}
-					offset={offset}
-					loading={isLoading}
-				/>
 			</div>
 		</div>
 	);
