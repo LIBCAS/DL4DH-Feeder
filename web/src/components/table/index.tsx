@@ -8,7 +8,7 @@ import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
 import { Checkbox } from '@material-ui/core';
 
 import Text from 'components/styled/Text';
-import { Flex } from 'components/styled';
+import { Dot, Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 
 import { Loader } from 'modules/loader';
@@ -134,33 +134,9 @@ const Table = <T extends TableItem>({
 						`}
 					>
 						<NavLinkButton variant="text" to={`/reading/${data[rowIndex].id}`}>
-							<div
-								css={css`
-									margin-right: 2px;
-									width: 1px;
-									height: 1px;
-									border-radius: 100%;
-									border: 2px solid ${theme.colors.primary};
-								`}
-							/>
-							<div
-								css={css`
-									margin-right: 2px;
-									width: 1px;
-									height: 1px;
-									border-radius: 100%;
-									border: 2px solid ${theme.colors.primary};
-								`}
-							/>
-							<div
-								css={css`
-									margin-right: 2px;
-									width: 1px;
-									height: 1px;
-									border-radius: 100%;
-									border: 2px solid ${theme.colors.primary};
-								`}
-							/>
+							<Dot />
+							<Dot />
+							<Dot />
 						</NavLinkButton>
 					</Flex>
 				)}

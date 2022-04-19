@@ -12,16 +12,7 @@ import Text from 'components/styled/Text';
 import { ArrowDownIcon, ArrowUpIcon } from 'assets';
 import { getDateString } from 'utils';
 
-import { Backend } from 'api/endpoints';
 import { TPublication } from 'api/models';
-
-import { useSearchContext } from 'hooks/useSearchContext';
-
-import {
-	colorFromStatus,
-	readingStateText,
-	readingStateTextCustomer,
-} from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 import useAdminFilter from './useAdminFilter';
@@ -33,43 +24,6 @@ const Cell = styled(Text)`
 	padding: 0;
 	margin: 0;
 `;
-
-export const StateBadge: FC<{ state?: Backend.ReadingState; admin?: boolean }> =
-	({ state, admin }) => {
-		const color = state ? colorFromStatus[state] : 'textLight';
-		// eslint-disable-next-line no-nested-ternary
-		const label = state
-			? admin
-				? readingStateText[state]
-				: readingStateTextCustomer[state]
-			: 'Neznámy';
-		return (
-			<Flex
-				px={1}
-				color={color}
-				css={css`
-					background: linear-gradient(
-							0deg,
-							rgba(255, 255, 255, 0.9),
-							rgba(255, 255, 255, 0.9)
-						),
-						${color};
-					border: 1px solid rgba(255, 255, 255, 0.5);
-					box-sizing: border-box;
-					border-radius: 4px;
-				`}
-			>
-				<Text
-					css={css`
-						text-overflow: ellipsis;
-						overflow: hidden;
-					`}
-				>
-					{label}
-				</Text>
-			</Flex>
-		);
-	};
 
 const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	/* if (cellKey === 'toExport') {
@@ -105,23 +59,14 @@ const renderRow = (row: TColumnsLayout) => (
 
 const ListView: FC<{
 	data?: TPublication[];
-	count: number;
 	isLoading: boolean;
-	hasMore: boolean;
-}> = ({ data, count, isLoading, hasMore }) => {
+}> = ({ data, isLoading }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
 		debounce: 200,
 	});
 
-	const { state, dispatch } = useSearchContext();
+	const { sort } = useAdminFilter();
 
-	const setPageLimit = useCallback(
-		(p: number) => dispatch?.({ type: 'setPageSize', pageSize: p }),
-		[dispatch],
-	);
-
-	const { params, filters, sort } = useAdminFilter();
-	const offset = state?.offset ?? 0;
 	const renderHeader = useCallback(
 		() =>
 			colsOrder.map(cellKey => (

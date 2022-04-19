@@ -1,19 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC } from 'react';
-import { useTheme } from '@emotion/react';
 import { MdCalendarToday, MdPerson } from 'react-icons/md';
 
 import TileGrid from 'components/tiles';
-import { Box, Flex } from 'components/styled';
+import { Box, Dot, Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
 import { Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
-import { Chip, InfoBox } from 'components/form/input/TextInput';
 
 import { theme } from 'theme';
 import { getDateString } from 'utils';
-import { ProfileIcon } from 'assets';
 
 import placeholder from 'assets/title_placeholder.png';
 
@@ -42,16 +39,36 @@ const TileView: FC<Props> = ({ data }) => {
 								<Text fontSize="lg" fontFamily="RobotoCondensed-bold">
 									{d.title}
 								</Text>
-								<Box fontSize="sm" mt={2}>
+								<Flex fontSize="sm" mt={2}>
 									<Flex alignItems="center">
 										<MdPerson color="primary" />
 										<Text ml={2}>{d.author}</Text>
 									</Flex>
-									<Flex alignItems="center">
+									<Flex alignItems="center" ml={3}>
 										<MdCalendarToday color="primary" />
 										<Text ml={2}>{getDateString(d.published)}</Text>
 									</Flex>
-								</Box>
+								</Flex>
+								<Flex fontSize="sm" mt={2}>
+									<Flex alignItems="center">
+										<Dot color="primary" size={3} />
+										<Text ml={2}>{d.meta1}</Text>
+									</Flex>
+									<Flex alignItems="center" ml={2}>
+										<Dot color="primary" size={3} />
+										<Text ml={2}>{d.meta2}</Text>
+									</Flex>
+								</Flex>
+								<Flex fontSize="sm" mt={2}>
+									<Flex alignItems="center">
+										<Dot color="primary" size={3} />
+										<Text ml={2}>{d.meta3}</Text>
+									</Flex>
+									<Flex alignItems="center" ml={2}>
+										<Dot color="primary" size={3} />
+										<Text ml={2}>{d.meta1}</Text>
+									</Flex>
+								</Flex>
 								<Flex flexGrow={1} />
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
 									<Flex bg="primary" color="white" opacity="0.5">

@@ -42,17 +42,20 @@ const Results: FC = () => {
 		<Wrapper>
 			{state?.viewMode === 'list' ? (
 				<>
-					<ListView
-						data={data}
-						count={count}
-						isLoading={isLoading}
-						hasMore={hasMore}
-					/>
+					<ListView data={data} isLoading={isLoading} />
 				</>
 			) : (
-				<Wrapper overflowY="auto">
-					{isLoading ? <Loader /> : <TileView data={data} />}
-				</Wrapper>
+				<>
+					{state?.viewMode === 'tiles' ? (
+						<Wrapper overflowY="auto" overflowX="hidden">
+							{isLoading ? <Loader /> : <TileView data={data} />}
+						</Wrapper>
+					) : (
+						<Wrapper overflowY="auto" overflowX="hidden">
+							{isLoading ? <Loader /> : 'Graph view'}
+						</Wrapper>
+					)}
+				</>
 			)}
 			<Flex
 				position="sticky"

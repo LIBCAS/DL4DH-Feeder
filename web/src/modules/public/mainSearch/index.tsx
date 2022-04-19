@@ -50,13 +50,13 @@ const MainSearch: FC = () => {
 	);
 
 	const [toSearch, setToSearch] = useState('');
-	const [leftCollapsed, setLeftCollapsed] = useState(false);
+	// const [leftCollapsed, setLeftCollapsed] = useState(false);
 	// const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
 	const [sortOption, setSortOption] = useState<string>('A-ASC');
-	const { search } = useLocation();
+	// const { search } = useLocation();
 
 	const {
 		state,
@@ -64,8 +64,7 @@ const MainSearch: FC = () => {
 		Provider: SearchContextProvider,
 	} = useSearchContextProvider();
 
-	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
-	console.log(parsed);
+	// const parsed = parse(search) as unknown as Partial<TSearchQuery>;
 
 	return (
 		<ResponsiveWrapper
@@ -96,8 +95,10 @@ const MainSearch: FC = () => {
 				</Flex>
 				<Flex pr={3} width={1} flexShrink={1}>
 					<TextInput
+						placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
 						label=""
 						labelType="inline"
+						color="primary"
 						value={toSearch}
 						iconLeft={
 							<Flex color="primary" ml={2}>
@@ -129,14 +130,14 @@ const MainSearch: FC = () => {
 					</Button>
 					{!isMobile && (
 						<>
-							<Button variant="text">Sbirky</Button>
-							<Button variant="text">Prochadzet</Button>
+							<Button variant="text">Sbírky</Button>
+							<Button variant="text">Procházet</Button>
 							<Button variant="text">Informace</Button>
 							<Button variant="text">English</Button>
 						</>
 					)}
 					<Button minWidth={150} variant="primary">
-						Prejit do Krameria
+						Přejít do Kraméria
 					</Button>
 				</Flex>
 			</Flex>
@@ -145,19 +146,23 @@ const MainSearch: FC = () => {
 				<Flex bg="white" width={1} height={SUB_HEADER_HEIGHT}>
 					<Flex
 						flexShrink={0}
-						width={leftCollapsed ? 10 : 300}
+						alignItems="center"
+						justifyContent="flex-start"
+						width={300}
+						// width={leftCollapsed ? 10 : 300}
 						overflow="hidden"
 						css={css`
 							border-right: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;
 						`}
 					>
-						Vysledky
+						<Text pl={3} fontSize="sm" fontWeight="bold">
+							Výsledky: {state.offset} -{' '}
+							{state.offset + (state?.pageSize ?? 15)}/ 249 221
+						</Text>
 					</Flex>
 					<Flex width={1} alignItems="center" justifyContent="flex-end" py={2}>
 						{/**MODES SWITCHES */}
-						{/*TODO: make TABS component*/}
-
 						<Flex
 							mx={3}
 							css={css`
@@ -285,15 +290,22 @@ const MainSearch: FC = () => {
 					bg="primaryLight"
 				>
 					<Flex
+						position="relative"
 						alignItems="flex-start"
 						flexShrink={0}
-						width={leftCollapsed ? 10 : 300}
-						onClick={() => setLeftCollapsed(p => !p)}
+						width={300}
+						// width={leftCollapsed ? 10 : 300}
+						// onClick={() => setLeftCollapsed(p => !p)}
 						css={css`
 							border-right: 1px solid ${theme.colors.border};
 							transition: width 1s ease-in-out;
 						`}
 					>
+						{' '}
+						{/*hide button TODO: */}
+						{/* <Flex bg="red" position="absolute" right={0} top={0}>
+							ahoj
+						</Flex> */}
 						<SearchResultLeftPanel />
 					</Flex>
 					<Flex width={1} bg="white">

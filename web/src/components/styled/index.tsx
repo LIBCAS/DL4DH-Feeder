@@ -108,3 +108,11 @@ export const DetailsCell = styled('div')<{
 	width: ${p => (p.label ? 30 : 70)}%;
 	margin-right: ${p => (p.label ? 16 : 0)}px;
 `;
+
+export const Dot = styled('div')<{ size?: number }>`
+	margin-right: 2px;
+	width: 1px;
+	height: 1px;
+	border-radius: 100%;
+	border: ${p => p.size ?? 2}px solid ${p => p.theme.colors.primary};
+`;

@@ -98,6 +98,10 @@ export const InputCss = (theme: Theme) => css`
 	&:disabled {
 		color: ${theme.colors.darkerGrey};
 	}
+	&::placeholder {
+		color: ${theme.colors.primary};
+		font-weight: normal;
+	}
 
 	&:focus {
 		box-shadow: none;
