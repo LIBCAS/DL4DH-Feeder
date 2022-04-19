@@ -6,11 +6,13 @@ import React, {
 	SetStateAction,
 	useCallback,
 	useMemo,
+	useState,
 } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import useMeasure from 'react-use-measure';
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md';
+import { Checkbox } from '@material-ui/core';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
@@ -102,9 +104,11 @@ const Table = <T extends TableItem>({
 	const webHeaderHeight = useHeaderHeight();
 	const theme = useTheme();
 
+	const [tempAllChecked, setTempAllChecked] = useState(false);
+
 	const wrapperWidth = wrapperWidthAbs;
 	const tableHeight = useMemo(
-		() => (wrapperHeight - 10 < 400 ? 400 : wrapperHeight - 30),
+		() => (wrapperHeight - 10 < 400 ? 400 : wrapperHeight - 50),
 		[wrapperHeight],
 	);
 
@@ -129,6 +133,7 @@ const Table = <T extends TableItem>({
 					}
 				`}
 			>
+				<Checkbox checked={tempAllChecked} />
 				{renderRow(data[rowIndex])}
 				{!hideEditButton && (
 					<Flex
@@ -149,7 +154,7 @@ const Table = <T extends TableItem>({
 						`}
 					>
 						<NavLinkButton variant="text" to={`/reading/${data[rowIndex].id}`}>
-							<ThreeDotsIcon />
+							<ThreeDotsIcon color="primary" />
 						</NavLinkButton>
 					</Flex>
 				)}
@@ -164,6 +169,7 @@ const Table = <T extends TableItem>({
 			hasVerticalScroll,
 			scWidth,
 			hideEditButton,
+			tempAllChecked,
 		],
 	);
 
@@ -179,6 +185,10 @@ const Table = <T extends TableItem>({
 					height: ${headerHeight}px;
 				`}
 			>
+				<Checkbox
+					checked={tempAllChecked}
+					onChange={() => setTempAllChecked(p => !p)}
+				/>
 				{renderHeader(false)}
 
 				<Flex
@@ -199,7 +209,15 @@ const Table = <T extends TableItem>({
 				</Flex>
 			</Flex>
 		),
-		[wrapperWidth, renderHeader, minWidth, headerHeight, scWidth],
+		[
+			wrapperWidth,
+			renderHeader,
+			minWidth,
+			headerHeight,
+			scWidth,
+			setTempAllChecked,
+			tempAllChecked,
+		],
 	);
 
 	const headerGridRef = React.useRef<FixedSizeGrid<HTMLDivElement>>(null);

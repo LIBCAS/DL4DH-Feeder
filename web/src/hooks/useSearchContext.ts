@@ -1,6 +1,7 @@
-import { createContext, useContext } from 'react';
+import { createContext, Dispatch, useContext, useReducer } from 'react';
 
 export type TField = 'author' | 'title' | 'keyword';
+export type ViewMode = 'list' | 'graph' | 'tiles';
 
 export type TSearchQuery = {
 	q: string;
@@ -8,9 +9,43 @@ export type TSearchQuery = {
 	value: string;
 };
 
-export const toSearch = {
-	content: '',
+type State = {
+	searchQuery: string;
+	viewMode: ViewMode;
+	pageSize?: number;
+	offset: number;
 };
-export const SearchContext = createContext(toSearch);
+
+const initState: State = {
+	searchQuery: '',
+	viewMode: 'list',
+	pageSize: 15,
+	offset: 0,
+};
+
+type Actions = { type: 'setPageSize'; pageSize: number };
+
+const reducer = (state: State, action: Actions) => {
+	switch (action.type) {
+		case 'setPageSize':
+			return { ...state, pageSize: action.pageSize };
+		default:
+			return state;
+	}
+};
+
+const SearchContext = createContext<[State, Dispatch<Actions>] | [null, null]>([
+	null,
+	null,
+]);
 export const SearchContextProvider = SearchContext.Provider;
-export const useSearchContext = () => useContext(SearchContext);
+export const useSearchContext = () => {
+	const [state, dispatch] = useContext(SearchContext);
+
+	return { state, dispatch };
+};
+
+export const useSearchContextProvider = () => {
+	const [state, dispatch] = useReducer(reducer, { ...initState });
+	return { state, dispatch, Provider: SearchContext.Provider } as const;
+};

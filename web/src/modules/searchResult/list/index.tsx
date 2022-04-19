@@ -1,20 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback } from 'react';
 import useMeasure from 'react-use-measure';
-import { get } from 'lodash-es';
 
-import { Box, Flex } from 'components/styled';
-import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
+import { Flex } from 'components/styled';
+import { Wrapper } from 'components/styled/Wrapper';
 import Table from 'components/table';
 import Text from 'components/styled/Text';
 
 import { ArrowDownIcon, ArrowUpIcon } from 'assets';
 import { getDateString } from 'utils';
 
-import { useAdminReadingsOverview } from 'api/readingsApi';
 import { Backend } from 'api/endpoints';
+import { TPublication } from 'api/models';
+
+import { useSearchContext } from 'hooks/useSearchContext';
 
 import {
 	colorFromStatus,
@@ -71,14 +72,17 @@ export const StateBadge: FC<{ state?: Backend.ReadingState; admin?: boolean }> =
 	};
 
 const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
-	/* if (cellKey === 'customer') {
-		return <Cell>{get(get(row, 'customer'), 'email')}</Cell>;
+	/* if (cellKey === 'toExport') {
+		return <Checkbox />;
 	} */
 
 	/* if (cellKey === 'published') {
 		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
 	} */
-	return <Cell title="cell">cell</Cell>;
+	if (cellKey === 'published') {
+		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
+	}
+	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 	// return <Cell title={row[cellKey]}>{row[cellKey]}</Cell>;
 };
 
@@ -99,24 +103,25 @@ const renderRow = (row: TColumnsLayout) => (
 	</>
 );
 
-const AdminReadingsOverview = () => {
+const ListView: FC<{
+	data?: TPublication[];
+	count: number;
+	isLoading: boolean;
+	hasMore: boolean;
+}> = ({ data, count, isLoading, hasMore }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
 		debounce: 200,
 	});
-	const [pageLimit, setPageLimit] = useState(15);
 
-	const { params, filters, sort } = useAdminFilter();
-	const offset = useMemo(
-		() => filters.page * pageLimit,
-		[filters.page, pageLimit],
+	const { state, dispatch } = useSearchContext();
+
+	const setPageLimit = useCallback(
+		(p: number) => dispatch?.({ type: 'setPageSize', pageSize: p }),
+		[dispatch],
 	);
 
-	const { data, count, isLoading, hasMore } = useAdminReadingsOverview({
-		...params,
-		offset,
-		size: pageLimit,
-	});
-
+	const { params, filters, sort } = useAdminFilter();
+	const offset = state?.offset ?? 0;
 	const renderHeader = useCallback(
 		() =>
 			colsOrder.map(cellKey => (
@@ -173,7 +178,7 @@ const AdminReadingsOverview = () => {
 						changeLimit={setPageLimit}
 						changePage={filters.setPage}
 						page={filters.page}
-						pageLimit={pageLimit}
+						pageLimit={state?.pageSize}
 						totalCount={count}
 						offset={offset}
 						marginTop={filterHeight}
@@ -185,4 +190,4 @@ const AdminReadingsOverview = () => {
 	);
 };
 
-export default AdminReadingsOverview;
+export default ListView;

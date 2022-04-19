@@ -43,7 +43,7 @@ const useAdminFilter = () => {
 	);
 
 	const SORT_OPTIONS: Record<
-		keyof Omit<TColumnsLayout, 'id' | 'meta1' | 'meta2' | 'meta3'>,
+		keyof Omit<TColumnsLayout, 'id' | 'meta1' | 'meta2' | 'meta3' | 'toExport'>,
 		SortOption
 	> = {
 		title: { label: 'title', field: 'title' },

@@ -1,20 +1,9 @@
 import React from 'react';
 import { MdDateRange, MdInfo, MdLocationCity, MdPerson } from 'react-icons/md';
 
-import { Backend } from 'api/endpoints';
+import { TPublication } from 'api/models';
 
-type TRecord = {
-	id: string;
-	title: string;
-	author: string;
-	published: Date;
-	pages: number;
-	meta1: string;
-	meta2: string;
-	meta3: string;
-};
-
-export type TColumnsLayout = TRecord;
+export type TColumnsLayout = TPublication;
 
 export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	title: 3,

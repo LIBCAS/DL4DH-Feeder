@@ -25,7 +25,11 @@ import SearchResultLeftPanel from 'modules/searchResult/leftPanel';
 
 import { theme } from 'theme';
 
-import { SearchContextProvider, TSearchQuery } from 'hooks/useSearchContext';
+import {
+	TSearchQuery,
+	useSearchContextProvider,
+	ViewMode,
+} from 'hooks/useSearchContext';
 
 import {
 	HEADER_WRAPPER_ID,
@@ -34,8 +38,6 @@ import {
 } from 'utils/useHeaderHeight';
 
 const collapseWidth = theme.breakpointsInt[2];
-
-type ViewModes = 'list' | 'graph' | 'tiles';
 
 const MainSearch: FC = () => {
 	const [ref, { width: viewportWidth }] = useMeasure({
@@ -53,9 +55,16 @@ const MainSearch: FC = () => {
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
-	const [viewMode, setViewMode] = useState<ViewModes>('list');
+	const [viewMode, setViewMode] = useState<ViewMode>('list');
 	const [sortOption, setSortOption] = useState<string>('A-ASC');
 	const { search } = useLocation();
+
+	const {
+		state,
+		dispatch,
+		Provider: SearchContextProvider,
+	} = useSearchContextProvider();
+
 	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
 	console.log(parsed);
 
@@ -132,7 +141,7 @@ const MainSearch: FC = () => {
 				</Flex>
 			</Flex>
 			<Divider />
-			<SearchContextProvider value={{ content: toSearch }}>
+			<SearchContextProvider value={[state, dispatch]}>
 				<Flex bg="white" width={1} height={SUB_HEADER_HEIGHT}>
 					<Flex
 						flexShrink={0}
