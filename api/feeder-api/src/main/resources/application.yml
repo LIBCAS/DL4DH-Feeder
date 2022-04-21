@@ -1,0 +1,40 @@
+spring:
+#  datasource:
+#    url: jdbc:postgresql://db:5432/feeder
+#    username: feeder
+#    password: changeit
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+  liquibase:
+    changeLog: classpath:/dbchangelog.xml
+  main:
+    allow-bean-definition-overriding: true
+  interceptor:
+    body: SHORT
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        data:
+#          mongodb:
+#            core:
+#              MongoTemplate: DEBUG
+
+springdoc:
+  swagger-ui.path: /swagger
+
+system:
+  feeder:
