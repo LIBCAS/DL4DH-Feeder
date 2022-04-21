@@ -88,9 +88,16 @@ const MainSearch: FC = () => {
 				overflow="hidden"
 			>
 				<Flex flexShrink={0} width={300}>
-					<NavLinkButton to="/" variant="text">
+					<NavLinkButton to="/" variant="text" pr={5}>
 						<ArrowBackIcon />
-						Moravska zemska knihovna
+						<Flex flexDirection="column" ml={2} justifyContent="center">
+							<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
+								Studijní a vědecká knihovna Plzeňského kraje
+							</Text>
+							<Text m={0} textAlign="left" fontSize="11px">
+								DL4DH Feeder
+							</Text>
+						</Flex>
 					</NavLinkButton>
 				</Flex>
 				<Flex pr={3} width={1} flexShrink={1}>

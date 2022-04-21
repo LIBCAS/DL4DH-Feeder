@@ -15,11 +15,8 @@ import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 import { getScrollBarWidth } from 'utils';
-import { ThreeDotsIcon } from 'assets';
 
 import useHeaderHeight from 'utils/useHeaderHeight';
-
-import Pagination from './Pagination';
 
 /** FLAGS */
 const TableHeader = FixedSizeGrid;

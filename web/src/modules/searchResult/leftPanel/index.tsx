@@ -121,6 +121,7 @@ const SearchResultLeftPanel = () => {
 			<MyAccordion label="Dostupnost" isExpanded>
 				<StatList items={AvalItems} />
 			</MyAccordion>
+			<Box>Rok vydani</Box>
 		</Box>
 	);
 };
