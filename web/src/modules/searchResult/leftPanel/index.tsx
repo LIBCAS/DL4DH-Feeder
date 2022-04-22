@@ -118,6 +118,15 @@ const SearchResultLeftPanel = () => {
 					/>
 				)}
 			</MyAccordion>
+			<MyAccordion label="Klíčové slovo" isExpanded>
+				{onRefresh => (
+					<StatList
+						items={[...DocItems, ...DocItems]}
+						maxRows={3}
+						refresh={onRefresh}
+					/>
+				)}
+			</MyAccordion>
 			<MyAccordion label="Dostupnost" isExpanded>
 				<StatList items={AvalItems} />
 			</MyAccordion>

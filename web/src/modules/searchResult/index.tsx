@@ -21,22 +21,23 @@ import useAdminFilter from './list/useAdminFilter';
 const Results: FC = () => {
 	const { state, dispatch } = useSearchContext();
 
-	const { params, filters, sort } = useAdminFilter();
-	const offset = useMemo(
-		() => filters.page * (state?.pageSize ?? 15),
-		[filters.page, state?.pageSize],
+	const changePage = useCallback(
+		(page: number) => dispatch?.({ type: 'setPage', page }),
+		[dispatch],
 	);
+
+	const setPageLimit = useCallback(
+		(pageSize: number) => dispatch?.({ type: 'setPageSize', pageSize }),
+		[dispatch],
+	);
+
+	const { params } = useAdminFilter();
 
 	const { data, count, isLoading, hasMore } = useSearchPublications({
 		...params,
-		offset,
-		size: state?.pageSize ?? 15,
+		offset: state.offset,
+		size: state.pageSize,
 	});
-
-	const setPageLimit = useCallback(
-		(p: number) => dispatch?.({ type: 'setPageSize', pageSize: p }),
-		[dispatch],
-	);
 
 	return (
 		<Wrapper>
@@ -79,13 +80,13 @@ const Results: FC = () => {
 				`}
 			>
 				<Pagination
-					page={filters.page}
-					changePage={filters.setPage}
+					page={state.page}
+					changePage={changePage}
 					changeLimit={setPageLimit}
-					pageLimit={state?.pageSize ?? 15}
+					pageLimit={state.pageSize}
 					totalCount={count}
 					hasMore={hasMore}
-					offset={offset}
+					offset={state.offset}
 					loading={isLoading}
 				/>
 			</Flex>

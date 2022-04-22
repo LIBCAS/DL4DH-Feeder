@@ -5,12 +5,21 @@ import {
 	useInfiniteQuery,
 	useQuery,
 } from 'react-query';
-import { createContext, useCallback, useContext, useMemo, useRef } from 'react';
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+} from 'react';
 import toast from 'react-hot-toast';
 
 import { OidcUserInfo } from 'modules/public/auth';
 
 import { VsdUser } from 'auth/token';
+
+import { useSearchContext } from 'hooks/useSearchContext';
 
 import { EASParams, EASResult } from 'utils/EASTypes';
 import {
@@ -194,6 +203,12 @@ export const infiniteEndpoint =
 			() => offset + (data?.length ?? 0) < count,
 			[offset, count, data],
 		);
+
+		const { dispatch } = useSearchContext();
+
+		useEffect(() => {
+			dispatch?.({ type: 'setTotalCount', totalCount: count, hasMore });
+		}, [count, hasMore, dispatch]);
 
 		return {
 			...result,

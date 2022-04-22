@@ -164,8 +164,9 @@ const MainSearch: FC = () => {
 						`}
 					>
 						<Text pl={3} fontSize="sm" fontWeight="bold">
-							Výsledky: {state.offset} -{' '}
-							{state.offset + (state?.pageSize ?? 15)}/ 249 221
+							Výsledky: {state.offset + 1} -{' '}
+							{state.hasMore ? state.offset + state.pageSize : state.totalCount}
+							/ {state.totalCount}
 						</Text>
 					</Flex>
 					<Flex width={1} alignItems="center" justifyContent="flex-end" py={2}>
@@ -301,6 +302,7 @@ const MainSearch: FC = () => {
 						alignItems="flex-start"
 						flexShrink={0}
 						width={300}
+						overflowY="auto"
 						// width={leftCollapsed ? 10 : 300}
 						// onClick={() => setLeftCollapsed(p => !p)}
 						css={css`

@@ -1,0 +1,1 @@
+yarn build && cd build && npx http-server --proxy http://localhost:8080

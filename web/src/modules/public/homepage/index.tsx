@@ -2,14 +2,12 @@
 import { FC, useState } from 'react';
 import { css } from '@emotion/core';
 import { MdSearch, MdClear, MdArrowForward, MdInfo } from 'react-icons/md';
-import { Checkbox } from '@material-ui/core';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
-import Divider from 'components/styled/Divider';
 
 import placeholder from 'assets/title_placeholder.png';
 
