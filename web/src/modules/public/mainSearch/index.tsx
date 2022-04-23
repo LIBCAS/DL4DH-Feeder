@@ -1,20 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MdClear, MdSearch } from 'react-icons/md';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GridViewIcon from '@mui/icons-material/GridView';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
-import { parse } from 'query-string';
 import useMeasure from 'react-use-measure';
 import ListIcon from '@mui/icons-material/List';
-import { MenuItem, Select } from '@material-ui/core';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
-import TextInput from 'components/form/input/TextInput';
 import Button, { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
@@ -22,20 +17,19 @@ import Tabs from 'components/tabs';
 
 import Results from 'modules/searchResult/index';
 import SearchResultLeftPanel from 'modules/searchResult/leftPanel';
+import Sorting from 'modules/sorting/Sorting';
 
 import { theme } from 'theme';
 
-import {
-	TSearchQuery,
-	useSearchContextProvider,
-	ViewMode,
-} from 'hooks/useSearchContext';
+import { useSearchContextProvider, ViewMode } from 'hooks/useSearchContext';
 
 import {
 	HEADER_WRAPPER_ID,
 	INIT_HEADER_HEIGHT,
 	SUB_HEADER_HEIGHT,
 } from 'utils/useHeaderHeight';
+
+import MainSearchInput from './MainSearchInput';
 
 const collapseWidth = theme.breakpointsInt[2];
 
@@ -48,14 +42,12 @@ const MainSearch: FC = () => {
 		() => viewportWidth < collapseWidth,
 		[viewportWidth],
 	);
-
-	const [toSearch, setToSearch] = useState('');
 	// const [leftCollapsed, setLeftCollapsed] = useState(false);
 	// const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
-	const [sortOption, setSortOption] = useState<string>('A-ASC');
+
 	// const { search } = useLocation();
 
 	const {
@@ -67,89 +59,62 @@ const MainSearch: FC = () => {
 	// const parsed = parse(search) as unknown as Partial<TSearchQuery>;
 
 	return (
-		<ResponsiveWrapper
-			bg="primaryLight"
-			px={1}
-			mx={0}
-			ref={ref}
-			css={css`
-				padding-bottom: 0px !important;
-				overflow: hidden !important;
-			`}
-			// overflow="hidden"
-		>
-			<Flex
-				id={HEADER_WRAPPER_ID}
-				alignItems="center"
-				flexDirection="row"
-				justifyContent="space-between"
-				height={INIT_HEADER_HEIGHT}
+		<SearchContextProvider value={[state, dispatch]}>
+			<ResponsiveWrapper
 				bg="primaryLight"
-				overflow="hidden"
+				px={1}
+				mx={0}
+				ref={ref}
+				css={css`
+					padding-bottom: 0px !important;
+					overflow: hidden !important;
+				`}
+				// overflow="hidden"
 			>
-				<Flex flexShrink={0} width={300}>
-					<NavLinkButton to="/" variant="text" pr={5}>
-						<ArrowBackIcon />
-						<Flex flexDirection="column" ml={2} justifyContent="center">
-							<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
-								Studijní a vědecká knihovna Plzeňského kraje
-							</Text>
-							<Text m={0} textAlign="left" fontSize="11px">
-								DL4DH Feeder
-							</Text>
-						</Flex>
-					</NavLinkButton>
-				</Flex>
-				<Flex pr={3} width={1} flexShrink={1}>
-					<TextInput
-						placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
-						label=""
-						labelType="inline"
-						color="primary"
-						value={toSearch}
-						iconLeft={
-							<Flex color="primary" ml={2}>
-								<MdSearch size={26} />
+				<Flex
+					id={HEADER_WRAPPER_ID}
+					alignItems="center"
+					flexDirection="row"
+					justifyContent="space-between"
+					height={INIT_HEADER_HEIGHT}
+					bg="primaryLight"
+					overflow="hidden"
+				>
+					<Flex flexShrink={0} width={300}>
+						<NavLinkButton to="/" variant="text" pr={5}>
+							<ArrowBackIcon />
+							<Flex flexDirection="column" ml={2} justifyContent="center">
+								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
+									Studijní a vědecká knihovna Plzeňského kraje
+								</Text>
+								<Text m={0} textAlign="left" fontSize="11px">
+									DL4DH Feeder
+								</Text>
 							</Flex>
-						}
-						iconRight={
-							toSearch !== '' ? (
-								<Flex mr={3} color="primary">
-									<MdClear
-										onClick={() => setToSearch('')}
-										css={css`
-											cursor: pointer;
-										`}
-									/>
-								</Flex>
-							) : (
-								<></>
-							)
-						}
-						onChange={e => {
-							setToSearch(e.currentTarget.value);
-						}}
-					/>
+						</NavLinkButton>
+					</Flex>
+					<Flex pr={3} width={1} flexShrink={1}>
+						<MainSearchInput />
+					</Flex>
+					<Flex flexShrink={0}>
+						<Button width={150} variant="primary" py={2} mr={[2, 2, 2, 0]}>
+							Hledat v K+
+						</Button>
+						{!isMobile && (
+							<>
+								<Button variant="text">Sbírky</Button>
+								<Button variant="text">Procházet</Button>
+								<Button variant="text">Informace</Button>
+								<Button variant="text">English</Button>
+							</>
+						)}
+						<Button minWidth={150} variant="primary">
+							Přejít do Kraméria
+						</Button>
+					</Flex>
 				</Flex>
-				<Flex flexShrink={0}>
-					<Button width={150} variant="primary" py={2} mr={[2, 2, 2, 0]}>
-						Hledat v K+
-					</Button>
-					{!isMobile && (
-						<>
-							<Button variant="text">Sbírky</Button>
-							<Button variant="text">Procházet</Button>
-							<Button variant="text">Informace</Button>
-							<Button variant="text">English</Button>
-						</>
-					)}
-					<Button minWidth={150} variant="primary">
-						Přejít do Kraméria
-					</Button>
-				</Flex>
-			</Flex>
-			<Divider />
-			<SearchContextProvider value={[state, dispatch]}>
+				<Divider />
+
 				<Flex bg="white" width={1} height={SUB_HEADER_HEIGHT}>
 					<Flex
 						flexShrink={0}
@@ -264,24 +229,7 @@ const MainSearch: FC = () => {
 							/>
 						</Flex>
 						<Flex mr={3} alignItems="center">
-							<Text mr={2}>Řazení</Text>
-							<Select
-								labelId="sort-select-label"
-								id="sort-select"
-								value={sortOption}
-								onChange={e =>
-									setSortOption(e.target.value as unknown as string)
-								}
-							>
-								<MenuItem value={'A-ASC'}>Dle nazvu - ASC</MenuItem>
-								<MenuItem value={'A-DESC'}>Dle nazvu - DESC</MenuItem>
-								<MenuItem value={'B-ASC'}>Dle autora - ASC</MenuItem>
-								<MenuItem value={'B-DESC'}>Dle autora - DESC</MenuItem>
-								<MenuItem value={'C-ASC'}>C-ASC</MenuItem>
-								<MenuItem value={'C-DESC'}>C-ASC</MenuItem>
-								<MenuItem value={'D-ASC'}>D-ASC</MenuItem>
-								<MenuItem value={'D-DESC'}>D-ASC</MenuItem>
-							</Select>
+							<Sorting />
 
 							<Button height={30} ml={3} variant="primary">
 								Exportovat
@@ -332,8 +280,8 @@ const MainSearch: FC = () => {
 						Menu Right
 					</Flex> */}
 				</Flex>
-			</SearchContextProvider>
-		</ResponsiveWrapper>
+			</ResponsiveWrapper>
+		</SearchContextProvider>
 	);
 };
 

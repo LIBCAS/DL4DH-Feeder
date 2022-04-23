@@ -8,6 +8,7 @@ import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
+import TestSelect from 'components/form/select/TestSelect';
 
 import placeholder from 'assets/title_placeholder.png';
 
@@ -23,6 +24,7 @@ const Homepage: FC = () => {
 					justifyContent="center"
 				>
 					<img src={placeholder} height={50} />
+
 					<Flex mt={3} mb={4} flexDirection="column" alignItems="center">
 						<Text fontSize="xl" fontWeight="bold">
 							Studijní a vědecká knihovna Plzeňského kraje

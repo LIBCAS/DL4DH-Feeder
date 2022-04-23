@@ -1,5 +1,7 @@
 import { createContext, Dispatch, useContext, useReducer } from 'react';
 
+import { SortOption, sortOptions } from 'modules/sorting/Sorting';
+
 export type TField = 'author' | 'title' | 'keyword';
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
@@ -17,6 +19,7 @@ type State = {
 	offset: number;
 	totalCount: number;
 	hasMore: boolean;
+	sorting: SortOption;
 };
 
 const initState: State = {
@@ -27,17 +30,29 @@ const initState: State = {
 	offset: 0,
 	totalCount: 0,
 	hasMore: false,
+	sorting: sortOptions[0],
 };
 
 type Actions =
+	| { type: 'setSearchQuery'; searchQuery: string }
+	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
 	| { type: 'setPage'; page: number }
 	| { type: 'setPageSize'; pageSize: number }
 	| { type: 'setViewMode'; viewMode: ViewMode };
 
 const reducer = (state: State, action: Actions) => {
-	console.log(state);
 	switch (action.type) {
+		case 'setSearchQuery':
+			return {
+				...state,
+				searchQuery: action.searchQuery,
+			};
+		case 'setSorting':
+			return {
+				...state,
+				sorting: action.sortOption,
+			};
 		case 'setPage':
 			return {
 				...state,
