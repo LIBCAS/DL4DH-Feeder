@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { css } from '@emotion/core';
+import { css, SerializedStyles } from '@emotion/core';
 import { MdArrowDropDown } from 'react-icons/md';
 
 import { Box, Flex, FlexProps } from 'components/styled';
@@ -8,7 +8,7 @@ import Text from 'components/styled/Text';
 
 import { theme } from 'theme';
 
-const OutsideAlerter: FC<{ onClickAway: () => void }> = ({
+const ClickAway: FC<{ onClickAway: () => void }> = ({
 	children,
 	onClickAway,
 }) => {
@@ -39,17 +39,19 @@ type Props<T extends unknown> = {
 	onChange: (item: T) => void;
 	options: T[];
 	renderMenuItem?: (item: T) => JSX.Element;
+	wrapperCss?: SerializedStyles;
 } & FlexProps;
 
 type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
 
-const TestSelect = <T extends unknown>({
+const SimpleSelect = <T extends unknown>({
 	nameFromOption,
 	onChange,
 	options,
 	value,
 	renderMenuItem,
 	keyFromOption,
+	wrapperCss,
 	...props
 }: ComponentProps<T>) => {
 	const height = props?.height ?? 40;
@@ -120,8 +122,9 @@ const TestSelect = <T extends unknown>({
 					cursor: pointer;
 					border-bottom: 1px solid ${theme.colors.primary};
 					&:hover {
-						border-bottom: 2px solid ${theme.colors.primary};
+						border-bottom: 1px solid ${theme.colors.primary};
 					}
+					${wrapperCss}
 				`}
 				onClick={() => setShowMenu(p => !p)}
 			>
@@ -134,7 +137,7 @@ const TestSelect = <T extends unknown>({
 			</Flex>
 
 			{showMenu && (
-				<OutsideAlerter onClickAway={() => setShowMenu(false)}>
+				<ClickAway onClickAway={() => setShowMenu(false)}>
 					<Box
 						position="absolute"
 						top={0}
@@ -145,10 +148,10 @@ const TestSelect = <T extends unknown>({
 						onClick={() => setShowMenu(false)}
 					/>
 					<Menu />
-				</OutsideAlerter>
+				</ClickAway>
 			)}
 		</Flex>
 	);
 };
 
-export default TestSelect;
+export default SimpleSelect;

@@ -3,6 +3,7 @@ import styled from '@emotion/styled/macro';
 
 import { Box } from 'components/styled';
 
+import { ReactComponent as Checkmark } from './svg/checkmark.svg';
 import { ReactComponent as ThreeDots } from './svg/dots.svg';
 import { ReactComponent as Profile } from './profile-icon.svg';
 import { ReactComponent as ArrowRight } from './svg/arrow-right.svg';
@@ -17,6 +18,7 @@ import { ReactComponent as Calendar } from './svg/calendar.svg';
 
 const Icon = styled(Box, { shouldForwardProp: isPropValid })``;
 
+export const CheckmarkIcon = Icon.withComponent(Checkmark);
 export const ProfileIcon = Icon.withComponent(Profile);
 export const ArrowRightIcon = Icon.withComponent(ArrowRight);
 export const ArrowLeftIcon = Icon.withComponent(ArrowLeft);

@@ -91,7 +91,7 @@ export const EMPLOYEE_ITEMS: HeaderItem[] = [
 export const CUSTOMER_ITEMS: HeaderItem[] = [
 	{
 		title: 'Nahlásenie odpočtu',
-		to: '/reading/new',
+		to: '/publication/new',
 		variant: 'text',
 	},
 	{

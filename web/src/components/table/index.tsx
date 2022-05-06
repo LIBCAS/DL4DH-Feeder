@@ -5,11 +5,11 @@ import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import useMeasure from 'react-use-measure';
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
-import { Checkbox } from '@material-ui/core';
 
 import Text from 'components/styled/Text';
 import { Dot, Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
+import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { Loader } from 'modules/loader';
 
@@ -73,7 +73,7 @@ const Table = <T extends TableItem>({
 }: Props<T>) => {
 	const [wrapperRef, { width: wrapperWidthAbs, height: wrapperHeight }] =
 		useMeasure({
-			debounce: 100,
+			debounce: 10,
 		});
 
 	const gridRef = React.createRef<FixedSizeGrid>();
@@ -110,7 +110,9 @@ const Table = <T extends TableItem>({
 					}
 				`}
 			>
-				<Checkbox checked={tempAllChecked} />
+				<Flex mt={2} mx={2}>
+					<Checkbox checked={tempAllChecked} />
+				</Flex>
 				{renderRow(data[rowIndex])}
 				{!hideEditButton && (
 					<Flex
@@ -130,7 +132,10 @@ const Table = <T extends TableItem>({
 							/* border-right: 1px solid ${theme.colors.lightGrey}; */
 						`}
 					>
-						<NavLinkButton variant="text" to={`/reading/${data[rowIndex].id}`}>
+						<NavLinkButton
+							variant="text"
+							to={`/publication/${data[rowIndex].id}`}
+						>
 							<Dot />
 							<Dot />
 							<Dot />
@@ -164,10 +169,12 @@ const Table = <T extends TableItem>({
 					height: ${headerHeight}px;
 				`}
 			>
-				<Checkbox
-					checked={tempAllChecked}
-					onChange={() => setTempAllChecked(p => !p)}
-				/>
+				<Flex mt={2} mx={2}>
+					<Checkbox
+						checked={tempAllChecked}
+						onChange={() => setTempAllChecked(p => !p)}
+					/>
+				</Flex>
 				{renderHeader(false)}
 
 				<Flex

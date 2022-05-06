@@ -8,7 +8,6 @@ import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
-import TestSelect from 'components/form/select/TestSelect';
 
 import placeholder from 'assets/title_placeholder.png';
 

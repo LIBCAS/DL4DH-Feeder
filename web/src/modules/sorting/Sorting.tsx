@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import TestSelect from 'components/form/select/TestSelect';
+import SimpleSelect from 'components/form/select/SimpleSelect';
 import Text from 'components/styled/Text';
 
 import { useSearchContext } from 'hooks/useSearchContext';
@@ -29,7 +29,7 @@ const Sorting = () => {
 	return (
 		<>
 			<Text mr={2}>Řazení</Text>
-			<TestSelect
+			<SimpleSelect
 				value={state.sorting}
 				options={sortOptions}
 				onChange={setSortOption}

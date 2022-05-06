@@ -78,7 +78,7 @@ const MainSearch: FC = () => {
 					justifyContent="space-between"
 					height={INIT_HEADER_HEIGHT}
 					bg="primaryLight"
-					overflow="hidden"
+					// overflow="hidden"
 				>
 					<Flex flexShrink={0} width={300}>
 						<NavLinkButton to="/" variant="text" pr={5}>
