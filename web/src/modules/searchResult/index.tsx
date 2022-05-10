@@ -17,6 +17,7 @@ import { useSearchContext } from 'hooks/useSearchContext';
 import ListView from './list';
 import TileView from './tiles';
 import useAdminFilter from './list/useAdminFilter';
+import GraphView from './graph';
 
 const Results: FC = () => {
 	const { state, dispatch } = useSearchContext();
@@ -53,19 +54,7 @@ const Results: FC = () => {
 						</Wrapper>
 					) : (
 						<Wrapper overflowY="auto" overflowX="hidden">
-							{isLoading ? (
-								<Loader />
-							) : (
-								<Flex
-									justifyContent="center"
-									alignItems="center"
-									height="100%"
-									fontSize="xl"
-									fontWeight="bold"
-								>
-									Graph view
-								</Flex>
-							)}
+							{isLoading ? <Loader /> : <GraphView data={data} />}
 						</Wrapper>
 					)}
 				</>

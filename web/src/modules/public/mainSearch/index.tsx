@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GridViewIcon from '@mui/icons-material/GridView';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import useMeasure from 'react-use-measure';
 import ListIcon from '@mui/icons-material/List';
+import { useLocation } from 'react-router-dom';
+import { parse } from 'query-string';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
@@ -21,7 +23,11 @@ import Sorting from 'modules/sorting/Sorting';
 
 import { theme } from 'theme';
 
-import { useSearchContextProvider, ViewMode } from 'hooks/useSearchContext';
+import {
+	TSearchQuery,
+	useSearchContextProvider,
+	ViewMode,
+} from 'hooks/useSearchContext';
 
 import {
 	HEADER_WRAPPER_ID,
@@ -48,15 +54,26 @@ const MainSearch: FC = () => {
 		'publications' | 'pages'
 	>('publications');
 
-	// const { search } = useLocation();
+	const { search } = useLocation();
+	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
+	console.log(parsed);
+
+	useEffect(() => {
+		dispatch?.({
+			type: 'setSearchQuery',
+			searchQuery: { ...state.searchQuery, ...parsed },
+		});
+		dispatch?.({
+			type: 'setViewMode',
+			viewMode: 'graph',
+		});
+	}, []);
 
 	const {
 		state,
 		dispatch,
 		Provider: SearchContextProvider,
 	} = useSearchContextProvider();
-
-	// const parsed = parse(search) as unknown as Partial<TSearchQuery>;
 
 	return (
 		<SearchContextProvider value={[state, dispatch]}>
@@ -93,13 +110,10 @@ const MainSearch: FC = () => {
 							</Flex>
 						</NavLinkButton>
 					</Flex>
-					<Flex pr={3} width={1} flexShrink={1}>
-						<MainSearchInput />
-					</Flex>
+
+					<MainSearchInput />
+
 					<Flex flexShrink={0}>
-						<Button width={150} variant="primary" py={2} mr={[2, 2, 2, 0]}>
-							Hledat v K+
-						</Button>
 						{!isMobile && (
 							<>
 								<Button variant="text">Sbírky</Button>

@@ -2,17 +2,25 @@ import { createContext, Dispatch, useContext, useReducer } from 'react';
 
 import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
-export type TField = 'author' | 'title' | 'keyword';
+import { MakeTuple } from 'utils';
+
+export const fieldsTuple = MakeTuple('author', 'title', 'keyword');
+export const operationsTuple = MakeTuple('eq', 'neq', 'gt');
+
+export type TField = typeof fieldsTuple[number];
+export type TOperation = typeof operationsTuple[number];
+
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
 export type TSearchQuery = {
-	q: string;
-	field: TField;
-	value: string;
+	q?: string;
+	field?: TField;
+	operation?: TOperation;
+	value?: string;
 };
 
 type State = {
-	searchQuery: string;
+	searchQuery: TSearchQuery | null;
 	viewMode: ViewMode;
 	pageSize: number;
 	page: number;
@@ -23,7 +31,7 @@ type State = {
 };
 
 const initState: State = {
-	searchQuery: '',
+	searchQuery: null,
 	viewMode: 'tiles',
 	pageSize: 15,
 	page: 0,
@@ -34,7 +42,7 @@ const initState: State = {
 };
 
 type Actions =
-	| { type: 'setSearchQuery'; searchQuery: string }
+	| { type: 'setSearchQuery'; searchQuery: TSearchQuery | null }
 	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
 	| { type: 'setPage'; page: number }
@@ -88,5 +96,15 @@ export const useSearchContext = () => {
 
 export const useSearchContextProvider = () => {
 	const [state, dispatch] = useReducer(reducer, { ...initState });
+	//	const { search } = useLocation();
+	//	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
+	/* 
+	useEffect(() => {
+		dispatch?.({
+			type: 'setSearchQuery',
+			searchQuery: { ...state.searchQuery, q: parsed.q },
+		});
+	}, []);
+ */
 	return { state, dispatch, Provider: SearchContext.Provider } as const;
 };

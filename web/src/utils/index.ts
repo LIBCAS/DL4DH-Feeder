@@ -192,3 +192,5 @@ export const getTimeString = (date: Date) =>
 
 export const getDateTimeString = (date: Date) =>
 	`${getDateString(date)} ${getTimeString(date)}`;
+
+export const MakeTuple = <T extends string[]>(...args: T) => args;
