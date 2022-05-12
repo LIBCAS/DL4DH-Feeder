@@ -54,7 +54,7 @@ const Results: FC = () => {
 						</Wrapper>
 					) : (
 						<Wrapper overflowY="auto" overflowX="hidden">
-							{isLoading ? <Loader /> : <GraphView data={data} />}
+							{isLoading || !data ? <Loader /> : <GraphView data={data} />}
 						</Wrapper>
 					)}
 				</>

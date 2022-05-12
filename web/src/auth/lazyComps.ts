@@ -5,4 +5,5 @@ export default {
 	// Public
 	Homepage: () => import('modules/public/homepage'),
 	MainSearch: () => import('modules/public/mainSearch'),
+	PublicationView: () => import('modules/publication/detail'),
 };

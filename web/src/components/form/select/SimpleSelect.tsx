@@ -33,25 +33,33 @@ const ClickAway: FC<{ onClickAway: () => void }> = ({
 };
 
 type Props<T extends unknown> = {
-	nameFromOption: (value: T | null) => string;
-	keyFromOption: (value: T | null) => string;
+	nameFromOption?: (value: T | null) => string;
+	keyFromOption?: (value: T | null) => string;
 	value: T;
 	onChange: (item: T) => void;
 	options: T[];
 	renderMenuItem?: (item: T) => JSX.Element;
+	label?: string;
+	labelMinWidth?: number;
+	variant?: 'outlined' | 'underlined' | 'borderless';
 	wrapperCss?: SerializedStyles;
+	arrowHidden?: boolean;
 } & FlexProps;
 
 type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
 
 const SimpleSelect = <T extends unknown>({
-	nameFromOption,
+	nameFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
+	keyFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
 	onChange,
 	options,
 	value,
 	renderMenuItem,
-	keyFromOption,
 	wrapperCss,
+	label,
+	labelMinWidth = 100,
+	variant = 'underlined',
+	arrowHidden,
 	...props
 }: ComponentProps<T>) => {
 	const height = props?.height ?? 40;
@@ -111,7 +119,14 @@ const SimpleSelect = <T extends unknown>({
 		</Flex>
 	);
 	return (
-		<Flex position="relative" width="150px" {...props}>
+		<Flex alignItems="center" position="relative" width="150px" {...props}>
+			{label ? (
+				<Flex minWidth={labelMinWidth}>
+					<Text>{label}</Text>
+				</Flex>
+			) : (
+				<></>
+			)}
 			<Flex
 				width={1}
 				px={2}
@@ -120,10 +135,21 @@ const SimpleSelect = <T extends unknown>({
 				justifyContent="space-between"
 				css={css`
 					cursor: pointer;
-					border-bottom: 1px solid ${theme.colors.primary};
-					&:hover {
+					${variant === 'outlined' &&
+					css`
+						border: 1px solid ${theme.colors.primary};
+						&:hover {
+							border: 1px solid ${theme.colors.primary};
+						}
+					`}
+					${variant === 'underlined' &&
+					css`
 						border-bottom: 1px solid ${theme.colors.primary};
-					}
+						&:hover {
+							border-bottom: 1px solid ${theme.colors.primary};
+						}
+					`}
+					
 					${wrapperCss}
 				`}
 				onClick={() => setShowMenu(p => !p)}
@@ -133,7 +159,7 @@ const SimpleSelect = <T extends unknown>({
 				) : (
 					<Flex flexGrow={1} />
 				)}
-				<MdArrowDropDown size={22} />
+				{!arrowHidden && <MdArrowDropDown size={22} />}
 			</Flex>
 
 			{showMenu && (

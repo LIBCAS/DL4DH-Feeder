@@ -2,6 +2,7 @@
 import { css } from '@emotion/core';
 import { FC } from 'react';
 import { MdCalendarToday, MdPerson } from 'react-icons/md';
+import { useHistory } from 'react-router-dom';
 
 import TileGrid from 'components/tiles';
 import { Box, Dot, Flex } from 'components/styled';
@@ -21,11 +22,23 @@ type Props = {
 };
 
 const TileView: FC<Props> = ({ data }) => {
+	const { push } = useHistory();
 	return (
 		<Wrapper p={2}>
 			<TileGrid tileSize="350px" isEmpty={data === undefined}>
 				{(data ?? []).map(d => (
-					<AspectRatio key={d.id} ratio={[2.5, 1]} width="100%">
+					<AspectRatio
+						key={d.id}
+						ratio={[2.5, 1]}
+						width="100%"
+						onClick={() => push(`view/${d.id}`)}
+						css={css`
+							&:hover {
+								box-shadow: 0px 8px 32px 4px rgba(0, 0, 0, 0.2);
+								cursor: pointer;
+							}
+						`}
+					>
 						<Flex height="100%" bg="primaryLight" p={2}>
 							<Flex
 								minWidth="100px"

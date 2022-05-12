@@ -3,25 +3,27 @@ import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { stringify } from 'query-string';
+import { parse, stringify } from 'query-string';
 
 import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import Button from 'components/styled/Button';
 
+import { useTheme } from 'theme';
+
 import {
 	fieldsTuple,
 	operationsTuple,
 	TField,
 	TOperation,
+	TSearchQuery,
 	useSearchContext,
 } from 'hooks/useSearchContext';
 
 const OperationToTextLabel: Record<TOperation, string> = {
 	eq: '=',
-	neq: '!=',
-	gt: '<',
+	neq: '\u{2260}',
 };
 
 const FieldToTextLabel: Record<TField, string> = {
@@ -32,6 +34,7 @@ const FieldToTextLabel: Record<TField, string> = {
 
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
+	const theme = useTheme();
 	const { push } = useHistory();
 	const [localState, setLocalState] = useState('');
 	useEffect(() => {
@@ -42,7 +45,19 @@ const MainSearchInput = () => {
 		const url = stringify({ ...state.searchQuery, q: localState });
 		push(`/search?${url}`);
 	};
-	console.log(state);
+
+	const { search } = useLocation();
+	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
+
+	useEffect(() => {
+		if (parsed.q !== state.searchQuery?.q) {
+			dispatch?.({
+				type: 'setSearchQuery',
+				searchQuery: { ...state.searchQuery, q: parsed.q },
+			});
+		}
+	}, []);
+
 	return (
 		<>
 			<Flex pr={3} width={1} flexShrink={1}>
@@ -69,8 +84,16 @@ const MainSearchInput = () => {
 								keyFromOption={item => (item ? FieldToTextLabel[item] : '')}
 								width={100}
 								nameFromOption={item => (item ? FieldToTextLabel[item] : '')}
+								arrowHidden
 								wrapperCss={css`
 									border: none;
+									background: ${theme.colors.primaryLight};
+									justify-content: center;
+									margin-left: 2px;
+									margin-right: 2px;
+									&:hover {
+										border: 1px solid ${theme.colors.border};
+									}
 								`}
 							/>
 							<SimpleSelect
@@ -84,11 +107,19 @@ const MainSearchInput = () => {
 								}
 								keyFromOption={item => (item ? OperationToTextLabel[item] : '')}
 								width={50}
+								arrowHidden
 								nameFromOption={item =>
 									item ? OperationToTextLabel[item] : ''
 								}
 								wrapperCss={css`
 									border: none;
+									background: ${theme.colors.primaryLight};
+									justify-content: center;
+									margin-left: 2px;
+									margin-right: 2px;
+									&:hover {
+										border: 1px solid ${theme.colors.border};
+									}
 								`}
 							/>
 						</Flex>

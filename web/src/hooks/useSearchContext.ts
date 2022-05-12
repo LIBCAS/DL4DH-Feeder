@@ -5,7 +5,7 @@ import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 import { MakeTuple } from 'utils';
 
 export const fieldsTuple = MakeTuple('author', 'title', 'keyword');
-export const operationsTuple = MakeTuple('eq', 'neq', 'gt');
+export const operationsTuple = MakeTuple('eq', 'neq');
 
 export type TField = typeof fieldsTuple[number];
 export type TOperation = typeof operationsTuple[number];
@@ -30,7 +30,7 @@ type State = {
 	sorting: SortOption;
 };
 
-const initState: State = {
+export const initState: State = {
 	searchQuery: null,
 	viewMode: 'tiles',
 	pageSize: 15,
@@ -49,7 +49,7 @@ type Actions =
 	| { type: 'setPageSize'; pageSize: number }
 	| { type: 'setViewMode'; viewMode: ViewMode };
 
-const reducer = (state: State, action: Actions) => {
+export const reducer = (state: State, action: Actions) => {
 	switch (action.type) {
 		case 'setSearchQuery':
 			return {

@@ -20,6 +20,11 @@ export const PUBLIC_ROUTES: RouterItem[] = [
 	},
 	{
 		type: 'route',
+		path: '/view/:id',
+		render: LazyRoute(Lazy.PublicationView),
+	},
+	{
+		type: 'route',
 		path: '/auth',
 		render: LazyRoute(Lazy.Authorize),
 	},

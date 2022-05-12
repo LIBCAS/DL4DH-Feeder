@@ -204,11 +204,13 @@ export const infiniteEndpoint =
 			[offset, count, data],
 		);
 
-		const { dispatch } = useSearchContext();
+		const { state, dispatch } = useSearchContext();
 
 		useEffect(() => {
-			dispatch?.({ type: 'setTotalCount', totalCount: count, hasMore });
-		}, [count, hasMore, dispatch]);
+			if (state.totalCount !== count) {
+				dispatch?.({ type: 'setTotalCount', totalCount: count, hasMore });
+			}
+		}, [count, hasMore, dispatch, state.totalCount]);
 
 		return {
 			...result,

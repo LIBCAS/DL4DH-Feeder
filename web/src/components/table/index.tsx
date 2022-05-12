@@ -132,10 +132,7 @@ const Table = <T extends TableItem>({
 							/* border-right: 1px solid ${theme.colors.lightGrey}; */
 						`}
 					>
-						<NavLinkButton
-							variant="text"
-							to={`/publication/${data[rowIndex].id}`}
-						>
+						<NavLinkButton variant="text" to={`/view/${data[rowIndex].id}`}>
 							<Dot />
 							<Dot />
 							<Dot />

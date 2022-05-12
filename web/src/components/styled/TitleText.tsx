@@ -7,12 +7,12 @@ const TitleText: React.FC<
 > = ({ variant, children, ...props }) => (
 	<Text
 		as="h2"
-		fontSize="xxl"
+		fontSize={['xl', 'xl', 'xl', 'xxl']}
 		fontWeight="bold"
 		textAlign="center"
 		fontFamily="Roboto"
 		my={[3, 3, 'initial']}
-		p={[1, 2]}
+		p={[1, 1, 1, 2]}
 		color={variant === 'primary' ? 'primary' : 'text'}
 		{...props}
 	>

@@ -41,10 +41,14 @@ const Pagination: FC<Props> = ({
 }) => {
 	useEffect(() => {
 		const limit = parseInt(Store.get<string>('vsd-pagination-limit') ?? '');
-		if (limit && pageLimitOptions.some(l => l === limit)) {
+		if (
+			limit &&
+			pageLimit !== limit &&
+			pageLimitOptions.some(l => l === limit)
+		) {
 			changeLimit(limit);
 		}
-	}, [changeLimit]);
+	}, [changeLimit, pageLimit]);
 	return (
 		<Flex
 			width="100%"
