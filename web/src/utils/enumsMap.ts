@@ -4,6 +4,8 @@ import { Backend } from 'api/endpoints';
 
 import { isIntern } from './FEVersion';
 
+export const LEFT_PANEL_WIDTH = 300;
+
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
 
 /**APP CONTEXT */
