@@ -12,14 +12,6 @@ services:
       - "5432:5432"
     volumes:
       - feeder_db:/var/lib/postgresql
-#  client:
-#    build: ./client
-#    image: inqool/feeder-client
-#    container_name: feeder-client
-#    ports:
-#      - "5000:80"
-#    environment:
-#      - API_HOST=api
   api:
     build: ./api
     image: inqool/feeder-api

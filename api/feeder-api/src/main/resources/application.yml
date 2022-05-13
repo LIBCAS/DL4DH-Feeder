@@ -37,4 +37,7 @@ springdoc:
   swagger-ui.path: /swagger
 
 system:
-  feeder:
+  kramerius:
+    api: https://www.ndk.cz/search/api/v5.0
+  kramerius-plus:
+    api: https://plus.nkp.cz/api
