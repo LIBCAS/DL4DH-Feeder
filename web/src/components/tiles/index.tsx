@@ -37,7 +37,6 @@ const TileGrid: FC<Props> = ({
 							)}
 							mb={3}
 						/> */}
-						[Žádné výsledky]
 					</Paper>
 				) : (
 					noResults

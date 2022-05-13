@@ -35,7 +35,10 @@ const TileView: FC<Props> = ({ data }) => {
 
 	return (
 		<Wrapper p={2}>
-			<TileGrid tileSize="350px" isEmpty={data === undefined}>
+			<TileGrid
+				tileSize="350px"
+				isEmpty={data === undefined || data.length < 1}
+			>
 				{(data ?? []).map(d => (
 					<AspectRatio
 						key={d.pid}
