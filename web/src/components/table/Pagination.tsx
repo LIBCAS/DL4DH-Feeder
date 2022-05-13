@@ -9,7 +9,7 @@ import { theme } from 'theme';
 
 import Store from 'utils/Store';
 
-const pageLimitOptions = [15, 30, 50, 100, -1];
+const pageLimitOptions = [15, 30, 50, 100];
 const nameFromOption = (n: number) => (n !== -1 ? n : 'Všetko');
 
 const selectStyle = {

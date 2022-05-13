@@ -3,17 +3,19 @@ import { MdDateRange, MdInfo, MdLocationCity, MdPerson } from 'react-icons/md';
 
 import { TPublication } from 'api/models';
 
-export type TColumnsLayout = TPublication;
+export type TColumnsLayout = Pick<TPublication, 'title' | 'pid' | 'model'>;
 
 export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	title: 3,
-	author: 2,
-	published: 1,
-	pages: 1,
-	meta1: 2,
-	meta2: 2,
-	meta3: 2,
-	id: 0,
+	model: 2,
+
+	//authors: 2,
+	//published: 1,
+	//pages: 1,
+	//meta1: 2,
+	//meta2: 2,
+	//meta3: 2,
+	pid: 0,
 };
 
 const iconSize = 20;
@@ -23,7 +25,8 @@ export const headerLabels: Record<
 	{ text?: string; icon?: React.ReactNode; hidden?: boolean }
 > = {
 	title: { text: 'Název', icon: <MdPerson size={iconSize} /> },
-	author: { text: 'Autor', icon: <MdLocationCity /> },
+	model: { text: 'Typ', icon: <MdPerson size={iconSize} /> },
+	/* authors: { text: 'Autor', icon: <MdLocationCity /> },
 	published: { text: 'Rok vydání', icon: <MdInfo size={iconSize} /> },
 	pages: { text: 'Počet stránek', icon: <MdInfo size={iconSize} /> },
 	meta1: { text: 'Metadata 1', icon: <MdInfo size={iconSize} /> },
@@ -34,16 +37,16 @@ export const headerLabels: Record<
 	meta3: {
 		text: 'Metadata 3',
 		icon: <MdDateRange size={iconSize} />,
-	},
-	id: { hidden: true },
+	}, */
+	pid: { hidden: true },
 };
 
 export const colsOrder: (keyof TColumnsLayout)[] = [
 	'title',
-	'author',
-	'published',
+	'model',
+	/*'published',
 	'pages',
 	'meta1',
 	'meta2',
-	'meta3',
+	'meta3', */
 ];

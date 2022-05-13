@@ -30,15 +30,17 @@ import {
 } from 'utils/enumsMap';
 import store from 'utils/Store';
 import { isIntern } from 'utils/FEVersion';
+import { SolrParams } from 'utils/SolrTypes';
 
 import { Backend } from './endpoints';
+import { SearchDto } from './models';
 
 export const QueryCacheInstance = new QueryCache();
 
 const FETCH_TIMEOUT = 30000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 
-export const api = (prefix?: string, json?: EASParams) =>
+export const api = (prefix?: string, json?: SolrParams) =>
 	ky.extend({
 		prefixUrl: `${APP_CONTEXT}/api/${prefix ?? ''}`,
 		timeout: FETCH_TIMEOUT,
@@ -158,8 +160,8 @@ export const infiniteEndpoint =
 			async () => {
 				const r = await promise(
 					api('', {
-						offset,
-						size,
+						start: offset,
+						pageSize: size,
 					}),
 
 					...args,
@@ -218,5 +220,85 @@ export const infiniteEndpoint =
 			count,
 			page,
 			hasMore,
+		};
+	};
+
+export const infiniteEndpoint2 =
+	<T, Args extends unknown[] = []>(
+		key: string[],
+		promise: (a: ReturnType<typeof api>, ...args: Args) => ResponsePromise,
+	) =>
+	(...args: Args) => {
+		const { offset, size } = args[args.length - 1] as {
+			offset: number;
+			size: number;
+		};
+		const { state, dispatch } = useSearchContext();
+		const result = useInfiniteQuery(
+			[...key, ...args],
+			async () => {
+				const r = await promise(
+					api('', {
+						start: offset,
+						pageSize: size,
+						query: state.searchQuery?.q,
+					}),
+
+					...args,
+				);
+				return await (r.json() as Promise<SearchDto>);
+			},
+			{
+				//	staleTime: Infinity,
+
+				retry: INFINITE_QUERY_RETRY_COUNT,
+				refetchOnWindowFocus: false,
+				refetchOnReconnect: false,
+				retryDelay: 3000,
+			},
+		);
+
+		const data = useMemo(
+			() => result.data?.flatMap(i => i.documents.docs),
+			[result.data],
+		);
+
+		const statistics = useMemo(
+			() => result.data?.flatMap(i => i.availableFilters)[0],
+			[result.data],
+		);
+
+		const page = useMemo(() => {
+			if (!result.data || result.data.length <= 0) {
+				return 0;
+			}
+
+			return Math.ceil(offset / size);
+		}, [result.data, offset, size]);
+		const refCount = useRef(0);
+		const count = useMemo(
+			() => result.data?.[0]?.documents.numFound ?? refCount.current,
+			[result.data],
+		);
+		refCount.current = count;
+
+		const hasMore = useMemo(
+			() => offset + (data?.length ?? 0) < count,
+			[offset, count, data],
+		);
+
+		useEffect(() => {
+			if (state.totalCount !== count) {
+				dispatch?.({ type: 'setTotalCount', totalCount: count, hasMore });
+			}
+		}, [count, hasMore, dispatch, state.totalCount]);
+
+		return {
+			...result,
+			data,
+			count,
+			page,
+			hasMore,
+			statistics,
 		};
 	};

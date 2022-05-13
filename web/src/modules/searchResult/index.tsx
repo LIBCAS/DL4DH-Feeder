@@ -11,6 +11,7 @@ import { Loader } from 'modules/loader';
 import { theme } from 'theme';
 
 import { useSearchPublications } from 'api/publicationsApi';
+import { PublicationDto } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
@@ -19,7 +20,14 @@ import TileView from './tiles';
 import useAdminFilter from './list/useAdminFilter';
 import GraphView from './graph';
 
-const Results: FC = () => {
+type Props = {
+	data: PublicationDto[] | undefined;
+	count: number;
+	isLoading: boolean;
+	hasMore: boolean;
+};
+
+const Results: FC<Props> = ({ data, count, isLoading, hasMore }) => {
 	const { state, dispatch } = useSearchContext();
 
 	const changePage = useCallback(
@@ -31,14 +39,6 @@ const Results: FC = () => {
 		(pageSize: number) => dispatch?.({ type: 'setPageSize', pageSize }),
 		[dispatch],
 	);
-
-	const { params } = useAdminFilter();
-
-	const { data, count, isLoading, hasMore } = useSearchPublications({
-		...params,
-		offset: state.offset,
-		size: state.pageSize,
-	});
 
 	return (
 		<Wrapper>

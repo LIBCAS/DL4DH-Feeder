@@ -42,7 +42,12 @@ const useAdminFilter = () => {
 		FILTER_INIT_VALUES,
 	);
 
-	const SORT_OPTIONS: Record<
+	const SORT_OPTIONS: Record<keyof Pick<TColumnsLayout, 'title'>, SortOption> =
+		{
+			title: { label: 'title', field: 'title' },
+		};
+
+	/* const SORT_OPTIONS: Record<
 		keyof Omit<TColumnsLayout, 'id' | 'meta1' | 'meta2' | 'meta3' | 'toExport'>,
 		SortOption
 	> = {
@@ -50,7 +55,7 @@ const useAdminFilter = () => {
 		author: { label: 'author', field: 'author' },
 		published: { label: 'published', field: 'published' },
 		pages: { label: 'pages', field: 'pages' },
-	};
+	}; */
 	const defaultSort = { key: 'title', order: 'DESC' } as StoredSort;
 
 	const sort = useSearchSort(

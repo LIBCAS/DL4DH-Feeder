@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FC } from 'react';
 import { MdCalendarToday, MdPerson } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
+import styled from '@emotion/styled/macro';
 
 import TileGrid from 'components/tiles';
 import { Box, Dot, Flex } from 'components/styled';
@@ -17,6 +18,14 @@ import placeholder from 'assets/title_placeholder.png';
 
 import { TPublication } from 'api/models';
 
+const Cell = styled(Text)`
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 0;
+	margin: 0;
+`;
+
 type Props = {
 	data?: TPublication[];
 };
@@ -29,10 +38,10 @@ const TileView: FC<Props> = ({ data }) => {
 			<TileGrid tileSize="350px" isEmpty={data === undefined}>
 				{(data ?? []).map(d => (
 					<AspectRatio
-						key={d.id}
+						key={d.pid}
 						ratio={[2.5, 1]}
 						width="100%"
-						onClick={() => push(`view/${d.id}`)}
+						onClick={() => push(`view/${d.pid}`)}
 					>
 						<Flex
 							height="100%"
@@ -55,17 +64,25 @@ const TileView: FC<Props> = ({ data }) => {
 								<img src={placeholder} height={30} />
 							</Flex>
 							<Flex flexDirection="column" pl={2} width={1}>
-								<Text fontSize="lg" fontFamily="RobotoCondensed-bold">
-									{d.title}
-								</Text>
-								<Flex fontSize="sm" mt={2}>
+								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">
+									{d.rootTitle}
+								</Cell>
+
+								<Flex fontSize="sm" mt={2} flexDirection="column">
 									<Flex alignItems="center">
 										<MdPerson color="primary" />
-										<Text ml={2}>{d.author}</Text>
+										<Cell>
+											{typeof d.authors === 'object'
+												? d.authors.map(a => a)
+												: d.authors}
+										</Cell>
 									</Flex>
-									<Flex alignItems="center" ml={3}>
+									<Flex alignItems="center">
 										<MdCalendarToday color="primary" />
-										<Text ml={2}>{getDateString(d.published)}</Text>
+										<Text ml={2}>
+											{/* {getDateString(d?.published ?? d.date )} */}
+											{d.date}
+										</Text>
 									</Flex>
 								</Flex>
 								<Flex fontSize="sm" mt={2}>
@@ -92,7 +109,7 @@ const TileView: FC<Props> = ({ data }) => {
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
 									<Flex bg="primary" color="white" opacity="0.5">
 										<Text py={1} my={0} px={3} fontSize="sm">
-											Tag
+											{d.model}
 										</Text>
 									</Flex>
 								</Flex>

@@ -2,9 +2,7 @@
 import { css } from '@emotion/react';
 import { FC, useState } from 'react';
 
-import MyAccordion from 'components/accordion';
 import { Flex } from 'components/styled';
-import Text from 'components/styled/Text';
 import SidePanelHideButton from 'components/sidepanels/SidePanelHideButton';
 import Tabs from 'components/tabs';
 import Button from 'components/styled/Button';
@@ -20,12 +18,13 @@ const PublicationSidePanel: FC<{ variant: 'left' | 'right' }> = ({
 }) => {
 	const theme = useTheme();
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
+
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>('detail');
 	return (
 		<Flex
 			position="relative"
-			maxHeight="100vh"
-			width={leftCollapsed ? '1px' : 300}
+			// maxHeight="100vh"
+			width={leftCollapsed ? '0px' : 300}
 			flexShrink={0}
 			css={css`
 				${variant === 'left' &&
@@ -42,7 +41,7 @@ const PublicationSidePanel: FC<{ variant: 'left' | 'right' }> = ({
 			<Flex
 				position="relative"
 				alignItems="flex-start"
-				overflowY="auto"
+				// overflowY="auto"
 				width={1}
 				flexDirection="column"
 			>
@@ -52,6 +51,7 @@ const PublicationSidePanel: FC<{ variant: 'left' | 'right' }> = ({
 					width={1}
 					alignItems="center"
 					justifyContent="center"
+					flexShrink={0}
 				>
 					<Tabs
 						tabs={[
@@ -86,7 +86,11 @@ const PublicationSidePanel: FC<{ variant: 'left' | 'right' }> = ({
 					/>
 				</Flex>
 				<Divider />
-				{viewMode === 'search' ? <PubSideSearch /> : <PubSideDetail />}
+				{viewMode === 'search' ? (
+					<PubSideSearch marginTop={60} />
+				) : (
+					<PubSideDetail />
+				)}
 			</Flex>
 			<SidePanelHideButton
 				onClick={() => setLeftCollapsed(p => !p)}

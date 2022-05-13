@@ -26,7 +26,7 @@ const EDIT_COL_WIDTH = 60;
 /** Types */
 
 type TableItem = {
-	id?: string;
+	pid?: string;
 };
 
 type RenderCallback = ({
@@ -132,7 +132,7 @@ const Table = <T extends TableItem>({
 							/* border-right: 1px solid ${theme.colors.lightGrey}; */
 						`}
 					>
-						<NavLinkButton variant="text" to={`/view/${data[rowIndex].id}`}>
+						<NavLinkButton variant="text" to={`/view/${data[rowIndex].pid}`}>
 							<Dot />
 							<Dot />
 							<Dot />

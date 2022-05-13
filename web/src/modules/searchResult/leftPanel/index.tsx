@@ -1,18 +1,31 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
+import styled from '@emotion/styled/macro';
 
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import MyAccordion from 'components/accordion';
 import Button from 'components/styled/Button';
 
+import { AvailableFilters, PublicationDto } from 'api/models';
+
+import { useSearchContext } from 'hooks/useSearchContext';
+
 type StatItem = {
 	label: string;
 	value: number;
 	bold?: boolean;
 };
+
+const Cell = styled(Text)`
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 0;
+	margin: 0;
+`;
 
 const AvalItems: StatItem[] = [
 	{ label: 'Pouze verejne', value: 49636 },
@@ -43,7 +56,7 @@ const StatList: FC<{
 					justifyContent="space-between"
 					fontWeight={item.bold ? 'bold' : 'unset'}
 				>
-					<Text>{item.label}</Text>
+					<Cell maxWidth={200}>{item.label}</Cell>
 					<Text> {item.value}</Text>
 				</Flex>
 			))}
@@ -100,16 +113,52 @@ const StatList: FC<{
 	);
 };
 
-const SearchResultLeftPanel = () => {
+type Props = {
+	data?: AvailableFilters;
+	isLoading?: boolean;
+};
+
+const SearchResultLeftPanel: FC<Props> = ({ data }) => {
+	const avalItems: StatItem[] = useMemo(
+		() => [
+			{
+				label: 'Pouze veřejné',
+				value: data?.availability.public ?? 0,
+			},
+			{
+				label: 'Pouze neveřejné',
+				value: data?.availability.private ?? 0,
+			},
+			{
+				label: 'Všechny',
+				value:
+					(data?.availability.private ?? 0) + (data?.availability.public ?? 0),
+			},
+		],
+		[data],
+	);
+
+	const modelItems: StatItem[] = useMemo(
+		() =>
+			data?.models
+				? [
+						...Object.keys(data?.models).map(key => ({
+							label: key,
+							value: data.models[key],
+						})),
+				  ].sort((a, b) => b.value - a.value)
+				: [],
+		[],
+	);
 	return (
 		<Box px={2} width={1}>
 			<MyAccordion label="Dostupnost" isExpanded>
-				<StatList items={AvalItems} />
+				<StatList items={avalItems} />
 			</MyAccordion>
 			<MyAccordion label="Typ dokumentů" isExpanded>
-				<StatList items={AvalItems} />
+				<StatList items={modelItems} />
 			</MyAccordion>
-			<MyAccordion label="Klíčové slovo" isExpanded>
+			{/* <MyAccordion label="Klíčové slovo">
 				{onRefresh => (
 					<StatList
 						items={[...DocItems, ...DocItems]}
@@ -118,7 +167,7 @@ const SearchResultLeftPanel = () => {
 					/>
 				)}
 			</MyAccordion>
-			<MyAccordion label="Klíčové slovo" isExpanded>
+			<MyAccordion label="Klíčové slovo">
 				{onRefresh => (
 					<StatList
 						items={[...DocItems, ...DocItems]}
@@ -127,10 +176,10 @@ const SearchResultLeftPanel = () => {
 					/>
 				)}
 			</MyAccordion>
-			<MyAccordion label="Dostupnost" isExpanded>
+			<MyAccordion label="Dostupnost">
 				<StatList items={AvalItems} />
 			</MyAccordion>
-			<Box>Rok vydani</Box>
+			<Box>Rok vydani</Box> */}
 		</Box>
 	);
 };

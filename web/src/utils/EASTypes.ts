@@ -53,6 +53,8 @@ export type EASParams = {
 	searchAfter?: string;
 	flipDirection?: boolean;
 	offset?: number;
+	start?: number;
+	pageSize?: number;
 };
 
 export type EASResult<T> = {

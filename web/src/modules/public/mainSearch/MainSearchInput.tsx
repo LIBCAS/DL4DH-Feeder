@@ -43,6 +43,10 @@ const MainSearchInput = () => {
 
 	const handleUpdateContext = () => {
 		const url = stringify({ ...state.searchQuery, q: localState });
+		dispatch?.({
+			type: 'setSearchQuery',
+			searchQuery: { ...state.searchQuery, q: parsed.q },
+		});
 		push(`/search?${url}`);
 	};
 
@@ -56,7 +60,7 @@ const MainSearchInput = () => {
 				searchQuery: { ...state.searchQuery, q: parsed.q },
 			});
 		}
-	}, []);
+	}, [parsed.q]);
 
 	return (
 		<>

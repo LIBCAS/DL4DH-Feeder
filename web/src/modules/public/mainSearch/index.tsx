@@ -19,18 +19,25 @@ import Sorting from 'modules/sorting/Sorting';
 
 import { theme } from 'theme';
 
+import { useSearchPublications } from 'api/publicationsApi';
+
 import { useSearchContext, ViewMode } from 'hooks/useSearchContext';
 
 import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 const MainSearch: FC = () => {
-	// const [leftCollapsed, setLeftCollapsed] = useState(false);
-	// const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
 
 	const { state, dispatch } = useSearchContext();
+	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
+		{
+			offset: state.offset,
+			pageSize: state.pageSize,
+			query: state.searchQuery?.q,
+		},
+	);
 
 	return (
 		<ResponsiveWrapper
@@ -179,22 +186,20 @@ const MainSearch: FC = () => {
 					flexShrink={0}
 					width={300}
 					overflowY="auto"
-					// width={leftCollapsed ? 10 : 300}
-					// onClick={() => setLeftCollapsed(p => !p)}
 					css={css`
 						border-right: 1px solid ${theme.colors.border};
 						transition: width 1s ease-in-out;
 					`}
 				>
-					{' '}
-					{/*hide button TODO: */}
-					{/* <Flex bg="red" position="absolute" right={0} top={0}>
-							ahoj
-						</Flex> */}
-					<SearchResultLeftPanel />
+					<SearchResultLeftPanel data={statistics} isLoading={isLoading} />
 				</Flex>
 				<Flex width={1} bg="white">
-					<Results />
+					<Results
+						data={data}
+						hasMore={hasMore}
+						isLoading={isLoading}
+						count={count}
+					/>
 				</Flex>
 				{/* <Flex
 						flexShrink={0}

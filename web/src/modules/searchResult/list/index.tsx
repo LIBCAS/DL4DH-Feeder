@@ -33,9 +33,9 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	/* if (cellKey === 'published') {
 		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
 	} */
-	if (cellKey === 'published') {
+	/* if (cellKey === 'published') {
 		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
-	}
+	} */
 	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 	// return <Cell title={row[cellKey]}>{row[cellKey]}</Cell>;
 };
@@ -65,7 +65,7 @@ const ListView: FC<{
 		debounce: 200,
 	});
 
-	const { sort } = useAdminFilter();
+	//	const { sort } = useAdminFilter();
 
 	const renderHeader = useCallback(
 		() =>
@@ -78,7 +78,7 @@ const ListView: FC<{
 					p={2}
 					pl={[2, 3]}
 					fontWeight="bold"
-					onClick={() => {
+					/* onClick={() => {
 						if (sort.options[cellKey]) {
 							sort.setSelected(cellKey);
 						}
@@ -90,19 +90,19 @@ const ListView: FC<{
 						sort.options[cellKey]
 							? `Zoradiť podľa ${headerLabels[cellKey].text}`
 							: ''
-					}
+					} */
 				>
 					<Cell>{headerLabels[cellKey].text}</Cell>
 
-					{sort.selected.key === cellKey &&
+					{/* {sort.selected.key === cellKey &&
 						(sort.selected.order === 'ASC' ? (
 							<ArrowDownIcon ml={2} />
 						) : (
 							<ArrowUpIcon ml={2} />
-						))}
+						))} */}
 				</Flex>
 			)),
-		[sort],
+		[],
 	);
 	const items = data ?? [];
 

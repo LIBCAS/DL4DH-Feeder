@@ -27,25 +27,25 @@ type Props = {
 	data: TPublication[];
 };
 
-const XAxisOptTuple = MakeTuple('author', 'published');
+const XAxisOptTuple = MakeTuple('authors', 'date');
 type XAxisOpts = typeof XAxisOptTuple[number];
 
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
 	const [zoom, setZoom] = useState(50);
-	const [axisX, setAxisX] = useState<XAxisOpts>('published');
+	const [axisX, setAxisX] = useState<XAxisOpts>('date');
 
 	const formattedData = useMemo(
 		() =>
 			groupBy(
 				data.filter(p => p[axisX] !== undefined),
 				d => {
-					if (axisX === 'published') {
-						const year = new Date(d.published).getFullYear();
+					if (axisX === 'date') {
+						const year = new Date(d.date).getFullYear();
 						return Math.round(year / zoom) * zoom;
 					}
 
-					return d.author;
+					return d.date;
 				},
 			),
 		[zoom, data, axisX],

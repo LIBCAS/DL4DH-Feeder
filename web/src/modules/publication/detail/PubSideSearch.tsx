@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { FC, useState } from 'react';
 import { MdClear, MdSearch } from 'react-icons/md';
+import useMeasure from 'react-use-measure';
 
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -11,58 +12,72 @@ import TextInput from 'components/form/input/TextInput';
 
 import { useTheme } from 'theme';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 type Props = {
 	nic?: boolean;
+	marginTop: number;
 };
 
-const testPubs = Array.from(Array(20).keys());
+const testPubs = Array.from(Array(100).keys());
 
-const PubSideSearch: FC<Props> = () => {
+const PubSideSearch: FC<Props> = ({ marginTop }) => {
 	const [toSearch, setToSearch] = useState('');
 	const [selected, setSelected] = useState(1);
+	const [ref, { height: resultsMargin }] = useMeasure();
 	const theme = useTheme();
+
 	return (
 		<Box width={1}>
-			<Flex p={3}>
-				<Text>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam,
-					eum!
-				</Text>
-			</Flex>
-			<Divider />
-			<Flex p={3}>
-				<TextInput
-					placeholder="Vyhledávat v publikaci"
-					label=""
-					labelType="inline"
-					color="primary"
-					value={toSearch}
-					iconLeft={
-						<Flex color="primary" ml={2}>
-							<MdSearch size={26} />
-						</Flex>
-					}
-					iconRight={
-						toSearch !== '' ? (
-							<Flex mr={3} color="primary">
-								<MdClear
-									onClick={() => setToSearch('')}
-									css={css`
-										cursor: pointer;
-									`}
-								/>
+			<div ref={ref}>
+				<Flex p={3}>
+					<Text>
+						Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam,
+						eum!
+					</Text>
+				</Flex>
+				<Divider />
+				<Flex p={3}>
+					<TextInput
+						placeholder="Vyhledávat v publikaci"
+						label=""
+						labelType="inline"
+						color="primary"
+						value={toSearch}
+						iconLeft={
+							<Flex color="primary" ml={2}>
+								<MdSearch size={26} />
 							</Flex>
-						) : (
-							<></>
-						)
-					}
-					onChange={e => {
-						setToSearch(e.currentTarget.value);
-					}}
-				/>
-			</Flex>
-			<Divider />
-			<Flex p={2} flexWrap="wrap">
+						}
+						iconRight={
+							toSearch !== '' ? (
+								<Flex mr={3} color="primary">
+									<MdClear
+										onClick={() => setToSearch('')}
+										css={css`
+											cursor: pointer;
+										`}
+									/>
+								</Flex>
+							) : (
+								<></>
+							)
+						}
+						onChange={e => {
+							setToSearch(e.currentTarget.value);
+						}}
+					/>
+				</Flex>
+				<Divider />
+			</div>
+			<Flex
+				p={2}
+				flexWrap="wrap"
+				maxHeight={`calc(100vh - ${
+					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 30
+				}px)`}
+				overflowY="auto"
+			>
 				{testPubs.map(p => (
 					<Box
 						key={p}
