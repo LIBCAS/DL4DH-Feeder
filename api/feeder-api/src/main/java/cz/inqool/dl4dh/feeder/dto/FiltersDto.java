@@ -21,6 +21,9 @@ public class FiltersDto {
     private Integer yearFrom;
     private Integer yearTo;
 
+    private Integer start = 0;
+    private Integer pageSize = 60;
+
     public String toFqQuery() {
         List<List<String>> list = new ArrayList<>();
         list.add(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"));

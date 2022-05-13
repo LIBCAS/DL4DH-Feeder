@@ -3,22 +3,14 @@ package cz.inqool.dl4dh.feeder.api;
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Peter Sekan
@@ -40,7 +32,7 @@ public class SearchApi {
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")
                         .queryParam("bq", "dostupnost:public^5")
-                        .queryParam("rows", "50")
+                        .queryParam("rows", filters.getPageSize())
                         .build())
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
@@ -66,8 +58,8 @@ public class SearchApi {
                         .queryParam("facet.field","dostupnost")
                         .queryParam("facet.field","collection")
                         .queryParam("sort","created_date desc")
-                        .queryParam("rows","60")
-                        .queryParam("start","0")
+                        .queryParam("rows",filters.getPageSize())
+                        .queryParam("start",filters.getStart())
                         .build())
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
