@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>cz.inqool.dl4dh</groupId>
-            <artifactId>krameriusplus-core</artifactId>
+            <artifactId>feeder-core</artifactId>
             <version>${revision}</version>
         </dependency>
 
@@ -35,4 +35,15 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>cz.inqool.dl4dh.feeder.FeederApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
