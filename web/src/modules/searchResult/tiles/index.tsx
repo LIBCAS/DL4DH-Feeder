@@ -23,6 +23,7 @@ type Props = {
 
 const TileView: FC<Props> = ({ data }) => {
 	const { push } = useHistory();
+
 	return (
 		<Wrapper p={2}>
 			<TileGrid tileSize="350px" isEmpty={data === undefined}>
@@ -32,14 +33,19 @@ const TileView: FC<Props> = ({ data }) => {
 						ratio={[2.5, 1]}
 						width="100%"
 						onClick={() => push(`view/${d.id}`)}
-						css={css`
-							&:hover {
-								box-shadow: 0px 8px 32px 4px rgba(0, 0, 0, 0.2);
-								cursor: pointer;
-							}
-						`}
 					>
-						<Flex height="100%" bg="primaryLight" p={2}>
+						<Flex
+							height="100%"
+							bg="primaryLight"
+							p={2}
+							css={css`
+								border: 1px solid ${theme.colors.border};
+								&:hover {
+									box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
+									cursor: pointer;
+								}
+							`}
+						>
 							<Flex
 								minWidth="100px"
 								bg="white"

@@ -5,10 +5,10 @@ import {
 import { FC } from 'react';
 
 const nkpColors = {
-	primary: '#058ba8',
-	primaryLight: '#fff',
+	primary: '#0389a7',
+	primaryLight: '#f5f5f5',
 	secondary: '#1E2838',
-	border: '#BCE0FD',
+	border: '#058ba8',
 	//border: '#684947',
 	inactive: '#BCE0FD',
 	text: '#058ba8',

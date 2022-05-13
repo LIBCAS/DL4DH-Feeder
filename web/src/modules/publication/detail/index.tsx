@@ -23,7 +23,7 @@ import { useTheme } from 'theme';
 
 // 	https://github.com/gerhardsletten/react-pinch-zoom-pan?ref=morioh.com&utm_source=morioh.com
 
-import DetailLeftMenu from './DetailLeftMenu';
+import PublicationSidePanel from './PublicationSidePanel';
 
 const PublicationDetail = () => {
 	const theme = useTheme();
@@ -44,19 +44,8 @@ const PublicationDetail = () => {
 			width={1}
 			height="100vh"
 		>
-			<Flex
-				bg="white"
-				width={1}
-				height={50}
-				alignItems="center"
-				css={css`
-					border-bottom: 1px solid ${theme.colors.border};
-				`}
-			>
-				SUBHEADER
-			</Flex>
 			<Flex width={1}>
-				<DetailLeftMenu />
+				<PublicationSidePanel variant="left" />
 				<Flex
 					ref={ref}
 					width={1}
@@ -124,6 +113,7 @@ const PublicationDetail = () => {
 						</Button>
 					</Flex>
 				</Flex>
+				<PublicationSidePanel variant="right" />
 			</Flex>
 		</ResponsiveWrapper>
 	);

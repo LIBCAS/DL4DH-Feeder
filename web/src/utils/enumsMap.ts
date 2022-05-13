@@ -4,7 +4,9 @@ import { Backend } from 'api/endpoints';
 
 import { isIntern } from './FEVersion';
 
-export const LEFT_PANEL_WIDTH = 300;
+export const SIDE_PANEL_WIDTH = 300;
+
+export const LEFT_PANEL_WIDTH = SIDE_PANEL_WIDTH;
 
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
 
@@ -15,12 +17,12 @@ export const APP_CONTEXT = '';
 
 /**TOKENS */
 export const ACCESS_TOKEN_CONTEXT = isIntern()
-	? 'intern-vsd-access-token'
-	: 'public-vsd-access-token';
+	? 'feeder-access-token'
+	: 'feeder-access-token';
 
 export const REFRESH_TOKEN_CONTEXT = isIntern()
-	? 'intern-vsd-refresh-token'
-	: 'public-vsd-refresh-token';
+	? 'feeder-refresh-token'
+	: 'feeder-refresh-token';
 
 /**ANONYMOUS USER */
 export const ANONYMOUS_USER_LOGGED = 'public-vsd-lsiduser-logged-in';
