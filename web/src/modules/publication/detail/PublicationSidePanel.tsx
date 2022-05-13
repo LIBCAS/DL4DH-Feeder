@@ -13,13 +13,16 @@ import { useTheme } from 'theme';
 import PubSideSearch from './PubSideSearch';
 import PubSideDetail from './PubSideDetail';
 
-const PublicationSidePanel: FC<{ variant: 'left' | 'right' }> = ({
-	variant,
-}) => {
+const PublicationSidePanel: FC<{
+	variant: 'left' | 'right';
+	defaultView?: 'detail' | 'search';
+}> = ({ variant, defaultView }) => {
 	const theme = useTheme();
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
-	const [viewMode, setViewMode] = useState<'detail' | 'search'>('detail');
+	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
+		defaultView ?? 'detail',
+	);
 	return (
 		<Flex
 			position="relative"

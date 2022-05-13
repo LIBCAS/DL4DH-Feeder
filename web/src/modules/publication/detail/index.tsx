@@ -45,7 +45,7 @@ const PublicationDetail = () => {
 			height="100vh"
 		>
 			<Flex width={1}>
-				<PublicationSidePanel variant="left" />
+				<PublicationSidePanel variant="left" defaultView="search" />
 				<Flex
 					ref={ref}
 					width={1}
