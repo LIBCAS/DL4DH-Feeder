@@ -41,8 +41,17 @@ const GraphView: FC<Props> = ({ data }) => {
 				data.filter(p => p[axisX] !== undefined),
 				d => {
 					if (axisX === 'date') {
-						const year = new Date(d.date).getFullYear();
+						const year = parseInt(d.date); //new Date(d.date).getFullYear();
+
 						return Math.round(year / zoom) * zoom;
+					}
+
+					if (axisX === 'authors') {
+						if (typeof d.authors === 'object') {
+							return d.authors[0];
+						} else {
+							return d.authors;
+						}
 					}
 
 					return d.date;

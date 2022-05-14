@@ -1,16 +1,22 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
+import { debounce } from 'lodash-es';
 
+import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import Button from 'components/styled/Button';
+import { Wrapper } from 'components/styled/Wrapper';
 
 import { useTheme } from 'theme';
+import { api } from 'api';
+
+import { HintDto } from 'api/models';
 
 import {
 	fieldsTuple,
@@ -37,6 +43,7 @@ const MainSearchInput = () => {
 	const theme = useTheme();
 	const { push } = useHistory();
 	const [localState, setLocalState] = useState('');
+	const [hints, setHints] = useState<HintDto[]>([]);
 	useEffect(() => {
 		setLocalState(state.searchQuery?.q ?? '');
 	}, [state.searchQuery]);
@@ -62,16 +69,45 @@ const MainSearchInput = () => {
 		}
 	}, [parsed.q]);
 
+	const getHint = useCallback(async (q: string) => {
+		const hints = await api()
+			.post('search/hint', { json: { query: q } })
+			.json<HintDto[]>();
+		console.log(hints);
+		setHints(hints);
+	}, []);
+
+	const debouncedHint = useMemo(() => debounce(getHint, 200), [getHint]);
+	const menuOffset = useMemo(
+		() => Math.min(localState.length * 5, 500),
+		[hints],
+	);
+
 	return (
 		<>
-			<Flex pr={3} width={1} flexShrink={1}>
+			<Flex
+				pr={3}
+				width={1}
+				flexShrink={1}
+				position="relative"
+				overflow="visible"
+				zIndex={1}
+			>
 				<TextInput
 					placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
 					label=""
 					labelType="inline"
 					color="primary"
 					value={localState}
-					onChange={e => setLocalState(e.target.value)}
+					onChange={e => {
+						setLocalState(e.target.value);
+						debouncedHint(e.target.value);
+					}}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							handleUpdateContext();
+						}
+					}}
 					iconLeft={
 						<Flex color="primary" ml={2} alignItems="center">
 							<MdSearch size={26} />
@@ -146,6 +182,42 @@ const MainSearchInput = () => {
 						)
 					}
 				/>
+				{hints.length > 0 && localState !== '' && (
+					<Flex
+						position="absolute"
+						left={200 + menuOffset}
+						top={50}
+						bg="white"
+						color="text"
+						css={css`
+							border: 1px solid ${theme.colors.border};
+							box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
+						`}
+					>
+						<Flex position="relative" flexDirection="column">
+							{hints.map(h => (
+								<Flex
+									px={3}
+									py={2}
+									key={h.pid}
+									onClick={() => {
+										setLocalState(h.title);
+										setHints([]);
+									}}
+									css={css`
+										cursor: pointer;
+										&:hover {
+											color: white;
+											background-color: ${theme.colors.primary};
+										}
+									`}
+								>
+									<Text>{h.title}</Text>
+								</Flex>
+							))}
+						</Flex>
+					</Flex>
+				)}
 			</Flex>
 			<Flex flexShrink={0}>
 				<Button
