@@ -1,0 +1,156 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"jsx": true,
+		"useJSXTextNode": true,
+		"project": "./tsconfig.json",
+		"sourceType": "module",
+		"ecmaVersion": 2018,
+		"warnOnUnsupportedTypeScriptVersion": false,
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:import/errors",
+		"plugin:import/warnings",
+		"plugin:import/typescript",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended",
+		"plugin:react/recommended",
+		"prettier",
+		"prettier/@typescript-eslint",
+		"prettier/react"
+	],
+	"plugins": [
+		"@typescript-eslint",
+		"react",
+		"react-hooks",
+		"jsx-a11y",
+		"no-loops",
+		"@emotion",
+		"prettier"
+	],
+	"rules": {
+		"import/no-named-as-default": 0,
+		"react/react-in-jsx-scope": "off",
+		"curly": "error",
+		"@typescript-eslint/no-explicit-any": "warn",
+		"@typescript-eslint/consistent-type-definitions": ["error", "type"],
+		"@typescript-eslint/prefer-optional-chain": "error",
+		"@typescript-eslint/prefer-nullish-coalescing": "error",
+		"react-hooks/rules-of-hooks": "error",
+		"react-hooks/exhaustive-deps": "warn",
+		"react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"no-console": "off",
+		"no-nested-ternary": "error",
+		"no-restricted-imports": [
+			"error",
+			{
+				"paths": [
+					{
+						"name": "@emotion/styled",
+						"message": "Please import from @emotion/styled/macro."
+					}
+				],
+				"patterns": ["!@emotion/styled/macro"]
+			}
+		],
+		"@emotion/no-vanilla": "error",
+		"@emotion/import-from-emotion": "error",
+		"@emotion/styled-import": "error",
+		"@emotion/syntax-preference": ["error", "string"],
+		"import/order": [
+			"error",
+			{
+				"newlines-between": "always",
+				"groups": [
+					"builtin",
+					"external",
+					"internal",
+					"parent",
+					"sibling",
+					"index"
+				],
+				"pathGroups": [
+					{
+						"pattern": "@emotion/**",
+						"group": "external",
+						"position": "before"
+					},
+					{
+						"pattern": "react",
+						"group": "external",
+						"position": "before"
+					},
+					{
+						"pattern": "components/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "modules/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "assets/**",
+						"group": "internal",
+						"position": "after"
+					},
+					{
+						"pattern": "api/**",
+						"group": "parent",
+						"position": "before"
+					},
+					{
+						"pattern": "auth/**",
+						"group": "parent",
+						"position": "before"
+					},
+					{
+						"pattern": "hooks/**",
+						"group": "parent",
+						"position": "before"
+					},
+					{
+						"pattern": "utils/**",
+						"group": "parent",
+						"position": "before"
+					},
+					{
+						"pattern": "theme/**",
+						"group": "parent",
+						"position": "after"
+					}
+				]
+			}
+		]
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		},
+		"import/resolver": {
+			"node": {
+				"paths": "src"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"files": ["**/*.tsx"],
+			"rules": {
+				"react/prop-types": "off"
+			}
+		}
+	],
+	"env": {
+		"browser": true,
+		"node": true,
+		"es6": true,
+		"jest": true
+	}
+}
