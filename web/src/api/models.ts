@@ -48,8 +48,3 @@ export type SearchDto = {
 };
 
 export type TPublication = PublicationDto & Partial<MyPublication>;
-
-export type HintDto = {
-	title: string;
-	pid: string;
-};

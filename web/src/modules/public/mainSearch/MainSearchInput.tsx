@@ -16,8 +16,6 @@ import { Wrapper } from 'components/styled/Wrapper';
 import { useTheme } from 'theme';
 import { api } from 'api';
 
-import { HintDto } from 'api/models';
-
 import {
 	fieldsTuple,
 	operationsTuple,
@@ -43,7 +41,7 @@ const MainSearchInput = () => {
 	const theme = useTheme();
 	const { push } = useHistory();
 	const [localState, setLocalState] = useState('');
-	const [hints, setHints] = useState<HintDto[]>([]);
+	const [hints, setHints] = useState<string[]>([]);
 	useEffect(() => {
 		setLocalState(state.searchQuery?.q ?? '');
 	}, [state.searchQuery]);
@@ -72,8 +70,7 @@ const MainSearchInput = () => {
 	const getHint = useCallback(async (q: string) => {
 		const hints = await api()
 			.post('search/hint', { json: { query: q } })
-			.json<HintDto[]>();
-		console.log(hints);
+			.json<string[]>();
 		setHints(hints);
 	}, []);
 
@@ -195,13 +192,13 @@ const MainSearchInput = () => {
 						`}
 					>
 						<Flex position="relative" flexDirection="column">
-							{hints.map(h => (
+							{hints.map((h, index) => (
 								<Flex
 									px={3}
 									py={2}
-									key={h.pid}
+									key={index}
 									onClick={() => {
-										setLocalState(h.title);
+										setLocalState(h);
 										setHints([]);
 									}}
 									css={css`
@@ -212,7 +209,7 @@ const MainSearchInput = () => {
 										}
 									`}
 								>
-									<Text>{h.title}</Text>
+									<Text>{h}</Text>
 								</Flex>
 							))}
 						</Flex>
