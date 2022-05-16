@@ -1,0 +1,75 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <!-- Default property settings -->
+    <property name="id" value="varchar(255)" dbms="h2,postgresql"/>
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="h2"/>
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <changeSet id="1" author="bodnar">
+        <createTable tableName="file_ref">
+            <!-- Domain Object -->
+            <column name="id" type="${id}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="file_PK"/>
+            </column>
+
+            <!-- Dated Object -->
+            <column name="created" type="timestamp"/>
+            <column name="updated" type="timestamp"/>
+            <column name="deleted" type="timestamp"/>
+
+            <!-- FileRef -->
+            <column name="name" type="nvarchar(256)" />
+            <column name="content_type" type="varchar(256)"/>
+            <column name="storage" type="varchar(256)"/>
+            <column name="size" type="bigint"/>
+            <column name="hierarchical_level" type="int"/>
+        </createTable>
+
+        <createTable tableName="export">
+            <!-- Domain Object -->
+            <column name="id" type="${id}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="export_PK"/>
+            </column>
+
+            <!-- Dated Object -->
+            <column name="created" type="timestamp"/>
+            <column name="updated" type="timestamp"/>
+            <column name="deleted" type="timestamp"/>
+
+            <column name="publication_id" type="${id}"/>
+            <column name="publication_title" type="nvarchar(255)"/>
+            <column name="file_ref_id" type="${id}">
+                <constraints foreignKeyName="export_file_ref_FK"
+                             referencedTableName="file_ref"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="bodnar">
+        <createTable tableName="job_event">
+            <!-- Domain Object -->
+            <column name="id" type="${id}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="job_event__PK"/>
+            </column>
+
+            <!-- Dated Object -->
+            <column name="created" type="timestamp"/>
+            <column name="updated" type="timestamp"/>
+            <column name="deleted" type="timestamp"/>
+
+            <column name="job_name" type="nvarchar(255)"/>
+            <column name="publication_id" type="varchar(255)"/>
+            <column name="instance_id" type="bigint"/>
+            <column name="last_execution_id" type="bigint"/>
+            <column name="parent_id" type="${id}">
+                <constraints foreignKeyName="job_event_parent_FK"
+                             referencedTableName="job_event"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="parameters" type="varchar(2000)"/>
+            <column name="kramerius_job" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="default-config" version="1.6">
+
+    <field name="PID" type="string" indexed="true" stored="true" required="true"/>
+    <field name="_version_" type="plong" indexed="true" stored="true"/>
+
+    <uniqueKey>PID</uniqueKey>
+
+<!--	<field name="root_title" type="string" indexed="true" stored="true"/>-->
+<!--	<field name="title" type="text_cz" indexed="true" stored="true"/>-->
+<!--	<field name="lemma" type="tokenized" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true"/>-->
+<!--	<field name="nameTag.personalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.personalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.geographicalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.geographicalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.institutions.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.institutions.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+
+
+    <field name="nameTag.numbersInAddresses" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.geographicalNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make spacial value -->
+    <field name="nameTag.institutions" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.mediaNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.numberExpressions" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make numeric value -->
+    <field name="nameTag.artifactNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.personalNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.timeExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make timerange value -->
+    <field name="nameTag.complexPersonNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexTimeExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexAddressExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexBiblioExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+
+
+    <!-- K5 fields -->
+    <field name="root_pid" type="string" indexed="true" stored="true"/>
+    <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="datum_begin" type="int" default="0" indexed="true" stored="true"/>
+    <field name="dc.creator" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
+    <field name="dc.title" type="text_fgs" indexed="true" stored="true"/>
+    <field name="dostupnost" type="string" indexed="true" stored="true"/>
+    <field name="fedora.model" type="string" indexed="true" stored="true" docValues="true"/>
+    <field name="keywords" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+
+
+
+    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"  />
+    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true" docValues="true" />
+
+    <!-- boolean type: "true" or "false" -->
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+    <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+
+    <!--
+      Numeric field types that index values using KD-trees.
+      Point fields don't support FieldCache, so they must have docValues="true" if needed for sorting, faceting, functions, etc.
+    -->
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
+    <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+    <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+
+    <fieldType name="pints" class="solr.IntPointField" docValues="true" multiValued="true"/>
+    <fieldType name="pfloats" class="solr.FloatPointField" docValues="true" multiValued="true"/>
+    <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
+    <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
+    <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
+
+    <!-- since fields of this type are by default not stored or indexed,
+       any data added to them will be ignored outright.  -->
+    <fieldType name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+
+    <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
+         is a more restricted form of the canonical representation of dateTime
+         http://www.w3.org/TR/xmlschema-2/#dateTime    
+         The trailing "Z" designates UTC time and is mandatory.
+         Optional fractional seconds are allowed: 1995-12-31T23:59:59.999Z
+         All other components are mandatory.
+
+         Expressions can also be used to denote calculations that should be
+         performed relative to "NOW" to determine the value, ie...
+
+               NOW/HOUR
+                  ... Round to the start of the current hour
+               NOW-1DAY
+                  ... Exactly 1 day prior to now
+               NOW/DAY+6MONTHS+3DAYS
+                  ... 6 months and 3 days in the future from the start of
+                      the current day
+                      
+      -->
+    <!-- KD-tree versions of date fields -->
+    <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+    <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+    
+    <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
+    <fieldType name="binary" class="solr.BinaryField"/>
+
+    <!-- A specialized field for geospatial search filters and distance sorting. -->
+    <fieldType name="location" class="solr.LatLonPointSpatialField" docValues="true"/>
+	
+	<!-- Custom fieldtypes -->
+	<fieldType name="tokenized" class="solr.PreAnalyzedFieldWithTokenFilters" 
+	tokenFilters="org.apache.lucene.analysis.core.LowerCaseFilter,org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter">
+	  <analyzer type="query">
+		<tokenizer class="solr.ClassicTokenizerFactory"/>
+		<filter class="solr.LowerCaseFilterFactory"/>
+		<filter class="solr.ASCIIFoldingFilterFactory"/>
+	  </analyzer>
+	</fieldType>
+
+    <!-- A geospatial field type that supports multiValued and polygon shapes.
+      For more information about this and other spatial fields see:
+      http://lucene.apache.org/solr/guide/spatial-search.html
+    -->
+    <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+               geo="true" distErrPct="0.025" maxDistErr="0.001" distanceUnits="kilometers" />
+
+    <!-- Czech -->
+    <fieldType name="text_cz" class="solr.TextField" positionIncrementGap="100">
+      <analyzer> 
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_cz.txt" />
+        <filter class="solr.CzechStemFilterFactory"/>       
+      </analyzer>
+    </fieldType>
+	
+	<fieldType name="text_faceting" class="solr.TextField">
+		<analyzer>
+			<tokenizer class="solr.KeywordTokenizerFactory"/>
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.ASCIIFoldingFilterFactory"/>
+		</analyzer>
+	</fieldType>
+
+    <!-- A text field that only splits on whitespace for exact matching of words -->
+    <fieldType name="text_fgs" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
+</schema>

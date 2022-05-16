@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    image: postgres:12-alpine
+    restart: always
+    container_name: feeder-db
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: feeder
+    ports:
+      - "5432:5432"
+    volumes:
+      - feeder_db:/var/lib/postgresql
+  api:
+    build: ./api
+    image: inqool/feeder-api
+    container_name: feeder-api
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+  solr:
+    build: ./solr
+    image: inqool/dl4dh-feeder-solr
+    container_name: feeder-solr
+    volumes:
+      - solr_data:/var/solr
+    ports:
+      - "8983:8983"
+volumes:
+  feeder_db:
+  solr_data:
