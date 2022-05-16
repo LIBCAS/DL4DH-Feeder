@@ -41,3 +41,9 @@ system:
     api: https://www.ndk.cz/search/api/v5.0
   kramerius-plus:
     api: https://plus.nkp.cz/api
+
+
+
+solr:
+  host:
+    query: http://127.0.0.1:8983/solr/feeder

@@ -6,6 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class HintDto {
-    private String PID;
     private String title;
 }

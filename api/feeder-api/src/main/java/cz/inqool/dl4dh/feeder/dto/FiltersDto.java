@@ -11,7 +11,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class FiltersDto {
-    private String query = "*:*";
+    //Title
+    private String query = "";
+
+    //K5 filters
     private AvailabilityEnum availability = AvailabilityEnum.ALL;
     private Set<DocumentModelEnum> models = new HashSet<>();
     private Set<String> keywords = new HashSet<>();
@@ -21,12 +24,20 @@ public class FiltersDto {
     private Integer yearFrom;
     private Integer yearTo;
 
+    //K+ filters
+    private List<NameTagFilterDto> nameTagFilters;
+
+    //Pagination
     private Integer start = 0;
     private Integer pageSize = 60;
 
-    public String toFqQuery() {
+    public Integer getPageSize() {
+        return Integer.min(60, Integer.max(1, pageSize));
+    }
+
+    public String toFqQuery(List<String> base) {
         List<List<String>> list = new ArrayList<>();
-        list.add(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"));
+        list.add(base);
 
         if (availability != AvailabilityEnum.ALL) {
             list.add(List.of("dostupnost:" + availability.toString().toLowerCase()));

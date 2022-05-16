@@ -2,25 +2,51 @@
 
 <schema name="default-config" version="1.6">
 
-    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
-    <field name="_version_" type="plong" indexed="false" stored="false"/>
+    <field name="PID" type="string" indexed="true" stored="true" required="true"/>
+    <field name="_version_" type="plong" indexed="true" stored="true"/>
 
-    <uniqueKey>id</uniqueKey>
-	
-	<field name="root_id" type="string" indexed="true" stored="true"/>
-	<field name="root_title" type="string" indexed="true" stored="true"/>
-	<field name="title" type="text_cz" indexed="true" stored="true"/>
-	<field name="lemma" type="tokenized" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true"/>
-	<field name="nameTag.personalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>
-	<field name="nameTag.personalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>
-	<field name="nameTag.geographicalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>
-	<field name="nameTag.geographicalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>
-	<field name="nameTag.institutions.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>
-	<field name="nameTag.institutions.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>
+    <uniqueKey>PID</uniqueKey>
+
+<!--	<field name="root_title" type="string" indexed="true" stored="true"/>-->
+<!--	<field name="title" type="text_cz" indexed="true" stored="true"/>-->
+<!--	<field name="lemma" type="tokenized" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true"/>-->
+<!--	<field name="nameTag.personalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.personalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.geographicalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.geographicalNames.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.institutions.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
+<!--	<field name="nameTag.institutions.facet" type="text_faceting" indexed="true" stored="true" multiValued="true"/>-->
+
+
+    <field name="nameTag.numbersInAddresses" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.geographicalNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make spacial value -->
+    <field name="nameTag.institutions" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.mediaNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.numberExpressions" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make numeric value -->
+    <field name="nameTag.artifactNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.personalNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.timeExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/> <!-- TODO make timerange value -->
+    <field name="nameTag.complexPersonNames" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexTimeExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexAddressExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="nameTag.complexBiblioExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+
+
+    <!-- K5 fields -->
+    <field name="root_pid" type="string" indexed="true" stored="true"/>
+    <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="datum_begin" type="int" default="0" indexed="true" stored="true"/>
+    <field name="dc.creator" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
+    <field name="dc.title" type="text_fgs" indexed="true" stored="true"/>
+    <field name="dostupnost" type="string" indexed="true" stored="true"/>
+    <field name="fedora.model" type="string" indexed="true" stored="true" docValues="true"/>
+    <field name="keywords" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+
+
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" />
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"  />
     <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true" docValues="true" />
 
     <!-- boolean type: "true" or "false" -->
@@ -31,6 +57,7 @@
       Numeric field types that index values using KD-trees.
       Point fields don't support FieldCache, so they must have docValues="true" if needed for sorting, faceting, functions, etc.
     -->
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
     <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
     <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
     <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
@@ -109,6 +136,13 @@
 			<filter class="solr.ASCIIFoldingFilterFactory"/>
 		</analyzer>
 	</fieldType>
-	
+
+    <!-- A text field that only splits on whitespace for exact matching of words -->
+    <fieldType name="text_fgs" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
 
 </schema>
