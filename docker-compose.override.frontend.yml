@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  vinofe:
+    image: eu.gcr.io/inqool-1301/feeder-web-dev:latest
+    build:
+      dockerfile: vino-web/docker/dev.Dockerfile
+    volumes:
+      - type: bind
+        source: ./web/dist
+        target: /usr/local/apache2/htdocs/
+        consistency: delegated
+  hotreload:
+    image: eu.gcr.io/inqool-1301/hotreload:latest
+    build:
+      context: ./hotreload
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    tty: true
+    mem_limit: 256m
+    cpus: 1
+    ports:
+      - 8090:8090
+    volumes:
+      - type: bind
+        source: ./web/dist
+        target: /build/app
+        consistency: delegated

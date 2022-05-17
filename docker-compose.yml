@@ -1,33 +1,80 @@
-version: '3'
+version: '3.7'
 services:
   db:
     image: postgres:12-alpine
+    networks:
+      - backend
     restart: always
-    container_name: feeder-db
-    env_file:
-      - ./.env
     environment:
+      PGDATA: /var/lib/postgresql/data/db-files/
       POSTGRES_USER: feeder
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: eas
+      POSTGRES_PASSWORD: changeit
     volumes:
-      - feeder_db:/var/lib/postgresql
-  api:
-    build: ./api
-    image: inqool/feeder-api
-    container_name: feeder-api
-    env_file:
-      - ./.env
+      - feeder_db:/var/lib/postgresql/data/
+    labels:
+      app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
+      app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
+    deploy:
+      resources:
+        limits:
+          memory: 300m
+  feeder:
+    build:
+      context: .
+      dockerfile: api/docker/prod.Dockerfile
+    image: eu.gcr.io/inqool-1301/dl4dh-feeder-api:${FEEDER_TAG}
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+    labels:
+      app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
+      app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
     ports:
-      - "8080:8080"
+      - "80:8080"
+  feederfe:
+    build:
+      context: .
+      dockerfile: web/docker/prod.Dockerfile
+    image: eu.gcr.io/inqool-1301/dl4dh-feeder-web:${FEEDER_TAG}
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 15m
+    labels:
+      kompose.service.expose: "${CI_ENVIRONMENT_HOSTNAME}"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
+      nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
+      nginx.ingress.kubernetes.io/websocket-services: feederfe
+      nginx.org/websocket-services: feederfe
+      app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
+      app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
+    ports:
+      - "8080:80"
   solr:
     build: ./solr
-    image: inqool/dl4dh-feeder-solr
-    container_name: feeder-solr
+    image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+    networks:
+      - backend
     volumes:
       - solr_data:/var/solr
     ports:
       - "8983:8983"
+    labels:
+      app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
+      app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
+networks:
+  backend:
 volumes:
   feeder_db:
   solr_data:

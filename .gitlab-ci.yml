@@ -1,0 +1,72 @@
+variables:
+  KUBERNETES_CONFIG: kubernetes_config.yml
+
+stages:
+  - build
+  - deploy
+  - undeploy
+
+.build:
+  stage: build
+  tags:
+    - eas
+  script:
+    - ./git_tags.sh > .env
+    - DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
+    - DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose push
+
+build:
+  extends: .build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+
+.deploy:
+  stage: deploy
+  tags:
+    - eas
+  artifacts:
+    paths:
+      - $KUBERNETES_CONFIG
+  script:
+    - ./git_tags.sh > .env
+    # reads environment variables from .env file
+    - export $(cat .env | xargs)
+    # converts compose configuration to kubernetes configuration
+    - kompose convert -f docker-compose.yml --out $KUBERNETES_CONFIG
+    # deploys application
+    - kubectl apply -f $KUBERNETES_CONFIG
+    
+deploy:
+  extends: .deploy
+  environment:
+    name: development
+    url: http://$CI_PROJECT_NAME.dev.inqool.cz
+    action: start
+    on_stop: undeploy
+  variables:
+    CI_ENVIRONMENT_HOSTNAME: $CI_PROJECT_NAME.dev.inqool.cz
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+
+.undeploy:
+  stage: undeploy
+  tags:
+    - eas
+  script:
+    # undeploy application
+    - kubectl delete -f $KUBERNETES_CONFIG
+
+undeploy:
+  extends: .undeploy
+  environment:
+    name: development
+    url: http://$CI_PROJECT_NAME.dev.inqool.cz
+    action: stop
+  dependencies:
+    - deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+
