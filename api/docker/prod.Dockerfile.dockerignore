@@ -1,0 +1,7 @@
+*
+!api/docker
+!api/feeder-api/src
+!api/feeder-api/pom.xml
+!api/feeder-core/src
+!api/feeder-core/pom.xml
+!api/pom.xml

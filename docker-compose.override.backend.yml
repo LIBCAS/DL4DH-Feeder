@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  feeder:
+    image: eu.gcr.io/inqool-1301/feeder-dev:latest
+    build:
+      dockerfile: api/docker/dev.Dockerfile
+    tty: true

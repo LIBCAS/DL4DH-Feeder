@@ -1,0 +1,9 @@
+*
+!web/docker
+!web/public
+!web/src
+!web/.babelrc
+!web/package.json
+!web/yarn.lock
+!web/tsconfig.json
+!web/webpack.config.js
