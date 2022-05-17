@@ -17,6 +17,8 @@ import placeholder from 'assets/title_placeholder.png';
 
 import { TPublication } from 'api/models';
 
+import { modelToText } from 'utils/enumsMap';
+
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -111,7 +113,7 @@ const TileView: FC<Props> = ({ data }) => {
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
 									<Flex bg="primary" color="white" opacity="0.5">
 										<Text py={1} my={0} px={3} fontSize="sm">
-											{d.model}
+											{modelToText(d.model)}
 										</Text>
 									</Flex>
 								</Flex>

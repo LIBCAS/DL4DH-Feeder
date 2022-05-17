@@ -4,10 +4,23 @@ import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
 import { MakeTuple } from 'utils';
 
-import { FiltersDto } from 'api/models';
+import { FiltersDto, NameTagFilterDto } from 'api/models';
 
-export const fieldsTuple = MakeTuple('author', 'title', 'keyword');
-export const operationsTuple = MakeTuple('eq', 'neq');
+export const fieldsTuple = MakeTuple(
+	'NUMBERS_IN_ADDRESSES',
+	'GEOGRAPHICAL_NAMES',
+	'INSTITUTIONS',
+	'MEDIA_NAMES',
+	'NUMBER_EXPRESSIONS',
+	'ARTIFACT_NAMES',
+	'PERSONAL_NAMES',
+	'TIME_EXPRESSIONS',
+	'COMPLEX_PERSON_NAMES',
+	'COMPLEX_TIME_EXPRESSION',
+	'COMPLEX_ADDRESS_EXPRESSION',
+	'COMPLEX_BIBLIO_EXPRESSION ',
+);
+export const operationsTuple = MakeTuple('EQUAL', 'NOT_EQUAL');
 
 export type TField = typeof fieldsTuple[number];
 export type TOperation = typeof operationsTuple[number];
@@ -42,6 +55,7 @@ export const initState: State = {
 
 type Actions =
 	| { type: 'setSearchQuery'; searchQuery: TSearchQuery | null }
+	| { type: 'changeNameTagFilter'; nameTagFilter: NameTagFilterDto | null }
 	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
 	| { type: 'setPage'; page: number }
@@ -55,6 +69,21 @@ export const reducer = (state: State, action: Actions) => {
 				...state,
 				searchQuery: action.searchQuery,
 			};
+		case 'changeNameTagFilter': {
+			if (action.nameTagFilter) {
+				const newFilter: NameTagFilterDto[] = [] as NameTagFilterDto[];
+				newFilter.push(action.nameTagFilter);
+				return {
+					...state,
+					searchQuery: { ...state.searchQuery, nameTagFilters: newFilter },
+				};
+			} else {
+				return {
+					...state,
+					searchQuery: { ...state.searchQuery, nameTagFilter: null },
+				};
+			}
+		}
 		case 'setSorting':
 			return {
 				...state,

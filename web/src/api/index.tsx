@@ -249,7 +249,7 @@ export const infiniteMainSearchEndpoint =
 				return await (r.json() as Promise<SearchDto>);
 			},
 			{
-				//	staleTime: Infinity,
+				staleTime: Infinity,
 
 				retry: INFINITE_QUERY_RETRY_COUNT,
 				refetchOnWindowFocus: false,

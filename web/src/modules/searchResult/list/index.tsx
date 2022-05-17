@@ -14,6 +14,8 @@ import Text from 'components/styled/Text';
 
 import { TPublication } from 'api/models';
 
+import { modelToText } from 'utils/enumsMap';
+
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 // import useAdminFilter from './useAdminFilter';
 
@@ -33,9 +35,9 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	/* if (cellKey === 'published') {
 		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
 	} */
-	/* if (cellKey === 'published') {
-		return <Cell>{getDateString(row[cellKey]) ?? '--'}</Cell>;
-	} */
+	if (cellKey === 'model') {
+		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
+	}
 	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 	// return <Cell title={row[cellKey]}>{row[cellKey]}</Cell>;
 };

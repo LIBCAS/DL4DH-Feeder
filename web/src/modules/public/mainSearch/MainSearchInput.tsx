@@ -15,6 +15,8 @@ import Button from 'components/styled/Button';
 import { useTheme } from 'theme';
 import { api } from 'api';
 
+import { NameTagFilterDto } from 'api/models';
+
 import {
 	fieldsTuple,
 	operationsTuple,
@@ -25,15 +27,15 @@ import {
 } from 'hooks/useSearchContext';
 
 const OperationToTextLabel: Record<TOperation, string> = {
-	eq: '=',
-	neq: '\u{2260}',
+	EQUAL: '=',
+	NOT_EQUAL: '\u{2260}',
 };
 
-const FieldToTextLabel: Record<TField, string> = {
+/* const FieldToTextLabel: Record<TagNameEnum, string> = {
 	author: 'Autor',
 	keyword: 'Klucove slovo',
 	title: 'Titul',
-};
+}; */
 
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
@@ -46,14 +48,16 @@ const MainSearchInput = () => {
 	}, [state.searchQuery]);
 
 	const handleUpdateContext = (newState?: string) => {
+		const nameTagFilters = JSON.stringify(state.searchQuery?.nameTagFilters);
 		const url = stringify({
 			...state.searchQuery,
 			query: newState ?? localState,
+			nameTagFilters: [],
 		});
-		dispatch?.({
+		/* dispatch?.({
 			type: 'setSearchQuery',
 			searchQuery: { ...state.searchQuery, query: parsed.query },
-		});
+		}); */
 		push(`/search?${url}`);
 	};
 
@@ -68,7 +72,9 @@ const MainSearchInput = () => {
 			console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
-				searchQuery: { ...parsed },
+				searchQuery: {
+					...parsed,
+				},
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,21 +130,27 @@ const MainSearchInput = () => {
 						<Flex color="primary" ml={2} alignItems="center">
 							<MdSearch size={26} />
 
-							{/* <SimpleSelect
-								value={state.searchQuery?.field}
+							<SimpleSelect
+								value={state.searchQuery?.nameTagFilters?.[0].type}
 								options={fieldsTuple}
 								onChange={field =>
-									dispatch?.({
-										type: 'setSearchQuery',
-										searchQuery: { ...state.searchQuery, field },
-									})
+									field
+										? dispatch?.({
+												type: 'changeNameTagFilter',
+												nameTagFilter: {
+													type: field,
+													operator: 'EQUAL',
+													values: ['ahoj'],
+												},
+										  })
+										: null
 								}
-								keyFromOption={item => (item ? FieldToTextLabel[item] : '')}
-								width={100}
-								nameFromOption={item => (item ? FieldToTextLabel[item] : '')}
+								keyFromOption={item => (item ? item : '')}
+								nameFromOption={item => (item ? item : '')}
+								placeholder="Filter"
 								arrowHidden
 								wrapperCss={css`
-									border: none;
+									border: 1px solid ${theme.colors.primaryLight};
 									background: ${theme.colors.primaryLight};
 									justify-content: center;
 									margin-left: 2px;
@@ -148,7 +160,7 @@ const MainSearchInput = () => {
 									}
 								`}
 							/>
-							<SimpleSelect
+							{/*<SimpleSelect
 								value={state.searchQuery?.operation}
 								options={operationsTuple}
 								onChange={operation =>
@@ -181,8 +193,7 @@ const MainSearchInput = () => {
 							<Flex mr={3} color="primary">
 								<MdClear
 									onClick={() => {
-										dispatch?.({ type: 'setSearchQuery', searchQuery: null });
-										setLocalState('');
+										push(`/search`);
 									}}
 									css={css`
 										cursor: pointer;

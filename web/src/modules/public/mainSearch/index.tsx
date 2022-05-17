@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+import React, { FC, useState, useMemo } from 'react';
 import GridViewIcon from '@mui/icons-material/GridView';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import ListIcon from '@mui/icons-material/List';
@@ -38,6 +38,8 @@ const MainSearch: FC = () => {
 			...state.searchQuery,
 		},
 	);
+
+	const statsMemo = useMemo(() => statistics, [statistics]);
 
 	return (
 		<ResponsiveWrapper
@@ -180,6 +182,7 @@ const MainSearch: FC = () => {
 				bg="primaryLight"
 			>
 				<Flex
+					key="kakakaka"
 					position="relative"
 					alignItems="flex-start"
 					flexShrink={0}
@@ -190,7 +193,7 @@ const MainSearch: FC = () => {
 						transition: width 1s ease-in-out;
 					`}
 				>
-					<SearchResultLeftPanel data={statistics} isLoading={isLoading} />
+					<SearchResultLeftPanel data={statsMemo} isLoading={isLoading} />
 				</Flex>
 				<Flex width={1} bg="white">
 					<Results

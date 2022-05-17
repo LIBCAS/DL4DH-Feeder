@@ -23,7 +23,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
 	useEffect(() => setHeight(measureRef.current?.clientHeight ?? 0), [refresh]);
 
 	return (
-		<Box overflow="hidden" pb={exp ? 2 : 0}>
+		<Box overflow="hidden" pb={exp ? 2 : 0} key="AHOJ">
 			<Flex
 				pb={exp ? 0 : 2}
 				pt={2}
@@ -49,9 +49,9 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
 			</Flex>
 
 			<Box
-				height={exp ? height : 0}
+				height={exp ? 'auto' : 0}
 				css={css`
-					transition: height 0.2s ease;
+					transition: height 0.2s;
 				`}
 			>
 				<div ref={measureRef}>

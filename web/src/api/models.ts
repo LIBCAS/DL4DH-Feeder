@@ -19,7 +19,7 @@ export type MyPublication = {
 };
 
 export type PublicationDto = {
-	model: string;
+	model: ModelsEnum;
 	availability: string;
 	date: string;
 	authors: string | string[];
@@ -40,6 +40,16 @@ export type AvailableFilters = {
 		public: number;
 	};
 	models: Record<string, number>;
+	keywords: Record<string, number>;
+	authors: Record<string, number>;
+	languages: Record<string, number>;
+	collections: Record<string, number>;
+};
+
+export type NameTagFilterDto = {
+	type: TagNameEnum;
+	operator: 'EQUAL' | 'NOT_EQUAL';
+	values: string[];
 };
 
 export type SearchDto = {
@@ -55,6 +65,7 @@ export type FiltersDto = {
 	languages: string | string[];
 	start: number;
 	pageSize: number;
+	nameTagFilters: NameTagFilterDto[];
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
 
@@ -67,3 +78,17 @@ export type ModelsEnum =
 	| 'ARCHIVAL'
 	| 'MANUSCRIPT'
 	| 'SHEETMUSIC';
+
+export type TagNameEnum =
+	| 'NUMBERS_IN_ADDRESSES'
+	| 'GEOGRAPHICAL_NAMES'
+	| 'INSTITUTIONS'
+	| 'MEDIA_NAMES'
+	| 'NUMBER_EXPRESSIONS'
+	| 'ARTIFACT_NAMES'
+	| 'PERSONAL_NAMES'
+	| 'TIME_EXPRESSIONS'
+	| 'COMPLEX_PERSON_NAMES'
+	| 'COMPLEX_TIME_EXPRESSION'
+	| 'COMPLEX_ADDRESS_EXPRESSION'
+	| 'COMPLEX_BIBLIO_EXPRESSION ';

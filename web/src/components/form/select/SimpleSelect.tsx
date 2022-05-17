@@ -44,6 +44,7 @@ type Props<T extends unknown> = {
 	variant?: 'outlined' | 'underlined' | 'borderless';
 	wrapperCss?: SerializedStyles;
 	arrowHidden?: boolean;
+	placeholder?: string;
 } & FlexProps;
 
 type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
@@ -59,6 +60,7 @@ const SimpleSelect = <T extends unknown>({
 	label,
 	labelMinWidth = 100,
 	variant = 'underlined',
+	placeholder,
 	arrowHidden,
 	...props
 }: ComponentProps<T>) => {
@@ -67,11 +69,10 @@ const SimpleSelect = <T extends unknown>({
 	const Menu = () => (
 		<Flex
 			position="absolute"
+			bg="white"
 			zIndex={99999}
 			top={height}
 			left={0}
-			bg="white"
-			width={1}
 			flexWrap="nowrap"
 			flexDirection="column"
 			css={css`
@@ -81,45 +82,49 @@ const SimpleSelect = <T extends unknown>({
 				box-shadow: 0px 4px 12px rgb(212 215 217);
 			`}
 		>
-			{options.map((o, i) => (
-				<Box
-					key={i}
-					css={css`
-						&:hover {
-							background-color: ${theme.colors.primaryLight};
-						}
-					`}
-					onClick={() => {
-						onChange(o);
-						setShowMenu(false);
-					}}
-				>
-					{renderMenuItem ? (
-						renderMenuItem(o)
-					) : (
-						<Box
-							pl={3}
-							py={2}
-							css={css`
-								border-bottom: 1px solid ${theme.colors.primaryLight};
-							`}
-						>
-							<Text
-								fontSize="sm"
-								fontWeight={
-									keyFromOption(o) === keyFromOption(value) ? 'bold' : 'normal'
-								}
+			<Box position="relative" bg="white" width={1}>
+				{options.map((o, i) => (
+					<Box
+						key={i}
+						css={css`
+							&:hover {
+								background-color: ${theme.colors.primaryLight};
+							}
+						`}
+						onClick={() => {
+							onChange(o);
+							setShowMenu(false);
+						}}
+					>
+						{renderMenuItem ? (
+							renderMenuItem(o)
+						) : (
+							<Box
+								px={2}
+								py={2}
+								css={css`
+									border-bottom: 1px solid ${theme.colors.primaryLight};
+								`}
 							>
-								{nameFromOption(o)}
-							</Text>
-						</Box>
-					)}
-				</Box>
-			))}
+								<Text
+									fontSize="sm"
+									fontWeight={
+										keyFromOption(o) === keyFromOption(value)
+											? 'bold'
+											: 'normal'
+									}
+								>
+									{nameFromOption(o)}
+								</Text>
+							</Box>
+						)}
+					</Box>
+				))}
+			</Box>
 		</Flex>
 	);
 	return (
-		<Flex alignItems="center" position="relative" width="150px" {...props}>
+		<Flex alignItems="center" position="relative" {...props}>
 			{label ? (
 				<Flex minWidth={labelMinWidth}>
 					<Text>{label}</Text>
@@ -135,6 +140,7 @@ const SimpleSelect = <T extends unknown>({
 				justifyContent="space-between"
 				css={css`
 					cursor: pointer;
+					box-sizing: border-box;
 					${variant === 'outlined' &&
 					css`
 						border: 1px solid ${theme.colors.primary};
@@ -157,7 +163,7 @@ const SimpleSelect = <T extends unknown>({
 				{value ? (
 					<Text fontSize="sm">{nameFromOption(value)}</Text>
 				) : (
-					<Flex flexGrow={1} />
+					<Text fontSize="sm">{placeholder}</Text>
 				)}
 				{!arrowHidden && <MdArrowDropDown size={22} />}
 			</Flex>
