@@ -9,9 +9,7 @@ import Text from 'components/styled/Text';
 import MyAccordion from 'components/accordion';
 import Button from 'components/styled/Button';
 
-import { AvailableFilters, PublicationDto } from 'api/models';
-
-import { useSearchContext } from 'hooks/useSearchContext';
+import { AvailableFilters } from 'api/models';
 
 type StatItem = {
 	label: string;
@@ -26,21 +24,6 @@ const Cell = styled(Text)`
 	padding: 0;
 	margin: 0;
 `;
-
-const AvalItems: StatItem[] = [
-	{ label: 'Pouze verejne', value: 49636 },
-	{ label: 'Pouze neverejne', value: 199689 },
-	{ label: 'Vse', value: 249930, bold: true },
-];
-
-const DocItems: StatItem[] = [
-	{ label: 'Knihovna', value: 21636 },
-	{ label: 'Novinky a casopisy', value: 2039 },
-	{ label: 'Mapa', value: 1394 },
-	{ label: 'Grafika', value: 648 },
-	{ label: 'Archivalie', value: 383 },
-	{ label: 'Rukopis', value: 122 },
-];
 
 const StatList: FC<{
 	items: StatItem[];
@@ -148,7 +131,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data }) => {
 						})),
 				  ].sort((a, b) => b.value - a.value)
 				: [],
-		[],
+		[data?.models],
 	);
 	return (
 		<Box px={2} width={1}>

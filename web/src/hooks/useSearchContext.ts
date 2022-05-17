@@ -4,6 +4,8 @@ import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
 import { MakeTuple } from 'utils';
 
+import { FiltersDto } from 'api/models';
+
 export const fieldsTuple = MakeTuple('author', 'title', 'keyword');
 export const operationsTuple = MakeTuple('eq', 'neq');
 
@@ -12,19 +14,16 @@ export type TOperation = typeof operationsTuple[number];
 
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
-export type TSearchQuery = {
-	q?: string;
-	field?: TField;
-	operation?: TOperation;
-	value?: string;
-};
+export type TSearchQuery = Partial<
+	Omit<FiltersDto, 'keywords' | 'authors' | 'languages' | 'start' | 'pageSize'>
+>;
 
 type State = {
 	searchQuery: TSearchQuery | null;
 	viewMode: ViewMode;
 	pageSize: number;
 	page: number;
-	offset: number;
+	start: number;
 	totalCount: number;
 	hasMore: boolean;
 	sorting: SortOption;
@@ -35,7 +34,7 @@ export const initState: State = {
 	viewMode: 'tiles',
 	pageSize: 15,
 	page: 0,
-	offset: 0,
+	start: 0,
 	totalCount: 0,
 	hasMore: false,
 	sorting: sortOptions[0],
@@ -65,10 +64,10 @@ export const reducer = (state: State, action: Actions) => {
 			return {
 				...state,
 				page: action.page,
-				offset: action.page * state.pageSize,
+				start: action.page * state.pageSize,
 			};
 		case 'setPageSize':
-			return { ...state, pageSize: action.pageSize, page: 0, offset: 0 };
+			return { ...state, pageSize: action.pageSize, page: 0, start: 0 };
 		case 'setTotalCount':
 			return {
 				...state,

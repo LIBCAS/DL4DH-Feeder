@@ -21,7 +21,7 @@ import { VsdUser } from 'auth/token';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
-import { EASParams, EASResult } from 'utils/EASTypes';
+import { EASResult } from 'utils/EASTypes';
 import {
 	ACCESS_TOKEN_CONTEXT,
 	APP_CONTEXT,
@@ -223,15 +223,15 @@ export const infiniteEndpoint =
 		};
 	};
 
-export const infiniteEndpoint2 =
-	<T, Args extends unknown[] = []>(
+export const infiniteMainSearchEndpoint =
+	<Args extends unknown[] = []>(
 		key: string[],
 		promise: (a: ReturnType<typeof api>, ...args: Args) => ResponsePromise,
 	) =>
 	(...args: Args) => {
-		const { offset, size } = args[args.length - 1] as {
-			offset: number;
-			size: number;
+		const { start, pageSize } = args[args.length - 1] as {
+			start: number;
+			pageSize: number;
 		};
 		const { state, dispatch } = useSearchContext();
 		const result = useInfiniteQuery(
@@ -239,9 +239,9 @@ export const infiniteEndpoint2 =
 			async () => {
 				const r = await promise(
 					api('', {
-						start: offset,
-						pageSize: size,
-						query: state.searchQuery?.q,
+						start: start,
+						pageSize: pageSize,
+						query: state.searchQuery?.query,
 					}),
 
 					...args,
@@ -273,8 +273,8 @@ export const infiniteEndpoint2 =
 				return 0;
 			}
 
-			return Math.ceil(offset / size);
-		}, [result.data, offset, size]);
+			return Math.ceil(start / pageSize);
+		}, [result.data, start, pageSize]);
 		const refCount = useRef(0);
 		const count = useMemo(
 			() => result.data?.[0]?.documents.numFound ?? refCount.current,
@@ -283,8 +283,8 @@ export const infiniteEndpoint2 =
 		refCount.current = count;
 
 		const hasMore = useMemo(
-			() => offset + (data?.length ?? 0) < count,
-			[offset, count, data],
+			() => start + (data?.length ?? 0) < count,
+			[start, count, data],
 		);
 
 		useEffect(() => {

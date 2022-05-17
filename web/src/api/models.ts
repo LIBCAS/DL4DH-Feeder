@@ -46,5 +46,24 @@ export type SearchDto = {
 	documents: PublicationsListDto;
 	availableFilters: AvailableFilters;
 };
-
+export type FiltersDto = {
+	query: string;
+	availability: AvailabilityEnum;
+	models: ModelsEnum;
+	keywords: string | string[];
+	authors: string | string[];
+	languages: string | string[];
+	start: number;
+	pageSize: number;
+};
 export type TPublication = PublicationDto & Partial<MyPublication>;
+
+export type AvailabilityEnum = 'PUBLIC' | 'PRIVATE' | 'ALL';
+export type ModelsEnum =
+	| 'MONOGRAPH'
+	| 'PERIODICAL'
+	| 'MAP'
+	| 'GRAPHICS'
+	| 'ARCHIVAL'
+	| 'MANUSCRIPT'
+	| 'SHEETMUSIC';

@@ -2,7 +2,6 @@ export type SolrParams = {
 	query?: string;
 	searchAfter?: string;
 	flipDirection?: boolean;
-	offset?: number;
 	start?: number;
 	pageSize?: number;
 };

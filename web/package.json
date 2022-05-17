@@ -106,7 +106,7 @@
 			"react-app/jest"
 		]
 	},
-	"proxy": "http://localhost:8080/",
+	"proxy": "http://feeder.dev.inqool.cz/",
 	"lint-staged": {
 		"{src/**,.storybook,.}/*.{js,jsx,ts,tsx,json,md}": [
 			"prettier --write",

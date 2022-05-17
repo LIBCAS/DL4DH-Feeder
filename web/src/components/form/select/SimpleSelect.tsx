@@ -8,7 +8,7 @@ import Text from 'components/styled/Text';
 
 import { theme } from 'theme';
 
-const ClickAway: FC<{ onClickAway: () => void }> = ({
+export const ClickAway: FC<{ onClickAway: () => void }> = ({
 	children,
 	onClickAway,
 }) => {

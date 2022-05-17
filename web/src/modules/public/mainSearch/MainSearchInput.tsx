@@ -4,14 +4,13 @@ import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
-import { debounce } from 'lodash-es';
+import { debounce, isEqual } from 'lodash-es';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
-import SimpleSelect from 'components/form/select/SimpleSelect';
+import SimpleSelect, { ClickAway } from 'components/form/select/SimpleSelect';
 import Button from 'components/styled/Button';
-import { Wrapper } from 'components/styled/Wrapper';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
@@ -43,42 +42,58 @@ const MainSearchInput = () => {
 	const [localState, setLocalState] = useState('');
 	const [hints, setHints] = useState<string[]>([]);
 	useEffect(() => {
-		setLocalState(state.searchQuery?.q ?? '');
+		setLocalState(state.searchQuery?.query ?? '');
 	}, [state.searchQuery]);
 
-	const handleUpdateContext = () => {
-		const url = stringify({ ...state.searchQuery, q: localState });
+	const handleUpdateContext = (newState?: string) => {
+		const url = stringify({
+			...state.searchQuery,
+			query: newState ?? localState,
+		});
 		dispatch?.({
 			type: 'setSearchQuery',
-			searchQuery: { ...state.searchQuery, q: parsed.q },
+			searchQuery: { ...state.searchQuery, query: parsed.query },
 		});
 		push(`/search?${url}`);
 	};
 
 	const { search } = useLocation();
-	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
+	const parsed = useMemo(
+		() => parse(search) as unknown as Partial<TSearchQuery>,
+		[search],
+	);
 
 	useEffect(() => {
-		if (parsed.q !== state.searchQuery?.q) {
+		if (!isEqual(parsed, state.searchQuery)) {
+			console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
-				searchQuery: { ...state.searchQuery, q: parsed.q },
+				searchQuery: { ...parsed },
 			});
 		}
-	}, [parsed.q]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [parsed]);
 
 	const getHint = useCallback(async (q: string) => {
 		const hints = await api()
 			.post('search/hint', { json: { query: q } })
-			.json<string[]>();
-		setHints(hints);
+			.json<string[]>()
+			.catch(r => console.log(r));
+		if (hints) {
+			setHints(hints);
+		}
 	}, []);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 200), [getHint]);
 	const menuOffset = useMemo(
 		() => Math.min(localState.length * 5, 500),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[hints],
 	);
+	console.log('state');
+	console.log(state);
+	console.log('parsed');
+	console.log(parsed);
 
 	return (
 		<>
@@ -109,7 +124,7 @@ const MainSearchInput = () => {
 						<Flex color="primary" ml={2} alignItems="center">
 							<MdSearch size={26} />
 
-							<SimpleSelect
+							{/* <SimpleSelect
 								value={state.searchQuery?.field}
 								options={fieldsTuple}
 								onChange={field =>
@@ -158,7 +173,7 @@ const MainSearchInput = () => {
 										border: 1px solid ${theme.colors.border};
 									}
 								`}
-							/>
+							/> */}
 						</Flex>
 					}
 					iconRight={
@@ -180,40 +195,43 @@ const MainSearchInput = () => {
 					}
 				/>
 				{hints.length > 0 && localState !== '' && (
-					<Flex
-						position="absolute"
-						left={200 + menuOffset}
-						top={50}
-						bg="white"
-						color="text"
-						css={css`
-							border: 1px solid ${theme.colors.border};
-							box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
-						`}
-					>
-						<Flex position="relative" flexDirection="column">
-							{hints.map((h, index) => (
-								<Flex
-									px={3}
-									py={2}
-									key={index}
-									onClick={() => {
-										setLocalState(h);
-										setHints([]);
-									}}
-									css={css`
-										cursor: pointer;
-										&:hover {
-											color: white;
-											background-color: ${theme.colors.primary};
-										}
-									`}
-								>
-									<Text>{h}</Text>
-								</Flex>
-							))}
+					<ClickAway onClickAway={() => setHints([])}>
+						<Flex
+							position="absolute"
+							left={200 + menuOffset}
+							top={50}
+							bg="white"
+							color="text"
+							css={css`
+								border: 1px solid ${theme.colors.border};
+								box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
+							`}
+						>
+							<Flex position="relative" flexDirection="column">
+								{hints.map((h, index) => (
+									<Flex
+										px={3}
+										py={2}
+										key={index}
+										onClick={() => {
+											setLocalState(h);
+											handleUpdateContext(h);
+											setHints([]);
+										}}
+										css={css`
+											cursor: pointer;
+											&:hover {
+												color: white;
+												background-color: ${theme.colors.primary};
+											}
+										`}
+									>
+										<Text>{h}</Text>
+									</Flex>
+								))}
+							</Flex>
 						</Flex>
-					</Flex>
+					</ClickAway>
 				)}
 			</Flex>
 			<Flex flexShrink={0}>
@@ -222,7 +240,7 @@ const MainSearchInput = () => {
 					variant="primary"
 					py={2}
 					mr={[2, 2, 2, 0]}
-					onClick={handleUpdateContext}
+					onClick={() => handleUpdateContext()}
 					disabled={localState === ''}
 				>
 					Hledat v K+

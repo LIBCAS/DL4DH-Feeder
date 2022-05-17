@@ -33,9 +33,9 @@ const MainSearch: FC = () => {
 	const { state, dispatch } = useSearchContext();
 	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
 		{
-			offset: state.offset,
+			start: state.start,
 			pageSize: state.pageSize,
-			query: state.searchQuery?.q,
+			...state.searchQuery,
 		},
 	);
 
@@ -55,7 +55,6 @@ const MainSearch: FC = () => {
 					alignItems="center"
 					justifyContent="flex-start"
 					width={300}
-					// width={leftCollapsed ? 10 : 300}
 					overflow="hidden"
 					css={css`
 						border-right: 1px solid ${theme.colors.border};
@@ -63,8 +62,8 @@ const MainSearch: FC = () => {
 					`}
 				>
 					<Text pl={3} fontSize="sm" fontWeight="bold">
-						Výsledky: {state.offset + 1} -{' '}
-						{state.hasMore ? state.offset + state.pageSize : state.totalCount}/{' '}
+						Výsledky: {state.start + 1} -{' '}
+						{state.hasMore ? state.start + state.pageSize : state.totalCount}/{' '}
 						{state.totalCount}
 					</Text>
 				</Flex>
@@ -201,17 +200,6 @@ const MainSearch: FC = () => {
 						count={count}
 					/>
 				</Flex>
-				{/* <Flex
-						flexShrink={0}
-						width={rightCollapsed ? 10 : 300}
-						onClick={() => setRightCollapsed(p => !p)}
-						css={css`
-							border-left: 1px solid ${theme.colors.border};
-							transition: width 1s ease-in-out;
-						`}
-					>
-						Menu Right
-					</Flex> */}
 			</Flex>
 		</ResponsiveWrapper>
 	);

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback } from 'react';
 
 import Pagination from 'components/table/Pagination';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -10,14 +10,12 @@ import { Loader } from 'modules/loader';
 
 import { theme } from 'theme';
 
-import { useSearchPublications } from 'api/publicationsApi';
 import { PublicationDto } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
 import ListView from './list';
 import TileView from './tiles';
-import useAdminFilter from './list/useAdminFilter';
 import GraphView from './graph';
 
 type Props = {
@@ -75,7 +73,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore }) => {
 					pageLimit={state.pageSize}
 					totalCount={count}
 					hasMore={hasMore}
-					offset={state.offset}
+					offset={state.start}
 					loading={isLoading}
 				/>
 			</Flex>

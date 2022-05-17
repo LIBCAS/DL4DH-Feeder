@@ -6,13 +6,12 @@ import { useHistory } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
 import TileGrid from 'components/tiles';
-import { Box, Dot, Flex } from 'components/styled';
+import { Dot, Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
 import { Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { theme } from 'theme';
-import { getDateString } from 'utils';
 
 import placeholder from 'assets/title_placeholder.png';
 

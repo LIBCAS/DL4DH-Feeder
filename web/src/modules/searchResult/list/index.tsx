@@ -9,13 +9,13 @@ import { Wrapper } from 'components/styled/Wrapper';
 import Table from 'components/table';
 import Text from 'components/styled/Text';
 
-import { ArrowDownIcon, ArrowUpIcon } from 'assets';
-import { getDateString } from 'utils';
+// import { ArrowDownIcon, ArrowUpIcon } from 'assets';
+// import { getDateString } from 'utils';
 
 import { TPublication } from 'api/models';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
-import useAdminFilter from './useAdminFilter';
+// import useAdminFilter from './useAdminFilter';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
