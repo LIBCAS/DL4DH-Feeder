@@ -49,7 +49,7 @@ services:
     labels:
       kompose.service.expose: "${CI_ENVIRONMENT_HOSTNAME}"
       kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/proxy-body-size: 0
+      nginx.ingress.kubernetes.io/proxy-body-size: "20m"
       nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
       nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
       nginx.ingress.kubernetes.io/websocket-services: feederfe
