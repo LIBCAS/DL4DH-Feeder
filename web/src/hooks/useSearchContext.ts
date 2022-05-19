@@ -27,9 +27,7 @@ export type TOperation = typeof operationsTuple[number];
 
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
-export type TSearchQuery = Partial<
-	Omit<FiltersDto, 'authors' | 'languages' | 'start' | 'pageSize'>
->;
+export type TSearchQuery = Partial<Omit<FiltersDto, 'start' | 'pageSize'>>;
 
 type State = {
 	searchQuery: TSearchQuery | null;

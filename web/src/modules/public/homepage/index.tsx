@@ -1,7 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useState } from 'react';
 import { css } from '@emotion/core';
-import { MdSearch, MdClear, MdArrowForward, MdInfo } from 'react-icons/md';
+import {
+	MdSearch,
+	MdClear,
+	MdArrowForward,
+	MdInfo,
+	MdImage,
+} from 'react-icons/md';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
@@ -9,8 +15,6 @@ import { NavLinkButton } from 'components/styled/Button';
 import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
 import Checkbox from 'components/form/checkbox/Checkbox';
-
-import placeholder from 'assets/title_placeholder.png';
 
 const Homepage: FC = () => {
 	const [toSearch, setToSearch] = useState('');
@@ -33,7 +37,7 @@ const Homepage: FC = () => {
 					alignItems="center"
 					justifyContent="center"
 				>
-					<img src={placeholder} height={50} />
+					<MdImage size={50} />
 
 					<Flex mt={3} mb={4} flexDirection="column" alignItems="center">
 						<Text fontSize="xl" fontWeight="bold">

@@ -17,15 +17,7 @@ import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 
-import {
-	AvailableFilters,
-	FiltersDto,
-	ModelsEnum,
-	NameTagFilterDto,
-	TagNameEnum,
-} from 'api/models';
-
-import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';
+import { AvailableFilters } from 'api/models';
 
 import ActiveFilters from './ActiveFilters';
 
@@ -223,6 +215,13 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		},
 		[searchParams, setSearchParams],
 	);
+	const handleChangeFilter = useCallback(
+		(type: string) => (key: string) => {
+			searchParams.set(type, key);
+			setSearchParams(searchParams);
+		},
+		[searchParams, setSearchParams],
+	);
 	if (isLoading) {
 		return (
 			<Box p={2} width={1}>
@@ -231,10 +230,13 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		);
 	}
 	return (
-		<Box px={2} width={1}>
+		<Box px={0} width={1}>
 			<ActiveFilters />
 			<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
-				<StatList items={avalItems} />
+				<StatList
+					items={avalItems}
+					onClick={handleChangeFilter('availability')}
+				/>
 			</MyAccordion>
 			<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
 				<StatList items={modelItems} onClick={handleUpdateFilter('models')} />
@@ -251,60 +253,30 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			</MyAccordion>
 			<MyAccordion label="Autor" isExpanded isLoading={isLoading}>
 				{onRefresh => (
-					<StatList items={authorsItems} maxRows={3} refresh={onRefresh} />
+					<StatList
+						items={authorsItems}
+						maxRows={3}
+						refresh={onRefresh}
+						onClick={handleUpdateFilter('authors')}
+					/>
 				)}
 			</MyAccordion>
 			<MyAccordion label="Jazyk" isExpanded isLoading={isLoading}>
 				{onRefresh => (
-					<StatList items={languagesItems} maxRows={3} refresh={onRefresh} />
-				)}
-			</MyAccordion>
-			{/* <MyAccordion label="Klíčové slovo">
-				{onRefresh => (
 					<StatList
-						items={[...DocItems, ...DocItems]}
+						items={languagesItems}
 						maxRows={3}
 						refresh={onRefresh}
+						onClick={handleUpdateFilter('languages')}
 					/>
 				)}
 			</MyAccordion>
-			<MyAccordion label="Klíčové slovo">
-				{onRefresh => (
-					<StatList
-						items={[...DocItems, ...DocItems]}
-						maxRows={3}
-						refresh={onRefresh}
-					/>
-				)}
-			</MyAccordion>
-			<MyAccordion label="Dostupnost">
-				<StatList items={AvalItems} />
-			</MyAccordion>
-			<Box>Rok vydani</Box> */}
 		</Box>
 	);
 };
 
-const SearchResultLeftPanelTest: FC = () => {
-	console.log('panel rerender');
-	return (
-		<Box px={2} width={1} key={'cicicici'}>
-			{/* <MyAccordion label="Dostupnost" isExpanded>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-					<Text>ahoj</Text>
-				</MyAccordion> */}
-		</Box>
-	);
-};
-
-/* export default React.memo(SearchResultLeftPanel, (prevProps, nextProps) =>
+export default React.memo(SearchResultLeftPanel, (prevProps, nextProps) =>
 	isEqual(prevProps, nextProps),
-); */
+);
 
-export default SearchResultLeftPanel;
+//export default SearchResultLeftPanel;

@@ -15,7 +15,7 @@ import Button from 'components/styled/Button';
 import { useTheme } from 'theme';
 import { api } from 'api';
 
-import { NameTagFilterDto } from 'api/models';
+import { ModelsEnum, NameTagFilterDto } from 'api/models';
 
 import {
 	fieldsTuple,
@@ -45,6 +45,18 @@ const sanitizeSearchQuery = (q: TSearchQuery) => {
 	if (typeof q.keywords === 'string') {
 		sanitized.keywords = [q.keywords];
 	}
+	if (typeof q.authors === 'string') {
+		sanitized.authors = [q.authors];
+	}
+	if (typeof q.languages === 'string') {
+		sanitized.languages = [q.languages];
+	}
+	if (sanitized.models) {
+		sanitized.models = sanitized.models.map(
+			m => m.toLocaleUpperCase() as ModelsEnum,
+		);
+	}
+
 	return sanitized;
 };
 

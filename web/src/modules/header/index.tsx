@@ -31,7 +31,7 @@ const Header = () => {
 
 	return (
 		<ResponsiveWrapper
-			bg="primaryLight"
+			bg="headerBg"
 			px={1}
 			mx={0}
 			maxHeight={60}
@@ -49,11 +49,12 @@ const Header = () => {
 					flexDirection="row"
 					justifyContent="space-between"
 					height={INIT_HEADER_HEIGHT}
-					bg="primaryLight"
+					bg="headerBg"
+					color="headerColor"
 					// overflow="hidden"
 				>
-					<Flex flexShrink={0} width={300}>
-						<NavLinkButton to="/" variant="text" pr={5}>
+					<Flex flexShrink={0} width={300} color="headerColor">
+						<NavLinkButton to="/" variant="text" pr={5} color="headerColor">
 							<ArrowBackIcon />
 							<Flex flexDirection="column" ml={2} justifyContent="center">
 								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
@@ -68,13 +69,21 @@ const Header = () => {
 
 					<MainSearchInput />
 
-					<Flex flexShrink={0}>
+					<Flex flexShrink={0} color="headerColor">
 						{!isMobile && (
 							<>
-								<Button variant="text">Sbírky</Button>
-								<Button variant="text">Procházet</Button>
-								<Button variant="text">Informace</Button>
-								<Button variant="text">English</Button>
+								<Button color="headerColor" variant="text">
+									Sbírky
+								</Button>
+								<Button color="headerColor" variant="text">
+									Procházet
+								</Button>
+								<Button color="headerColor" variant="text">
+									Informace
+								</Button>
+								<Button color="headerColor" variant="text">
+									English
+								</Button>
 							</>
 						)}
 						<Button minWidth={150} variant="primary">

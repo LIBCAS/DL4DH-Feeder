@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC } from 'react';
-import { MdCalendarToday, MdPerson } from 'react-icons/md';
+import { MdCalendarToday, MdImage, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
@@ -12,8 +12,6 @@ import { Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { theme } from 'theme';
-
-import placeholder from 'assets/title_placeholder.png';
 
 import { TPublication } from 'api/models';
 
@@ -64,8 +62,9 @@ const TileView: FC<Props> = ({ data }) => {
 								bg="white"
 								justifyContent="center"
 								alignItems="center"
+								color="text"
 							>
-								<img src={placeholder} height={30} />
+								<MdImage size={30} />
 							</Flex>
 							<Flex flexDirection="column" pl={2} width={1}>
 								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">

@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useSearchParams } from 'react-router-dom';
+import { MdClose } from 'react-icons/md';
 
 import { Flex, Box } from 'components/styled';
 import IconButton from 'components/styled/IconButton';
@@ -9,14 +10,24 @@ import Divider from 'components/styled/Divider';
 
 import { CheckmarkIcon, CrossIcon } from 'assets';
 
+import { ModelsEnum } from 'api/models';
+
 import { useSearchContext } from 'hooks/useSearchContext';
+
+import { modelToText } from 'utils/enumsMap';
 
 // const keyToText: Record<string, string> = {
 // 	keywords: 'Klíčové slovo',
 // };
 
-function removeParam(sp: URLSearchParams, key: string, value: string) {
-	const entries = sp.getAll(key);
+function removeParam(
+	sp: URLSearchParams,
+	key: string,
+	value: string,
+	unique: boolean,
+) {
+	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
+
 	const newEntries = entries.filter(entry => entry !== value);
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
@@ -26,13 +37,17 @@ const ActiveFilters: React.FC = () => {
 	const { state } = useSearchContext();
 	const [sp, setSp] = useSearchParams();
 
-	if (sp.toString().length < 1) {
-		return null;
-	}
 	const arrayFilters: Record<string, string[]> = {
 		keywords: state.searchQuery?.keywords ?? [],
 		models: state.searchQuery?.models ?? [],
+		authors: state.searchQuery?.authors ?? [],
+		languages: state.searchQuery?.languages ?? [],
 	};
+
+	// no filters?
+	if (!Object.keys(arrayFilters).some(k => arrayFilters[k].length > 0)) {
+		return null;
+	}
 
 	const keys = Object.keys(arrayFilters);
 
@@ -48,8 +63,9 @@ const ActiveFilters: React.FC = () => {
 								py={1}
 								width={1}
 								justifyContent="space-between"
+								alignItems="center"
 								onClick={() => {
-									removeParam(sp, k, val);
+									removeParam(sp, k, val, k === 'models');
 									setSp(sp);
 								}}
 								css={css`
@@ -60,25 +76,37 @@ const ActiveFilters: React.FC = () => {
 									}
 									,
 									&:hover .filter-cross-icon {
-										display: flex;
+										visibility: visible;
 									}
 									&:hover .filter-active-icon {
-										display: none;
+										visibility: hidden;
+									}
+									.filter-cross-icon {
+										visibility: hidden;
 									}
 								`}
 							>
-								<Flex>
+								<Flex alignItems="center" position="relative">
 									<IconButton
 										className="filter-cross-icon"
-										display="none"
 										mr={2}
+										position="absolute"
+										left={0}
+										top={0}
 									>
-										<CrossIcon size={13} color="red" />
+										<MdClose size={13} />
 									</IconButton>
-									<IconButton className="filter-active-icon" mr={2}>
+									<IconButton
+										className="filter-active-icon"
+										mr={2}
+										position="absolute"
+										left={0}
+									>
 										<CheckmarkIcon size={13} color="primary" />
 									</IconButton>
-									{val}
+									<Text ml={3} my={0} py={0}>
+										{k === 'models' ? modelToText(val as ModelsEnum) : val}
+									</Text>
 								</Flex>
 							</Flex>
 						))}
@@ -91,15 +119,3 @@ const ActiveFilters: React.FC = () => {
 };
 
 export default ActiveFilters;
-/*
-
-
-<Flex width={1} justifyContent="space-between">
-						<Text>{keyToText[k]}</Text>
-						<Text>{state?.searchQuery?.[k]}</Text>
-						<IconButton>
-							<CrossIcon />
-						</IconButton>
-					</Flex>
-
-*/

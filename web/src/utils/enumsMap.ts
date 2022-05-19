@@ -44,4 +44,4 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 };
 
 export const modelToText = (model: ModelsEnum) =>
-	ModelsTexts[model.toUpperCase() as ModelsEnum];
+	ModelsTexts[model.toUpperCase() as ModelsEnum] ?? model;

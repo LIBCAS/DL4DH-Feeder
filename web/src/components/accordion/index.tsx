@@ -25,7 +25,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 	useEffect(() => setHeight(measureRef.current?.clientHeight ?? 0), [refresh]);
 
 	return (
-		<Box overflow="hidden" pb={exp ? 2 : 0} key="AHOJ">
+		<Box overflow="hidden">
 			<Flex
 				pb={exp ? 0 : 2}
 				pt={2}
@@ -54,8 +54,8 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 				<LoaderSpin />
 			) : (
 				<Box
-					//height={exp ? 'auto' : 0}
-					height={exp ? height : 0}
+					height={exp ? 'auto' : 0}
+					// height={exp ? height : 0}
 					//minHeight={1}
 					css={css`
 						transition: height 0.2s;

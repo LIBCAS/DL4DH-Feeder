@@ -4,13 +4,13 @@ import {
 } from 'emotion-theming';
 import { FC } from 'react';
 
-const nkpColors = {
+const nkpRoot = {
 	primary: '#0389a7',
 	primaryLight: '#f5f5f5',
 	secondary: '#1E2838',
 	border: '#058ba8',
 	//border: '#684947',
-	inactive: '#BCE0FD',
+	inactive: '#81a1a8ab',
 	text: '#058ba8',
 	//text: '#0F0000',
 	textLight: '#7D7D7D',
@@ -22,9 +22,11 @@ const nkpColors = {
 	darkerGrey: '#B0B0B0',
 	lightGreen: '#5BCCC6',
 	darkGreen: '#00aae1',
+	white: '#fff',
+	/**HEADER */
 };
 
-const wireColors = {
+const wireRoot = {
 	primary: '#0099ff',
 	//primary: '#aa0b00',
 	//primaryLight: '#d4adad',
@@ -46,8 +48,15 @@ const wireColors = {
 	darkGreen: '#00aae1',
 };
 
+const headerStyleNKP = {
+	headerBg: nkpRoot.primary,
+	headerColor: nkpRoot.white,
+};
+
+const NKP = { ...nkpRoot, ...headerStyleNKP };
+
 export const theme = {
-	colors: nkpColors,
+	colors: NKP,
 
 	//breakpoints: ['40em', '52em', '64em', '76em'],
 	breakpoints: ['800px', '1200px', '1300px', '1500px', '1920px'],
