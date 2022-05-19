@@ -43,8 +43,10 @@ type Props<T extends unknown> = {
 	labelMinWidth?: number;
 	variant?: 'outlined' | 'underlined' | 'borderless';
 	wrapperCss?: SerializedStyles;
+	menuItemCss?: SerializedStyles;
 	arrowHidden?: boolean;
 	placeholder?: string;
+	isExpanded?: boolean;
 } & FlexProps;
 
 type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
@@ -57,15 +59,17 @@ const SimpleSelect = <T extends unknown>({
 	value,
 	renderMenuItem,
 	wrapperCss,
+	menuItemCss,
 	label,
 	labelMinWidth = 100,
 	variant = 'underlined',
 	placeholder,
 	arrowHidden,
+	isExpanded,
 	...props
 }: ComponentProps<T>) => {
 	const height = props?.height ?? 40;
-	const [showMenu, setShowMenu] = useState(false);
+	const [showMenu, setShowMenu] = useState(isExpanded);
 	const Menu = () => (
 		<Flex
 			position="absolute"
@@ -90,6 +94,7 @@ const SimpleSelect = <T extends unknown>({
 							&:hover {
 								background-color: ${theme.colors.primaryLight};
 							}
+							${menuItemCss}
 						`}
 						onClick={() => {
 							onChange(o);
@@ -168,7 +173,7 @@ const SimpleSelect = <T extends unknown>({
 				{!arrowHidden && <MdArrowDropDown size={22} />}
 			</Flex>
 
-			{showMenu && (
+			{(showMenu || isExpanded) && (
 				<ClickAway onClickAway={() => setShowMenu(false)}>
 					<Box
 						position="absolute"

@@ -33,14 +33,14 @@ import { isIntern } from 'utils/FEVersion';
 import { SolrParams } from 'utils/SolrTypes';
 
 import { Backend } from './endpoints';
-import { SearchDto } from './models';
+import { FiltersDto, SearchDto } from './models';
 
 export const QueryCacheInstance = new QueryCache();
 
 const FETCH_TIMEOUT = 30000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 
-export const api = (prefix?: string, json?: SolrParams) =>
+export const api = (prefix?: string, json?: Partial<FiltersDto>) =>
 	ky.extend({
 		prefixUrl: `${APP_CONTEXT}/api/${prefix ?? ''}`,
 		timeout: FETCH_TIMEOUT,
@@ -241,7 +241,7 @@ export const infiniteMainSearchEndpoint =
 					api('', {
 						start: start,
 						pageSize: pageSize,
-						query: state.searchQuery?.query,
+						query: state.searchQuery?.query ?? '',
 					}),
 
 					...args,
