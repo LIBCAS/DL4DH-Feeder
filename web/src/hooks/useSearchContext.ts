@@ -18,7 +18,7 @@ export const fieldsTuple = MakeTuple(
 	'COMPLEX_PERSON_NAMES',
 	'COMPLEX_TIME_EXPRESSION',
 	'COMPLEX_ADDRESS_EXPRESSION',
-	'COMPLEX_BIBLIO_EXPRESSION ',
+	'COMPLEX_BIBLIO_EXPRESSION',
 );
 export const operationsTuple = MakeTuple('EQUAL', 'NOT_EQUAL');
 

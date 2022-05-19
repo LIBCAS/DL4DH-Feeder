@@ -17,7 +17,9 @@ import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 
-import { AvailableFilters } from 'api/models';
+import { AvailableFilters, ModelsEnum } from 'api/models';
+
+import { modelToText } from 'utils/enumsMap';
 
 import ActiveFilters from './ActiveFilters';
 
@@ -157,7 +159,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			data?.models
 				? [
 						...Object.keys(data?.models).map(key => ({
-							label: key,
+							label: modelToText(key as ModelsEnum),
 							key,
 							value: data.models[key],
 						})),
@@ -210,8 +212,17 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 
 	const handleUpdateFilter = useCallback(
 		(type: string) => (key: string) => {
-			searchParams.append(type, key);
-			setSearchParams(searchParams);
+			//TODO: riesi ked je nejaky model nieco/nieco
+			if (type === 'models' && key.split('/').length > 1) {
+				const keyArr = key.split('/');
+				console.log('keyArr');
+				console.log(keyArr);
+				keyArr.forEach(k => searchParams.append(type, k));
+				setSearchParams(searchParams);
+			} else {
+				searchParams.append(type, key);
+				setSearchParams(searchParams);
+			}
 		},
 		[searchParams, setSearchParams],
 	);

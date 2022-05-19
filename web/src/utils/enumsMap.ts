@@ -43,5 +43,9 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 	SHEETMUSIC: 'Hudebniny',
 };
 
-export const modelToText = (model: ModelsEnum) =>
-	ModelsTexts[model.toUpperCase() as ModelsEnum] ?? model;
+export const modelToText = (model: ModelsEnum) => {
+	const parsed = model.split('/');
+	return parsed
+		.map(p => ModelsTexts[p.toUpperCase() as ModelsEnum] ?? p)
+		.join('/');
+};
