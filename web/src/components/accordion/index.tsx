@@ -6,15 +6,17 @@ import { MdExpandMore } from 'react-icons/md';
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
+import LoaderSpin from 'components/loaders/LoaderSpin';
 
 type Props = {
 	label: string | JSX.Element;
 	isExpanded?: boolean;
+	isLoading?: boolean;
 	onExpand?: () => void;
 	children: ((onRefresh: () => void) => ReactNode) | ReactNode;
 };
 
-const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
+const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 	const [exp, setExp] = useState(isExpanded ?? false);
 	const [refresh, setRefresh] = useState(false);
 	const [height, setHeight] = useState(0);
@@ -23,7 +25,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
 	useEffect(() => setHeight(measureRef.current?.clientHeight ?? 0), [refresh]);
 
 	return (
-		<Box overflow="hidden" pb={exp ? 2 : 0}>
+		<Box overflow="hidden">
 			<Flex
 				pb={exp ? 0 : 2}
 				pt={2}
@@ -48,18 +50,24 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children }) => {
 				</Flex>
 			</Flex>
 
-			<Box
-				height={exp ? height : 0}
-				css={css`
-					transition: height 0.2s ease;
-				`}
-			>
-				<div ref={measureRef}>
-					<Box p={2}>
-						{typeof children === 'function' ? children(onRefresh) : children}
-					</Box>
-				</div>
-			</Box>
+			{isLoading ? (
+				<LoaderSpin />
+			) : (
+				<Box
+					height={exp ? 'auto' : 0}
+					// height={exp ? height : 0}
+					//minHeight={1}
+					css={css`
+						transition: height 0.2s;
+					`}
+				>
+					<div ref={measureRef}>
+						<Box p={2}>
+							{typeof children === 'function' ? children(onRefresh) : children}
+						</Box>
+					</div>
+				</Box>
+			)}
 			<Divider />
 		</Box>
 	);

@@ -1,22 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC } from 'react';
-import { MdCalendarToday, MdPerson } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
+import { MdCalendarToday, MdImage, MdPerson } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
 import TileGrid from 'components/tiles';
-import { Box, Dot, Flex } from 'components/styled';
+import { Dot, Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
 import { Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { theme } from 'theme';
-import { getDateString } from 'utils';
-
-import placeholder from 'assets/title_placeholder.png';
 
 import { TPublication } from 'api/models';
+
+import { modelToText } from 'utils/enumsMap';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
@@ -31,7 +30,7 @@ type Props = {
 };
 
 const TileView: FC<Props> = ({ data }) => {
-	const { push } = useHistory();
+	const push = useNavigate();
 
 	return (
 		<Wrapper p={2}>
@@ -44,7 +43,7 @@ const TileView: FC<Props> = ({ data }) => {
 						key={d.pid}
 						ratio={[2.5, 1]}
 						width="100%"
-						onClick={() => push(`view/${d.pid}`)}
+						onClick={() => push(`/view/${d.pid}`)}
 					>
 						<Flex
 							height="100%"
@@ -63,8 +62,9 @@ const TileView: FC<Props> = ({ data }) => {
 								bg="white"
 								justifyContent="center"
 								alignItems="center"
+								color="text"
 							>
-								<img src={placeholder} height={30} />
+								<MdImage size={30} />
 							</Flex>
 							<Flex flexDirection="column" pl={2} width={1}>
 								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">
@@ -112,7 +112,7 @@ const TileView: FC<Props> = ({ data }) => {
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
 									<Flex bg="primary" color="white" opacity="0.5">
 										<Text py={1} my={0} px={3} fontSize="sm">
-											{d.model}
+											{modelToText(d.model)}
 										</Text>
 									</Flex>
 								</Flex>

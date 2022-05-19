@@ -19,14 +19,14 @@ import { Flex } from 'components/styled';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Button from 'components/styled/Button';
 
-import { useTheme } from 'theme';
+// import { useTheme } from 'theme';
 
 // 	https://github.com/gerhardsletten/react-pinch-zoom-pan?ref=morioh.com&utm_source=morioh.com
 
 import PublicationSidePanel from './PublicationSidePanel';
 
 const PublicationDetail = () => {
-	const theme = useTheme();
+	// const theme = useTheme();
 	const [rotation, setRotation] = useState(0);
 	const pinchRef = useRef<ReactZoomPanPinchRef>(null);
 	const [ref, { width: viewportWidth }] = useMeasure({

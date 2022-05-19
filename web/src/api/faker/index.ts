@@ -1,7 +1,5 @@
 import { v4 as uuid } from 'uuid';
 
-import { TPublication } from 'api/models';
-
 type TRecord = {
 	id: string;
 	title: string;

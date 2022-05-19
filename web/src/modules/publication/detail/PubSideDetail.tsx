@@ -1,18 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+
+import { FC } from 'react';
 import { MdDownload, MdPrint, MdShare, MdTextFields } from 'react-icons/md';
 
-import MyAccordion from 'components/accordion';
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
-import SidePanelHideButton from 'components/sidepanels/SidePanelHideButton';
-import Tabs from 'components/tabs';
-import Button from 'components/styled/Button';
 import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
-
-import { useTheme } from 'theme';
 
 type Props = {
 	nic?: boolean;

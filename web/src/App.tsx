@@ -1,5 +1,5 @@
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Dispatch, useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { Flex } from 'components/styled';
@@ -15,11 +15,7 @@ import { GlobalStyles, ThemeProvider } from 'theme';
 
 import { getUserRoutes } from 'auth/routes';
 
-import {
-	initState,
-	reducer,
-	useSearchContextProvider,
-} from 'hooks/useSearchContext';
+import { useSearchContextProvider } from 'hooks/useSearchContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 
@@ -50,7 +46,7 @@ const App = () => {
 								{userResponse.isLoading && <Loader />}
 								{userResponse.isError && <ErrorScreen {...userResponse} />}
 
-								{userResponse.isSuccess && <AppRoutes routes={routes} />}
+								{userResponse.isSuccess && <AppRoutes /* routes={routes} */ />}
 							</SearchContextProvider>
 						</UserContextProvider>
 					</Router>

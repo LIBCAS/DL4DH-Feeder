@@ -1,6 +1,3 @@
-import React from 'react';
-import { MdDateRange, MdInfo, MdLocationCity, MdPerson } from 'react-icons/md';
-
 import { TPublication } from 'api/models';
 
 export type TColumnsLayout = Pick<TPublication, 'title' | 'pid' | 'model'>;
@@ -18,14 +15,12 @@ export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	pid: 0,
 };
 
-const iconSize = 20;
-
 export const headerLabels: Record<
 	keyof TColumnsLayout,
-	{ text?: string; icon?: React.ReactNode; hidden?: boolean }
+	{ text?: string; hidden?: boolean }
 > = {
-	title: { text: 'Název', icon: <MdPerson size={iconSize} /> },
-	model: { text: 'Typ', icon: <MdPerson size={iconSize} /> },
+	title: { text: 'Název' },
+	model: { text: 'Typ' },
 	/* authors: { text: 'Autor', icon: <MdLocationCity /> },
 	published: { text: 'Rok vydání', icon: <MdInfo size={iconSize} /> },
 	pages: { text: 'Počet stránek', icon: <MdInfo size={iconSize} /> },

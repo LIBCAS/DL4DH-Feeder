@@ -6,7 +6,6 @@ import useMeasure from 'react-use-measure';
 
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
-import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
 import TextInput from 'components/form/input/TextInput';
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { NavButton } from 'components/styled/Button';
@@ -11,21 +11,21 @@ import { useLoggedInUser } from 'api';
 import { isAuthPath } from 'auth/routes';
 
 //TODO:
-const NotFound: React.FC<RouteComponentProps> = ({
-	location: { pathname },
-	history: { goBack, push },
-}) => {
+const NotFound: React.FC = () => {
 	// Page title
 	//	usePageTitle('Stránka nenalezena');
 
 	const token = useLoggedInUser();
+	const nav = useNavigate();
+	const { pathname } = useLocation();
+	console.log('heeeeeeeeeere');
 
 	useEffect(() => {
 		if (!token && isAuthPath(pathname)) {
 			toast.error('Pre prístup k tejto podstránke je potrebné sa prihlásiť.', {
 				duration: 10000,
 			});
-			push({ pathname: '/', state: { redirect: pathname } });
+			nav({ pathname: '/' });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -43,7 +43,7 @@ const NotFound: React.FC<RouteComponentProps> = ({
 				nebola nájdená.
 			</Text>
 
-			<NavButton mt={3} onClick={goBack}>
+			<NavButton mt={3} onClick={() => nav(-1)}>
 				Naspäť
 			</NavButton>
 		</ResponsiveWrapper>

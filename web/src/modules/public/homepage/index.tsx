@@ -1,28 +1,43 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useState } from 'react';
 import { css } from '@emotion/core';
-import { MdSearch, MdClear, MdArrowForward, MdInfo } from 'react-icons/md';
+import {
+	MdSearch,
+	MdClear,
+	MdArrowForward,
+	MdInfo,
+	MdImage,
+} from 'react-icons/md';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
-
-import placeholder from 'assets/title_placeholder.png';
+import Checkbox from 'components/form/checkbox/Checkbox';
 
 const Homepage: FC = () => {
 	const [toSearch, setToSearch] = useState('');
+	const [publicOnly, setPublicOnly] = useState<boolean>(false);
+	const query = `${toSearch ? `query=${toSearch}` : ''}${
+		publicOnly ? `${toSearch ? '&' : ''}availability=PUBLIC` : ''
+	}`;
 	return (
 		<ResponsiveWrapper bg="white" px={1} mx={0}>
-			<Flex alignItems="center" justifyContent="center" height="100vh">
+			<Flex
+				alignItems="center"
+				justifyContent="center"
+				height="100vh"
+				flexDirection="column"
+			>
+				<Flex flexGrow={1} />
 				<Flex
 					flexDirection="column"
-					width={[1, 1 / 2]}
+					width={[1, 2 / 3, 1 / 2]}
 					alignItems="center"
 					justifyContent="center"
 				>
-					<img src={placeholder} height={50} />
+					<MdImage size={50} />
 
 					<Flex mt={3} mb={4} flexDirection="column" alignItems="center">
 						<Text fontSize="xl" fontWeight="bold">
@@ -32,7 +47,15 @@ const Homepage: FC = () => {
 
 						<Text fontSize="md">DL4DH Feeder</Text>
 					</Flex>
-					<Flex px={3} width={1} flexShrink={1}>
+					<Flex
+						px={3}
+						width={[6 / 7, 1, 1]}
+						flexShrink={0}
+						minWidth={300}
+						flexDirection={['column', 'row']}
+						alignItems="center"
+						ml={[0, 100, 100]}
+					>
 						<TextInput
 							placeholder="Hledejte v DL4DH Feeder"
 							label=""
@@ -62,23 +85,30 @@ const Homepage: FC = () => {
 								setToSearch(e.currentTarget.value);
 							}}
 						/>
-						{/* <Flex alignItems="center" minWidth={150}>
-							<Checkbox aria-label="Pouze veřejné" />
-							<Text fontSize="sm">Pouze veřejné</Text>
-						</Flex> */}
+						<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
+							<Checkbox
+								checked={publicOnly}
+								onChange={() => setPublicOnly(p => !p)}
+								aria-label="Pouze veřejné"
+								label="Pouze veřejné"
+							/>
+						</Flex>
 					</Flex>
-					<NavLinkButton mt={4} to={`/search?q=${toSearch}`} variant="primary">
+					<NavLinkButton
+						mt={4}
+						to={`/search${query ? `?${query}` : ''}`}
+						variant="primary"
+					>
 						Vstoupit do DL4DH Feeder{' '}
 						<Flex ml={2}>
 							<MdArrowForward size={22} />
 						</Flex>
 					</NavLinkButton>
 				</Flex>
-			</Flex>
-			<Flex position="sticky" bottom={10} width={1} justifyContent="center">
+				<Flex flexGrow={1} />
 				<Flex
 					py={[3, 4]}
-					// px={4}
+					mb={5}
 					bg="primaryLight"
 					flexDirection="column"
 					width={[1, 1 / 2]}
@@ -101,6 +131,12 @@ const Homepage: FC = () => {
 					</Text>
 				</Flex>
 			</Flex>
+			<Flex
+				position="sticky"
+				bottom={10}
+				width={1}
+				justifyContent="center"
+			></Flex>
 		</ResponsiveWrapper>
 	);
 };

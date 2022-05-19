@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+import React, { FC, useState, useMemo } from 'react';
 import GridViewIcon from '@mui/icons-material/GridView';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import ListIcon from '@mui/icons-material/List';
@@ -33,11 +33,13 @@ const MainSearch: FC = () => {
 	const { state, dispatch } = useSearchContext();
 	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
 		{
-			offset: state.offset,
+			start: state.start,
 			pageSize: state.pageSize,
-			query: state.searchQuery?.q,
+			...state.searchQuery,
 		},
 	);
+
+	const statsMemo = useMemo(() => statistics, [statistics]);
 
 	return (
 		<ResponsiveWrapper
@@ -55,7 +57,6 @@ const MainSearch: FC = () => {
 					alignItems="center"
 					justifyContent="flex-start"
 					width={300}
-					// width={leftCollapsed ? 10 : 300}
 					overflow="hidden"
 					css={css`
 						border-right: 1px solid ${theme.colors.border};
@@ -63,8 +64,8 @@ const MainSearch: FC = () => {
 					`}
 				>
 					<Text pl={3} fontSize="sm" fontWeight="bold">
-						Výsledky: {state.offset + 1} -{' '}
-						{state.hasMore ? state.offset + state.pageSize : state.totalCount}/{' '}
+						Výsledky: {state.start + 1} -{' '}
+						{state.hasMore ? state.start + state.pageSize : state.totalCount}/{' '}
 						{state.totalCount}
 					</Text>
 				</Flex>
@@ -181,6 +182,7 @@ const MainSearch: FC = () => {
 				bg="primaryLight"
 			>
 				<Flex
+					key="kakakaka"
 					position="relative"
 					alignItems="flex-start"
 					flexShrink={0}
@@ -191,7 +193,7 @@ const MainSearch: FC = () => {
 						transition: width 1s ease-in-out;
 					`}
 				>
-					<SearchResultLeftPanel data={statistics} isLoading={isLoading} />
+					<SearchResultLeftPanel data={statsMemo} isLoading={isLoading} />
 				</Flex>
 				<Flex width={1} bg="white">
 					<Results
@@ -201,17 +203,6 @@ const MainSearch: FC = () => {
 						count={count}
 					/>
 				</Flex>
-				{/* <Flex
-						flexShrink={0}
-						width={rightCollapsed ? 10 : 300}
-						onClick={() => setRightCollapsed(p => !p)}
-						css={css`
-							border-left: 1px solid ${theme.colors.border};
-							transition: width 1s ease-in-out;
-						`}
-					>
-						Menu Right
-					</Flex> */}
 			</Flex>
 		</ResponsiveWrapper>
 	);

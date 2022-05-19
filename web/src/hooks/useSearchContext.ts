@@ -4,27 +4,37 @@ import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
 import { MakeTuple } from 'utils';
 
-export const fieldsTuple = MakeTuple('author', 'title', 'keyword');
-export const operationsTuple = MakeTuple('eq', 'neq');
+import { FiltersDto, NameTagFilterDto } from 'api/models';
+
+export const fieldsTuple = MakeTuple(
+	'NUMBERS_IN_ADDRESSES',
+	'GEOGRAPHICAL_NAMES',
+	'INSTITUTIONS',
+	'MEDIA_NAMES',
+	'NUMBER_EXPRESSIONS',
+	'ARTIFACT_NAMES',
+	'PERSONAL_NAMES',
+	'TIME_EXPRESSIONS',
+	'COMPLEX_PERSON_NAMES',
+	'COMPLEX_TIME_EXPRESSION',
+	'COMPLEX_ADDRESS_EXPRESSION',
+	'COMPLEX_BIBLIO_EXPRESSION ',
+);
+export const operationsTuple = MakeTuple('EQUAL', 'NOT_EQUAL');
 
 export type TField = typeof fieldsTuple[number];
 export type TOperation = typeof operationsTuple[number];
 
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
-export type TSearchQuery = {
-	q?: string;
-	field?: TField;
-	operation?: TOperation;
-	value?: string;
-};
+export type TSearchQuery = Partial<Omit<FiltersDto, 'start' | 'pageSize'>>;
 
 type State = {
 	searchQuery: TSearchQuery | null;
 	viewMode: ViewMode;
 	pageSize: number;
 	page: number;
-	offset: number;
+	start: number;
 	totalCount: number;
 	hasMore: boolean;
 	sorting: SortOption;
@@ -35,7 +45,7 @@ export const initState: State = {
 	viewMode: 'tiles',
 	pageSize: 15,
 	page: 0,
-	offset: 0,
+	start: 0,
 	totalCount: 0,
 	hasMore: false,
 	sorting: sortOptions[0],
@@ -43,6 +53,8 @@ export const initState: State = {
 
 type Actions =
 	| { type: 'setSearchQuery'; searchQuery: TSearchQuery | null }
+	| { type: 'changeNameTagFilter'; nameTagFilter: NameTagFilterDto | null }
+	| { type: 'addNameTagFilter'; nameTagFilter: NameTagFilterDto }
 	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
 	| { type: 'setPage'; page: number }
@@ -56,6 +68,33 @@ export const reducer = (state: State, action: Actions) => {
 				...state,
 				searchQuery: action.searchQuery,
 			};
+		case 'changeNameTagFilter': {
+			if (action.nameTagFilter) {
+				const newFilter: NameTagFilterDto[] = [] as NameTagFilterDto[];
+				newFilter.push(action.nameTagFilter);
+				return {
+					...state,
+					searchQuery: { ...state.searchQuery, nameTagFilters: newFilter },
+				};
+			} else {
+				return {
+					...state,
+					searchQuery: { ...state.searchQuery, nameTagFilter: null },
+				};
+			}
+		}
+		case 'addNameTagFilter': {
+			const newFilter: NameTagFilterDto[] = [
+				...(state.searchQuery?.nameTagFilters
+					? state.searchQuery.nameTagFilters
+					: []),
+				action.nameTagFilter,
+			];
+			return {
+				...state,
+				searchQuery: { ...state.searchQuery, nameTagFilters: newFilter },
+			};
+		}
 		case 'setSorting':
 			return {
 				...state,
@@ -65,10 +104,10 @@ export const reducer = (state: State, action: Actions) => {
 			return {
 				...state,
 				page: action.page,
-				offset: action.page * state.pageSize,
+				start: action.page * state.pageSize,
 			};
 		case 'setPageSize':
-			return { ...state, pageSize: action.pageSize, page: 0, offset: 0 };
+			return { ...state, pageSize: action.pageSize, page: 0, start: 0 };
 		case 'setTotalCount':
 			return {
 				...state,

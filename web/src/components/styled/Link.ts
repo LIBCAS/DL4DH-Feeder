@@ -50,8 +50,4 @@ export const NavLink = styled(Link)`
 	}
 `.withComponent(RouterNavLink);
 
-NavLink.defaultProps = {
-	activeClassName,
-};
-
 export default Link;

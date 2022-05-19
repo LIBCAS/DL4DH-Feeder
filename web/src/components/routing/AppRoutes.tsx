@@ -1,41 +1,56 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
-import Lazy from 'auth/lazyComps';
+import { Loader } from 'modules/loader';
 
-import { LazyRoute, RouterItem } from './LazyRoute';
+// const Home = React.lazy(() => import('./pages/Home'));
+// const About = React.lazy(() => import('./pages/About'));
 
-type Props = {
-	routes: RouterItem[];
-};
+const NotFound = React.lazy(() => import('modules/notFound'));
+const Authorize = React.lazy(() => import('modules/public/auth'));
 
-const AppRoutes: React.FC<Props> = ({ routes }) => {
+// Public
+const Homepage = React.lazy(() => import('modules/public/homepage'));
+const MainSearch = React.lazy(() => import('modules/public/mainSearch'));
+const PublicationView = React.lazy(() => import('modules/publication/detail'));
+
+const AppRoutes: React.FC = () => {
 	return (
-		<Switch>
-			{routes.map(route => {
-				if (route.type === 'route') {
-					return (
-						<Route
-							key={`app-route-${route.path}`}
-							exact
-							path={route.path}
-							render={route.render}
-						/>
-					);
-				} else if (route.type === 'redirect') {
-					return (
-						<Route key={`app-redirect-${route.path}`} exact path={route.path}>
-							<Redirect to={route.to} />
-						</Route>
-					);
-				} else {
-					throw new Error(`Unhandled route type ${route}`);
+		<Routes>
+			<Route
+				path="/"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<Homepage />
+					</React.Suspense>
 				}
-			})}
-
+			/>
+			<Route
+				path="/search"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<MainSearch />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/view/:id"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<PublicationView />
+					</React.Suspense>
+				}
+			/>
 			{/* Not found route */}
-			<Route exact render={LazyRoute(Lazy.NotFound)} />
-		</Switch>
+			<Route
+				path="*"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<NotFound />
+					</React.Suspense>
+				}
+			/>
+		</Routes>
 	);
 };
 

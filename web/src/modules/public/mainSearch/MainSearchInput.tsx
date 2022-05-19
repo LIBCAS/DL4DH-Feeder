@@ -2,19 +2,20 @@
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
-import { debounce } from 'lodash-es';
+import { debounce, isEqual } from 'lodash-es';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
-import SimpleSelect from 'components/form/select/SimpleSelect';
+import SimpleSelect, { ClickAway } from 'components/form/select/SimpleSelect';
 import Button from 'components/styled/Button';
-import { Wrapper } from 'components/styled/Wrapper';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
+
+import { ModelsEnum, NameTagFilterDto } from 'api/models';
 
 import {
 	fieldsTuple,
@@ -26,59 +27,103 @@ import {
 } from 'hooks/useSearchContext';
 
 const OperationToTextLabel: Record<TOperation, string> = {
-	eq: '=',
-	neq: '\u{2260}',
+	EQUAL: '=',
+	NOT_EQUAL: '\u{2260}',
 };
 
-const FieldToTextLabel: Record<TField, string> = {
+/* const FieldToTextLabel: Record<TagNameEnum, string> = {
 	author: 'Autor',
 	keyword: 'Klucove slovo',
 	title: 'Titul',
+}; */
+
+const sanitizeSearchQuery = (q: TSearchQuery) => {
+	const sanitized = { ...q };
+	if (typeof q.models === 'string') {
+		sanitized.models = [q.models];
+	}
+	if (typeof q.keywords === 'string') {
+		sanitized.keywords = [q.keywords];
+	}
+	if (typeof q.authors === 'string') {
+		sanitized.authors = [q.authors];
+	}
+	if (typeof q.languages === 'string') {
+		sanitized.languages = [q.languages];
+	}
+	if (sanitized.models) {
+		sanitized.models = sanitized.models.map(
+			m => m.toLocaleUpperCase() as ModelsEnum,
+		);
+	}
+
+	return sanitized;
 };
 
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
-	const { push } = useHistory();
+	const push = useNavigate();
 	const [localState, setLocalState] = useState('');
 	const [hints, setHints] = useState<string[]>([]);
 	useEffect(() => {
-		setLocalState(state.searchQuery?.q ?? '');
+		setLocalState(state.searchQuery?.query ?? '');
 	}, [state.searchQuery]);
 
-	const handleUpdateContext = () => {
-		const url = stringify({ ...state.searchQuery, q: localState });
-		dispatch?.({
-			type: 'setSearchQuery',
-			searchQuery: { ...state.searchQuery, q: parsed.q },
+	const handleUpdateContext = (newState?: string) => {
+		const nameTagFilters = JSON.stringify(state.searchQuery?.nameTagFilters);
+		const url = stringify({
+			...state.searchQuery,
+			query: newState ?? localState,
+			nameTagFilters: [],
 		});
+		/* dispatch?.({
+			type: 'setSearchQuery',
+			searchQuery: { ...state.searchQuery, query: parsed.query },
+		}); */
 		push(`/search?${url}`);
 	};
 
 	const { search } = useLocation();
-	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
+	const parsed = useMemo(
+		() =>
+			sanitizeSearchQuery(parse(search) as unknown as Partial<TSearchQuery>),
+		[search],
+	);
 
 	useEffect(() => {
-		if (parsed.q !== state.searchQuery?.q) {
+		if (!isEqual(parsed, state.searchQuery)) {
+			console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
-				searchQuery: { ...state.searchQuery, q: parsed.q },
+				searchQuery: {
+					...parsed,
+				},
 			});
 		}
-	}, [parsed.q]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [parsed]);
 
 	const getHint = useCallback(async (q: string) => {
 		const hints = await api()
 			.post('search/hint', { json: { query: q } })
-			.json<string[]>();
-		setHints(hints);
+			.json<string[]>()
+			.catch(r => console.log(r));
+		if (hints) {
+			setHints(hints);
+		}
 	}, []);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 200), [getHint]);
 	const menuOffset = useMemo(
 		() => Math.min(localState.length * 5, 500),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[hints],
 	);
+	console.log('state');
+	console.log(state);
+	console.log('parsed');
+	console.log(parsed);
 
 	return (
 		<>
@@ -110,20 +155,26 @@ const MainSearchInput = () => {
 							<MdSearch size={26} />
 
 							<SimpleSelect
-								value={state.searchQuery?.field}
+								value={state.searchQuery?.nameTagFilters?.[0].type}
 								options={fieldsTuple}
 								onChange={field =>
-									dispatch?.({
-										type: 'setSearchQuery',
-										searchQuery: { ...state.searchQuery, field },
-									})
+									field
+										? dispatch?.({
+												type: 'changeNameTagFilter',
+												nameTagFilter: {
+													type: field,
+													operator: 'EQUAL',
+													values: ['ahoj'],
+												},
+										  })
+										: null
 								}
-								keyFromOption={item => (item ? FieldToTextLabel[item] : '')}
-								width={100}
-								nameFromOption={item => (item ? FieldToTextLabel[item] : '')}
+								keyFromOption={item => (item ? item : '')}
+								nameFromOption={item => (item ? item : '')}
+								placeholder="Filter"
 								arrowHidden
 								wrapperCss={css`
-									border: none;
+									border: 1px solid ${theme.colors.primaryLight};
 									background: ${theme.colors.primaryLight};
 									justify-content: center;
 									margin-left: 2px;
@@ -133,7 +184,7 @@ const MainSearchInput = () => {
 									}
 								`}
 							/>
-							<SimpleSelect
+							{/*<SimpleSelect
 								value={state.searchQuery?.operation}
 								options={operationsTuple}
 								onChange={operation =>
@@ -158,7 +209,7 @@ const MainSearchInput = () => {
 										border: 1px solid ${theme.colors.border};
 									}
 								`}
-							/>
+							/> */}
 						</Flex>
 					}
 					iconRight={
@@ -166,8 +217,7 @@ const MainSearchInput = () => {
 							<Flex mr={3} color="primary">
 								<MdClear
 									onClick={() => {
-										dispatch?.({ type: 'setSearchQuery', searchQuery: null });
-										setLocalState('');
+										push(`/search`);
 									}}
 									css={css`
 										cursor: pointer;
@@ -180,40 +230,43 @@ const MainSearchInput = () => {
 					}
 				/>
 				{hints.length > 0 && localState !== '' && (
-					<Flex
-						position="absolute"
-						left={200 + menuOffset}
-						top={50}
-						bg="white"
-						color="text"
-						css={css`
-							border: 1px solid ${theme.colors.border};
-							box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
-						`}
-					>
-						<Flex position="relative" flexDirection="column">
-							{hints.map((h, index) => (
-								<Flex
-									px={3}
-									py={2}
-									key={index}
-									onClick={() => {
-										setLocalState(h);
-										setHints([]);
-									}}
-									css={css`
-										cursor: pointer;
-										&:hover {
-											color: white;
-											background-color: ${theme.colors.primary};
-										}
-									`}
-								>
-									<Text>{h}</Text>
-								</Flex>
-							))}
+					<ClickAway onClickAway={() => setHints([])}>
+						<Flex
+							position="absolute"
+							left={200 + menuOffset}
+							top={50}
+							bg="white"
+							color="text"
+							css={css`
+								border: 1px solid ${theme.colors.border};
+								box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
+							`}
+						>
+							<Flex position="relative" flexDirection="column">
+								{hints.map((h, index) => (
+									<Flex
+										px={3}
+										py={2}
+										key={index}
+										onClick={() => {
+											setLocalState(h);
+											handleUpdateContext(h);
+											setHints([]);
+										}}
+										css={css`
+											cursor: pointer;
+											&:hover {
+												color: white;
+												background-color: ${theme.colors.primary};
+											}
+										`}
+									>
+										<Text>{h}</Text>
+									</Flex>
+								))}
+							</Flex>
 						</Flex>
-					</Flex>
+					</ClickAway>
 				)}
 			</Flex>
 			<Flex flexShrink={0}>
@@ -222,7 +275,7 @@ const MainSearchInput = () => {
 					variant="primary"
 					py={2}
 					mr={[2, 2, 2, 0]}
-					onClick={handleUpdateContext}
+					onClick={() => handleUpdateContext()}
 					disabled={localState === ''}
 				>
 					Hledat v K+

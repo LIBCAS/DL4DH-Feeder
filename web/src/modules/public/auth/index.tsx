@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -80,7 +80,7 @@ export const OIDCLoginButton = () => {
 
 const GetAccesToken = () => {
 	const { search } = useLocation();
-	const history = useHistory();
+	const nav = useNavigate();
 
 	const { code } = parse(search);
 	useEffect(() => {
@@ -89,9 +89,9 @@ const GetAccesToken = () => {
 		}
 		if (!code || code === '') {
 			toast.error('Nepodarilo sa prihlásiť', { duration: 8000 });
-			history.push('/');
+			nav('/');
 		}
-	}, [code, history]);
+	}, [code, nav]);
 
 	return (
 		<Wrapper justifyContent="center">

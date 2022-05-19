@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 
-import { Box, Flex, Grid } from 'components/styled';
+import { Flex, Grid } from 'components/styled';
 import Text from 'components/styled/Text';
 import Paper from 'components/styled/Paper';
 
