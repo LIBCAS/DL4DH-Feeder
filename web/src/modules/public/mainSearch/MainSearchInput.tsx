@@ -192,7 +192,9 @@ const MainSearchInput = () => {
 									options={fieldsTuple}
 									onChange={field => {
 										setShowTagNameMenu(false);
-										field ? setSelectedTagName(field) : null;
+										if (field) {
+											setSelectedTagName(field);
+										}
 										/* field
 											? dispatch?.({
 													type: 'changeNameTagFilter',
