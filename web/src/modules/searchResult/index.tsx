@@ -10,7 +10,7 @@ import { Loader } from 'modules/loader';
 
 import { theme } from 'theme';
 
-import { PublicationDto } from 'api/models';
+import { AvailableFilters, PublicationDto } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
@@ -23,9 +23,10 @@ type Props = {
 	count: number;
 	isLoading: boolean;
 	hasMore: boolean;
+	stats: AvailableFilters | undefined;
 };
 
-const Results: FC<Props> = ({ data, count, isLoading, hasMore }) => {
+const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 	const { state, dispatch } = useSearchContext();
 
 	const changePage = useCallback(
@@ -52,7 +53,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore }) => {
 						</Wrapper>
 					) : (
 						<Wrapper overflowY="auto" overflowX="hidden">
-							{isLoading || !data ? <Loader /> : <GraphView data={data} />}
+							{isLoading || !stats ? <Loader /> : <GraphView data={stats} />}
 						</Wrapper>
 					)}
 				</>
