@@ -34,7 +34,7 @@ services:
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
     ports:
-      - "80:8080"
+      - "8080:8080"
   feederfe:
     build:
       context: .
@@ -57,7 +57,7 @@ services:
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
     ports:
-      - "8080:80"
+      - "80:80"
   solr:
     build: ./solr
     image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
