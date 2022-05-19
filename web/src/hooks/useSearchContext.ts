@@ -28,7 +28,7 @@ export type TOperation = typeof operationsTuple[number];
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
 export type TSearchQuery = Partial<
-	Omit<FiltersDto, 'keywords' | 'authors' | 'languages' | 'start' | 'pageSize'>
+	Omit<FiltersDto, 'authors' | 'languages' | 'start' | 'pageSize'>
 >;
 
 type State = {
@@ -56,6 +56,7 @@ export const initState: State = {
 type Actions =
 	| { type: 'setSearchQuery'; searchQuery: TSearchQuery | null }
 	| { type: 'changeNameTagFilter'; nameTagFilter: NameTagFilterDto | null }
+	| { type: 'addNameTagFilter'; nameTagFilter: NameTagFilterDto }
 	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
 	| { type: 'setPage'; page: number }
@@ -83,6 +84,18 @@ export const reducer = (state: State, action: Actions) => {
 					searchQuery: { ...state.searchQuery, nameTagFilter: null },
 				};
 			}
+		}
+		case 'addNameTagFilter': {
+			const newFilter: NameTagFilterDto[] = [
+				...(state.searchQuery?.nameTagFilters
+					? state.searchQuery.nameTagFilters
+					: []),
+				action.nameTagFilter,
+			];
+			return {
+				...state,
+				searchQuery: { ...state.searchQuery, nameTagFilters: newFilter },
+			};
 		}
 		case 'setSorting':
 			return {

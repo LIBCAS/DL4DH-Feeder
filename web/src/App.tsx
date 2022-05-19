@@ -46,7 +46,7 @@ const App = () => {
 								{userResponse.isLoading && <Loader />}
 								{userResponse.isError && <ErrorScreen {...userResponse} />}
 
-								{userResponse.isSuccess && <AppRoutes routes={routes} />}
+								{userResponse.isSuccess && <AppRoutes /* routes={routes} */ />}
 							</SearchContextProvider>
 						</UserContextProvider>
 					</Router>

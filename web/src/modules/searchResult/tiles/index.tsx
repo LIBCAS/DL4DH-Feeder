@@ -2,7 +2,7 @@
 import { css } from '@emotion/core';
 import { FC } from 'react';
 import { MdCalendarToday, MdPerson } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
 import TileGrid from 'components/tiles';
@@ -32,7 +32,7 @@ type Props = {
 };
 
 const TileView: FC<Props> = ({ data }) => {
-	const { push } = useHistory();
+	const push = useNavigate();
 
 	return (
 		<Wrapper p={2}>
@@ -45,7 +45,7 @@ const TileView: FC<Props> = ({ data }) => {
 						key={d.pid}
 						ratio={[2.5, 1]}
 						width="100%"
-						onClick={() => push(`view/${d.pid}`)}
+						onClick={() => push(`/view/${d.pid}`)}
 					>
 						<Flex
 							height="100%"

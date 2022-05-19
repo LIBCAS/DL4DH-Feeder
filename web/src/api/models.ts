@@ -59,10 +59,10 @@ export type SearchDto = {
 export type FiltersDto = {
 	query: string;
 	availability: AvailabilityEnum;
-	models: ModelsEnum;
-	keywords: string | string[];
-	authors: string | string[];
-	languages: string | string[];
+	models: ModelsEnum[];
+	keywords: string[];
+	authors: string[];
+	languages: string[];
 	start: number;
 	pageSize: number;
 	nameTagFilters: NameTagFilterDto[];

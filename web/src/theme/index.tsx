@@ -47,7 +47,7 @@ const wireColors = {
 };
 
 export const theme = {
-	colors: wireColors,
+	colors: nkpColors,
 
 	//breakpoints: ['40em', '52em', '64em', '76em'],
 	breakpoints: ['800px', '1200px', '1300px', '1500px', '1920px'],

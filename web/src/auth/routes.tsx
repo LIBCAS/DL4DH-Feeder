@@ -11,22 +11,22 @@ export const PUBLIC_ROUTES: RouterItem[] = [
 	{
 		type: 'route',
 		path: '/',
-		render: LazyRoute(Lazy.Homepage),
+		element: LazyRoute(Lazy.Homepage),
 	},
 	{
 		type: 'route',
 		path: '/search',
-		render: LazyRoute(Lazy.MainSearch),
+		element: LazyRoute(Lazy.MainSearch),
 	},
 	{
 		type: 'route',
 		path: '/view/:id',
-		render: LazyRoute(Lazy.PublicationView),
+		element: LazyRoute(Lazy.PublicationView),
 	},
 	{
 		type: 'route',
 		path: '/auth',
-		render: LazyRoute(Lazy.Authorize),
+		element: LazyRoute(Lazy.Authorize),
 	},
 ];
 
@@ -34,12 +34,12 @@ export const LOGGED_ROUTES: RouterItem[] = [
 	{
 		type: 'route',
 		path: '/',
-		render: LazyRoute(Lazy.Homepage),
+		element: LazyRoute(Lazy.Homepage),
 	},
 	{
 		type: 'route',
 		path: '/auth',
-		render: LazyRoute(Lazy.Authorize),
+		element: LazyRoute(Lazy.Authorize),
 	},
 ];
 
@@ -54,5 +54,5 @@ export const getUserRoutes = (user?: VsdUser) => {
 
 export const isAuthPath = (path: string) =>
 	[...LOGGED_ROUTES].some(r =>
-		r.type === 'redirect' || r.path === '/' ? false : matchPath(path, r),
+		r.path === '/' ? false : matchPath(path, r.path),
 	);

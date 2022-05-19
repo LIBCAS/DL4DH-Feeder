@@ -2,7 +2,7 @@
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
 import { debounce, isEqual } from 'lodash-es';
 
@@ -37,10 +37,21 @@ const OperationToTextLabel: Record<TOperation, string> = {
 	title: 'Titul',
 }; */
 
+const sanitizeSearchQuery = (q: TSearchQuery) => {
+	const sanitized = { ...q };
+	if (typeof q.models === 'string') {
+		sanitized.models = [q.models];
+	}
+	if (typeof q.keywords === 'string') {
+		sanitized.keywords = [q.keywords];
+	}
+	return sanitized;
+};
+
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
-	const { push } = useHistory();
+	const push = useNavigate();
 	const [localState, setLocalState] = useState('');
 	const [hints, setHints] = useState<string[]>([]);
 	useEffect(() => {
@@ -63,7 +74,8 @@ const MainSearchInput = () => {
 
 	const { search } = useLocation();
 	const parsed = useMemo(
-		() => parse(search) as unknown as Partial<TSearchQuery>,
+		() =>
+			sanitizeSearchQuery(parse(search) as unknown as Partial<TSearchQuery>),
 		[search],
 	);
 
