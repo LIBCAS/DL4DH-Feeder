@@ -21,24 +21,25 @@ import IconButton from 'components/styled/IconButton';
 import { useTheme } from 'theme';
 import { MakeTuple } from 'utils';
 
-import { TPublication } from 'api/models';
+import { AvailableFilters, TPublication } from 'api/models';
 
 type Props = {
-	data: TPublication[];
+	data: AvailableFilters;
 };
 
-const XAxisOptTuple = MakeTuple('authors', 'date');
+const XAxisOptTuple = MakeTuple('authors', 'keywords', 'models', 'languages');
 type XAxisOpts = typeof XAxisOptTuple[number];
 
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
 	const [zoom, setZoom] = useState(50);
-	const [axisX, setAxisX] = useState<XAxisOpts>('date');
+	const [axisX, setAxisX] =
+		useState<keyof Omit<AvailableFilters, 'availability'>>('authors');
 
-	const formattedData = useMemo(
+	/* const formattedData = useMemo(
 		() =>
 			groupBy(
-				data.filter(p => p[axisX] !== undefined),
+				keywords.filter(p => p[axisX] !== undefined),
 				d => {
 					if (axisX === 'date') {
 						const year = parseInt(d.date); //new Date(d.date).getFullYear();
@@ -57,15 +58,18 @@ const GraphView: FC<Props> = ({ data }) => {
 					return d.date;
 				},
 			),
-		[zoom, data, axisX],
-	);
+		[zoom, keywords, axisX],
+	); */
+	const formattedData = data[axisX];
 
 	const chartData = useMemo(
 		() =>
-			Object.keys(formattedData).map(key => ({
-				year: key,
-				count: formattedData[key].length,
-			})),
+			Object.keys(formattedData)
+				.map(key => ({
+					year: key,
+					count: formattedData[key],
+				}))
+				.sort((a, b) => b.count - a.count),
 		[formattedData],
 	);
 

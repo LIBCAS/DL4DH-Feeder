@@ -198,6 +198,7 @@ const MainSearch: FC = () => {
 				<Flex width={1} bg="white">
 					<Results
 						data={data}
+						stats={statsMemo}
 						hasMore={hasMore}
 						isLoading={isLoading}
 						count={count}
