@@ -33,4 +33,7 @@ public class PublicationDto {
 
     @NotNull
     private String rootTitle;
+
+    @NotNull
+    private boolean enriched;
 }

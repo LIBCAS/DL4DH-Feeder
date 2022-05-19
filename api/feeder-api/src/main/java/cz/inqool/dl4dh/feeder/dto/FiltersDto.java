@@ -35,6 +35,10 @@ public class FiltersDto {
         return Integer.min(60, Integer.max(1, pageSize));
     }
 
+    public String getQueryEscaped() {
+        return query.replaceAll(":","\\\\:");
+    }
+
     public String toFqQuery(List<String> base) {
         List<List<String>> list = new ArrayList<>();
         list.add(base);

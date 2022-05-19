@@ -19,7 +19,6 @@ build:
   extends: .build
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      when: manual
 
 .deploy:
   stage: deploy
@@ -48,7 +47,6 @@ deploy:
     CI_ENVIRONMENT_HOSTNAME: $CI_PROJECT_NAME.dev.inqool.cz
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      when: manual
 
 .undeploy:
   stage: undeploy

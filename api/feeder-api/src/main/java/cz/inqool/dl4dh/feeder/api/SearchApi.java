@@ -55,7 +55,7 @@ public class SearchApi {
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("defType", "edismax")
                         .queryParam("fl", "PID,dc.title")
-                        .queryParam("q", "dc.title:"+filters.getQuery()+"*")
+                        .queryParam("q", "dc.title:"+filters.getQueryEscaped()+"*")
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")
@@ -84,7 +84,7 @@ public class SearchApi {
 //                        .queryParam("group.sort score desc")
 //                        .queryParam("group.truncate true")
                         .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
-                        .queryParam("q", filters.getQuery().isEmpty() ? "*:*" : filters.getQuery())
+                        .queryParam("q", filters.getQuery().isEmpty() ? "*:*" : "dc.title:"+filters.getQueryEscaped()+"*")
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
@@ -115,7 +115,8 @@ public class SearchApi {
                                         (List<String>)d.get("dc.creator"),
                                         (String)d.get("dc.title"),
                                         (String)d.get("PID"),
-                                        (String)d.get("root_title")
+                                        (String)d.get("root_title"),
+                                        false
                                 )
                         ).collect(Collectors.toList())),
                 result.getFacet_counts().transformed());
