@@ -8,9 +8,11 @@ import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 
-import { CheckmarkIcon, CrossIcon } from 'assets';
+import { OperationToTextLabel } from 'modules/public/mainSearch/MainSearchInput';
 
-import { ModelsEnum } from 'api/models';
+import { CheckmarkIcon } from 'assets';
+
+import { ModelsEnum, NameTagCode, OperationCode } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
@@ -36,7 +38,7 @@ function removeParam(
 const ActiveFilters: React.FC = () => {
 	const { state } = useSearchContext();
 	const [sp, setSp] = useSearchParams();
-
+	const NT = state.searchQuery?.nameTagFilters;
 	const arrayFilters: Record<string, string[]> = {
 		keywords: state.searchQuery?.keywords ?? [],
 		models: state.searchQuery?.models ?? [],
@@ -45,7 +47,10 @@ const ActiveFilters: React.FC = () => {
 	};
 
 	// no filters?
-	if (!Object.keys(arrayFilters).some(k => arrayFilters[k].length > 0)) {
+	if (
+		!Object.keys(arrayFilters).some(k => arrayFilters[k].length > 0) &&
+		(NT?.length ?? 0) < 1
+	) {
 		return null;
 	}
 
@@ -110,6 +115,67 @@ const ActiveFilters: React.FC = () => {
 								</Flex>
 							</Flex>
 						))}
+					</Box>
+				))}
+				{(NT ?? []).map(nt => (
+					<Box key={nt.values + nt.type} fontSize="13px">
+						<Flex
+							py={1}
+							width={1}
+							justifyContent="space-between"
+							alignItems="center"
+							onClick={() => {
+								removeParam(
+									sp,
+									'NT',
+									`${NameTagCode[nt.type]}${OperationCode[nt.operator]}${
+										nt.values[0]
+									}`,
+									false,
+								);
+								setSp(sp);
+							}}
+							css={css`
+								cursor: pointer;
+								&:hover,
+								&:hover {
+									font-weight: bold;
+								}
+								,
+								&:hover .filter-cross-icon {
+									visibility: visible;
+								}
+								&:hover .filter-active-icon {
+									visibility: hidden;
+								}
+								.filter-cross-icon {
+									visibility: hidden;
+								}
+							`}
+						>
+							<Flex alignItems="center" position="relative">
+								<IconButton
+									className="filter-cross-icon"
+									mr={2}
+									position="absolute"
+									left={0}
+									top={0}
+								>
+									<MdClose size={13} />
+								</IconButton>
+								<IconButton
+									className="filter-active-icon"
+									mr={2}
+									position="absolute"
+									left={0}
+								>
+									<CheckmarkIcon size={13} color="primary" />
+								</IconButton>
+								<Text ml={3} my={0} py={0}>
+									{nt.type} {OperationToTextLabel[nt.operator]} {nt.values[0]}
+								</Text>
+							</Flex>
+						</Flex>
 					</Box>
 				))}
 			</Box>
