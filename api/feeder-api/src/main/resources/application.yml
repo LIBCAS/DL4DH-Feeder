@@ -42,7 +42,9 @@ system:
   kramerius-plus:
     api: https://plus.nkp.cz/api
 
-
+info:
+  app:
+    version: '@project.version@'
 
 solr:
   host:
