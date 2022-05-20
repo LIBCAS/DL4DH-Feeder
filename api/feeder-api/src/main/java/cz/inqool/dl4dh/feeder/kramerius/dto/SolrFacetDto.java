@@ -31,7 +31,14 @@ public class SolrFacetDto {
                 .collect(Collectors.toMap(e -> keyTransform(e.getKey()), e -> {
                     Map<String, Integer> map = new HashMap<>();
                     for (int i = 0; i < e.getValue().size(); i+=2) {
-                        map.put((String)e.getValue().get(i), (Integer)e.getValue().get(i+1));
+                        String key = (String)e.getValue().get(i);
+                        //For models return only base types
+                        if (keyTransform(e.getKey()).equals("models")) {
+                            if (key.contains("/") || key.contains("volume") || key.contains("unit")) {
+                                continue;
+                            }
+                        }
+                        map.put(key, (Integer)e.getValue().get(i+1));
                     }
                     return map;
                 }));
