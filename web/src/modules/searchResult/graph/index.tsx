@@ -13,6 +13,7 @@ import {
 import { groupBy } from 'lodash-es';
 import { MdZoomIn, MdZoomOut } from 'react-icons/md';
 
+import Text from 'components/styled/Text';
 import { Box, Flex } from 'components/styled';
 import TitleText from 'components/styled/TitleText';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -21,14 +22,14 @@ import IconButton from 'components/styled/IconButton';
 import { useTheme } from 'theme';
 import { MakeTuple } from 'utils';
 
-import { AvailableFilters, TPublication } from 'api/models';
+import { AvailableFilters } from 'api/models';
 
 type Props = {
 	data: AvailableFilters;
 };
 
 const XAxisOptTuple = MakeTuple('authors', 'keywords', 'models', 'languages');
-type XAxisOpts = typeof XAxisOptTuple[number];
+// type XAxisOpts = typeof XAxisOptTuple[number];
 
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
@@ -79,25 +80,32 @@ const GraphView: FC<Props> = ({ data }) => {
 				<TitleText textAlign="left" ml={1}>
 					Záznamy v grafickej podobe
 				</TitleText>
-				<Flex>
+				<Flex alignItems="center">
+					<Text mr={2}>Os X</Text>
 					<SimpleSelect
-						label="Os X"
+						label=""
 						options={XAxisOptTuple}
 						onChange={item => setAxisX(item)}
 						value={axisX}
-						minWidth={200}
+						minWidth={150}
+						width={150}
 						variant="outlined"
-						labelMinWidth={50}
+						menuItemCss={css`
+							width: 150px;
+						`}
 					/>
+					<Text mr={2} ml={3}>
+						Seřadit dle
+					</Text>
 					<SimpleSelect
-						ml={3}
-						label="Seřadit dle"
 						options={[1, 2, 3]}
 						onChange={() => null}
 						value={2}
-						minWidth={250}
+						width={100}
 						variant="outlined"
-						labelMinWidth={100}
+						menuItemCss={css`
+							width: 100px;
+						`}
 					/>
 					<Flex
 						ml={3}
