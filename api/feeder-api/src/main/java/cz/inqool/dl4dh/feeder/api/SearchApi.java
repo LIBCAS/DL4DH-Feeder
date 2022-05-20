@@ -1,6 +1,7 @@
 package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
+import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
@@ -35,7 +36,11 @@ public class SearchApi {
     }
 
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> hint(@RequestBody FiltersDto filters, @RequestParam(required = false) NameTagEntityType nameTagType) throws SolrServerException, IOException {
+    public List<String> hint(@RequestParam String q, @RequestParam(required = false) NameTagEntityType nameTagType) throws SolrServerException, IOException {
+        FiltersDto filters = new FiltersDto();
+        filters.setQuery(q);
+        filters.setPageSize(20);
+
         if (nameTagType != null) {
             SolrQuery query = new SolrQuery();
             query.setFacet(true)
@@ -55,7 +60,7 @@ public class SearchApi {
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("defType", "edismax")
                         .queryParam("fl", "PID,dc.title")
-                        .queryParam("q", "dc.title:"+filters.getQueryEscaped()+"*")
+                        .queryParam("q", "dc.title:"+q.replaceAll(":","\\\\:")+"*")
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")
