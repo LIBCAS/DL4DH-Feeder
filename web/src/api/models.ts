@@ -58,6 +58,7 @@ export type SearchDto = {
 };
 export type FiltersDto = {
 	query: string;
+	queryEscaped: string;
 	availability: AvailabilityEnum;
 	models: ModelsEnum[];
 	keywords: string[];
@@ -68,6 +69,20 @@ export type FiltersDto = {
 	nameTagFilters: NameTagFilterDto[];
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
+
+export type InfoDto = {
+	version: string;
+	kramerius: {
+		version: string;
+		name: string;
+		nameEn: string;
+		logo: string;
+	};
+	krameriusPlus: {
+		version: string;
+		time: string;
+	};
+};
 
 export type AvailabilityEnum = 'PUBLIC' | 'PRIVATE' | 'ALL';
 export type ModelsEnum =

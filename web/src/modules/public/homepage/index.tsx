@@ -16,12 +16,17 @@ import TextInput from 'components/form/input/TextInput';
 import Text from 'components/styled/Text';
 import Checkbox from 'components/form/checkbox/Checkbox';
 
+import { useInfoApi } from 'api/infoApi';
+
 const Homepage: FC = () => {
 	const [toSearch, setToSearch] = useState('');
 	const [publicOnly, setPublicOnly] = useState<boolean>(false);
 	const query = `${toSearch ? `query=${toSearch}` : ''}${
 		publicOnly ? `${toSearch ? '&' : ''}availability=PUBLIC` : ''
 	}`;
+	const info = useInfoApi();
+	const libName = info.data?.kramerius.name ?? '';
+	const logo = info.data?.kramerius.logo ?? undefined;
 	return (
 		<ResponsiveWrapper bg="white" px={1} mx={0}>
 			<Flex
@@ -37,11 +42,11 @@ const Homepage: FC = () => {
 					alignItems="center"
 					justifyContent="center"
 				>
-					<MdImage size={50} />
+					{logo ? <img src={logo} height={80} /> : <MdImage size={80} />}
 
 					<Flex mt={3} mb={4} flexDirection="column" alignItems="center">
 						<Text fontSize="xl" fontWeight="bold">
-							Studijní a vědecká knihovna Plzeňského kraje
+							{libName}
 						</Text>
 						<Flex my={2} width={1} maxWidth={200} height={1} bg="border"></Flex>
 

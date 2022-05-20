@@ -1,4 +1,4 @@
-import { ModelsEnum } from 'api/models';
+import { ModelsEnum, TagNameEnum } from 'api/models';
 
 import { isIntern } from './FEVersion';
 
@@ -48,4 +48,31 @@ export const modelToText = (model: ModelsEnum) => {
 	return parsed
 		.map(p => ModelsTexts[p.toUpperCase() as ModelsEnum] ?? p)
 		.join('/');
+};
+export const availabilityToText = (value: string) => {
+	switch (value) {
+		case 'PUBLIC':
+			return 'Pouze veřejné';
+		case 'PRIVATE':
+			return 'Pouze neveřejné';
+		case 'ALL':
+			return 'Všechny';
+		default:
+			return 'Neznáma hodnota';
+	}
+};
+
+export const NameTagToText: Record<TagNameEnum, string> = {
+	NUMBERS_IN_ADDRESSES: 'Čísla v adresách',
+	GEOGRAPHICAL_NAMES: 'Zeměpisné názvy',
+	INSTITUTIONS: 'Instituce',
+	MEDIA_NAMES: 'Názvy médií',
+	NUMBER_EXPRESSIONS: 'Kvantitativní výrazy',
+	ARTIFACT_NAMES: 'Názvy artefaktů',
+	PERSONAL_NAMES: 'Osobní jména',
+	TIME_EXPRESSIONS: 'Vyjádření času',
+	COMPLEX_PERSON_NAMES: 'Komplexní osobní jména',
+	COMPLEX_TIME_EXPRESSION: 'Komplexní vyjádření času',
+	COMPLEX_ADDRESS_EXPRESSION: 'Komplexní vyjádření adresy',
+	COMPLEX_BIBLIO_EXPRESSION: 'COMPLEX_BIBLIO_EXPRESSION',
 };

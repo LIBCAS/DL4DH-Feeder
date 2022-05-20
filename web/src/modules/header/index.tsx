@@ -14,6 +14,8 @@ import MainSearchInput from 'modules/public/mainSearch/MainSearchInput';
 
 import { theme } from 'theme';
 
+import { useInfoApi } from 'api/infoApi';
+
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 const collapseWidth = theme.breakpointsInt[3];
 
@@ -28,6 +30,8 @@ const Header = () => {
 		() => viewportWidth < collapseWidth,
 		[viewportWidth],
 	);
+	const info = useInfoApi();
+	const libName = info.data?.kramerius.name ?? '';
 
 	return (
 		<ResponsiveWrapper
@@ -54,11 +58,11 @@ const Header = () => {
 					// overflow="hidden"
 				>
 					<Flex flexShrink={0} width={300} color="headerColor">
-						<NavLinkButton to="/" variant="text" pr={5} color="headerColor">
+						<NavLinkButton to="/" variant="text" pr={3} color="headerColor">
 							<ArrowBackIcon />
 							<Flex flexDirection="column" ml={2} justifyContent="center">
 								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
-									Studijní a vědecká knihovna Plzeňského kraje
+									{libName}
 								</Text>
 								<Text m={0} textAlign="left" fontSize="11px">
 									DL4DH Feeder
@@ -93,11 +97,18 @@ const Header = () => {
 				</Flex>
 			) : (
 				<Flex alignSelf="flex-end">
-					{' '}
-					<Button variant="text">Sbírky</Button>
-					<Button variant="text">Procházet</Button>
-					<Button variant="text">Informace</Button>
-					<Button variant="text">English</Button>
+					<Button color="headerColor" variant="text">
+						Sbírky
+					</Button>
+					<Button color="headerColor" variant="text">
+						Procházet
+					</Button>
+					<Button color="headerColor" variant="text">
+						Informace
+					</Button>
+					<Button color="headerColor" variant="text">
+						English
+					</Button>
 				</Flex>
 			)}
 		</ResponsiveWrapper>

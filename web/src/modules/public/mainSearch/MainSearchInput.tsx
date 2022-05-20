@@ -4,7 +4,7 @@ import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { parse } from 'query-string';
-import { debounce, indexOf, isEqual, omit } from 'lodash-es';
+import { debounce, isEqual, omit } from 'lodash-es';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -14,7 +14,6 @@ import Button from 'components/styled/Button';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
-import { MakeTuple } from 'utils';
 
 import {
 	FiltersDto,
@@ -32,6 +31,8 @@ import {
 	TSearchQuery,
 	useSearchContext,
 } from 'hooks/useSearchContext';
+
+import { NameTagToText } from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',
@@ -97,7 +98,6 @@ const sanitizeSearchQuery = (q: TRawSearchQuery) => {
 	return sanitized;
 };
 
-//http://localhost:3000/search?nameTagFilters=%5B%7B%22type%22%3A%22INSTITUTIONS%22%2C%22operator%22%3A%22EQUAL%22%2C%22values%22%3A%5B%22pentagon%22%5D%7D%5D&nameTagFilters=%5B%7B%22type%22%3A%22ARTIFACT_NAMES%22%2C%22operator%22%3A%22NOT_EQUAL%22%2C%22values%22%3A%5B%22nieco%22%5D%7D%5D
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
@@ -161,21 +161,13 @@ const MainSearchInput = () => {
 
 	const getHint = useCallback(
 		async (q: string) => {
-			const json: Partial<FiltersDto> = {
-				nameTagFilters:
-					selectedTagName && selectedTagOp
-						? [
-								{
-									type: selectedTagName,
-									operator: selectedTagOp,
-									values: [q],
-								},
-						  ]
-						: [],
-				//	query: q,
-			};
+			const nameTagMode = selectedTagName && selectedTagOp;
 			const hints = await api()
-				.post('search/hint', { json })
+				.post(
+					`search/hint?${
+						nameTagMode ? `nameTagType=${selectedTagName}&` : ''
+					}q=${q}`,
+				)
 				.json<string[]>()
 				.catch(r => console.log(r));
 			if (hints) {
@@ -251,7 +243,7 @@ const MainSearchInput = () => {
 											: null; */
 									}}
 									keyFromOption={item => (item ? item : '')}
-									nameFromOption={item => (item ? item : '')}
+									nameFromOption={item => (item ? NameTagToText[item] : '')}
 									placeholder=""
 									arrowHidden
 									wrapperCss={css`
@@ -264,6 +256,10 @@ const MainSearchInput = () => {
 										&:hover {
 											border: 1px solid ${theme.colors.border};
 										}
+									`}
+									menuItemCss={css`
+										padding-left: 16px;
+										padding-right: 16px;
 									`}
 								/>
 							</ClickAway>
@@ -286,6 +282,7 @@ const MainSearchInput = () => {
 											item ? OperationToTextLabel[item] : ''
 										}
 										wrapperCss={css`
+											font-size: ${theme.fontSizes.xl}px;
 											border: none;
 											background: ${theme.colors.primaryLight};
 											justify-content: center;
@@ -298,6 +295,7 @@ const MainSearchInput = () => {
 										menuItemCss={css`
 											padding-left: 16px;
 											padding-right: 16px;
+											font-size: 20px !important;
 										`}
 									/>
 								</ClickAway>
@@ -331,7 +329,7 @@ const MainSearchInput = () => {
 							<Flex
 								position="absolute"
 								// left={200 + menuOffset}
-								left={0}
+								left={50}
 								top={50}
 								bg="white"
 								color="text"
@@ -343,7 +341,7 @@ const MainSearchInput = () => {
 								<Flex
 									position="relative"
 									flexDirection="column"
-									overflowY="scroll"
+									overflowY="auto"
 									maxHeight="80vh"
 								>
 									{hints.map((h, index) => (
