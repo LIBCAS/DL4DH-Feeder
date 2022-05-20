@@ -73,7 +73,7 @@ const StatList: FC<{
 					<Text> {item.value}</Text>
 				</Flex>
 			))}
-			{!exp ? (
+			{maxRows && items.length > maxRows && !exp ? (
 				<Button
 					p={0}
 					mt={2}
@@ -97,7 +97,7 @@ const StatList: FC<{
 				</Button>
 			) : (
 				<>
-					{maxRows && (
+					{maxRows && items.length > maxRows && (
 						<Button
 							p={0}
 							mt={2}
@@ -243,45 +243,55 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 	return (
 		<Box px={0} width={1}>
 			<ActiveFilters />
-			<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
-				<StatList
-					items={avalItems}
-					onClick={handleChangeFilter('availability')}
-				/>
-			</MyAccordion>
-			<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
-				<StatList items={modelItems} onClick={handleUpdateFilter('models')} />
-			</MyAccordion>
-			<MyAccordion label="Klíčové slovo" isExpanded isLoading={isLoading}>
-				{onRefresh => (
+			{avalItems.length > 0 && (
+				<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
 					<StatList
-						items={keywordsItems}
-						maxRows={3}
-						refresh={onRefresh}
-						onClick={handleUpdateFilter('keywords')}
+						items={avalItems}
+						onClick={handleChangeFilter('availability')}
 					/>
-				)}
-			</MyAccordion>
-			<MyAccordion label="Autor" isExpanded isLoading={isLoading}>
-				{onRefresh => (
-					<StatList
-						items={authorsItems}
-						maxRows={3}
-						refresh={onRefresh}
-						onClick={handleUpdateFilter('authors')}
-					/>
-				)}
-			</MyAccordion>
-			<MyAccordion label="Jazyk" isExpanded isLoading={isLoading}>
-				{onRefresh => (
-					<StatList
-						items={languagesItems}
-						maxRows={3}
-						refresh={onRefresh}
-						onClick={handleUpdateFilter('languages')}
-					/>
-				)}
-			</MyAccordion>
+				</MyAccordion>
+			)}
+			{modelItems.length > 0 && (
+				<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
+					<StatList items={modelItems} onClick={handleUpdateFilter('models')} />
+				</MyAccordion>
+			)}
+			{keywordsItems.length > 0 && (
+				<MyAccordion label="Klíčové slovo" isExpanded isLoading={isLoading}>
+					{onRefresh => (
+						<StatList
+							items={keywordsItems}
+							maxRows={3}
+							refresh={onRefresh}
+							onClick={handleUpdateFilter('keywords')}
+						/>
+					)}
+				</MyAccordion>
+			)}
+			{authorsItems.length > 0 && (
+				<MyAccordion label="Autor" isExpanded isLoading={isLoading}>
+					{onRefresh => (
+						<StatList
+							items={authorsItems}
+							maxRows={3}
+							refresh={onRefresh}
+							onClick={handleUpdateFilter('authors')}
+						/>
+					)}
+				</MyAccordion>
+			)}
+			{languagesItems.length > 0 && (
+				<MyAccordion label="Jazyk" isExpanded isLoading={isLoading}>
+					{onRefresh => (
+						<StatList
+							items={languagesItems}
+							maxRows={3}
+							refresh={onRefresh}
+							onClick={handleUpdateFilter('languages')}
+						/>
+					)}
+				</MyAccordion>
+			)}
 		</Box>
 	);
 };
