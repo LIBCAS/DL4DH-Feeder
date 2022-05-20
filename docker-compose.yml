@@ -30,6 +30,8 @@ services:
       resources:
         limits:
           memory: 500m
+    volumes:
+      - solr_data:/var/solr
     labels:
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
