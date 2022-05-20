@@ -101,7 +101,6 @@ const sanitizeSearchQuery = (q: TRawSearchQuery) => {
 const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
-	const push = useNavigate();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
 	});
@@ -118,9 +117,9 @@ const MainSearchInput = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const [hints, setHints] = useState<string[]>([]);
-	useEffect(() => {
+	/* useEffect(() => {
 		setLocalState(state.searchQuery?.query ?? '');
-	}, [state.searchQuery]);
+	}, [state.searchQuery]); */
 
 	const handleUpdateContext = (newState?: string) => {
 		if (selectedTagName) {
@@ -305,7 +304,6 @@ const MainSearchInput = () => {
 										setLocalState('');
 										setSelectedTagName(null);
 										setSelectedTagOp(null);
-										push(`/search`);
 									}}
 									css={css`
 										cursor: pointer;
