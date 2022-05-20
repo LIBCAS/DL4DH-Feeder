@@ -67,6 +67,8 @@ const TileView: FC<Props> = ({ data }) => {
 								css={css`
 									border: 1px solid ${theme.colors.border};
 									background-image: url(${`api/item/${d.pid}/thumb`});
+									background-repeat: no-repeat;
+									background-size: cover;
 								`}
 							>
 								{/* <MdImage size={30} /> */}

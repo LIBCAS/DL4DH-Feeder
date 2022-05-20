@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 
 import { Flex, Box } from 'components/styled';
@@ -11,12 +11,13 @@ import Divider from 'components/styled/Divider';
 import { OperationToTextLabel } from 'modules/public/mainSearch/MainSearchInput';
 
 import { CheckmarkIcon } from 'assets';
+import { useTheme } from 'theme';
 
 import { ModelsEnum, NameTagCode, OperationCode } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
-import { modelToText } from 'utils/enumsMap';
+import { availabilityToText, modelToText, NameTagToText } from 'utils/enumsMap';
 
 // const keyToText: Record<string, string> = {
 // 	keywords: 'Klíčové slovo',
@@ -35,15 +36,35 @@ function removeParam(
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
 }
 
+const enumToText = (type: string, value: string) => {
+	switch (type) {
+		case 'models':
+			return modelToText(value as ModelsEnum);
+		case 'availability':
+			return availabilityToText(value);
+		case 'query':
+			return `Řetězec: "${value}"`;
+
+		default:
+			return value;
+	}
+};
+
 const ActiveFilters: React.FC = () => {
+	const theme = useTheme();
 	const { state } = useSearchContext();
 	const [sp, setSp] = useSearchParams();
+	const nav = useNavigate();
 	const NT = state.searchQuery?.nameTagFilters;
 	const arrayFilters: Record<string, string[]> = {
 		keywords: state.searchQuery?.keywords ?? [],
 		models: state.searchQuery?.models ?? [],
 		authors: state.searchQuery?.authors ?? [],
 		languages: state.searchQuery?.languages ?? [],
+		availability: state.searchQuery?.availability
+			? [state.searchQuery.availability]
+			: [],
+		query: state.searchQuery?.query ? [state.searchQuery?.query] : [],
 	};
 
 	// no filters?
@@ -59,7 +80,31 @@ const ActiveFilters: React.FC = () => {
 	return (
 		<Box px={2}>
 			<Box my={3}>
-				<Text fontWeight="bold">Aktivní filtry</Text>
+				<Flex justifyContent="space-between" alignItems="center" mb={2}>
+					<Text color="warning" fontWeight="bold" my={0}>
+						Aktivní filtry
+					</Text>
+					<IconButton
+						width={22}
+						height={22}
+						color="white"
+						css={css`
+							border: 1px solid ${theme.colors.primaryLight};
+							background-color: ${theme.colors.warning};
+							border-radius: 22px;
+							box-sizing: border-box;
+							&:hover {
+								border: 1px solid ${theme.colors.primary};
+								background-color: ${theme.colors.primary};
+							}
+						`}
+						onClick={() => nav('/search')}
+					>
+						<Flex alignItems="center" justifyContent="center">
+							<MdClose size={20} />
+						</Flex>
+					</IconButton>
+				</Flex>
 				{keys.map((k, i) => (
 					<Box key={k + i} fontSize="13px">
 						{arrayFilters[k].map(val => (
@@ -70,6 +115,8 @@ const ActiveFilters: React.FC = () => {
 								justifyContent="space-between"
 								alignItems="center"
 								onClick={() => {
+									console.log(k);
+									console.log(val);
 									removeParam(sp, k, val, k === 'models');
 									setSp(sp);
 								}}
@@ -78,10 +125,12 @@ const ActiveFilters: React.FC = () => {
 									&:hover,
 									&:hover {
 										font-weight: bold;
+										color: ${theme.colors.warning};
 									}
 									,
 									&:hover .filter-cross-icon {
 										visibility: visible;
+										color: ${theme.colors.warning};
 									}
 									&:hover .filter-active-icon {
 										visibility: hidden;
@@ -99,7 +148,7 @@ const ActiveFilters: React.FC = () => {
 										left={0}
 										top={0}
 									>
-										<MdClose size={13} />
+										<MdClose size={15} />
 									</IconButton>
 									<IconButton
 										className="filter-active-icon"
@@ -110,7 +159,7 @@ const ActiveFilters: React.FC = () => {
 										<CheckmarkIcon size={13} color="primary" />
 									</IconButton>
 									<Text ml={3} my={0} py={0}>
-										{k === 'models' ? modelToText(val as ModelsEnum) : val}
+										{enumToText(k, val)}
 									</Text>
 								</Flex>
 							</Flex>
@@ -140,10 +189,12 @@ const ActiveFilters: React.FC = () => {
 								&:hover,
 								&:hover {
 									font-weight: bold;
+									color: ${theme.colors.warning};
 								}
 								,
 								&:hover .filter-cross-icon {
 									visibility: visible;
+									color: ${theme.colors.warning};
 								}
 								&:hover .filter-active-icon {
 									visibility: hidden;
@@ -161,7 +212,7 @@ const ActiveFilters: React.FC = () => {
 									left={0}
 									top={0}
 								>
-									<MdClose size={13} />
+									<MdClose size={15} />
 								</IconButton>
 								<IconButton
 									className="filter-active-icon"
@@ -172,7 +223,8 @@ const ActiveFilters: React.FC = () => {
 									<CheckmarkIcon size={13} color="primary" />
 								</IconButton>
 								<Text ml={3} my={0} py={0}>
-									{nt.type} {OperationToTextLabel[nt.operator]} {nt.values[0]}
+									{NameTagToText[nt.type]} {OperationToTextLabel[nt.operator]}{' '}
+									{nt.values[0]}
 								</Text>
 							</Flex>
 						</Flex>

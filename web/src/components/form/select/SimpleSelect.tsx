@@ -89,6 +89,7 @@ const SimpleSelect = <T extends unknown>({
 			<Box position="relative" bg="white" width={1}>
 				{options.map((o, i) => (
 					<Box
+						fontSize="sm"
 						key={i}
 						css={css`
 							&:hover {
@@ -112,7 +113,6 @@ const SimpleSelect = <T extends unknown>({
 								`}
 							>
 								<Text
-									fontSize="sm"
 									fontWeight={
 										keyFromOption(o) === keyFromOption(value)
 											? 'bold'
@@ -143,6 +143,7 @@ const SimpleSelect = <T extends unknown>({
 				height={height}
 				alignItems="center"
 				justifyContent="space-between"
+				fontSize="sm"
 				css={css`
 					cursor: pointer;
 					box-sizing: border-box;
@@ -166,9 +167,9 @@ const SimpleSelect = <T extends unknown>({
 				onClick={() => setShowMenu(p => !p)}
 			>
 				{value ? (
-					<Text fontSize="sm">{nameFromOption(value)}</Text>
+					<Text>{nameFromOption(value)}</Text>
 				) : (
-					<Text fontSize="sm">{placeholder}</Text>
+					<Text>{placeholder}</Text>
 				)}
 				{!arrowHidden && <MdArrowDropDown size={22} />}
 			</Flex>
