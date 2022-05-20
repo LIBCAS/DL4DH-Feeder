@@ -74,7 +74,6 @@ services:
     ports:
       - "8983:8983"
     labels:
-      kompose.volume.size: "2Gi"
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
 networks:
