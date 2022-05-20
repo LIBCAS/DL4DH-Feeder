@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { parse } from 'query-string';
 import { debounce, isEqual, omit } from 'lodash-es';
+import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -16,7 +17,6 @@ import { useTheme } from 'theme';
 import { api } from 'api';
 
 import {
-	FiltersDto,
 	ModelsEnum,
 	NameTagCode,
 	NameTagFilterDto,
@@ -102,6 +102,9 @@ const MainSearchInput = () => {
 	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
 	const push = useNavigate();
+	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
+		debounce: 100,
+	});
 	const [localState, setLocalState] = useState('');
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
@@ -170,6 +173,7 @@ const MainSearchInput = () => {
 				)
 				.json<string[]>()
 				.catch(r => console.log(r));
+
 			if (hints) {
 				setHints(hints);
 			}
@@ -188,6 +192,7 @@ const MainSearchInput = () => {
 				position="relative"
 				overflow="visible"
 				zIndex={1}
+				ref={wrapperRef}
 			>
 				<TextInput
 					placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
@@ -231,16 +236,6 @@ const MainSearchInput = () => {
 										if (field) {
 											setSelectedTagName(field);
 										}
-										/* field
-											? dispatch?.({
-													type: 'changeNameTagFilter',
-													nameTagFilter: {
-														type: field,
-														operator: 'EQUAL',
-														values: ['ahoj'],
-													},
-											  })
-											: null; */
 									}}
 									keyFromOption={item => (item ? item : '')}
 									nameFromOption={item => (item ? NameTagToText[item] : '')}
@@ -328,8 +323,7 @@ const MainSearchInput = () => {
 						<ClickAway onClickAway={() => setHints([])}>
 							<Flex
 								position="absolute"
-								// left={200 + menuOffset}
-								left={50}
+								left={0}
 								top={50}
 								bg="white"
 								color="text"
@@ -343,6 +337,7 @@ const MainSearchInput = () => {
 									flexDirection="column"
 									overflowY="auto"
 									maxHeight="80vh"
+									width={wrapperWidth - 16}
 								>
 									{hints.map((h, index) => (
 										<Flex
