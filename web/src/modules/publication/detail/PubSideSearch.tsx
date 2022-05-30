@@ -3,28 +3,40 @@ import { css } from '@emotion/react';
 import { FC, useState } from 'react';
 import { MdClear, MdSearch } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
+import { useParams } from 'react-router-dom';
 
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import TextInput from 'components/form/input/TextInput';
 
+import { Loader } from 'modules/loader';
+
 import { useTheme } from 'theme';
 
+import { usePublicationChildren } from 'api/publicationsApi';
+
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
+/** TODO: PUBLICATION THUMBNAILS AND SEARCHING WITHIN */
 
 type Props = {
 	nic?: boolean;
 	marginTop: number;
 };
 
-const testPubs = Array.from(Array(100).keys());
-
 const PubSideSearch: FC<Props> = ({ marginTop }) => {
+	const { id } = useParams<{ id: string }>();
 	const [toSearch, setToSearch] = useState('');
 	const [selected, setSelected] = useState(1);
 	const [ref, { height: resultsMargin }] = useMeasure();
 	const theme = useTheme();
+
+	const response = usePublicationChildren(id ?? '');
+	if (response.isLoading) {
+		return <Loader />;
+	}
+	const pubChildren = response.data ?? [];
 
 	return (
 		<Box width={1}>
@@ -77,25 +89,26 @@ const PubSideSearch: FC<Props> = ({ marginTop }) => {
 				}px)`}
 				overflowY="auto"
 			>
-				{testPubs.map(p => (
+				{(pubChildren ?? []).map((p, index) => (
 					<Box
-						key={p}
+						key={p.pid}
 						width={80}
 						height={120}
 						bg="darkerGrey"
 						m={1}
 						position="relative"
 						css={css`
-							border: ${selected === p ? 5 : 1}px solid ${theme.colors.primary};
+							border: ${selected === index ? 5 : 1}px solid
+								${theme.colors.primary};
 							box-sizing: border-box;
 							cursor: pointer;
-							background-image: url('pubtest.jpg');
+							background-image: url(/api/item/${p.pid}/thumb);
 							background-size: contain;
 							&:hover {
 								box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
 							}
 						`}
-						onClick={() => setSelected(p)}
+						onClick={() => setSelected(index)}
 					>
 						<Box
 							position="absolute"
@@ -107,7 +120,7 @@ const PubSideSearch: FC<Props> = ({ marginTop }) => {
 							p={1}
 						>
 							<Text my={0} fontSize="sm">
-								{p}
+								{p.title}
 							</Text>
 						</Box>
 					</Box>

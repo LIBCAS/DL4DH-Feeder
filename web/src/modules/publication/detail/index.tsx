@@ -14,6 +14,7 @@ import {
 	MdZoomIn,
 	MdZoomOut,
 } from 'react-icons/md';
+import { useParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
@@ -23,9 +24,12 @@ import Button from 'components/styled/Button';
 
 // 	https://github.com/gerhardsletten/react-pinch-zoom-pan?ref=morioh.com&utm_source=morioh.com
 
+import { getPublicationDetail } from 'api/publicationsApi';
+
 import PublicationSidePanel from './PublicationSidePanel';
 
 const PublicationDetail = () => {
+	const { id } = useParams<{ id: string }>();
 	// const theme = useTheme();
 	const [rotation, setRotation] = useState(0);
 	const pinchRef = useRef<ReactZoomPanPinchRef>(null);
@@ -34,6 +38,9 @@ const PublicationDetail = () => {
 	});
 
 	const staticWidth = useMemo(() => viewportWidth, [viewportWidth]);
+
+	//	const smt = getPublicationDetail(id ?? '');
+	//console.log(smt);
 
 	return (
 		<ResponsiveWrapper

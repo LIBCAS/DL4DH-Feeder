@@ -70,6 +70,13 @@ export type FiltersDto = {
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
 
+export type PublicationChild = {
+	datanode: boolean;
+	pid: string;
+	policy: string;
+	title: string;
+};
+
 export type InfoDto = {
 	version: string;
 	kramerius: {
