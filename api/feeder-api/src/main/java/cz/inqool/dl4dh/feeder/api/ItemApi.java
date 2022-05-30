@@ -23,6 +23,17 @@ public class ItemApi {
 
     private WebClient kramerius;
 
+    @Resource(name = "krameriusWebClient")
+    public void setWebClient(WebClient webClient) {
+        this.kramerius = webClient;
+    }
+
+    @GetMapping("/{uuid}")
+    public @ResponseBody Object item(@PathVariable(value="uuid") String uuid) {
+        return kramerius.get()
+                .uri("/item/"+uuid).retrieve().bodyToMono(Object.class).block();
+    }
+
     @GetMapping(
             value = "/{uuid}/thumb",
             produces = MediaType.IMAGE_JPEG_VALUE
@@ -32,8 +43,9 @@ public class ItemApi {
                 .uri("/item/"+uuid+"/thumb").retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
     }
 
-    @Resource(name = "krameriusWebClient")
-    public void setWebClient(WebClient webClient) {
-        this.kramerius = webClient;
+    @GetMapping("/{uuid}/children")
+    public @ResponseBody Object children(@PathVariable(value="uuid") String uuid) {
+        return kramerius.get()
+                .uri("/item/"+uuid+"/children").retrieve().bodyToMono(Object.class).block();
     }
 }
