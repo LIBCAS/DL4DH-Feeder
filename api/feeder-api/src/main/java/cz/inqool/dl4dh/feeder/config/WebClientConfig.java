@@ -49,6 +49,11 @@ public class WebClientConfig {
         return getWebClient(krameriusApi);
     }
 
+    @Bean(name = "krameriusZoomifyWebClient")
+    public WebClient webClientKrameriusZoomify(@Value("${system.kramerius-zoomify.api}") String krameriusZoomifyApi) throws SSLException {
+        return getWebClient(krameriusZoomifyApi);
+    }
+
     @Bean(name = "krameriusPlusWebClient")
     public WebClient webClientKrameriusPlus(@Value("${system.kramerius-plus.api}") String krameriusPlusApi) throws SSLException {
         return getWebClient(krameriusPlusApi);

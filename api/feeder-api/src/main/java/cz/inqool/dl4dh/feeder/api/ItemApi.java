@@ -9,6 +9,7 @@ import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -38,14 +39,26 @@ public class ItemApi {
             value = "/{uuid}/thumb",
             produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public @ResponseBody byte[] thumb(@PathVariable(value="uuid") String uuid) {
+    public @ResponseBody ByteArrayResource thumb(@PathVariable(value="uuid") String uuid) {
         return kramerius.get()
-                .uri("/item/"+uuid+"/thumb").retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
+                .uri("/item/"+uuid+"/thumb").retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 
     @GetMapping("/{uuid}/children")
     public @ResponseBody Object children(@PathVariable(value="uuid") String uuid) {
         return kramerius.get()
                 .uri("/item/"+uuid+"/children").retrieve().bodyToMono(Object.class).block();
+    }
+
+    @GetMapping("/{uuid}/streams")
+    public @ResponseBody Object streams(@PathVariable(value="uuid") String uuid) {
+        return kramerius.get()
+                .uri("/item/"+uuid+"/streams").retrieve().bodyToMono(Object.class).block();
+    }
+
+    @GetMapping("/{uuid}/streams/{stream}")
+    public @ResponseBody ResponseEntity<ByteArrayResource> streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
+        return kramerius.get()
+                .uri("/item/"+uuid+"/streams/"+stream).retrieve().toEntity(ByteArrayResource.class).block();
     }
 }
