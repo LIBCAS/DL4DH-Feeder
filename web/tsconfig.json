@@ -20,6 +20,7 @@
     "jsx": "react-jsx",
     "noImplicitReturns": true,
     "pretty": true,
+    "noImplicitAny": false,
     "plugins": [
       {
         "name": "typescript-styled-plugin"
@@ -30,7 +31,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src", "decs.d.ts"
   ],
   "exclude": [
     "node_modules",

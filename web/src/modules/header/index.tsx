@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useMeasure from 'react-use-measure';
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -25,6 +25,7 @@ const Header = () => {
 	});
 
 	const { pathname } = useLocation();
+	const nav = useNavigate();
 
 	const isMobile = useMemo(
 		() => viewportWidth < collapseWidth,
@@ -58,7 +59,12 @@ const Header = () => {
 					// overflow="hidden"
 				>
 					<Flex flexShrink={0} width={300} color="headerColor">
-						<NavLinkButton to="/" variant="text" pr={3} color="headerColor">
+						<Button
+							onClick={() => nav(-1)}
+							variant="text"
+							pr={3}
+							color="headerColor"
+						>
 							<ArrowBackIcon />
 							<Flex flexDirection="column" ml={2} justifyContent="center">
 								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
@@ -68,7 +74,7 @@ const Header = () => {
 									DL4DH Feeder
 								</Text>
 							</Flex>
-						</NavLinkButton>
+						</Button>
 					</Flex>
 
 					<MainSearchInput />

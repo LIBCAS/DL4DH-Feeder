@@ -28,6 +28,11 @@ export type PublicationDto = {
 	rootTitle: string;
 };
 
+export type PublicationDetail = {
+	policy: string;
+	model: string;
+};
+
 export type PublicationsListDto = {
 	numFound: number;
 	start: number;

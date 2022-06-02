@@ -3,40 +3,35 @@ import { css } from '@emotion/react';
 import { FC, useState } from 'react';
 import { MdClear, MdSearch } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import TextInput from 'components/form/input/TextInput';
 
-import { Loader } from 'modules/loader';
-
 import { useTheme } from 'theme';
 
-import { usePublicationChildren } from 'api/publicationsApi';
+import { PublicationChild } from 'api/models';
+import { useThumbnails } from 'api/publicationsApi';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 /** TODO: PUBLICATION THUMBNAILS AND SEARCHING WITHIN */
 
 type Props = {
-	nic?: boolean;
 	marginTop: number;
+	pages: PublicationChild[];
 };
 
-const PubSideSearch: FC<Props> = ({ marginTop }) => {
+const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 	const { id } = useParams<{ id: string }>();
 	const [toSearch, setToSearch] = useState('');
-	const [selected, setSelected] = useState(1);
+	const [selected, setSelected] = useState(0);
 	const [ref, { height: resultsMargin }] = useMeasure();
 	const theme = useTheme();
-
-	const response = usePublicationChildren(id ?? '');
-	if (response.isLoading) {
-		return <Loader />;
-	}
-	const pubChildren = response.data ?? [];
+	const [page, setPage] = useSearchParams();
+	const thumbnails = useThumbnails(pages.slice(0, 30));
 
 	return (
 		<Box width={1}>
@@ -89,7 +84,7 @@ const PubSideSearch: FC<Props> = ({ marginTop }) => {
 				}px)`}
 				overflowY="auto"
 			>
-				{(pubChildren ?? []).map((p, index) => (
+				{(pages ?? []).map((p, index) => (
 					<Box
 						key={p.pid}
 						width={80}
@@ -102,13 +97,18 @@ const PubSideSearch: FC<Props> = ({ marginTop }) => {
 								${theme.colors.primary};
 							box-sizing: border-box;
 							cursor: pointer;
-							background-image: url(/api/item/${p.pid}/thumb);
+							/* background-image: url(/api/item/${p.pid}/thumb); */
+							background-image: url(${thumbnails[index]});
 							background-size: contain;
 							&:hover {
 								box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
 							}
 						`}
-						onClick={() => setSelected(index)}
+						onClick={() => {
+							page.set('page', p.pid);
+							setPage(page);
+							setSelected(index);
+						}}
 					>
 						<Box
 							position="absolute"
@@ -130,4 +130,4 @@ const PubSideSearch: FC<Props> = ({ marginTop }) => {
 	);
 };
 
-export default PubSideSearch;
+export default PubThumbnails;
