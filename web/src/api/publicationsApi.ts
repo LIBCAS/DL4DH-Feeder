@@ -86,6 +86,7 @@ const getThumbnail = async (uuid: string) =>
 
 export const useThumbnails = (pages: PublicationChild[]) => {
 	const [thumbs, setThumbs] = useState<string[]>([]);
+
 	useEffect(() => {
 		//TODO: timeout, to prioritise iiif picture fetch, find better way
 		setTimeout(
@@ -105,6 +106,10 @@ export const useThumbnails = (pages: PublicationChild[]) => {
 	return thumbs;
 };
 
+export const useThumbnails2 = (pages: PublicationChild[]) => {
+	const thumbs = [];
+};
+
 export const useImageProperties = (uuid: string) =>
 	useQuery(
 		['imageProperties', uuid],
@@ -114,7 +119,7 @@ export const useImageProperties = (uuid: string) =>
 					headers: { accept: 'application/xml' },
 				})
 				.text(),
-		{ staleTime: 30000, refetchOnWindowFocus: false, refetchInterval: 30000 },
+		{ staleTime: 60000, refetchOnWindowFocus: false, refetchInterval: 5000 },
 	);
 /***************************THUMBNAILS***************************** */
 
@@ -122,8 +127,10 @@ export const useStreams = (uuid: string, stream: string) => {
 	const [data, setData] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-	const resp = useQuery(['stream', stream, uuid], () =>
-		api().get(`item/${uuid}/streams/${stream}`).text(),
+	const resp = useQuery(
+		['stream', stream, uuid],
+		() => api().get(`item/${uuid}/streams/${stream}`).text(),
+		{ retry: 1, refetchInterval: 5000 },
 	);
 	useEffect(() => {
 		if (!resp.isLoading) {

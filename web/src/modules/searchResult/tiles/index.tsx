@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC } from 'react';
-import { MdCalendarToday, MdImage, MdPerson } from 'react-icons/md';
+import { MdCalendarToday, MdImage, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
@@ -63,6 +63,7 @@ const TileView: FC<Props> = ({ data }) => {
 								justifyContent="center"
 								alignItems="center"
 								color="text"
+								position="relative"
 								p={1}
 								css={css`
 									border: 1px solid ${theme.colors.border};
@@ -71,7 +72,31 @@ const TileView: FC<Props> = ({ data }) => {
 									background-size: cover;
 								`}
 							>
-								{/* <MdImage size={30} /> */}
+								{d.availability !== 'public' && (
+									<Flex
+										position="absolute"
+										width="100%"
+										height="100%"
+										justifyContent="center"
+										alignItems="center"
+									>
+										<Flex
+											justifyContent="center"
+											alignItems="center"
+											position="relative"
+											width="80px"
+											height="80px"
+											opacity={0.7}
+											bg="white"
+											css={css`
+												border: 1px solid white;
+												border-radius: 100%;
+											`}
+										>
+											<MdLock size={50} />
+										</Flex>
+									</Flex>
+								)}
 							</Flex>
 							<Flex flexDirection="column" pl={2} width={1}>
 								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">
