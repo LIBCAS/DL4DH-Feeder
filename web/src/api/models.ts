@@ -26,6 +26,7 @@ export type PublicationDto = {
 	title: string;
 	pid: string;
 	rootTitle: string;
+	enriched: boolean;
 };
 
 export type PublicationDetail = {

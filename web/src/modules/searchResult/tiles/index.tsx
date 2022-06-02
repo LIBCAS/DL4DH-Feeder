@@ -47,7 +47,7 @@ const TileView: FC<Props> = ({ data }) => {
 					>
 						<Flex
 							height="100%"
-							bg="primaryLight"
+							bg={d.enriched ? 'enriched' : 'primaryLight'}
 							p={2}
 							css={css`
 								border: 1px solid ${theme.colors.border};
@@ -98,7 +98,12 @@ const TileView: FC<Props> = ({ data }) => {
 									</Flex>
 								)}
 							</Flex>
-							<Flex flexDirection="column" pl={2} width={1}>
+							<Flex
+								flexDirection="column"
+								pl={2}
+								width={1}
+								color={d.enriched ? 'black' : 'text'}
+							>
 								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">
 									{d.rootTitle}
 								</Cell>
@@ -143,7 +148,14 @@ const TileView: FC<Props> = ({ data }) => {
 								</Flex> */}
 								<Flex flexGrow={1} />
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
-									<Flex bg="primary" color="white" opacity="0.5">
+									{d.enriched && (
+										<Flex bg="error" color="white" opacity="0.8" mr={2}>
+											<Text py={1} my={0} px={3} fontSize="sm">
+												Obohacená
+											</Text>
+										</Flex>
+									)}
+									<Flex bg="primary" color="white" opacity="0.8">
 										<Text py={1} my={0} px={3} fontSize="sm">
 											{modelToText(d.model)}
 										</Text>

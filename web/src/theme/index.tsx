@@ -17,6 +17,7 @@ const nkpRoot = {
 	error: '#F03738',
 	success: '#3CC13B',
 	warning: '#F59100',
+	enriched: '#e4b36b',
 	lightGrey: '#F3F6F8',
 	lighterGrey: '#F7FAFC',
 	darkerGrey: '#B0B0B0',
