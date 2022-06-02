@@ -26,6 +26,12 @@ export type PublicationDto = {
 	title: string;
 	pid: string;
 	rootTitle: string;
+	enriched: boolean;
+};
+
+export type PublicationDetail = {
+	policy: string;
+	model: string;
 };
 
 export type PublicationsListDto = {
@@ -69,6 +75,13 @@ export type FiltersDto = {
 	nameTagFilters: NameTagFilterDto[];
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
+
+export type PublicationChild = {
+	datanode: boolean;
+	pid: string;
+	policy: string;
+	title: string;
+};
 
 export type InfoDto = {
 	version: string;

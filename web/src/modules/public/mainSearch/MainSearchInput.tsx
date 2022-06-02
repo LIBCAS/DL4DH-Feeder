@@ -115,6 +115,8 @@ const MainSearchInput = () => {
 	>(null);
 
 	const [searchParams, setSearchParams] = useSearchParams();
+	const nav = useNavigate();
+	const location = useLocation();
 
 	const [hints, setHints] = useState<string[]>([]);
 	/* useEffect(() => {
@@ -139,6 +141,10 @@ const MainSearchInput = () => {
 			setSelectedTagName(null);
 			setSelectedTagOp(null);
 			setSearchParams(searchParams);
+			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
+			if (location.pathname.includes('/view/')) {
+				nav('/search');
+			}
 		}
 	};
 

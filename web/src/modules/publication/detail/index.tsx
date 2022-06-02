@@ -1,39 +1,44 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import {
-	TransformWrapper,
-	TransformComponent,
-	ReactZoomPanPinchRef,
-} from 'react-zoom-pan-pinch';
-import useMeasure from 'react-use-measure';
-import { useMemo, useRef, useState } from 'react';
-import {
-	MdFullscreen,
-	MdRotateLeft,
-	MdRotateRight,
-	MdZoomIn,
-	MdZoomOut,
-} from 'react-icons/md';
 
-import { Flex } from 'components/styled';
+import { useMemo } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { MdClear, MdLock } from 'react-icons/md';
+
+import { Box, Flex } from 'components/styled';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
-import Button from 'components/styled/Button';
+import Text from 'components/styled/Text';
 
-// import { useTheme } from 'theme';
+import { Loader } from 'modules/loader';
 
-// 	https://github.com/gerhardsletten/react-pinch-zoom-pan?ref=morioh.com&utm_source=morioh.com
+import {
+	usePublicationChildren,
+	usePublicationDetail,
+} from 'api/publicationsApi';
 
 import PublicationSidePanel from './PublicationSidePanel';
+import PubMainDetail from './PubMainDetail';
 
 const PublicationDetail = () => {
-	// const theme = useTheme();
-	const [rotation, setRotation] = useState(0);
-	const pinchRef = useRef<ReactZoomPanPinchRef>(null);
-	const [ref, { width: viewportWidth }] = useMeasure({
-		debounce: 10,
-	});
+	const { id } = useParams<{ id: string }>();
 
-	const staticWidth = useMemo(() => viewportWidth, [viewportWidth]);
+	const pubChildren = usePublicationChildren(id ?? '');
+	const detail = usePublicationDetail(id ?? '');
+
+	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
+
+	const [page] = useSearchParams();
+
+	const pageId = useMemo(
+		() => page.get('page') ?? pages[0]?.pid ?? undefined,
+		[page, pages],
+	);
+
+	if (pubChildren.isLoading || detail.isLoading) {
+		return <Loader />;
+	}
+
+	const isPublic = detail.data?.policy === 'public';
+	const notRoot = detail.data?.model === 'periodical';
 
 	return (
 		<ResponsiveWrapper
@@ -45,75 +50,62 @@ const PublicationDetail = () => {
 			height="100vh"
 		>
 			<Flex width={1}>
-				<PublicationSidePanel variant="left" defaultView="search" />
-				<Flex
-					ref={ref}
-					width={1}
-					bg="white"
-					alignItems="center"
-					position="relative"
-				>
-					<TransformWrapper
-						ref={pinchRef}
-						initialScale={1}
-						limitToBounds={false}
-						minScale={0.1}
-						maxScale={3}
-					>
-						<TransformComponent>
-							<Flex width={staticWidth} height={'100vh'} p={3}>
+				<PublicationSidePanel
+					variant="left"
+					defaultView="search"
+					pages={pages}
+				/>
+				{isPublic ? (
+					<>
+						{notRoot ? (
+							<Flex
+								width="100%"
+								p={4}
+								alignItems="center"
+								justifyContent="center"
+								fontWeight="bold"
+								fontSize="xl"
+								height="100vh"
+							>
 								<Flex
-									css={css`
-										transform: rotate(${rotation}deg);
-										transition: transform 0.2s;
-									`}
+									justifyContent="center"
+									alignItems="center"
+									flexDirection="column"
+									mt={-100}
 								>
-									<img src="pubtest.jpg" />
-									<img src="pubtest2.jpg" />
+									<MdClear size={60} />
+									<Text>Tento typ dokumentu zatím nelze zobrazit</Text>
 								</Flex>
 							</Flex>
-						</TransformComponent>
-					</TransformWrapper>
+						) : (
+							<Flex height="100vh" width="100%">
+								<PubMainDetail page={pageId} />
+							</Flex>
+						)}
+					</>
+				) : (
 					<Flex
-						position="fixed"
+						width="100%"
+						p={4}
 						alignItems="center"
-						justifyContent="space-between"
-						bottom={50}
-						left={`calc(50vw + ${50}px)`}
-						px={3}
-						width={300}
-						bg="primaryLight"
-						css={css`
-							box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.08);
-						`}
+						justifyContent="center"
+						fontWeight="bold"
+						fontSize="xl"
+						height="100vh"
 					>
-						<Button
-							variant="text"
-							onClick={() => setRotation(r => (r - 90) % 7200)}
+						<Flex
+							justifyContent="center"
+							alignItems="center"
+							flexDirection="column"
+							mt={-100}
 						>
-							<MdRotateLeft size={30} />
-						</Button>
-						<Button
-							variant="text"
-							onClick={() => setRotation(r => (r + 90) % 7200)}
-						>
-							<MdRotateRight size={30} />
-						</Button>
-						<Button variant="text" onClick={() => pinchRef.current?.zoomIn()}>
-							<MdZoomIn size={30} />
-						</Button>
-						<Button variant="text" onClick={() => pinchRef.current?.zoomOut()}>
-							<MdZoomOut size={30} />
-						</Button>
-						<Button
-							variant="text"
-							onClick={() => pinchRef.current?.resetTransform()}
-						>
-							<MdFullscreen size={30} />
-						</Button>
+							<MdLock size={60} />
+							<Text>Tento dokument není veřejný</Text>
+						</Flex>
 					</Flex>
-				</Flex>
-				<PublicationSidePanel variant="right" />
+				)}
+
+				<PublicationSidePanel variant="right" pages={pages} />
 			</Flex>
 		</ResponsiveWrapper>
 	);

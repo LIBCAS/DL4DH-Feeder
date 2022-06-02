@@ -10,19 +10,26 @@ import Divider from 'components/styled/Divider';
 
 import { useTheme } from 'theme';
 
-import PubSideSearch from './PubSideSearch';
-import PubSideDetail from './PubSideDetail';
+import { PublicationChild } from 'api/models';
 
-const PublicationSidePanel: FC<{
+import PubThumbnails from './PubThumbnails';
+import PubBiblioDetail from './PubBiblioDetail';
+
+type Props = {
 	variant: 'left' | 'right';
 	defaultView?: 'detail' | 'search';
-}> = ({ variant, defaultView }) => {
+	//	page: string;
+	pages: PublicationChild[];
+};
+
+const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 	const theme = useTheme();
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		defaultView ?? 'detail',
 	);
+
 	return (
 		<Flex
 			position="relative"
@@ -90,9 +97,9 @@ const PublicationSidePanel: FC<{
 				</Flex>
 				<Divider />
 				{viewMode === 'search' ? (
-					<PubSideSearch marginTop={60} />
+					<PubThumbnails marginTop={60} pages={pages} />
 				) : (
-					<PubSideDetail />
+					<PubBiblioDetail />
 				)}
 			</Flex>
 			<SidePanelHideButton

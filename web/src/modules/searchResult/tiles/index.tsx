@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC } from 'react';
-import { MdCalendarToday, MdImage, MdPerson } from 'react-icons/md';
+import { MdCalendarToday, MdImage, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 
@@ -47,7 +47,7 @@ const TileView: FC<Props> = ({ data }) => {
 					>
 						<Flex
 							height="100%"
-							bg="primaryLight"
+							bg={d.enriched ? 'enriched' : 'primaryLight'}
 							p={2}
 							css={css`
 								border: 1px solid ${theme.colors.border};
@@ -63,6 +63,7 @@ const TileView: FC<Props> = ({ data }) => {
 								justifyContent="center"
 								alignItems="center"
 								color="text"
+								position="relative"
 								p={1}
 								css={css`
 									border: 1px solid ${theme.colors.border};
@@ -71,9 +72,38 @@ const TileView: FC<Props> = ({ data }) => {
 									background-size: cover;
 								`}
 							>
-								{/* <MdImage size={30} /> */}
+								{d.availability !== 'public' && (
+									<Flex
+										position="absolute"
+										width="100%"
+										height="100%"
+										justifyContent="center"
+										alignItems="center"
+									>
+										<Flex
+											justifyContent="center"
+											alignItems="center"
+											position="relative"
+											width="80px"
+											height="80px"
+											opacity={0.7}
+											bg="white"
+											css={css`
+												border: 1px solid white;
+												border-radius: 100%;
+											`}
+										>
+											<MdLock size={50} />
+										</Flex>
+									</Flex>
+								)}
 							</Flex>
-							<Flex flexDirection="column" pl={2} width={1}>
+							<Flex
+								flexDirection="column"
+								pl={2}
+								width={1}
+								color={d.enriched ? 'black' : 'text'}
+							>
 								<Cell fontSize="lg" fontFamily="RobotoCondensed-bold">
 									{d.rootTitle}
 								</Cell>
@@ -118,7 +148,14 @@ const TileView: FC<Props> = ({ data }) => {
 								</Flex> */}
 								<Flex flexGrow={1} />
 								<Flex justifyContent="flex-end" alignItems="flex-end" width={1}>
-									<Flex bg="primary" color="white" opacity="0.5">
+									{d.enriched && (
+										<Flex bg="error" color="white" opacity="0.8" mr={2}>
+											<Text py={1} my={0} px={3} fontSize="sm">
+												Obohacená
+											</Text>
+										</Flex>
+									)}
+									<Flex bg="primary" color="white" opacity="0.8">
 										<Text py={1} my={0} px={3} fontSize="sm">
 											{modelToText(d.model)}
 										</Text>
