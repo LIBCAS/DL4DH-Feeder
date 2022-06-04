@@ -14,7 +14,6 @@ const Authorize = React.lazy(() => import('modules/public/auth'));
 const Homepage = React.lazy(() => import('modules/public/homepage'));
 const MainSearch = React.lazy(() => import('modules/public/mainSearch'));
 const PublicationView = React.lazy(() => import('modules/publication/detail'));
-const OpenLayersViewer = React.lazy(() => import('modules/tests/ol'));
 
 const AppRoutes: React.FC = () => {
 	return (
