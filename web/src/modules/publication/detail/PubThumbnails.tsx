@@ -31,7 +31,7 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 	const [ref, { height: resultsMargin }] = useMeasure();
 	const theme = useTheme();
 	const [page, setPage] = useSearchParams();
-	const thumbnails = useThumbnails(pages.slice(0, 30));
+	const thumbnails = useThumbnails(pages.slice(0, 20));
 
 	return (
 		<Box width={1}>

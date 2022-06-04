@@ -119,7 +119,11 @@ export const useImageProperties = (uuid: string) =>
 					headers: { accept: 'application/xml' },
 				})
 				.text(),
-		{ staleTime: 60000, refetchOnWindowFocus: false, refetchInterval: 5000 },
+		{
+			staleTime: 60000,
+			refetchOnWindowFocus: false,
+			refetchInterval: Infinity,
+		},
 	);
 /***************************THUMBNAILS***************************** */
 
@@ -130,7 +134,7 @@ export const useStreams = (uuid: string, stream: string) => {
 	const resp = useQuery(
 		['stream', stream, uuid],
 		() => api().get(`item/${uuid}/streams/${stream}`).text(),
-		{ retry: 1, refetchInterval: 5000 },
+		{ retry: 1, refetchInterval: Infinity, refetchOnWindowFocus: false },
 	);
 	useEffect(() => {
 		if (!resp.isLoading) {

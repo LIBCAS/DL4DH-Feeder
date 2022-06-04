@@ -30,7 +30,6 @@ import {
 } from 'utils/enumsMap';
 import store from 'utils/Store';
 import { isIntern } from 'utils/FEVersion';
-import { SolrParams } from 'utils/SolrTypes';
 
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
@@ -45,7 +44,6 @@ export const api = (prefix?: string, json?: Partial<FiltersDto>) =>
 		prefixUrl: `${APP_CONTEXT}/api/${prefix ?? ''}`,
 		timeout: FETCH_TIMEOUT,
 		...(json ? { json } : {}),
-		//retry: { limit: 3, methods: ['post'], statusCodes: [400, 401, 500, 504] },
 		retry: { limit: 3 },
 		hooks: {
 			beforeRequest: [
