@@ -9,6 +9,7 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import Geometry from 'ol/geom/Geometry';
 import Feature from 'ol/Feature';
+import Zoomify from 'ol/source/Zoomify';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -18,6 +19,7 @@ import { Loader } from 'modules/loader';
 import { useImageProperties } from 'api/publicationsApi';
 
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
+import 'ol/ol.css';
 
 type Props = {
 	features?: Feature<Geometry>[];
@@ -32,9 +34,11 @@ const MapWrapper: React.FC<Props> = ({ features, id }) => {
 	// set intial state - used to track references to OpenLayers
 	//  objects for use in hooks, event handlers, etc.
 	const [map, setMap] = useState<Map>();
-	const mapRef = useRef<Map>();
+	//const mapRef = useRef<Map>();
 	const mapElement = useRef<HTMLDivElement>(null);
-	mapRef.current = map;
+	//mapRef.current = map;
+	const imageWidth = 1402;
+	const imageHeight = 2362;
 
 	const [featuresLayer, setFeaturesLayer] =
 		useState<VectorLayer<VectorSource<Geometry>>>();
@@ -80,6 +84,7 @@ const MapWrapper: React.FC<Props> = ({ features, id }) => {
 		// create map
 		const initialMap = new Map({
 			target: mapElement.current as HTMLDivElement,
+
 			layers: [
 				// USGS Topo
 				new TileLayer({
@@ -102,6 +107,11 @@ const MapWrapper: React.FC<Props> = ({ features, id }) => {
 				center: [0, 0],
 				zoom: 0,
 				minZoom: 0,
+				constrainOnlyCenter: true,
+				//extent: [-imageWidth / 2, imageHeight, imageWidth / 2, 0],
+				//extent: [-imageWidth / 2, -2800, imageWidth / 2 + 1600, 0],
+				extent: [imageWidth / 2 - 2000, -2000, imageWidth / 2, 0],
+
 				//maxZoom: 3,
 			}),
 			controls: [],
@@ -109,15 +119,23 @@ const MapWrapper: React.FC<Props> = ({ features, id }) => {
 
 		setMap(initialMap);
 
+		//extent = [-this.imageWidth / 2, -this.imageHeight, this.imageWidth / 2, 0];
+
 		//setFeaturesLayer(initalFeaturesLayer);
 	}, [id]);
-	/*
+
 	useEffect(() => {
+		setInterval(() => {
+			console.log(map?.getView().getResolution());
+			console.log('map?.getSize()');
+			console.log(map?.getSize());
+		}, 1500);
 		// placed at the bottom of the initialization hook
 		//  (other function content elimintated for brevity)
-		map?.on('click', e => handleMapClick(e, id));
-	}, [map, id, handleMapClick]);
-*/
+		//map?.getView().fit([-imageWidth / 2, imageHeight, imageWidth / 2, 0]);
+		//map?.on('click', e => handleMapClick(e, id));
+	}, [map, id /* handleMapClick */]);
+
 	return (
 		<Box
 			ref={mapElement}
@@ -149,4 +167,5 @@ const OpenLayersViewer: React.FC<{ id?: string; isLoading?: boolean }> = ({
 		</Wrapper>
 	);
 };
+
 export default OpenLayersViewer;

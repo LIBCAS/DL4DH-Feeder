@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Loader } from 'modules/loader';
+import ZoomifyView from 'modules/tests/ol/ZoomifyView';
 
 // const Home = React.lazy(() => import('./pages/Home'));
 // const About = React.lazy(() => import('./pages/About'));
@@ -30,7 +31,7 @@ const AppRoutes: React.FC = () => {
 				path="/test"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<OpenLayersViewer />
+						<ZoomifyView />
 					</React.Suspense>
 				}
 			/>

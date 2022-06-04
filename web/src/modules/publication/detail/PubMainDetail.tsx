@@ -14,7 +14,7 @@ import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 
-import OpenLayersViewer from 'modules/tests/ol';
+import ZoomifyView from 'modules/tests/ol/ZoomifyView';
 
 type Props = {
 	page: string;
@@ -30,7 +30,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 
 	return (
 		<Flex ref={ref} width={1} bg="grey" alignItems="center" position="relative">
-			<OpenLayersViewer id={page} />
+			<ZoomifyView id={page} />
 			{/* <TransformWrapper
         ref={pinchRef}
         initialScale={1}
