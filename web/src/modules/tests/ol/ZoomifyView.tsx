@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import 'ol/ol.css';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -15,6 +14,9 @@ import { Wrapper } from 'components/styled/Wrapper';
 import { Loader } from 'modules/loader';
 
 import { useImageProperties } from 'api/publicationsApi';
+
+import 'ol/ol.css';
+
 //const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 const ZOOMIFY_URL = 'https://kramerius5.nkp.cz/search/zoomify/';
 //ChangeEvent<HTMLInputElement>
