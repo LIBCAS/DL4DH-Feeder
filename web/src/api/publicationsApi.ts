@@ -1,18 +1,13 @@
-import { useQuery } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
 
-import { api, infiniteEndpoint, infiniteMainSearchEndpoint } from 'api';
+import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
 import { EASParams } from 'utils/EASTypes';
 import { SolrParams } from 'utils/SolrTypes';
 
 import { getEASMockReadings } from './faker';
-import { PublicationChild, PublicationDetail, TPublication } from './models';
-
-export const useSearchPublicationsOld = infiniteEndpoint<
-	TPublication,
-	[json: EASParams]
->(['search-publication'], (api, json) => api.post('search/list', { json }));
+import { PublicationChild, PublicationDetail } from './models';
 
 export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: SolrParams]
@@ -44,71 +39,31 @@ export const usePublicationChildren = (uuid: string) =>
 				.get('item/' + uuid + '/children')
 				.json<PublicationChild[]>(),
 		{
-			staleTime: 30000,
+			staleTime: REFETCH_INTERVAL,
 			refetchOnWindowFocus: false,
+			refetchInterval: REFETCH_INTERVAL,
 		},
 	);
 /***************************THUMBNAILS***************************** */
-//TODO: TODELETE?
-export const usePublicationThumbnails = (uuid: string) =>
-	useQuery(
-		['thumbnails', uuid],
-		async () => {
-			const children = await api()
-				.get('item/' + uuid + '/children')
-				.json<PublicationChild[]>();
 
-			return (children ?? []).map(async ch => {
-				return await api()
-					.get('item/' + ch.pid + '/thumb', {
-						headers: { accept: 'image/jpeg' },
-					})
-					.json<string>();
-			}) as unknown as string[];
-		},
-		{ staleTime: 30000, refetchOnWindowFocus: false },
+export const useThumbnails = (pages: PublicationChild[], toIndex: number) =>
+	useQueries(
+		pages.map((p, index) => ({
+			queryKey: ['thumbnail', p.pid],
+			queryFn: async () => {
+				const resp = await api().get('item/' + p.pid + '/thumb', {
+					headers: { accept: 'image/jpeg' },
+				});
+				const blob = await resp.blob();
+				return URL.createObjectURL(blob);
+			},
+			cacheTime: REFETCH_INTERVAL,
+			staleTime: REFETCH_INTERVAL,
+			refetchOnWindowFocus: false,
+			refetchInterval: REFETCH_INTERVAL,
+			enabled: index < toIndex,
+		})),
 	);
-//TODO: TODELETE?
-export const useThumbnail = (uuid: string) =>
-	useQuery(
-		['thumb', uuid],
-		() =>
-			api()
-				.get('item/' + uuid + '/thumb', { headers: { accept: 'image/jpeg' } })
-				.json<string>(),
-		{ staleTime: 30000, refetchOnWindowFocus: false },
-	);
-
-const getThumbnail = async (uuid: string) =>
-	await api()
-		.get('item/' + uuid + '/thumb', { headers: { accept: 'image/jpeg' } })
-		.then(async r => await r.blob());
-
-export const useThumbnails = (pages: PublicationChild[]) => {
-	const [thumbs, setThumbs] = useState<string[]>([]);
-
-	useEffect(() => {
-		//TODO: timeout, to prioritise iiif picture fetch, find better way
-		setTimeout(
-			() =>
-				pages.forEach(p =>
-					getThumbnail(p.pid).then(r => {
-						const reader = new FileReader();
-						reader.readAsDataURL(r);
-						reader.onloadend = () =>
-							setThumbs(prev => [...prev, reader.result as string]);
-					}),
-				),
-			100,
-		);
-	}, []);
-
-	return thumbs;
-};
-
-export const useThumbnails2 = (pages: PublicationChild[]) => {
-	const thumbs = [];
-};
 
 export const useImageProperties = (uuid: string) =>
 	useQuery(
@@ -120,9 +75,9 @@ export const useImageProperties = (uuid: string) =>
 				})
 				.text(),
 		{
-			staleTime: 60000,
+			staleTime: REFETCH_INTERVAL,
 			refetchOnWindowFocus: false,
-			refetchInterval: Infinity,
+			refetchInterval: REFETCH_INTERVAL,
 		},
 	);
 /***************************THUMBNAILS***************************** */
@@ -134,7 +89,11 @@ export const useStreams = (uuid: string, stream: string) => {
 	const resp = useQuery(
 		['stream', stream, uuid],
 		() => api().get(`item/${uuid}/streams/${stream}`).text(),
-		{ retry: 1, refetchInterval: Infinity, refetchOnWindowFocus: false },
+		{
+			retry: 1,
+			refetchInterval: REFETCH_INTERVAL,
+			refetchOnWindowFocus: false,
+		},
 	);
 	useEffect(() => {
 		if (!resp.isLoading) {
