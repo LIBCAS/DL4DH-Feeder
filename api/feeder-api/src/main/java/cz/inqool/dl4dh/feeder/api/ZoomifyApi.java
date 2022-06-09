@@ -31,11 +31,11 @@ public class ZoomifyApi {
     }
 
     @GetMapping(
-            value = "/{uuid}/{coords}.jpg",
+            value = "/{uuid}/{group}/{coords}.jpg",
             produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public @ResponseBody ByteArrayResource tile(@PathVariable(value="uuid") String uuid, @PathVariable(value="coords") String coords) {
+    public @ResponseBody ByteArrayResource tile(@PathVariable(value="group") String group, @PathVariable(value="uuid") String uuid, @PathVariable(value="coords") String coords) {
         return zoomify.get()
-                .uri("/"+uuid+"/TileGroup0/"+coords+".jpg").retrieve().bodyToMono(ByteArrayResource.class).block();
+                .uri("/"+uuid+"/"+group+"/"+coords+".jpg").retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 }
