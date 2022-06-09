@@ -9,6 +9,7 @@ import ErrorBoundary from 'components/ErrorBoundary';
 
 import { Loader } from 'modules/loader';
 import Header from 'modules/header';
+import { PubDetailCtxProvider } from 'modules/publication/ctx/pub-ctx';
 
 import { useLoggedInUserProvider } from 'api';
 import { GlobalStyles, ThemeProvider } from 'theme';
@@ -39,15 +40,19 @@ const App = () => {
 				<Flex as="main" flexDirection="column" minHeight="100vh">
 					<Router basename={APP_CONTEXT}>
 						<UserContextProvider value={user}>
-							<SearchContextProvider value={[state, dispatch]}>
-								<GlobalStyles />
-								<Toaster />
-								<Header />
-								{userResponse.isLoading && <Loader />}
-								{userResponse.isError && <ErrorScreen {...userResponse} />}
+							<PubDetailCtxProvider>
+								<SearchContextProvider value={[state, dispatch]}>
+									<GlobalStyles />
+									<Toaster />
+									<Header />
+									{userResponse.isLoading && <Loader />}
+									{userResponse.isError && <ErrorScreen {...userResponse} />}
 
-								{userResponse.isSuccess && <AppRoutes /* routes={routes} */ />}
-							</SearchContextProvider>
+									{userResponse.isSuccess && (
+										<AppRoutes /* routes={routes} */ />
+									)}
+								</SearchContextProvider>
+							</PubDetailCtxProvider>
 						</UserContextProvider>
 					</Router>
 				</Flex>

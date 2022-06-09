@@ -9,7 +9,6 @@ import {
 	MdFullscreen,
 } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
-import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -21,7 +20,6 @@ type Props = {
 };
 const PubMainDetail: FC<Props> = ({ page }) => {
 	const [rotation, setRotation] = useState(0);
-	const pinchRef = useRef<ReactZoomPanPinchRef>(null);
 	const [ref, { width: viewportWidth }] = useMeasure({
 		debounce: 10,
 	});
@@ -31,28 +29,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 	return (
 		<Flex ref={ref} width={1} bg="grey" alignItems="center" position="relative">
 			<ZoomifyView id={page} />
-			{/* <TransformWrapper
-        ref={pinchRef}
-        initialScale={1}
-        limitToBounds={false}
-        minScale={0.1}
-        maxScale={3}
-    >
-        <TransformComponent>
-            <Flex width={staticWidth} height={'100vh'} p={3}>
-                <Flex
-                    css={css`
-                        transform: rotate(${rotation}deg);
-                        transition: transform 0.2s;
-                    `}
-                >
-                    <OpenLayersViewer />
-                     <img src="pubtest.jpg" />
-                    <img src="pubtest2.jpg" /> 
-                </Flex>
-            </Flex>
-        </TransformComponent>
-    </TransformWrapper> */}
+
 			<Flex
 				//FIXME:
 				display="none!important"
@@ -80,16 +57,13 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 				>
 					<MdRotateRight size={30} />
 				</Button>
-				<Button variant="text" onClick={() => pinchRef.current?.zoomIn()}>
+				<Button variant="text" onClick={() => null}>
 					<MdZoomIn size={30} />
 				</Button>
-				<Button variant="text" onClick={() => pinchRef.current?.zoomOut()}>
+				<Button variant="text" onClick={() => null}>
 					<MdZoomOut size={30} />
 				</Button>
-				<Button
-					variant="text"
-					onClick={() => pinchRef.current?.resetTransform()}
-				>
+				<Button variant="text" onClick={() => null}>
 					<MdFullscreen size={30} />
 				</Button>
 			</Flex>

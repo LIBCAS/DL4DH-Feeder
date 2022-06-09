@@ -1,20 +1,20 @@
 import '@reach/dialog/styles.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ReactQueryCacheProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query-devtools';
-
-import { QueryCacheInstance } from 'api';
+import { QueryCache, QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 import App from './App';
 import './index.css';
+const queryCache = new QueryCache();
+const queryClient = new QueryClient({ queryCache });
 
 ReactDOM.render(
 	<React.StrictMode>
-		<ReactQueryCacheProvider queryCache={QueryCacheInstance}>
+		<QueryClientProvider client={queryClient}>
 			<App />
 			<ReactQueryDevtools />
-		</ReactQueryCacheProvider>
+		</QueryClientProvider>
 	</React.StrictMode>,
 	document.getElementById('root'),
 );

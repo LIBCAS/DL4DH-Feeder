@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { MdClear, MdLock } from 'react-icons/md';
 
@@ -14,6 +14,8 @@ import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
+
+import { usePublicationCtx } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
@@ -32,6 +34,22 @@ const PublicationDetail = () => {
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
 		[page, pages],
 	);
+
+	console.log('pageId after url parse', pageId);
+
+	const childIndex = useMemo(
+		() => pages.findIndex(p => p.pid === pageId),
+		[pageId, pages],
+	);
+
+	console.log('childIndex after url parse', childIndex);
+	const pubCtx = usePublicationCtx();
+
+	useEffect(() => {
+		pubCtx.setPublicationChildren(pages);
+		pubCtx.setCurrentPage({ uuid: pageId ?? '', childIndex });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pages, childIndex, pageId]);
 
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
