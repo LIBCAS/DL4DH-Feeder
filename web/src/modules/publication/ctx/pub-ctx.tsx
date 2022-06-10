@@ -1,4 +1,10 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, {
+	createContext,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 
 import { PublicationChild, PublicationDto } from 'api/models';
 
@@ -10,6 +16,8 @@ const STORE_CURRENT_PAGE = 'pub-current-page';
 type CurrentPage = {
 	uuid: string;
 	childIndex: number;
+	prevPid: string;
+	nextPid: string;
 };
 
 type PubCtxType = {
@@ -22,6 +30,7 @@ type PubCtxType = {
 	publicationChildren: PublicationChild[] | null;
 	currentPage: CurrentPage | null;
 	setCurrentPage: React.Dispatch<React.SetStateAction<CurrentPage | null>>;
+	getCurrentPage: () => CurrentPage | null;
 };
 
 export const PubCtx = createContext<PubCtxType>(undefined as never);
@@ -49,8 +58,19 @@ export function usePublicationCtx() {
 	}, [publicationChildren]);
 
 	useEffect(() => {
+		console.log('context');
+		console.log({ currentPage });
 		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
 	}, [currentPage]);
+
+	const getCurrentPage = useCallback(
+		() =>
+			JSON.parse(
+				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+				(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
+			) as CurrentPage | null,
+		[],
+	);
 
 	const ctx: PubCtxType = useMemo(
 		() => ({
@@ -60,6 +80,7 @@ export function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
+			getCurrentPage,
 		}),
 		[
 			publication,
@@ -68,6 +89,7 @@ export function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
+			getCurrentPage,
 		],
 	);
 	return ctx;

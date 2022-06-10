@@ -1,6 +1,5 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Toaster } from 'react-hot-toast';
 
 import { Flex } from 'components/styled';
 import AppRoutes from 'components/routing/AppRoutes';
@@ -43,7 +42,7 @@ const App = () => {
 							<PubDetailCtxProvider>
 								<SearchContextProvider value={[state, dispatch]}>
 									<GlobalStyles />
-									<Toaster />
+
 									<Header />
 									{userResponse.isLoading && <Loader />}
 									{userResponse.isError && <ErrorScreen {...userResponse} />}

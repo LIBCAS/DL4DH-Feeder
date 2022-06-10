@@ -8,7 +8,6 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import toast from 'react-hot-toast';
 
 import { OidcUserInfo } from 'modules/public/auth';
 
@@ -69,7 +68,7 @@ export const useLoggedInUserProvider = () => {
 					.then(async r => {
 						const resp = await api().get('me');
 						if (!resp.ok) {
-							toast.error('Nepodarilo sa kontaktovať /me api');
+							console.error('Nepodarilo sa kontaktovať /me api');
 							return undefined;
 						}
 
@@ -165,7 +164,7 @@ export const infiniteMainSearchEndpoint =
 		}, [result.data, start, pageSize]);
 		const refCount = useRef(0);
 		const count = useMemo(
-			() => result.data?.[0]?.documents.numFound ?? refCount.current,
+			() => result.data?.pages[0]?.documents.numFound ?? refCount.current,
 			[result.data],
 		);
 		refCount.current = count;

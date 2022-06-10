@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import { css } from '@emotion/core';
+import { css, SerializedStyles } from '@emotion/core';
 import { FC } from 'react';
 import { FieldMetaProps } from 'formik';
 import isEmpty from 'lodash-es/isEmpty';
@@ -33,7 +33,9 @@ export type TextInputProps = {
 	iconRight?: React.ReactElement;
 	hideArrows?: boolean;
 	loading?: boolean;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+	wrapperCss?: SerializedStyles;
+} & React.InputHTMLAttributes<HTMLInputElement> &
+	FlexProps;
 
 export const InputWrapper = styled(Flex)<{
 	hasError?: boolean;
@@ -200,6 +202,7 @@ const InlineTextInput: React.FC<Omit<TextInputProps, 'labelType'>> = ({
 	iconLeft,
 	iconRight,
 	loading,
+	wrapperCss,
 	...inputProps
 }) => (
 	<InputWrapper
@@ -209,15 +212,13 @@ const InlineTextInput: React.FC<Omit<TextInputProps, 'labelType'>> = ({
 		color="text"
 		inverted={colorVariant === 'inverted'}
 		p={0}
-		css={
-			colorVariant === 'inverted' &&
+		css={css`
+			${colorVariant === 'inverted' &&
 			css`
 				background: white;
-				border-radius: 25px;
-				padding-left: 12px;
-				padding-right: 12px;
-			`
-		}
+			`}
+			${wrapperCss}
+		`}
 	>
 		{iconLeft && (
 			<Box minWidth="auto" mr={2}>
@@ -266,7 +267,7 @@ const TextInput: React.FC<TextInputProps> = ({
 	};
 
 	return (
-		<Box width={1}>
+		<Box width={1} {...props}>
 			{labelType !== 'inline' && <LabelTextInput {...inputProps} />}
 
 			{labelType === 'inline' && <InlineTextInput {...inputProps} />}
