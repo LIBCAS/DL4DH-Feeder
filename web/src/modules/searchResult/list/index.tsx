@@ -50,6 +50,7 @@ const renderRow = (row: TColumnsLayout) => (
 				alignItems="center"
 				justifyContent="flex-start"
 				flex={rowLayout[cellKey]}
+				fontSize="md"
 				p={2}
 				pl={[2, 3]}
 			>
@@ -80,6 +81,7 @@ const ListView: FC<{
 					p={2}
 					pl={[2, 3]}
 					fontWeight="bold"
+					css={css``}
 					/* onClick={() => {
 						if (sort.options[cellKey]) {
 							sort.setSelected(cellKey);

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import { useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { MdClear, MdLock } from 'react-icons/md';
 
@@ -15,7 +15,7 @@ import {
 	usePublicationDetail,
 } from 'api/publicationsApi';
 
-import { usePublicationCtx } from '../ctx/pub-ctx';
+import { PubCtx } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
@@ -25,31 +25,25 @@ const PublicationDetail = () => {
 
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
-
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
-
 	const [page] = useSearchParams();
+	const pubCtx = useContext(PubCtx);
 
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
 		[page, pages],
 	);
 
-	console.log('pageId after url parse', pageId);
-
-	const childIndex = useMemo(
-		() => pages.findIndex(p => p.pid === pageId),
-		[pageId, pages],
-	);
-
-	console.log('childIndex after url parse', childIndex);
-	const pubCtx = usePublicationCtx();
-
 	useEffect(() => {
-		pubCtx.setPublicationChildren(pages);
-		pubCtx.setCurrentPage({ uuid: pageId ?? '', childIndex });
+		const childIndex = pages.findIndex(p => p.pid === pageId);
+		pubCtx.setCurrentPage({
+			uuid: pageId ?? '',
+			childIndex,
+			prevPid: pages[childIndex - 1]?.pid,
+			nextPid: pages[childIndex + 1]?.pid,
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, childIndex, pageId]);
+	}, [pages, pageId]);
 
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
