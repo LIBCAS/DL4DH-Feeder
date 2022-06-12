@@ -141,6 +141,7 @@ const MainSearchInput = () => {
 			setSelectedTagName(null);
 			setSelectedTagOp(null);
 			setSearchParams(searchParams);
+
 			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
 			if (location.pathname.includes('/view/')) {
 				nav('/search');

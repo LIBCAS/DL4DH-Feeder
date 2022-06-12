@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
 import { useEffect } from 'react';
-import toast from 'react-hot-toast';
 
 import { NavHrefButton } from 'components/styled/Button';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -88,7 +87,7 @@ const GetAccesToken = () => {
 			sendTokenRequest(code);
 		}
 		if (!code || code === '') {
-			toast.error('Nepodarilo sa prihlásiť', { duration: 8000 });
+			console.error('Nepodarilo sa prihlásiť', { duration: 8000 });
 			nav('/');
 		}
 	}, [code, nav]);

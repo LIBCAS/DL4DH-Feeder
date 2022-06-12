@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { QueryResult } from 'react-query';
+import { UseQueryResult } from 'react-query';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 import Button from 'components/styled/Button';
 
-type Props = Pick<QueryResult<unknown, unknown>, 'error' | 'refetch'> & {
+type Props = Pick<UseQueryResult<unknown, unknown>, 'error' | 'refetch'> & {
 	customMessage?: string;
 };
 

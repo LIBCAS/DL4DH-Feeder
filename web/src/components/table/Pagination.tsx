@@ -40,7 +40,7 @@ const Pagination: FC<Props> = ({
 	loading,
 }) => {
 	useEffect(() => {
-		const limit = parseInt(Store.get<string>('vsd-pagination-limit') ?? '');
+		const limit = parseInt(Store.get<string>('feeder-pagination-limit') ?? '');
 		if (
 			limit &&
 			pageLimit !== limit &&
@@ -49,6 +49,7 @@ const Pagination: FC<Props> = ({
 			changeLimit(limit);
 		}
 	}, [changeLimit, pageLimit]);
+
 	return (
 		<Flex
 			width="100%"
@@ -70,7 +71,7 @@ const Pagination: FC<Props> = ({
 					onChange={e => {
 						const limit = parseInt(e.target.value);
 						changeLimit(limit);
-						Store.set<number>('vsd-pagination-limit', limit);
+						Store.set<number>('feeder-pagination-limit', limit);
 						changePage(0);
 					}}
 				>

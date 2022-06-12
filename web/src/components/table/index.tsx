@@ -5,6 +5,7 @@ import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import useMeasure from 'react-use-measure';
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
+import { MdTune } from 'react-icons/md';
 
 import Text from 'components/styled/Text';
 import { Dot, Flex } from 'components/styled';
@@ -103,7 +104,9 @@ const Table = <T extends TableItem>({
 						? `${minWidth}px !important`
 						: `${wrapperWidth - hasVerticalScroll * scWidth - 4}px !important`};
 					border-top: 1px solid ${theme.colors.border};
-
+					background-color: ${rowIndex % 2
+						? theme.colors.white
+						: theme.colors.lightGrey};
 					&:hover,
 					&:hover .table-row-edit-button {
 						background-color: ${theme.colors.primaryLight};
@@ -128,8 +131,12 @@ const Table = <T extends TableItem>({
 							position: sticky;
 							right: 0;
 							background-color: rgba(255, 255, 255, 0.95);
-							// border-left: 1px solid ${theme.colors.lightGrey};
+							border-left: 1px solid ${theme.colors.lightGrey};
 							/* border-right: 1px solid ${theme.colors.lightGrey}; */
+
+							background-color: ${rowIndex % 2
+								? theme.colors.white
+								: theme.colors.lightGrey};
 						`}
 					>
 						<NavLinkButton variant="text" to={`/view/${data[rowIndex].pid}`}>
@@ -157,19 +164,21 @@ const Table = <T extends TableItem>({
 	const renderTableHeader: RenderCallback = useCallback(
 		() => (
 			<Flex
-				bg="primaryLight"
-				color="primary"
+				bg="primary"
+				color="white"
 				css={css`
 					width: ${wrapperWidth < minWidth
 						? `${minWidth}px!important`
 						: 'unset'};
 					height: ${headerHeight}px;
+					border: 1px solid ${theme.colors.primary};
 				`}
 			>
 				<Flex mt={2} mx={2}>
 					<Checkbox
 						checked={tempAllChecked}
 						onChange={() => setTempAllChecked(p => !p)}
+						colorVariant="inverted"
 					/>
 				</Flex>
 				{renderHeader(false)}
@@ -179,16 +188,16 @@ const Table = <T extends TableItem>({
 					justifyContent="center"
 					flex={1}
 					p={2}
-					bg="primaryLight"
 					css={css`
 						min-width: ${EDIT_COL_WIDTH + scWidth}px;
 						max-width: ${EDIT_COL_WIDTH + scWidth}px;
 						padding: 0;
 						position: sticky;
 						right: 0;
+						cursor: pointer;
 					`}
 				>
-					F
+					<MdTune size={30} />
 				</Flex>
 			</Flex>
 		),
@@ -200,6 +209,7 @@ const Table = <T extends TableItem>({
 			scWidth,
 			setTempAllChecked,
 			tempAllChecked,
+			theme,
 		],
 	);
 

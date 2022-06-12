@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
@@ -18,13 +17,10 @@ const NotFound: React.FC = () => {
 	const token = useLoggedInUser();
 	const nav = useNavigate();
 	const { pathname } = useLocation();
-	console.log('heeeeeeeeeere');
 
 	useEffect(() => {
 		if (!token && isAuthPath(pathname)) {
-			toast.error('Pre prístup k tejto podstránke je potrebné sa prihlásiť.', {
-				duration: 10000,
-			});
+			console.error('Pre prístup k tejto podstránke je potrebné sa prihlásiť.');
 			nav({ pathname: '/' });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
