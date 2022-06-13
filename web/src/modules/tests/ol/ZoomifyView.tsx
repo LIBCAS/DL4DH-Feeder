@@ -35,6 +35,9 @@ control?.addEventListener('change', (event: Event) => {
 	}
 });*/
 //openlayers.org/en/latest/examples/zoomify.html
+
+//deep zoom?
+//https://stackoverflow.com/questions/58498434/deepzoom-into-openlayers-images-using-zoomify/58500085#58500085
 const MapWrapper: FC<{
 	imgId?: string;
 	isLoading?: boolean;

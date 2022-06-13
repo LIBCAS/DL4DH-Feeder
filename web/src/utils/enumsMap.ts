@@ -41,6 +41,17 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 	MONOGRAPH: 'Kniha',
 	PERIODICAL: 'Noviny a časopisy',
 	SHEETMUSIC: 'Hudebniny',
+	MONOGRAPHUNIT: 'Svazek knih',
+};
+const ModelsColors: Record<ModelsEnum, string> = {
+	ARCHIVAL: 'primary',
+	GRAPHICS: 'primary',
+	MANUSCRIPT: 'primary',
+	MAP: 'modelMap',
+	MONOGRAPH: 'modelMonograph',
+	PERIODICAL: 'modelPeriodical',
+	SHEETMUSIC: 'modelMusic',
+	MONOGRAPHUNIT: 'modelMonograph',
 };
 
 export const modelToText = (model: ModelsEnum) => {
@@ -48,6 +59,14 @@ export const modelToText = (model: ModelsEnum) => {
 	return parsed
 		.map(p => ModelsTexts[p.toUpperCase() as ModelsEnum] ?? p)
 		.join('/');
+};
+
+export const modelToColor = (model: ModelsEnum) => {
+	const parsed = model.split('/');
+	if (parsed.length > 1) {
+		return 'black';
+	}
+	return ModelsColors[parsed[0].toUpperCase() as ModelsEnum];
 };
 export const availabilityToText = (value: string) => {
 	switch (value) {
@@ -57,6 +76,17 @@ export const availabilityToText = (value: string) => {
 			return 'Pouze neveřejné';
 		case 'ALL':
 			return 'Všechny';
+		default:
+			return 'Neznáma hodnota';
+	}
+};
+
+export const availabilityToTextTag = (value: string) => {
+	switch (value) {
+		case 'PUBLIC':
+			return 'Veřejné';
+		case 'PRIVATE':
+			return 'Neveřejné';
 		default:
 			return 'Neznáma hodnota';
 	}

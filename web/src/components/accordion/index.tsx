@@ -4,7 +4,7 @@ import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 
 import { Box, Flex } from 'components/styled';
-import Text from 'components/styled/Text';
+import Text, { H4 } from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 
@@ -27,8 +27,8 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 	return (
 		<Box overflow="hidden">
 			<Flex
-				pb={exp ? 0 : 2}
-				pt={2}
+				pb={exp ? 0 : 1}
+				pt={1}
 				px={2}
 				justifyContent="space-between"
 				alignItems="center"
@@ -37,7 +37,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 				`}
 				onClick={() => setExp(p => !p)}
 			>
-				<Text fontWeight="bold">{label}</Text>
+				<H4>{label}</H4>
 				<Flex color="primary">
 					<MdExpandMore
 						size={22}
@@ -62,7 +62,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 					`}
 				>
 					<div ref={measureRef}>
-						<Box p={2}>
+						<Box px={2}>
 							{typeof children === 'function' ? children(onRefresh) : children}
 						</Box>
 					</div>

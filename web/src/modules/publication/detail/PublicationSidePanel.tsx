@@ -14,6 +14,7 @@ import { PublicationChild } from 'api/models';
 
 import PubThumbnails from './PubThumbnails';
 import PubBiblioDetail from './PubBiblioDetail';
+import PubChooseSecond from './PubChooseSecond';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -25,6 +26,7 @@ type Props = {
 const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 	const theme = useTheme();
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
+	const [chooseSecond, setChooseSecond] = useState(false);
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		defaultView ?? 'detail',
@@ -55,6 +57,18 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 				width={1}
 				flexDirection="column"
 			>
+				<Flex alignItems="center" justifyContent="center" p={2} width={1}>
+					<Button variant="primary" onClick={() => setChooseSecond(p => !p)}>
+						Vyhledávaní v množině záznamů
+					</Button>
+					{chooseSecond && (
+						<PubChooseSecond
+							onClose={() => setChooseSecond(false)}
+							variant={variant}
+						/>
+					)}
+				</Flex>
+				<Divider />
 				<Flex
 					height={60}
 					bg="primaryLight"
@@ -96,6 +110,7 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 					/>
 				</Flex>
 				<Divider />
+
 				{viewMode === 'search' ? (
 					<PubThumbnails marginTop={60} pages={pages} />
 				) : (

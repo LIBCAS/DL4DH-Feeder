@@ -4,17 +4,15 @@ import styled from '@emotion/styled/macro';
 import { FC, useCallback } from 'react';
 import useMeasure from 'react-use-measure';
 
+import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 import Table from 'components/table';
-import Text from 'components/styled/Text';
-
-// import { ArrowDownIcon, ArrowUpIcon } from 'assets';
-// import { getDateString } from 'utils';
+import ClassicTable from 'components/table/ClassicTable';
 
 import { TPublication } from 'api/models';
 
-import { modelToText } from 'utils/enumsMap';
+import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 // import useAdminFilter from './useAdminFilter';
@@ -25,6 +23,7 @@ const Cell = styled(Text)`
 	white-space: nowrap;
 	padding: 0;
 	margin: 0;
+	color: black;
 `;
 
 const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
@@ -37,6 +36,12 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	} */
 	if (cellKey === 'model') {
 		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
+	}
+
+	if (cellKey === 'availability') {
+		return (
+			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
+		);
 	}
 	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 	// return <Cell title={row[cellKey]}>{row[cellKey]}</Cell>;
@@ -81,6 +86,7 @@ const ListView: FC<{
 					p={2}
 					pl={[2, 3]}
 					fontWeight="bold"
+					color="white"
 					css={css``}
 					/* onClick={() => {
 						if (sort.options[cellKey]) {
@@ -96,7 +102,7 @@ const ListView: FC<{
 							: ''
 					} */
 				>
-					<Cell>{headerLabels[cellKey].text}</Cell>
+					<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
 
 					{/* {sort.selected.key === cellKey &&
 						(sort.selected.order === 'ASC' ? (
@@ -110,20 +116,33 @@ const ListView: FC<{
 	);
 	const items = data ?? [];
 
+	console.log({ filterHeight });
+
 	return (
 		<>
-			<Wrapper p={2}>
-				<Flex flexDirection="column" position="relative">
-					<div ref={wrapperRef}>
-						{/* 	<FiltersForm filters={filters} sort={sort} isLoading={isLoading} /> */}
-					</div>
-
-					<Table
+			<Wrapper p={2} position="relative">
+				<Flex
+					position="absolute"
+					height="100%"
+					top={0}
+					left={0}
+					ref={wrapperRef}
+				></Flex>
+				<Flex
+					flexDirection="column"
+					position="absolute"
+					width="calc(100% - 20px)"
+					overflowY="auto"
+					overflowX="hidden"
+					pr={2}
+					height={`calc(${filterHeight}px - 10px)`}
+					//height={500}
+				>
+					<ClassicTable
 						data={items as unknown as TColumnsLayout[]}
 						isLoading={isLoading}
 						renderRow={renderRow}
 						renderHeader={renderHeader}
-						marginTop={filterHeight}
 						minWidth={1500}
 					/>
 				</Flex>

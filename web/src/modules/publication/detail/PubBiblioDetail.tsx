@@ -7,7 +7,7 @@ import _ from 'lodash';
 import XML from 'xml2js';
 
 import { Box, Flex } from 'components/styled';
-import Text from 'components/styled/Text';
+import Text, { H3, H4, H5 } from 'components/styled/Text';
 import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
 
@@ -89,41 +89,41 @@ const PubBiblioDetail: FC<Props> = () => {
 			<Divider />
 			<Box p={3}>
 				<Box mb={3}>
-					<Text fontSize="lg" color="secondary" fontWeight="bold">
+					<H3 color="#616161" fontSize="16.5px">
 						{biblio.title}
-					</Text>
+					</H3>
 				</Box>
 				<Box mb={3}>
-					<Text fontSize="sm" color="secondary">
+					<Text fontSize="13.5px" color="#9e9e9e">
 						Autor
 					</Text>
-					<Text fontSize="sm">{biblio.author}</Text>
+					<H5>{biblio.author}</H5>
 				</Box>
 				<Box mb={3}>
-					<Text fontSize="sm" color="secondary">
+					<Text fontSize="13.5px" color="#9e9e9e">
 						Nakladatelské údaje
 					</Text>
-					<Text fontSize="sm">
+					<H5>
 						{biblio.publisher}, {biblio.year}
-					</Text>
+					</H5>
 				</Box>
 				<Box mb={3}>
-					<Text fontSize="sm" color="secondary">
+					<Text fontSize="13.5px" color="#9e9e9e">
 						Typ dokumentu
 					</Text>
-					<Text fontSize="sm">{biblio.type}</Text>
+					<H5>{biblio.type}</H5>
 				</Box>
 				<Box mb={3}>
-					<Text fontSize="sm" color="secondary">
+					<Text fontSize="13.5px" color="#9e9e9e">
 						Jazyk
 					</Text>
-					<Text fontSize="sm">{biblio.language}</Text>
+					<H5>{biblio.language}</H5>
 				</Box>
 				<Box mb={3}>
-					<Text fontSize="sm" color="secondary">
+					<Text fontSize="13.5px" color="#9e9e9e">
 						Poznámky
 					</Text>
-					<Text fontSize="sm">{biblio.description}</Text>
+					<H5>{biblio.description}</H5>
 				</Box>
 			</Box>
 		</Box>
