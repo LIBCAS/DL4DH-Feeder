@@ -7,12 +7,11 @@ import { FC } from 'react';
 const nkpRoot = {
 	primary: '#0389a7',
 	primaryLight: '#f5f5f5',
+	paper: '#f5f5f5',
 	primaryBright: 'rgba(3, 137, 167, 0.1)',
 	secondary: '#1E2838',
 	border: '#058ba8',
-	//border: '#684947',
 	inactive: '#81a1a8ab',
-	//text: '#058ba8',
 	text: '#757575',
 	textCommon: '#757575',
 	textH4: '#212121',

@@ -255,7 +255,7 @@ const MainSearchInput = () => {
 						}
 					}}
 					iconLeft={
-						<Flex color="primary" ml={2} alignItems="center">
+						<Flex color="textCommon" ml={2} alignItems="center">
 							<MdSearch size={26} />
 							<ClickAway onClickAway={() => setShowTagNameMenu(false)}>
 								<SimpleSelect
@@ -274,6 +274,7 @@ const MainSearchInput = () => {
 									placeholder=""
 									arrowHidden
 									zIndex={5}
+									menuFixedSize
 									wrapperCss={css`
 										z-index: 3;
 										border: 1px solid ${theme.colors.primaryLight};
@@ -307,6 +308,7 @@ const MainSearchInput = () => {
 										}
 										width={50}
 										arrowHidden
+										menuFixedSize
 										nameFromOption={item =>
 											item ? OperationToTextLabel[item] : ''
 										}
@@ -357,12 +359,13 @@ const MainSearchInput = () => {
 							<Flex
 								position="absolute"
 								left={0}
-								top={50}
+								top={45}
 								bg="white"
 								color="text"
 								css={css`
 									border: 1px solid ${theme.colors.border};
-									box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
+									border-top: none;
+									box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.2);
 								`}
 							>
 								<Flex

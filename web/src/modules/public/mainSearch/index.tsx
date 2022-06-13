@@ -16,6 +16,8 @@ import Tabs from 'components/tabs';
 import Results from 'modules/searchResult/index';
 import SearchResultLeftPanel from 'modules/searchResult/leftPanel';
 import Sorting from 'modules/sorting/Sorting';
+import ListExportDialog from 'modules/export/ListExportDialog';
+import GraphExportDialog from 'modules/export/GraphExportDialog';
 
 import { theme } from 'theme';
 
@@ -167,9 +169,8 @@ const MainSearch: FC = () => {
 					<Flex mr={3} alignItems="center">
 						<Sorting />
 
-						<Button height={30} ml={3} variant="primary">
-							Exportovat
-						</Button>
+						{state.viewMode === 'list' && <ListExportDialog />}
+						{state.viewMode === 'graph' && <GraphExportDialog />}
 					</Flex>
 				</Flex>
 			</Flex>

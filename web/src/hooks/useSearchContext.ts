@@ -42,7 +42,7 @@ type State = {
 
 export const initState: State = {
 	searchQuery: null,
-	viewMode: 'tiles',
+	viewMode: 'graph',
 	pageSize: 15,
 	page: 0,
 	start: 0,
