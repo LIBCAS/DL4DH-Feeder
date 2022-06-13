@@ -7,12 +7,15 @@ import { FC } from 'react';
 const nkpRoot = {
 	primary: '#0389a7',
 	primaryLight: '#f5f5f5',
+	primaryBright: 'rgba(3, 137, 167, 0.1)',
 	secondary: '#1E2838',
 	border: '#058ba8',
 	//border: '#684947',
 	inactive: '#81a1a8ab',
-	text: '#058ba8',
-	//text: '#0F0000',
+	//text: '#058ba8',
+	text: '#757575',
+	textCommon: '#757575',
+	textH4: '#212121',
 	textLight: '#7D7D7D',
 	error: '#F03738',
 	success: '#3CC13B',
@@ -24,7 +27,13 @@ const nkpRoot = {
 	lightGreen: '#5BCCC6',
 	darkGreen: '#00aae1',
 	white: '#fff',
-	/**HEADER */
+	tableRow: '#F3F6F8',
+	tableRowEven: '#F7FAFC',
+	/**pub models colors */
+	modelMonograph: '#ec407a', // kniha
+	modelPeriodical: '#66bb6a', //noviny a casopisy
+	modelMap: '#c0ca33', //mapa
+	modelMusic: '#9575cd', // hudebniny
 };
 
 const wireRoot = {

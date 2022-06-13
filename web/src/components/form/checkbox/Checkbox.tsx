@@ -60,6 +60,7 @@ const StyledCheckbox = styled.div<
 		p.colorVariant === 'inverted' &&
 		css`
 			background-color: white;
+			color:${p.theme.colors.primary}
 
 			&:focus-within {
 				${InvertFocusStyle}

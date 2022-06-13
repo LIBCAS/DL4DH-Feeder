@@ -21,6 +21,7 @@ export type MyPublication = {
 export type PublicationDto = {
 	model: ModelsEnum;
 	availability: string;
+	policy: string;
 	date: string;
 	authors: string | string[];
 	title: string;
@@ -32,6 +33,9 @@ export type PublicationDto = {
 export type PublicationDetail = {
 	policy: string;
 	model: string;
+	datanode: boolean;
+	pid: string;
+	root_pid: string;
 };
 
 export type PublicationsListDto = {
@@ -81,6 +85,13 @@ export type PublicationChild = {
 	pid: string;
 	policy: string;
 	title: string;
+	details: {
+		volumeNumber: string;
+		year: string;
+	};
+	root_pid: string;
+	root_title: string;
+	model: string;
 };
 
 export type InfoDto = {
@@ -105,7 +116,8 @@ export type ModelsEnum =
 	| 'GRAPHICS'
 	| 'ARCHIVAL'
 	| 'MANUSCRIPT'
-	| 'SHEETMUSIC';
+	| 'SHEETMUSIC'
+	| 'MONOGRAPHUNIT';
 
 export type TagNameEnum =
 	| 'NUMBERS_IN_ADDRESSES'

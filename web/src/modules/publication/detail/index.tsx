@@ -1,19 +1,23 @@
 /** @jsxImportSource @emotion/react */
-
+import { css } from '@emotion/core';
 import { useContext, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { MdClear, MdLock } from 'react-icons/md';
 
 import { Box, Flex } from 'components/styled';
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
+import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
+import TileView from 'modules/searchResult/tiles';
+
+import { useTheme } from 'theme';
 
 import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
+import { TPublication } from 'api/models';
 
 import { PubCtx } from '../ctx/pub-ctx';
 
@@ -22,7 +26,7 @@ import PubMainDetail from './PubMainDetail';
 
 const PublicationDetail = () => {
 	const { id } = useParams<{ id: string }>();
-
+	const theme = useTheme();
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
@@ -48,9 +52,9 @@ const PublicationDetail = () => {
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
 	}
-
+	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail.data?.policy === 'public';
-	const notRoot = detail.data?.model === 'periodical';
+	const datanode = pubChildren.data?.[0]?.datanode ?? false;
 
 	return (
 		<ResponsiveWrapper
@@ -69,26 +73,37 @@ const PublicationDetail = () => {
 				/>
 				{isPublic ? (
 					<>
-						{notRoot ? (
-							<Flex
-								width="100%"
-								p={4}
-								alignItems="center"
-								justifyContent="center"
-								fontWeight="bold"
-								fontSize="xl"
-								height="100vh"
+						{!datanode ? (
+							<Wrapper
+								overflowY="auto"
+								overflowX="hidden"
+								p={3}
+								maxHeight="90vh"
 							>
-								<Flex
-									justifyContent="center"
-									alignItems="center"
-									flexDirection="column"
-									mt={-100}
-								>
-									<MdClear size={60} />
-									<Text>Tento typ dokumentu zatím nelze zobrazit</Text>
+								<TileView
+									data={pubChildren.data as unknown as TPublication[]}
+								/>
+								<Text>Dlasie info</Text>
+								<Flex flexWrap="wrap">
+									{(pubChildren.data ?? []).map(ch => (
+										<Flex
+											key={ch.pid}
+											p={3}
+											m={2}
+											flexWrap="wrap"
+											css={css`
+												border: 1px solid ${theme.colors.primary};
+											`}
+										>
+											{Object.keys(ch.details).map(k => (
+												<Text key={k} m={2}>
+													{k} : {ch.details[k]}
+												</Text>
+											))}
+										</Flex>
+									))}
 								</Flex>
-							</Flex>
+							</Wrapper>
 						) : (
 							<Flex height="100vh" width="100%">
 								<PubMainDetail page={pageId} />

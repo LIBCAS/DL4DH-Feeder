@@ -61,8 +61,8 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 			<Flex
 				position="sticky"
 				bottom={0}
-				mt={2}
-				p={3}
+				mt={1}
+				p={2}
 				css={css`
 					border-top: 1px solid ${theme.colors.border};
 				`}

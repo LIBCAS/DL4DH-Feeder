@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { parse } from 'query-string';
 import { debounce, isEqual, omit } from 'lodash-es';
@@ -104,6 +104,7 @@ const MainSearchInput = () => {
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
 	});
+
 	const [localState, setLocalState] = useState('');
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
@@ -123,6 +124,19 @@ const MainSearchInput = () => {
 		setLocalState(state.searchQuery?.query ?? '');
 	}, [state.searchQuery]); */
 
+	useEffect(() => {
+		if (localState === '') {
+			if (selectedTagName && !selectedTagOp) {
+				setShowTagNameMenu(false);
+				setShowTagOpMenu(true);
+			}
+			if (selectedTagName && selectedTagOp) {
+				setShowTagNameMenu(false);
+				setShowTagOpMenu(false);
+			}
+		}
+	}, [localState, selectedTagName, selectedTagOp]);
+
 	const handleUpdateContext = (newState?: string) => {
 		if (selectedTagName) {
 			searchParams.append(
@@ -135,6 +149,14 @@ const MainSearchInput = () => {
 			setSelectedTagName(null);
 			setSelectedTagOp(null);
 			setSearchParams(searchParams);
+			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
+			if (
+				location.pathname.includes('/view/') ||
+				location.pathname.includes('/periodical/')
+			) {
+				console.log('aleluja');
+				nav('/search');
+			}
 		} else {
 			searchParams.set('query', newState ?? localState);
 			setLocalState('');
@@ -143,7 +165,10 @@ const MainSearchInput = () => {
 			setSearchParams(searchParams);
 
 			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
-			if (location.pathname.includes('/view/')) {
+			if (
+				location.pathname.includes('/view/') ||
+				location.pathname.includes('/periodical/')
+			) {
 				nav('/search');
 			}
 		}
@@ -187,7 +212,7 @@ const MainSearchInput = () => {
 		[selectedTagName, selectedTagOp],
 	);
 
-	const debouncedHint = useMemo(() => debounce(getHint, 200), [getHint]);
+	const debouncedHint = useMemo(() => debounce(getHint, 100), [getHint]);
 
 	return (
 		<>
@@ -197,7 +222,7 @@ const MainSearchInput = () => {
 				flexShrink={1}
 				position="relative"
 				overflow="visible"
-				zIndex={1}
+				zIndex={2}
 				ref={wrapperRef}
 			>
 				<TextInput
@@ -221,6 +246,7 @@ const MainSearchInput = () => {
 						if (localState === '') {
 							if (selectedTagName && !selectedTagOp) {
 								setShowTagOpMenu(true);
+								setShowTagNameMenu(false);
 							}
 							if (!selectedTagName) {
 								setShowTagNameMenu(true);
@@ -247,7 +273,9 @@ const MainSearchInput = () => {
 									nameFromOption={item => (item ? NameTagToText[item] : '')}
 									placeholder=""
 									arrowHidden
+									zIndex={5}
 									wrapperCss={css`
+										z-index: 3;
 										border: 1px solid ${theme.colors.primaryLight};
 										background: ${theme.colors.primaryLight};
 										visibility: ${selectedTagName ? 'visible' : 'hidden'};
@@ -347,7 +375,7 @@ const MainSearchInput = () => {
 									{hints.map((h, index) => (
 										<Flex
 											px={3}
-											py={2}
+											py={1}
 											key={index}
 											onClick={() => {
 												setLocalState(h);
@@ -363,7 +391,7 @@ const MainSearchInput = () => {
 												}
 											`}
 										>
-											<Text>{h}</Text>
+											<Text fontSize="md">{h}</Text>
 										</Flex>
 									))}
 								</Flex>

@@ -42,6 +42,14 @@ const AppRoutes: React.FC = () => {
 				}
 			/>
 			<Route
+				path="/periodical/:id"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<PublicationView />
+					</React.Suspense>
+				}
+			/>
+			<Route
 				path="/view/:id"
 				element={
 					<React.Suspense fallback={<Loader />}>
