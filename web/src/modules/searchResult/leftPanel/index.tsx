@@ -3,8 +3,7 @@ import { css } from '@emotion/react';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 import styled from '@emotion/styled/macro';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { parse, stringify } from 'query-string';
+import { useSearchParams } from 'react-router-dom';
 import { isEqual } from 'lodash-es';
 
 import { Box, Flex } from 'components/styled';
@@ -12,8 +11,6 @@ import Text from 'components/styled/Text';
 import MyAccordion from 'components/accordion';
 import Button from 'components/styled/Button';
 import LoaderSpin from 'components/loaders/LoaderSpin';
-
-import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 

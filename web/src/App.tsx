@@ -31,7 +31,7 @@ const App = () => {
 		[userResponse],
 	);
 
-	const routes = useMemo(() => getUserRoutes(user), [user]);
+	//	const routes = useMemo(() => getUserRoutes(user), [user]);
 
 	return (
 		<ThemeProvider>

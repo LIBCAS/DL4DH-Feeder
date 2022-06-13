@@ -35,7 +35,7 @@ const nkpRoot = {
 	modelMap: '#c0ca33', //mapa
 	modelMusic: '#9575cd', // hudebniny
 };
-
+/* 
 const wireRoot = {
 	primary: '#0099ff',
 	//primary: '#aa0b00',
@@ -56,7 +56,7 @@ const wireRoot = {
 	darkerGrey: '#B0B0B0',
 	lightGreen: '#5BCCC6',
 	darkGreen: '#00aae1',
-};
+}; */
 
 const headerStyleNKP = {
 	headerBg: nkpRoot.primary,

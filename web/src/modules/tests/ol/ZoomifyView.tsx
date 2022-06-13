@@ -7,8 +7,6 @@ import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
 import { FC, useEffect, useRef, useState } from 'react';
 import XML from 'xml2js';
-import Control from 'ol/control/Control';
-import { rotate } from 'ol/transform';
 import {
 	DragRotateAndZoom,
 	defaults as defaultInteractions,
@@ -46,10 +44,9 @@ const MapWrapper: FC<{
 	rotation: number;
 	zoom: number;
 	fullscreen: boolean;
-}> = ({ imgId, imgWidth, imgHeight, rotation, zoom, fullscreen }) => {
+}> = ({ imgId, imgWidth, imgHeight, rotation, fullscreen }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
-	let x;
 	useEffect(() => {
 		const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 		const source = new Zoomify({
@@ -60,15 +57,15 @@ const MapWrapper: FC<{
 		});
 		const extent = source?.getTileGrid()?.getExtent();
 
-		const retinaPixelRatio = 2;
-		const retinaSource = new Zoomify({
+		/*const retinaPixelRatio = 2;
+		 const retinaSource = new Zoomify({
 			url: zoomifyUrl,
 			size: [imgWidth, imgHeight],
 			crossOrigin: 'anonymous',
 			zDirection: -1, // Ensure we get a tile with the screen resolution or higher
 			tilePixelRatio: retinaPixelRatio, // Display retina tiles
 			tileSize: 256 / retinaPixelRatio, // from a higher zoom level
-		});
+		}); */
 
 		const layer = new TileLayer({
 			source: source,
@@ -170,7 +167,7 @@ const ZoomifyView: React.FC<{
 
 	return (
 		<Wrapper width={1} height="100vh">
-			{/* <button onClick={() => setFullscreen(p => !p)}>ROTATE</button> */}
+			<button onClick={() => setFullscreen(p => !p)}>fullscreen</button>
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}

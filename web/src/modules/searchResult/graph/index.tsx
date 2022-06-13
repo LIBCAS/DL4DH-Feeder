@@ -10,7 +10,6 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { groupBy } from 'lodash-es';
 import { MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Text from 'components/styled/Text';
@@ -34,6 +33,7 @@ const XAxisOptTuple = MakeTuple('authors', 'keywords', 'models', 'languages');
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
 	const [zoom, setZoom] = useState(50);
+	console.log({ zoom });
 	const [axisX, setAxisX] =
 		useState<keyof Omit<AvailableFilters, 'availability'>>('authors');
 

@@ -7,7 +7,6 @@ import useMeasure from 'react-use-measure';
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
-import Table from 'components/table';
 import ClassicTable from 'components/table/ClassicTable';
 
 import { TPublication } from 'api/models';
@@ -115,8 +114,6 @@ const ListView: FC<{
 		[],
 	);
 	const items = data ?? [];
-
-	console.log({ filterHeight });
 
 	return (
 		<>

@@ -3,8 +3,6 @@ import normalizeUtility from 'normalize-url';
 
 import { Backend } from 'api/endpoints';
 
-import { EASFilter } from './EASTypes';
-
 export type FilteredKeys<T, C> = {
 	[K in keyof T]: T[K] extends C ? K : never;
 }[keyof T];
@@ -94,7 +92,10 @@ const formatDate = (d: Date) => {
 	return newDate.toISOString().split('T')[0];
 };
 
-export const easRange = (field: string, date: Date): EASFilter[] => [
+export const easRange = (
+	field: string,
+	date: Date,
+): { field: string; operation: string; value: string }[] => [
 	{
 		field,
 		operation: 'GTE',

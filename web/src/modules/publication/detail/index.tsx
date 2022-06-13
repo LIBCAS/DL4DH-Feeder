@@ -2,9 +2,9 @@
 import { css } from '@emotion/core';
 import { useContext, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { MdClear, MdLock } from 'react-icons/md';
+import { MdLock } from 'react-icons/md';
 
-import { Box, Flex } from 'components/styled';
+import { Flex } from 'components/styled';
 import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
