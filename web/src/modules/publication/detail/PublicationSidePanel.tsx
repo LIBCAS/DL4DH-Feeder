@@ -35,7 +35,6 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 	return (
 		<Flex
 			position="relative"
-			// maxHeight="100vh"
 			width={leftCollapsed ? '0px' : 300}
 			flexShrink={0}
 			css={css`

@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Loader } from 'modules/loader';
+import TestTable from 'modules/tests/table/testtable';
 
 // const Home = React.lazy(() => import('./pages/Home'));
 // const About = React.lazy(() => import('./pages/About'));
@@ -13,6 +14,7 @@ const Authorize = React.lazy(() => import('modules/public/auth'));
 const Homepage = React.lazy(() => import('modules/public/homepage'));
 const MainSearch = React.lazy(() => import('modules/public/mainSearch'));
 const PublicationView = React.lazy(() => import('modules/publication/detail'));
+const Periodical = React.lazy(() => import('modules/publication/periodical'));
 
 const AppRoutes: React.FC = () => {
 	return (
@@ -29,7 +31,7 @@ const AppRoutes: React.FC = () => {
 				path="/test"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<>test page</>
+						<TestTable />
 					</React.Suspense>
 				}
 			/>
@@ -45,7 +47,7 @@ const AppRoutes: React.FC = () => {
 				path="/periodical/:id"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<PublicationView />
+						<Periodical />
 					</React.Suspense>
 				}
 			/>

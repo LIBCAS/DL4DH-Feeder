@@ -3,18 +3,13 @@ import { useEffect, useState } from 'react';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
-import { EASParams } from 'utils/EASTypes';
 import { SolrParams } from 'utils/SolrTypes';
 
-import { getEASMockReadings } from './faker';
 import { PublicationChild, PublicationDetail } from './models';
 
 export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: SolrParams]
 >(['search-publication'], (api, json) => api.post('search', { json }));
-
-export const useSearchPublications2 = (json: EASParams) =>
-	getEASMockReadings(json.size ?? 15, json.offset ?? 0);
 
 export const getPublicationDetail = async (uuid: string) => {
 	const r = await api().get('item/' + uuid);

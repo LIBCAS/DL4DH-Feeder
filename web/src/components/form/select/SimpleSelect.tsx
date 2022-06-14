@@ -33,11 +33,13 @@ export const ClickAway: FC<{ onClickAway: () => void }> = ({
 };
 
 type Props<T extends unknown> = {
-	nameFromOption?: (value: T | null) => string;
-	keyFromOption?: (value: T | null) => string;
+	options: T[];
 	value: T;
 	onChange: (item: T) => void;
-	options: T[];
+
+	menuFixedSize?: boolean;
+	nameFromOption?: (value: T | null) => string;
+	keyFromOption?: (value: T | null) => string;
 	renderMenuItem?: (item: T) => JSX.Element;
 	label?: string;
 	labelMinWidth?: number;
@@ -66,6 +68,7 @@ const SimpleSelect = <T extends unknown>({
 	placeholder,
 	arrowHidden,
 	isExpanded,
+	menuFixedSize = false,
 	...props
 }: ComponentProps<T>) => {
 	const height = props?.height ?? 40;
@@ -79,9 +82,15 @@ const SimpleSelect = <T extends unknown>({
 			left={0}
 			flexWrap="nowrap"
 			flexDirection="column"
+			width={menuFixedSize ? 'unset' : 1}
 			css={css`
 				border: 1px solid ${theme.colors.primaryLight};
 				border-bottom: none;
+				${variant === 'borderless' &&
+				css`
+					border-left: none;
+					border-right: none;
+				`}
 				cursor: pointer;
 				box-shadow: 0px 4px 12px rgb(212 215 217);
 			`}
@@ -89,7 +98,7 @@ const SimpleSelect = <T extends unknown>({
 			<Box position="relative" bg="white" width={1}>
 				{options.map((o, i) => (
 					<Box
-						fontSize="sm"
+						fontSize="md"
 						key={i}
 						css={css`
 							&:hover {
@@ -143,7 +152,7 @@ const SimpleSelect = <T extends unknown>({
 				height={height}
 				alignItems="center"
 				justifyContent="space-between"
-				fontSize="sm"
+				fontSize="md"
 				css={css`
 					cursor: pointer;
 					box-sizing: border-box;
@@ -185,6 +194,7 @@ const SimpleSelect = <T extends unknown>({
 						bg="transparent"
 						onClick={() => setShowMenu(false)}
 					/>
+
 					<Menu />
 				</ClickAway>
 			)}

@@ -30,6 +30,7 @@ const Sorting = () => {
 		<>
 			<Text mr={2}>Řazení</Text>
 			<SimpleSelect
+				variant="borderless"
 				value={state.sorting}
 				options={sortOptions}
 				onChange={setSortOption}

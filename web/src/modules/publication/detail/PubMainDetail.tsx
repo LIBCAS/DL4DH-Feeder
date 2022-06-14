@@ -16,6 +16,7 @@ import {
 	MdZoomOut,
 	MdFullscreen,
 	MdExpandMore,
+	MdFullscreenExit,
 } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
 import { useSearchParams } from 'react-router-dom';
@@ -46,7 +47,7 @@ const ToolButton: FC<{
 			css={css`
 				box-sizing: border-box;
 				border: 1px solid ${theme.colors.lightGrey};
-				color: black;
+				color: ${theme.colors.textCommon};
 				&:hover {
 					background-color: ${theme.colors.white};
 					color: ${theme.colors.primary};
@@ -64,78 +65,97 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 	const [ref, { width: viewportWidth }] = useMeasure({
 		debounce: 10,
 	});
+	const zoomRef = useRef<HTMLDivElement | null>(null);
+	const [fullscreen, setFullscreen] = useState<boolean>(false);
 
-	//const pbctx = usePublicationCtx();
-	const pbctx2 = useContext(PubCtx);
-	const theme = useTheme();
+	const pbctx = useContext(PubCtx);
 
 	const [pageUrl, setPageUrl] = useSearchParams();
 
 	const staticWidth = useMemo(() => viewportWidth, [viewportWidth]);
 
-	console.log('===========**============');
-
 	return (
-		<Flex ref={ref} width={1} bg="grey" alignItems="center" position="relative">
+		<Flex
+			ref={zoomRef}
+			width={1}
+			bg="grey"
+			alignItems="center"
+			position="relative"
+		>
 			<ZoomifyView id={page} rotation={rotation} />
+			<Flex position="absolute" width={1} bottom={70} justifyContent="center">
+				<Flex
+					alignItems="center"
+					justifyContent="space-between"
+					px={2}
+					py={2}
+					opacity="0.9"
+					bg="primaryLight"
+					css={css`
+						box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.2);
+					`}
+				>
+					<ToolButton
+						onClick={() => {
+							pageUrl.set('page', pbctx.currentPage?.prevPid ?? page);
+							setPageUrl(pageUrl);
+						}}
+						Icon={
+							<MdExpandMore
+								size={24}
+								css={css`
+									transform: rotate(90deg);
+								`}
+							/>
+						}
+					/>
 
-			<Flex
-				//display="none!important"
-				position="fixed"
-				alignItems="center"
-				justifyContent="space-between"
-				bottom={50}
-				left={`calc(40vw + ${50}px)`}
-				px={3}
-				py={3}
-				width={500}
-				bg="primaryLight"
-				css={css`
-					box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.08);
-				`}
-			>
-				<ToolButton
-					onClick={() => {
-						pageUrl.set('page', pbctx2.currentPage?.prevPid ?? page);
-						setPageUrl(pageUrl);
-					}}
-					Icon={
-						<MdExpandMore
-							size={30}
-							css={css`
-								transform: rotate(90deg);
-							`}
-						/>
-					}
-				/>
+					<ToolButton
+						onClick={() => setRotation(r => (r - 90) % 360)}
+						Icon={<MdRotateLeft size={24} />}
+					/>
+					<ToolButton
+						onClick={() => setRotation(r => (r + 90) % 360)}
+						Icon={<MdRotateRight size={24} />}
+					/>
+					<ToolButton onClick={() => null} Icon={<MdZoomIn size={24} />} />
+					<ToolButton onClick={() => null} Icon={<MdZoomOut size={24} />} />
 
-				<ToolButton
-					onClick={() => setRotation(r => (r - 90) % 360)}
-					Icon={<MdRotateLeft size={30} />}
-				/>
-				<ToolButton
-					onClick={() => setRotation(r => (r + 90) % 360)}
-					Icon={<MdRotateRight size={30} />}
-				/>
-				<ToolButton onClick={() => null} Icon={<MdZoomIn size={30} />} />
-				<ToolButton onClick={() => null} Icon={<MdZoomOut size={30} />} />
+					<ToolButton
+						onClick={() => {
+							if (fullscreen) {
+								document?.exitFullscreen();
+								setFullscreen(false);
+							}
+							if (!fullscreen) {
+								setFullscreen(true);
+								zoomRef.current?.requestFullscreen();
+							}
+						}}
+						Icon={
+							fullscreen ? (
+								<MdFullscreenExit size={24} />
+							) : (
+								<MdFullscreen size={24} />
+							)
+						}
+					/>
 
-				<ToolButton onClick={() => null} Icon={<MdFullscreen size={30} />} />
-
-				<ToolButton
-					onClick={() => {
-						pageUrl.set('page', pbctx2.currentPage?.nextPid ?? page);
-						setPageUrl(pageUrl);
-					}}
-					Icon={
-						<MdExpandMore
-							size={30}
-							css={css`
-								transform: rotate(-90deg);
-							`}
-						/>
-					}
-				/>
+					<ToolButton
+						onClick={() => {
+							pageUrl.set('page', pbctx.currentPage?.nextPid ?? page);
+							setPageUrl(pageUrl);
+						}}
+						Icon={
+							<MdExpandMore
+								size={24}
+								css={css`
+									transform: rotate(-90deg);
+								`}
+							/>
+						}
+					/>
+				</Flex>
 			</Flex>
 		</Flex>
 	);

@@ -7,8 +7,6 @@ import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
 import { FC, useEffect, useRef, useState } from 'react';
 import XML from 'xml2js';
-import Control from 'ol/control/Control';
-import { rotate } from 'ol/transform';
 import {
 	DragRotateAndZoom,
 	defaults as defaultInteractions,
@@ -45,11 +43,9 @@ const MapWrapper: FC<{
 	imgHeight: number;
 	rotation: number;
 	zoom: number;
-	fullscreen: boolean;
-}> = ({ imgId, imgWidth, imgHeight, rotation, zoom, fullscreen }) => {
+}> = ({ imgId, imgWidth, imgHeight, rotation }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
-	let x;
 	useEffect(() => {
 		const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 		const source = new Zoomify({
@@ -60,15 +56,15 @@ const MapWrapper: FC<{
 		});
 		const extent = source?.getTileGrid()?.getExtent();
 
-		const retinaPixelRatio = 2;
-		const retinaSource = new Zoomify({
+		/*const retinaPixelRatio = 2;
+		 const retinaSource = new Zoomify({
 			url: zoomifyUrl,
 			size: [imgWidth, imgHeight],
 			crossOrigin: 'anonymous',
 			zDirection: -1, // Ensure we get a tile with the screen resolution or higher
 			tilePixelRatio: retinaPixelRatio, // Display retina tiles
 			tileSize: 256 / retinaPixelRatio, // from a higher zoom level
-		});
+		}); */
 
 		const layer = new TileLayer({
 			source: source,
@@ -93,12 +89,6 @@ const MapWrapper: FC<{
 
 	map.current?.getView().setRotation((rotation * Math.PI) / 180);
 
-	useEffect(() => {
-		if (fullscreen) {
-			mapElement.current?.requestFullscreen();
-		}
-	}, [fullscreen]);
-
 	return (
 		<>
 			<Box
@@ -108,27 +98,7 @@ const MapWrapper: FC<{
 					width: 100%;
 					height: 100vh;
 				`}
-			>
-				{fullscreen && (
-					<Flex
-						position="fixed"
-						alignItems="center"
-						justifyContent="space-between"
-						bottom={50}
-						left={`calc(40vw + ${50}px)`}
-						px={3}
-						py={3}
-						width={500}
-						bg="primaryLight"
-						css={css`
-							box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.08);
-							z-index: 999;
-						`}
-					>
-						FULLSCREEN TOOLBAR
-					</Flex>
-				)}
-			</Box>
+			></Box>
 		</>
 	);
 };
@@ -149,7 +119,6 @@ const ZoomifyView: React.FC<{
 		};
 	};
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
-	const [fullscreen, setFullscreen] = useState<boolean>(false);
 
 	useEffect(() => {
 		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
@@ -170,7 +139,6 @@ const ZoomifyView: React.FC<{
 
 	return (
 		<Wrapper width={1} height="100vh">
-			{/* <button onClick={() => setFullscreen(p => !p)}>ROTATE</button> */}
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}
@@ -178,7 +146,6 @@ const ZoomifyView: React.FC<{
 				imgHeight={imgHeight}
 				rotation={rotation}
 				zoom={0}
-				fullscreen={fullscreen}
 			/>
 		</Wrapper>
 	);

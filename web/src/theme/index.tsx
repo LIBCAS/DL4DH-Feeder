@@ -7,12 +7,12 @@ import { FC } from 'react';
 const nkpRoot = {
 	primary: '#0389a7',
 	primaryLight: '#f5f5f5',
+	paper: '#f5f5f5',
 	primaryBright: 'rgba(3, 137, 167, 0.1)',
 	secondary: '#1E2838',
-	border: '#058ba8',
-	//border: '#684947',
+	//border: '#058ba8',
+	border: '#e0e0e0',
 	inactive: '#81a1a8ab',
-	//text: '#058ba8',
 	text: '#757575',
 	textCommon: '#757575',
 	textH4: '#212121',
@@ -35,7 +35,7 @@ const nkpRoot = {
 	modelMap: '#c0ca33', //mapa
 	modelMusic: '#9575cd', // hudebniny
 };
-
+/* 
 const wireRoot = {
 	primary: '#0099ff',
 	//primary: '#aa0b00',
@@ -56,7 +56,7 @@ const wireRoot = {
 	darkerGrey: '#B0B0B0',
 	lightGreen: '#5BCCC6',
 	darkGreen: '#00aae1',
-};
+}; */
 
 const headerStyleNKP = {
 	headerBg: nkpRoot.primary,

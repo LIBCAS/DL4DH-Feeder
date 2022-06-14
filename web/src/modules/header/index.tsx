@@ -41,9 +41,11 @@ const Header = () => {
 			mx={0}
 			maxHeight={60}
 			ref={ref}
+			zIndex={1}
 			css={css`
 				padding-bottom: 0px !important;
-				border-bottom: 1px solid ${theme.colors.border};
+				/* border-bottom: 1px solid ${theme.colors.border}; */
+				box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 29%);
 			`}
 		>
 			{pathname !== '/' ? (

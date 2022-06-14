@@ -9,7 +9,7 @@ import TileGrid from 'components/tiles';
 import { Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
 import { Wrapper } from 'components/styled/Wrapper';
-import Text, { H1, H3 } from 'components/styled/Text';
+import Text, { H3 } from 'components/styled/Text';
 
 import { theme } from 'theme';
 
