@@ -36,6 +36,8 @@ export type PublicationDetail = {
 	datanode: boolean;
 	pid: string;
 	root_pid: string;
+	rootTitle: string;
+	title: string;
 };
 
 export type PublicationsListDto = {
@@ -92,6 +94,7 @@ export type PublicationChild = {
 	root_pid: string;
 	root_title: string;
 	model: string;
+	enriched;
 };
 
 export type InfoDto = {

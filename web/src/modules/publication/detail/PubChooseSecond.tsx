@@ -10,6 +10,8 @@ import Pagination from 'components/table/Pagination';
 import Divider from 'components/styled/Divider';
 
 import ListView from 'modules/searchResult/list';
+import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
+import MainSearchInput from 'modules/public/mainSearch/MainSearchInput';
 
 import { useTheme } from 'theme';
 
@@ -62,8 +64,9 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						box-shadow: -10px 0px 10px 3px rgba(0, 0, 0, 0.1);
 					`}
 				>
-					<Flex height={'80vh'} width={1} position="relative">
-						<ListView data={data} isLoading={isLoading} />
+					{/* <MainSearchInput /> */}
+					<Flex height={'70vh'} width={1} position="relative">
+						<SplitScreenView data={data} isLoading={isLoading} />
 					</Flex>
 					<Divider my={3} />
 					<Pagination

@@ -1,13 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
+import RadioButton from 'components/styled/RadioButton';
 
 import { TPublication } from 'api/models';
 
@@ -34,28 +35,10 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
 		);
 	}
-	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
+	return <Cell title={row[cellKey] ?? '--'}>{row[cellKey] ?? '--'}</Cell>;
 };
 
-const renderRow = (row: TColumnsLayout) => (
-	<>
-		{colsOrder.map(cellKey => (
-			<Flex
-				key={cellKey}
-				alignItems="center"
-				justifyContent="flex-start"
-				flex={rowLayout[cellKey]}
-				fontSize="md"
-				p={2}
-				pl={[2, 3]}
-			>
-				{renderCell(row, cellKey)}
-			</Flex>
-		))}
-	</>
-);
-
-const ListView: FC<{
+const SplitScreenView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
@@ -63,44 +46,66 @@ const ListView: FC<{
 		debounce: 200,
 	});
 
-	const renderHeader = useCallback(
-		() =>
-			colsOrder.map(cellKey => (
-				<Flex
-					key={cellKey}
-					alignItems="center"
-					justifyContent="flex-start"
-					flex={rowLayout[cellKey]}
-					p={2}
-					pl={[2, 3]}
-					fontWeight="bold"
-					color="white"
-					css={css``}
-					/* onClick={() => {
-						if (sort.options[cellKey]) {
-							sort.setSelected(cellKey);
-						}
-					}}
-					css={css`
-						cursor: ${sort.options[cellKey] ? 'pointer' : 'unset'};
-					`}
-					title={
-						sort.options[cellKey]
-							? `Zoradiť podľa ${headerLabels[cellKey].text}`
-							: ''
-					} */
-				>
-					<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
+	const [selectedRow, setSelectedRow] = useState<number>(0);
+	console.log({ selectedRow });
 
-					{/* {sort.selected.key === cellKey &&
-						(sort.selected.order === 'ASC' ? (
-							<ArrowDownIcon ml={2} />
-						) : (
-							<ArrowUpIcon ml={2} />
-						))} */}
-				</Flex>
-			)),
+	const renderHeader = useCallback(
+		() => (
+			<>
+				<RadioButton
+					pl={[2, 3]}
+					name="empty"
+					checked={true}
+					onChange={() => null}
+					size="sm"
+				/>
+				{colsOrder.map(cellKey => (
+					<Flex
+						key={cellKey}
+						alignItems="center"
+						justifyContent="flex-start"
+						flex={rowLayout[cellKey]}
+						p={2}
+						pl={[2, 3]}
+						fontWeight="bold"
+						color="white"
+					>
+						<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
+					</Flex>
+				))}
+			</>
+		),
 		[],
+	);
+
+	const renderRow = useCallback(
+		(row: TColumnsLayout, rowIndex: number) => (
+			<>
+				<RadioButton
+					pl={[2, 3]}
+					name="split-choose"
+					checked={selectedRow === rowIndex}
+					onChange={() => setSelectedRow(rowIndex)}
+					size="sm"
+					bg={selectedRow === rowIndex ? 'enriched' : 'transparent'}
+				/>
+				{colsOrder.map(cellKey => (
+					<Flex
+						key={cellKey}
+						bg={selectedRow === rowIndex ? 'enriched' : 'transparent'}
+						alignItems="center"
+						justifyContent="flex-start"
+						flex={rowLayout[cellKey]}
+						fontSize="md"
+						p={2}
+						pl={[2, 3]}
+					>
+						{renderCell(row, cellKey)}
+					</Flex>
+				))}
+			</>
+		),
+		[selectedRow],
 	);
 	const items = data ?? [];
 
@@ -129,7 +134,7 @@ const ListView: FC<{
 						isLoading={isLoading}
 						renderRow={renderRow}
 						renderHeader={renderHeader}
-						minWidth={1500}
+						minWidth={900}
 					/>
 				</Flex>
 			</Wrapper>
@@ -137,4 +142,4 @@ const ListView: FC<{
 	);
 };
 
-export default ListView;
+export default SplitScreenView;

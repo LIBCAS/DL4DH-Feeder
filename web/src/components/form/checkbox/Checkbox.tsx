@@ -28,14 +28,14 @@ export type CheckboxProps = {
 	'type' | 'value' | 'onBlur'
 >;
 
-const StyledCheckbox = styled.div<
-	{
-		checked?: boolean;
-		hasError?: boolean;
-		disabled?: boolean;
-		colorVariant: CheckboxProps['colorVariant'];
-	} & SpaceProps
->`
+type StyledCheckboxProps = {
+	checked?: boolean;
+	hasError?: boolean;
+	disabled?: boolean;
+	colorVariant: CheckboxProps['colorVariant'];
+} & SpaceProps;
+
+const StyledCheckbox = styled.div<StyledCheckboxProps>`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;

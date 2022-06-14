@@ -43,8 +43,7 @@ const MapWrapper: FC<{
 	imgHeight: number;
 	rotation: number;
 	zoom: number;
-	fullscreen: boolean;
-}> = ({ imgId, imgWidth, imgHeight, rotation, fullscreen }) => {
+}> = ({ imgId, imgWidth, imgHeight, rotation }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	useEffect(() => {
@@ -90,12 +89,6 @@ const MapWrapper: FC<{
 
 	map.current?.getView().setRotation((rotation * Math.PI) / 180);
 
-	useEffect(() => {
-		if (fullscreen) {
-			mapElement.current?.requestFullscreen();
-		}
-	}, [fullscreen]);
-
 	return (
 		<>
 			<Box
@@ -105,27 +98,7 @@ const MapWrapper: FC<{
 					width: 100%;
 					height: 100vh;
 				`}
-			>
-				{fullscreen && (
-					<Flex
-						position="fixed"
-						alignItems="center"
-						justifyContent="space-between"
-						bottom={50}
-						left={`calc(40vw + ${50}px)`}
-						px={3}
-						py={3}
-						width={500}
-						bg="primaryLight"
-						css={css`
-							box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.08);
-							z-index: 999;
-						`}
-					>
-						FULLSCREEN TOOLBAR
-					</Flex>
-				)}
-			</Box>
+			></Box>
 		</>
 	);
 };
@@ -146,7 +119,6 @@ const ZoomifyView: React.FC<{
 		};
 	};
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
-	const [fullscreen, setFullscreen] = useState<boolean>(false);
 
 	useEffect(() => {
 		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
@@ -167,7 +139,6 @@ const ZoomifyView: React.FC<{
 
 	return (
 		<Wrapper width={1} height="100vh">
-			<button onClick={() => setFullscreen(p => !p)}>fullscreen</button>
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}
@@ -175,7 +146,6 @@ const ZoomifyView: React.FC<{
 				imgHeight={imgHeight}
 				rotation={rotation}
 				zoom={0}
-				fullscreen={fullscreen}
 			/>
 		</Wrapper>
 	);

@@ -68,7 +68,7 @@ const RadioButtonInput = styled.input<{ checked?: boolean; size: number }>`
 `;
 
 const mapRadioSizeButton: Record<'sm' | 'md' | 'lg', number> = {
-	sm: 28,
+	sm: 32,
 	md: 48,
 	lg: 64,
 };

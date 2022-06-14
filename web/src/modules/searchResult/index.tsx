@@ -15,7 +15,7 @@ import { AvailableFilters, PublicationDto } from 'api/models';
 import { useSearchContext } from 'hooks/useSearchContext';
 
 import ListView from './list';
-import TileView from './tiles';
+import TileView from './tiles/TileView';
 import GraphView from './graph';
 
 type Props = {

@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from '@emotion/core';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import Text from 'components/styled/Text';
 import { Box, Dot, Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
-import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { Loader } from 'modules/loader';
 
@@ -29,7 +28,7 @@ type Props<T extends TableItem> = {
 	headerHeight?: number;
 	rowHeight?: number;
 	data: T[];
-	renderRow: (row: T) => React.ReactNode;
+	renderRow: (row: T, rowIndex: number) => React.ReactNode;
 	renderHeader: (
 		collapsed: boolean,
 		setSortColumn?: (key: string) => void,
@@ -38,6 +37,8 @@ type Props<T extends TableItem> = {
 	isLoading?: boolean;
 	height?: number;
 	hideEditButton?: boolean;
+
+	openInNewTab?: boolean;
 };
 
 /** Table implementation */
@@ -51,18 +52,13 @@ const Table2 = <T extends TableItem>({
 	//rowHeight = 40,
 	isLoading,
 	hideEditButton,
-	height = 500,
 }: Props<T>) => {
 	const theme = useTheme();
-	const [tempAllChecked, setTempAllChecked] = useState(false);
 	const RenderRow: FC<{ rowIndex: number }> = ({ rowIndex }) => (
 		<Flex
 			css={css`
 				min-width: ${minWidth}px;
 				border-bottom: 1px solid ${theme.colors.primary};
-				border-left: 1px solid ${theme.colors.primary};
-				border-right: 1px solid ${theme.colors.primary};
-
 				background-color: ${rowIndex % 2
 					? theme.colors.tableRowEven
 					: theme.colors.tableRow};
@@ -76,10 +72,7 @@ const Table2 = <T extends TableItem>({
 				}
 			`}
 		>
-			<Flex mt={2} mx={2}>
-				<Checkbox checked={tempAllChecked} />
-			</Flex>
-			{renderRow(data[rowIndex])}
+			{renderRow(data[rowIndex], rowIndex)}
 			{!hideEditButton && (
 				<Flex
 					className="table-row-edit-button"
@@ -131,13 +124,6 @@ const Table2 = <T extends TableItem>({
 					min-width: ${isEmpty ? 'unset' : minWidth}px;
 				`}
 			>
-				<Flex mt={2} mx={2}>
-					<Checkbox
-						checked={tempAllChecked}
-						onChange={() => setTempAllChecked(p => !p)}
-						colorVariant="inverted"
-					/>
-				</Flex>
 				{renderHeader(false)}
 
 				<Flex
@@ -170,7 +156,7 @@ const Table2 = <T extends TableItem>({
 			css={css`
 				border: ${data.length < 1
 					? `1px solid ${theme.colors.border}`
-					: `1px solid white`};
+					: `1px solid ${theme.colors.border}`};
 			`}
 		>
 			{renderTableHeader(data.length < 1)}
