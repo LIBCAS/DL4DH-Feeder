@@ -36,9 +36,6 @@ const MainSearch: FC = () => {
 	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
 		{
 			start: state.start,
-			//pageSize: state.pageSize,
-			//yearFrom: state.searchQuery?.yearFrom,
-
 			...state.searchQuery,
 		},
 	);

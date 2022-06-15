@@ -21,10 +21,10 @@ type TRawSearchQuery = Omit<TSearchQuery, 'nameTagFilters'> & {
 };
 //TODO: Main searchquery parser, make hook from it and call it somwhere else probably (header? app?)
 const sanitizeSearchQuery = (q: TRawSearchQuery) => {
-	const sanitized = { ...omit(q, ['NT', 'from', 'to']) } as TSearchQuery;
+	const sanitized = { ...omit(q, ['NT']) } as TSearchQuery;
 
-	sanitized.yearFrom = get(q, 'from') ?? null;
-	sanitized.yearTo = get(q, 'to') ?? null;
+	//sanitized.yearFrom = get(q, 'from') ?? null;
+	//sanitized.yearTo = get(q, 'to') ?? null;
 
 	let NT = q?.NT;
 	if (typeof q.models === 'string') {

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-
+import { css } from '@emotion/react';
 import { useCallback, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { useSearchParams } from 'react-router-dom';
@@ -82,6 +82,7 @@ const PublishDateFilter = () => {
 			<Flex flexDirection="column" p={3}>
 				<Flex justifyContent="flex-start" alignItems="center">
 					<TextInput
+						p={'0px!important'}
 						id="yearFrom"
 						label="Od"
 						labelType="leftToInput"
@@ -101,6 +102,7 @@ const PublishDateFilter = () => {
 								alert('enter');
 							}
 						}}
+						inputPadding="8px"
 					/>
 					<TextInput
 						ml={2}
@@ -124,6 +126,7 @@ const PublishDateFilter = () => {
 								alert('enter');
 							}
 						}}
+						inputPadding="8px"
 					/>
 				</Flex>
 				<Box>

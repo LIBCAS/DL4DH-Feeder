@@ -27,8 +27,13 @@ const TileGrid: FC<Props> = ({
 		{!isLoading && isEmpty && (
 			<Flex flexDirection="column" justifyContent="center" flexGrow={1} my={3}>
 				{typeof noResults === 'string' ? (
-					<Paper alignItems="center" justifyContent="center">
-						<Text fontWeight="bold" textAlign="center" fontSize="xl">
+					<Paper
+						alignItems="center"
+						justifyContent="center"
+						bg="paper"
+						color="warning"
+					>
+						<Text fontWeight="bold" textAlign="center" fontSize="xxl">
 							{noResults}
 						</Text>
 						{/* <Box

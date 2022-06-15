@@ -241,15 +241,24 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			<ActiveFilters />
 			{avalItems.length > 0 && (
 				<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
-					<StatList
-						items={avalItems}
-						onClick={handleChangeFilter('availability')}
-					/>
+					{onRefresh => (
+						<StatList
+							items={avalItems}
+							onClick={handleChangeFilter('availability')}
+							refresh={onRefresh}
+						/>
+					)}
 				</MyAccordion>
 			)}
 			{modelItems.length > 0 && (
 				<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
-					<StatList items={modelItems} onClick={handleUpdateFilter('models')} />
+					{onRefresh => (
+						<StatList
+							items={modelItems}
+							onClick={handleUpdateFilter('models')}
+							refresh={onRefresh}
+						/>
+					)}
 				</MyAccordion>
 			)}
 			{keywordsItems.length > 0 && (
@@ -291,7 +300,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
 				<PublishDateFilter />
 			</MyAccordion>
-			<Box height="500px" />
+			<Box height="50px" />
 		</Box>
 	);
 };

@@ -72,8 +72,8 @@ export type FiltersDto = {
 	query: string;
 	queryEscaped: string;
 	availability: AvailabilityEnum;
-	yearFrom: string;
-	yearTo: string;
+	from: string;
+	to: string;
 	models: ModelsEnum[];
 	keywords: string[];
 	authors: string[];
