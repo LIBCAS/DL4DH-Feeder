@@ -21,8 +21,8 @@ public class FiltersDto {
     private Set<String> authors = new HashSet<>();
     private Set<String> languages = new HashSet<>();
     private Set<String> collections = new HashSet<>();
-    private Integer yearFrom;
-    private Integer yearTo;
+    private Integer from;
+    private Integer to;
 
     //K+ filters
     private List<NameTagFilterDto> nameTagFilters;
@@ -76,13 +76,13 @@ public class FiltersDto {
                     .collect(Collectors.toList()));
         }
 
-        if (yearFrom != null || yearTo != null) {
+        if (from != null || to != null) {
             List<String> yearList = new ArrayList<>();
-            if (yearFrom != null) {
-                yearList.add("datum_begin:["+yearFrom+" TO *]");
+            if (from != null) {
+                yearList.add("datum_begin:["+ from +" TO *]");
             }
-            if (yearTo != null) {
-                yearList.add("datum_begin:[* TO "+yearTo+"]");
+            if (to != null) {
+                yearList.add("datum_begin:[* TO "+ to +"]");
             }
             list.add(List.of(String.join(" AND ", yearList)));
         }
