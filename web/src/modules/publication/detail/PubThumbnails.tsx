@@ -1,20 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import {
-	createRef,
-	FC,
-	RefObject,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from 'react';
+import { createRef, FC, useEffect, useState } from 'react';
 import {
 	MdArrowDownward,
 	MdArrowUpward,
 	MdClear,
-	MdNavigateNext,
-	MdOutlineNavigateNext,
 	MdSearch,
 } from 'react-icons/md';
 import useMeasure from 'react-use-measure';

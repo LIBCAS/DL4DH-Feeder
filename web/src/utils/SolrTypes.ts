@@ -4,6 +4,8 @@ export type SolrParams = {
 	flipDirection?: boolean;
 	start?: number;
 	pageSize?: number;
+	yearFrom?: string;
+	yearTo?: string;
 };
 /*
 {

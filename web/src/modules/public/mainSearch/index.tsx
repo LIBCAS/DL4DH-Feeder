@@ -36,7 +36,9 @@ const MainSearch: FC = () => {
 	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
 		{
 			start: state.start,
-			pageSize: state.pageSize,
+			//pageSize: state.pageSize,
+			//yearFrom: state.searchQuery?.yearFrom,
+
 			...state.searchQuery,
 		},
 	);
@@ -180,10 +182,9 @@ const MainSearch: FC = () => {
 					width: 100%;
 					height: calc(100vh - ${INIT_HEADER_HEIGHT + SUB_HEADER_HEIGHT}px);
 				`}
-				bg="primaryLight"
+				bg="paper"
 			>
 				<Flex
-					key="kakakaka"
 					position="relative"
 					alignItems="flex-start"
 					flexShrink={0}
@@ -196,7 +197,7 @@ const MainSearch: FC = () => {
 				>
 					<SearchResultLeftPanel data={statsMemo} isLoading={isLoading} />
 				</Flex>
-				<Flex width={1} bg="white">
+				<Flex width={1} bg="paper">
 					<Results
 						data={data}
 						stats={statsMemo}

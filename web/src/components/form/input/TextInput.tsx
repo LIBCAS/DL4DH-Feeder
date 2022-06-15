@@ -144,6 +144,8 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 	loading,
 	labelType,
 	labelMinWidth = '110px',
+	wrapperCss,
+	colorVariant,
 	...inputProps
 }) => (
 	<Flex
@@ -158,6 +160,9 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 			minWidth={labelMinWidth}
 			required={required}
 			pb={labelType === 'leftToInput' ? 0 : 2}
+			/* css={css`
+				${wrapperCss}
+			`} */
 		>
 			{label}:
 		</Label>
@@ -166,6 +171,13 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 			flexGrow={1}
 			alignItems="center"
 			hasError={!!error && touched}
+			css={css`
+				${colorVariant === 'inverted' &&
+				css`
+					background: white;
+				`}
+				${wrapperCss}
+			`}
 		>
 			{iconLeft && (
 				<Box mr={2} flex={0}>

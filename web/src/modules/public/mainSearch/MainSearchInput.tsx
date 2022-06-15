@@ -4,7 +4,7 @@ import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { parse } from 'query-string';
-import { debounce, isEqual, omit } from 'lodash-es';
+import { debounce, get, isEqual, omit } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
@@ -52,9 +52,13 @@ function getKeyByValue(object: Record<string, string>, value: string) {
 type TRawSearchQuery = Omit<TSearchQuery, 'nameTagFilters'> & {
 	NT: string | string[];
 };
-
+//TODO: Main searchquery parser, make hook from it and call it somwhere else probably (header? app?)
 const sanitizeSearchQuery = (q: TRawSearchQuery) => {
-	const sanitized = { ...omit(q, 'NT') } as TSearchQuery;
+	const sanitized = { ...omit(q, ['NT', 'from', 'to']) } as TSearchQuery;
+
+	sanitized.yearFrom = get(q, 'from') ?? null;
+	sanitized.yearTo = get(q, 'to') ?? null;
+
 	let NT = q?.NT;
 	if (typeof q.models === 'string') {
 		sanitized.models = [q.models];
