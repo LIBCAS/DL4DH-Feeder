@@ -4,7 +4,7 @@ import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 
 import { Box, Flex } from 'components/styled';
-import Text, { H4 } from 'components/styled/Text';
+import { H4 } from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 
@@ -27,7 +27,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 	return (
 		<Box overflow="hidden">
 			<Flex
-				pb={exp ? 0 : 1}
+				//pb={exp ? 0 : 1}
 				pt={1}
 				px={2}
 				justifyContent="space-between"
@@ -54,11 +54,24 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 				<LoaderSpin />
 			) : (
 				<Box
+					//height="auto"
 					height={exp ? 'auto' : 0}
-					// height={exp ? height : 0}
-					//minHeight={1}
+					//maxHeight={exp ? 1000 : 1}
+					minHeight={1}
 					css={css`
-						transition: height 0.2s;
+						transition: max-height 0.5s ease;
+						overflow: hidden;
+
+						/* clip: rect(auto, auto, ${exp ? height : 0}px, auto); */
+
+						/* transition: clip 0.2s ease; */
+
+						/* position: relative; */
+						/*
+						transition-property: clip;
+						transition-duration: 1.5s;
+						transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			*/
 					`}
 				>
 					<div ref={measureRef}>

@@ -53,6 +53,7 @@ const StyledButton = styled.button<Props>`
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	transition: filter 250ms ease;
 
 	&:disabled {
 		${p =>
@@ -93,9 +94,8 @@ const StyledButton = styled.button<Props>`
 		!p.hoverDisable &&
 		css`
 			&:hover {
-				background-color: ${p.theme.colors.secondary};
-				border: 1px solid ${p.theme.colors.secondary};
-				transition: background-color 50ms ease-out;
+				filter: brightness(1.1);
+				box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
 			}
 		`}
 
@@ -106,6 +106,10 @@ const StyledButton = styled.button<Props>`
 			border: 1px solid ${p.theme.colors.primary};
 			font-weight: 700;
 			color: ${p.theme.colors.primary};
+			&:hover {
+				filter: brightness(1.15);
+				box-shadow: inset 0px 0px 3px 1px rgba(0, 0, 0, 0.05);
+			}
 		`}
 		
 

@@ -67,18 +67,18 @@ const GlobalStyles = () => (
 		styles={(theme: Theme) => css`
 			body {
 				margin: 0;
-				font-family: 'RobotoCondensed-Regular', -apple-system,
-					BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-					'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+				font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+					'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+					'Helvetica Neue', sans-serif;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 				color: ${theme.colors.text};
 			}
 
 			* {
-				font-family: 'RobotoCondensed-Regular', -apple-system,
-					BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-					'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+				font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+					'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+					'Helvetica Neue', sans-serif;
 			}
 
 			*:focus {
@@ -104,14 +104,14 @@ const GlobalStyles = () => (
 
 			input {
 				min-width: 0;
-				font-family: 'RobotoCondensed-Regular', -apple-system,
-					BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-					'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+				font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+					'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+					'Helvetica Neue', sans-serif;
 			}
 			button {
-				font-family: 'RobotoCondensed-Regular', -apple-system,
-					BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-					'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+				font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+					'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+					'Helvetica Neue', sans-serif;
 			}
 		`}
 	/>

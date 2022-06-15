@@ -69,7 +69,7 @@ const TileView: FC<Props> = ({ data }) => {
 							>
 								<Flex
 									height="100%"
-									bg={d.enriched ? 'enriched' : 'primaryLight'}
+									bg={d.enriched ? 'enriched' : 'white'}
 									p={2}
 									css={css`
 										border: 1px solid ${theme.colors.border};

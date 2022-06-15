@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { parse } from 'query-string';
-import { debounce, isEqual, omit } from 'lodash-es';
+import { debounce, isEqual } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
@@ -16,86 +15,21 @@ import Button from 'components/styled/Button';
 import { useTheme } from 'theme';
 import { api } from 'api';
 
-import {
-	ModelsEnum,
-	NameTagCode,
-	NameTagFilterDto,
-	OperationCode,
-	TagNameEnum,
-} from 'api/models';
+import { NameTagCode, OperationCode, TagNameEnum } from 'api/models';
 
 import {
 	fieldsTuple,
 	operationsTuple,
 	TOperation,
-	TSearchQuery,
 	useSearchContext,
 } from 'hooks/useSearchContext';
+import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 
 import { NameTagToText } from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',
 	NOT_EQUAL: '\u{2260}',
-};
-
-/* const FieldToTextLabel: Record<TagNameEnum, string> = {
-	author: 'Autor',
-	keyword: 'Klucove slovo',
-	title: 'Titul',
-}; */
-
-function getKeyByValue(object: Record<string, string>, value: string) {
-	return Object.keys(object).find(key => object[key] === value);
-}
-
-type TRawSearchQuery = Omit<TSearchQuery, 'nameTagFilters'> & {
-	NT: string | string[];
-};
-
-const sanitizeSearchQuery = (q: TRawSearchQuery) => {
-	const sanitized = { ...omit(q, 'NT') } as TSearchQuery;
-	let NT = q?.NT;
-	if (typeof q.models === 'string') {
-		sanitized.models = [q.models];
-	}
-	if (typeof q.keywords === 'string') {
-		sanitized.keywords = [q.keywords];
-	}
-	if (typeof q.authors === 'string') {
-		sanitized.authors = [q.authors];
-	}
-	if (typeof q.languages === 'string') {
-		sanitized.languages = [q.languages];
-	}
-
-	if (sanitized.models) {
-		sanitized.models = sanitized.models.map(
-			m => m.toLocaleUpperCase() as ModelsEnum,
-		);
-	}
-
-	if (typeof NT === 'string') {
-		NT = [NT];
-	}
-	if (NT) {
-		const parsedNT = NT.map(nt => {
-			const type = getKeyByValue(NameTagCode, nt[0]) as TagNameEnum;
-			const operator = getKeyByValue(OperationCode, nt[1]) as
-				| 'EQUAL'
-				| 'NOT_EQUAL';
-			const value = nt.slice(2);
-			const filter: NameTagFilterDto = {
-				type,
-				operator,
-				values: [value],
-			};
-			return filter;
-		});
-		sanitized.nameTagFilters = parsedNT;
-	}
-
-	return sanitized;
 };
 
 const MainSearchInput = () => {
@@ -175,10 +109,7 @@ const MainSearchInput = () => {
 	};
 
 	const { search } = useLocation();
-	const parsed = useMemo(
-		() => sanitizeSearchQuery(parse(search) as unknown as TRawSearchQuery),
-		[search],
-	);
+	const parsed = useSanitizeSearchQuery(search);
 
 	useEffect(() => {
 		if (!isEqual(parsed, state.searchQuery)) {
@@ -404,12 +335,15 @@ const MainSearchInput = () => {
 			</Flex>
 			<Flex flexShrink={0}>
 				<Button
-					width={150}
+					width={120}
 					variant="primary"
 					py={2}
 					mr={[2, 2, 2, 0]}
-					onClick={() => handleUpdateContext()}
-					disabled={localState === ''}
+					onClick={() => localState !== '' && handleUpdateContext()}
+					css={css`
+						box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.15);
+					`}
+					//disabled={localState === ''}
 				>
 					Hledat v K+
 				</Button>

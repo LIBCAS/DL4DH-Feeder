@@ -66,6 +66,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 				css={css`
 					border-top: 1px solid ${theme.colors.border};
 				`}
+				bg="white"
 			>
 				<Pagination
 					page={state.page}

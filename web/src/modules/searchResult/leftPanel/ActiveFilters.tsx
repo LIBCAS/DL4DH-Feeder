@@ -29,8 +29,13 @@ function removeParam(
 	value: string,
 	unique: boolean,
 ) {
-	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
+	if (key === 'yearsInterval') {
+		sp.delete('from');
+		sp.delete('to');
+		return;
+	}
 
+	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
 	const newEntries = entries.filter(entry => entry !== value);
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
@@ -44,6 +49,8 @@ const enumToText = (type: string, value: string) => {
 			return availabilityToText(value);
 		case 'query':
 			return `Řetězec: "${value}"`;
+		case 'yearsInterval':
+			return `Léta: ${value}`;
 
 		default:
 			return value;
@@ -56,6 +63,11 @@ const ActiveFilters: React.FC = () => {
 	const [sp, setSp] = useSearchParams();
 	const nav = useNavigate();
 	const NT = state.searchQuery?.nameTagFilters;
+
+	const yearsInterval = `${state.searchQuery?.from ?? null} - ${
+		state.searchQuery?.to ?? null
+	}`;
+
 	const arrayFilters: Record<string, string[]> = {
 		keywords: state.searchQuery?.keywords ?? [],
 		models: state.searchQuery?.models ?? [],
@@ -65,6 +77,7 @@ const ActiveFilters: React.FC = () => {
 			? [state.searchQuery.availability]
 			: [],
 		query: state.searchQuery?.query ? [state.searchQuery?.query] : [],
+		yearsInterval: yearsInterval.includes('null') ? [] : [yearsInterval],
 	};
 
 	// no filters?

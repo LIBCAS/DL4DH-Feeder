@@ -30,31 +30,34 @@ export default Text;
 export const H1 = styled(Text)`
 	color: ${theme.colors.primary};
 	font-size: ${theme.fontSizes.xxl}px;
-	font-family: 'RobotoCondensed-bold';
+	font-family: 'Roboto';
+	font-weight: bold;
 `;
 
 export const H2 = styled(Text)`
 	color: ${theme.colors.primary};
 	font-size: ${theme.fontSizes.lg}px;
-	font-family: 'RobotoCondensed-Regular';
+	font-family: 'Roboto';
 `;
 
 export const H3 = styled(Text)`
 	${p => css`
 		color: ${p.color ?? theme.colors.primary};
 		font-size: ${theme.fontSizes.lg}px;
-		font-family: 'RobotoCondensed-Regular';
+		font-family: 'Roboto';
 	`}
 `;
 
 export const H4 = styled(Text)`
 	color: ${theme.colors.textH4};
 	font-size: ${theme.fontSizes.lg}px;
-	font-family: 'RobotoCondensed-Bold';
+	font-family: 'Roboto';
+	font-weight: bold;
 `;
 
 export const H5 = styled(Text)`
 	color: ${theme.colors.textH4};
 	font-size: ${theme.fontSizes.md}px;
-	font-family: 'RobotoCondensed-Regular';
+	font-family: 'Roboto';
+	font-weight: bold;
 `;

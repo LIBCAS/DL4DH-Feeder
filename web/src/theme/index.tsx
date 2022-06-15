@@ -71,7 +71,7 @@ export const theme = {
 	//breakpoints: ['40em', '52em', '64em', '76em'],
 	breakpoints: ['800px', '1200px', '1300px', '1500px', '1920px'],
 	breakpointsInt: [800, 1200, 1300, 1500, 1920],
-	fontSizes: { sm: 12, md: 14, lg: 16, xl: 18, xxl: 26 },
+	fontSizes: { sm: 12, md: 14, lg: 15, xl: 18, xxl: 26 },
 	space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
 };
 

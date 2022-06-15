@@ -19,6 +19,7 @@ import { AvailableFilters, ModelsEnum } from 'api/models';
 import { modelToText } from 'utils/enumsMap';
 
 import ActiveFilters from './ActiveFilters';
+import PublishDateFilter from './PublishDateFilter';
 
 type StatItem = {
 	label: string;
@@ -212,8 +213,6 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			//TODO: riesi ked je nejaky model nieco/nieco
 			if (type === 'models' && key.split('/').length > 1) {
 				const keyArr = key.split('/');
-				console.log('keyArr');
-				console.log(keyArr);
 				keyArr.forEach(k => searchParams.append(type, k));
 				setSearchParams(searchParams);
 			} else {
@@ -242,15 +241,24 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			<ActiveFilters />
 			{avalItems.length > 0 && (
 				<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
-					<StatList
-						items={avalItems}
-						onClick={handleChangeFilter('availability')}
-					/>
+					{onRefresh => (
+						<StatList
+							items={avalItems}
+							onClick={handleChangeFilter('availability')}
+							refresh={onRefresh}
+						/>
+					)}
 				</MyAccordion>
 			)}
 			{modelItems.length > 0 && (
 				<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
-					<StatList items={modelItems} onClick={handleUpdateFilter('models')} />
+					{onRefresh => (
+						<StatList
+							items={modelItems}
+							onClick={handleUpdateFilter('models')}
+							refresh={onRefresh}
+						/>
+					)}
 				</MyAccordion>
 			)}
 			{keywordsItems.length > 0 && (
@@ -289,6 +297,10 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 					)}
 				</MyAccordion>
 			)}
+			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
+				<PublishDateFilter />
+			</MyAccordion>
+			<Box height="50px" />
 		</Box>
 	);
 };

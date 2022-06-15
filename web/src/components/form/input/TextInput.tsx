@@ -32,16 +32,19 @@ export type TextInputProps = {
 	iconLeft?: React.ReactElement;
 	iconRight?: React.ReactElement;
 	hideArrows?: boolean;
+	inputPadding?: string;
 	loading?: boolean;
 	wrapperCss?: SerializedStyles;
 } & React.InputHTMLAttributes<HTMLInputElement> &
 	FlexProps;
 
-export const InputWrapper = styled(Flex)<{
+type InputWrapperProps = {
 	hasError?: boolean;
 	inverted?: boolean;
 	borderless?: boolean;
-}>`
+};
+
+export const InputWrapper = styled(Flex)<InputWrapperProps>`
 	color: ${p => p.theme.colors.primary};
 	border: ${p => (p.borderless ? 0 : 1)}px solid ${p => p.theme.colors.border};
 	padding: 0;
@@ -68,9 +71,9 @@ export const InputWrapper = styled(Flex)<{
 	} */
 `;
 
-export const Label = styled.label<
-	SpaceProps & LayoutProps & { required?: boolean }
->`
+type LabelProps = SpaceProps & LayoutProps & { required?: boolean };
+
+export const Label = styled.label<LabelProps>`
 	text-align: left;
 	white-space: nowrap;
 	font-family: 'Roboto', 'Drive', -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -95,7 +98,6 @@ export const InputCss = (theme: Theme) => css`
 	border: 0;
 	background-color: transparent;
 	padding: 14px ${theme.space[2]}px;
-	/* line-height: 3.5; */
 
 	&:disabled {
 		color: ${theme.colors.darkerGrey};
@@ -111,7 +113,12 @@ export const InputCss = (theme: Theme) => css`
 	}
 `;
 
-export const Input = styled.input<{ hideArrows?: boolean }>`
+type InputProps = {
+	hideArrows?: boolean;
+	inputPadding?: string;
+};
+
+export const Input = styled.input<InputProps>`
 	color: ${p => p.theme.colors.primary};
 	font-weight: bold;
 	${p => InputCss(p.theme)}
@@ -130,6 +137,11 @@ export const Input = styled.input<{ hideArrows?: boolean }>`
 				-moz-appearance: textfield;
 			}
 		`}
+		${p =>
+		p.inputPadding &&
+		css`
+			padding: ${p.inputPadding};
+		`}
 `;
 
 const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
@@ -144,6 +156,8 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 	loading,
 	labelType,
 	labelMinWidth = '110px',
+	wrapperCss,
+	colorVariant,
 	...inputProps
 }) => (
 	<Flex
@@ -158,6 +172,9 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 			minWidth={labelMinWidth}
 			required={required}
 			pb={labelType === 'leftToInput' ? 0 : 2}
+			/* css={css`
+				${wrapperCss}
+			`} */
 		>
 			{label}:
 		</Label>
@@ -166,6 +183,13 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 			flexGrow={1}
 			alignItems="center"
 			hasError={!!error && touched}
+			css={css`
+				${colorVariant === 'inverted' &&
+				css`
+					background: white;
+				`}
+				${wrapperCss}
+			`}
 		>
 			{iconLeft && (
 				<Box mr={2} flex={0}>
