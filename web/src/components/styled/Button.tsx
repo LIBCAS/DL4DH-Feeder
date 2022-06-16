@@ -87,14 +87,14 @@ const StyledButton = styled.button<Props>`
 		css`
 			background: ${p.theme.colors.primary};
 			border: 1px solid ${p.theme.colors.primary};
-			font-weight: 700;
+			font-weight: bold;
 		`}
 		${p =>
 		p.variant === 'primary' &&
 		!p.hoverDisable &&
 		css`
 			&:hover {
-				filter: brightness(1.1);
+				filter: brightness(1.05);
 				box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
 			}
 		`}
@@ -104,7 +104,7 @@ const StyledButton = styled.button<Props>`
 		css`
 			background: transparent;
 			border: 1px solid ${p.theme.colors.primary};
-			font-weight: 700;
+			font-weight: bold;
 			color: ${p.theme.colors.primary};
 			&:hover {
 				filter: brightness(1.15);

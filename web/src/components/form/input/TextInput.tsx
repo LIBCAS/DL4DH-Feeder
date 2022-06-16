@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { css, SerializedStyles } from '@emotion/core';
-import { FC } from 'react';
+import { FC, forwardRef } from 'react';
 import { FieldMetaProps } from 'formik';
 import isEmpty from 'lodash-es/isEmpty';
 import { space, SpaceProps, layout, LayoutProps } from 'styled-system';
@@ -214,92 +214,103 @@ const LabelTextInput: React.FC<Omit<TextInputProps, 'hideLabelOnValue'>> = ({
 	</Flex>
 );
 
-const InlineTextInput: React.FC<Omit<TextInputProps, 'labelType'>> = ({
-	id,
-	value,
-	label,
-	required,
-	hideLabelOnValue = false,
-	colorVariant,
-	error,
-	touched,
-	iconLeft,
-	iconRight,
-	loading,
-	wrapperCss,
-	...inputProps
-}) => (
-	<InputWrapper
-		width={1}
-		alignItems="center"
-		hasError={!!error && touched}
-		color="text"
-		inverted={colorVariant === 'inverted'}
-		p={0}
-		css={css`
-			${colorVariant === 'inverted' &&
-			css`
-				background: white;
+const InlineTextInput = forwardRef<
+	HTMLInputElement,
+	Omit<TextInputProps, 'labelType'>
+>(
+	(
+		{
+			id,
+			value,
+			label,
+			required,
+			hideLabelOnValue = false,
+			colorVariant,
+			error,
+			touched,
+			iconLeft,
+			iconRight,
+			loading,
+			wrapperCss,
+			...inputProps
+		},
+		ref,
+	) => (
+		<InputWrapper
+			width={1}
+			alignItems="center"
+			hasError={!!error && touched}
+			color="text"
+			inverted={colorVariant === 'inverted'}
+			p={0}
+			css={css`
+				${colorVariant === 'inverted' &&
+				css`
+					background: white;
+				`}
+				${wrapperCss}
 			`}
-			${wrapperCss}
-		`}
-	>
-		{iconLeft && (
-			<Box minWidth="auto" mr={2}>
-				{iconLeft}
-			</Box>
-		)}
-
-		<Label
-			htmlFor={id}
-			pr={2}
-			css={[hideLabelOnValue && !isEmpty(value) && OffscreenCSS]}
-			required={required}
 		>
-			{label}
-		</Label>
+			{iconLeft && (
+				<Box minWidth="auto" mr={2}>
+					{iconLeft}
+				</Box>
+			)}
 
-		<Input {...inputProps} id={id} value={value} />
+			<Label
+				htmlFor={id}
+				pr={2}
+				css={[hideLabelOnValue && !isEmpty(value) && OffscreenCSS]}
+				required={required}
+			>
+				{label}
+			</Label>
 
-		{iconRight && (
-			<Box minWidth="auto" ml={2}>
-				{iconRight}
-			</Box>
-		)}
+			<Input {...inputProps} id={id} value={value} ref={ref} />
 
-		{loading && (
-			<Box minWidth="auto" ml={1}>
-				{/* <LoaderSpin size={23} /> */}
-			</Box>
-		)}
-	</InputWrapper>
+			{iconRight && (
+				<Box minWidth="auto" ml={2}>
+					{iconRight}
+				</Box>
+			)}
+
+			{loading && (
+				<Box minWidth="auto" ml={1}>
+					{/* <LoaderSpin size={23} /> */}
+				</Box>
+			)}
+		</InputWrapper>
+	),
 );
+InlineTextInput.displayName = InlineTextInput.name;
 
-const TextInput: React.FC<TextInputProps> = ({
-	type = 'text',
-	labelType = 'leftToInput',
-	error,
-	touched,
-	...props
-}) => {
-	const inputProps = {
-		type,
-		labelType,
-		error,
-		touched,
-		...props,
-	};
+const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+	(
+		{ type = 'text', labelType = 'leftToInput', error, touched, ...props },
+		ref,
+	) => {
+		const inputProps = {
+			type,
+			labelType,
+			error,
+			touched,
+			...props,
+		};
 
-	return (
-		<Box width={1} {...props}>
-			{labelType !== 'inline' && <LabelTextInput {...inputProps} />}
+		return (
+			<Box width={1} {...props}>
+				{labelType !== 'inline' && <LabelTextInput {...inputProps} />}
 
-			{labelType === 'inline' && <InlineTextInput {...inputProps} />}
+				{labelType === 'inline' && (
+					<InlineTextInput {...inputProps} ref={ref} />
+				)}
 
-			{error && touched && <ErrorFeedback>{error}</ErrorFeedback>}
-		</Box>
-	);
-};
+				{error && touched && <ErrorFeedback>{error}</ErrorFeedback>}
+			</Box>
+		);
+	},
+);
+TextInput.displayName = TextInput.name;
 
 export const InfoBox: FC<
 	{

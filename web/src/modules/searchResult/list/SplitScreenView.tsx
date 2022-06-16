@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
@@ -41,7 +41,8 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 const SplitScreenView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
-}> = ({ data, isLoading }) => {
+	variant: 'left' | 'right';
+}> = ({ data, isLoading, variant }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
 		debounce: 200,
 	});
@@ -54,7 +55,7 @@ const SplitScreenView: FC<{
 			<>
 				<RadioButton
 					pl={[2, 3]}
-					name="empty"
+					name={`header-${variant}`}
 					checked={true}
 					onChange={() => null}
 					size="sm"
@@ -83,7 +84,7 @@ const SplitScreenView: FC<{
 			<>
 				<RadioButton
 					pl={[2, 3]}
-					name="split-choose"
+					name={`radio-${variant}`}
 					checked={selectedRow === rowIndex}
 					onChange={() => setSelectedRow(rowIndex)}
 					size="sm"
@@ -105,9 +106,13 @@ const SplitScreenView: FC<{
 				))}
 			</>
 		),
-		[selectedRow],
+		[selectedRow, data],
 	);
 	const items = data ?? [];
+
+	useEffect(() => {
+		setSelectedRow(0);
+	}, [data]);
 
 	return (
 		<>

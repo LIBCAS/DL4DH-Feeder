@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import Button, { NavButton, NavLinkButton } from 'components/styled/Button';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import MainSearchInput from 'modules/public/mainSearch/MainSearchInput';
@@ -81,24 +81,39 @@ const Header = () => {
 
 					<MainSearchInput />
 
-					<Flex flexShrink={0} color="headerColor">
+					<Flex ml={1} flexShrink={0} color="headerColor">
 						{!isMobile && (
 							<>
-								<Button color="headerColor" variant="text">
+								<NavLinkButton
+									to="/collections"
+									color="headerColor"
+									variant="primary"
+									minWidth={50}
+								>
 									Sbírky
-								</Button>
-								<Button color="headerColor" variant="text">
+								</NavLinkButton>
+								<NavLinkButton
+									to="/browse"
+									color="headerColor"
+									variant="primary"
+									minWidth={50}
+								>
 									Procházet
-								</Button>
-								<Button color="headerColor" variant="text">
+								</NavLinkButton>
+								<NavLinkButton
+									to="/about"
+									color="headerColor"
+									variant="primary"
+									minWidth={50}
+								>
 									Informace
-								</Button>
-								<Button color="headerColor" variant="text">
+								</NavLinkButton>
+								<Button color="headerColor" variant="primary" minWidth={50}>
 									English
 								</Button>
 							</>
 						)}
-						<Button minWidth={150} variant="primary">
+						<Button minWidth={100} variant="primary">
 							Přejít do Kraméria
 						</Button>
 					</Flex>

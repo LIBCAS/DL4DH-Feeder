@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { debounce, isEqual } from 'lodash-es';
 import useMeasure from 'react-use-measure';
@@ -38,6 +38,9 @@ const MainSearchInput = () => {
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
 	});
+	const mainInputRef = useRef<HTMLInputElement | null>(null);
+	const testRef = useRef<HTMLInputElement | null>(null);
+	const [hh, setHh] = useState(0);
 
 	const [localState, setLocalState] = useState('');
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
@@ -71,42 +74,46 @@ const MainSearchInput = () => {
 		}
 	}, [localState, selectedTagName, selectedTagOp]);
 
-	const handleUpdateContext = (newState?: string) => {
-		if (selectedTagName) {
-			searchParams.append(
-				'NT',
-				`${NameTagCode[selectedTagName]}${
-					OperationCode[selectedTagOp ?? 'EQUAL']
-				}${newState ?? localState}`,
-			);
-			setLocalState('');
-			setSelectedTagName(null);
-			setSelectedTagOp(null);
-			setSearchParams(searchParams);
-			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
-			if (
-				location.pathname.includes('/view/') ||
-				location.pathname.includes('/periodical/')
-			) {
-				console.log('aleluja');
-				nav('/search');
-			}
-		} else {
-			searchParams.set('query', newState ?? localState);
-			setLocalState('');
-			setSelectedTagName(null);
-			setSelectedTagOp(null);
-			setSearchParams(searchParams);
+	const handleUpdateContext = useCallback(
+		(newState?: string) => {
+			if (selectedTagName) {
+				searchParams.append(
+					'NT',
+					`${NameTagCode[selectedTagName]}${
+						OperationCode[selectedTagOp ?? 'EQUAL']
+					}${newState ?? localState}`,
+				);
+				setLocalState('');
+				setSelectedTagName(null);
+				setSelectedTagOp(null);
+				setSearchParams(searchParams);
+				//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
+				if (!location.pathname.includes('/search?')) {
+					nav('/search?' + searchParams);
+				}
+			} else {
+				searchParams.set('query', newState ?? localState);
+				setLocalState('');
+				setSelectedTagName(null);
+				setSelectedTagOp(null);
+				setSearchParams(searchParams);
 
-			//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
-			if (
-				location.pathname.includes('/view/') ||
-				location.pathname.includes('/periodical/')
-			) {
-				nav('/search');
+				//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
+				if (!location.pathname.includes('/search?')) {
+					nav('/search?' + searchParams);
+				}
 			}
-		}
-	};
+		},
+		[
+			localState,
+			location.pathname,
+			nav,
+			searchParams,
+			selectedTagName,
+			selectedTagOp,
+			setSearchParams,
+		],
+	);
 
 	const { search } = useLocation();
 	const parsed = useSanitizeSearchQuery(search);
@@ -162,15 +169,25 @@ const MainSearchInput = () => {
 					labelType="inline"
 					color="primary"
 					value={localState}
+					ref={mainInputRef}
 					onChange={e => {
 						setShowTagNameMenu(false);
 						setShowTagOpMenu(false);
 						setLocalState(e.target.value);
 						debouncedHint(e.target.value);
 					}}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
+					onKeyPress={e => {
+						if (e.key === 'Enter' && localState !== '') {
+							e.preventDefault();
+							e.stopPropagation();
 							handleUpdateContext();
+						}
+					}}
+					onKeyDown={e => {
+						if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+							e.stopPropagation();
+							e.preventDefault();
+							testRef.current?.focus();
 						}
 					}}
 					onClick={() => {
@@ -231,8 +248,10 @@ const MainSearchInput = () => {
 										value={selectedTagOp}
 										options={operationsTuple}
 										onChange={operation => {
+											console.log({ ss: 'defocusing' });
 											setShowTagOpMenu(false);
 											setSelectedTagOp(operation);
+											mainInputRef.current?.focus();
 										}}
 										keyFromOption={item =>
 											item ? OperationToTextLabel[item] : ''
@@ -283,6 +302,47 @@ const MainSearchInput = () => {
 						)
 					}
 				/>
+				<div style={{ position: 'absolute', left: '-1000px', opacity: 0 }}>
+					<input
+						width={0}
+						height={0}
+						ref={testRef}
+						onKeyPress={e => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								e.stopPropagation();
+								setLocalState(hints[hh]);
+								handleUpdateContext(hints[hh]);
+								setHh(0);
+								setHints([]);
+							}
+						}}
+						onKeyDown={e => {
+							if (e.key === 'Escape') {
+								e.preventDefault();
+								e.stopPropagation();
+								mainInputRef.current?.focus();
+								setHh(0);
+								setHints([]);
+							}
+							if (e.key === 'ArrowDown') {
+								e.stopPropagation();
+								setHh(p => (p + 1) % hints.length);
+							}
+							if (e.key === 'ArrowUp') {
+								e.stopPropagation();
+								setHh(p => {
+									if (p <= 0) {
+										return hints.length - 1;
+									} else {
+										return p - 1;
+									}
+								});
+							}
+						}}
+					/>
+				</div>
+
 				{hints.length > 0 &&
 					localState !== '' &&
 					(!showTagNameMenu || !showTagOpMenu) && (
@@ -316,6 +376,8 @@ const MainSearchInput = () => {
 												handleUpdateContext(h);
 												setHints([]);
 											}}
+											bg={index === hh ? 'primary' : 'initial'}
+											color={index === hh ? 'white' : 'initial'}
 											css={css`
 												cursor: default;
 												border-bottom: 1px solid ${theme.colors.primaryLight};

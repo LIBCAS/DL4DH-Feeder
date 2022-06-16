@@ -26,7 +26,7 @@ import { useInfoApi } from 'api/infoApi';
 
 const Homepage: FC = () => {
 	const [toSearch, setToSearch] = useState('');
-	const [publicOnly, setPublicOnly] = useState<boolean>(false);
+	const [publicOnly, setPublicOnly] = useState<boolean>(true);
 	const [hints, setHints] = useState<string[]>([]);
 	const [wrapperRef, { width }] = useMeasure({
 		debounce: 100,
@@ -122,7 +122,7 @@ const Homepage: FC = () => {
 								<Flex
 									position="absolute"
 									left={16}
-									top={50}
+									top={40}
 									bg="white"
 									color="text"
 									css={css`
