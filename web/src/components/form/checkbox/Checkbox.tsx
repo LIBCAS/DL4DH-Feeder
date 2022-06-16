@@ -39,9 +39,9 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	width: 20px;
-	min-width: 20px;
-	height: 20px;
+	width: 16px;
+	min-width: 16px;
+	height: 16px;
 	border: 1px solid
 		${p => {
 			if (p.disabled) {

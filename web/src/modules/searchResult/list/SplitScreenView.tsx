@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
 import { FC, useCallback, useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
@@ -48,18 +47,19 @@ const SplitScreenView: FC<{
 	});
 
 	const [selectedRow, setSelectedRow] = useState<number>(0);
-	console.log({ selectedRow });
 
 	const renderHeader = useCallback(
 		() => (
 			<>
-				<RadioButton
-					pl={[2, 3]}
-					name={`header-${variant}`}
-					checked={true}
-					onChange={() => null}
-					size="sm"
-				/>
+				<div style={{ opacity: 0 }}>
+					<RadioButton
+						pl={[2, 3]}
+						name={`header-${variant}`}
+						checked={true}
+						onChange={() => null}
+						size="sm"
+					/>
+				</div>
 				{colsOrder.map(cellKey => (
 					<Flex
 						key={cellKey}

@@ -1,17 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
-import { Flex } from 'components/styled';
+import { Box, Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
+import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { TPublication } from 'api/models';
 
-import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
+import {
+	availabilityToTextTag,
+	modelToText,
+	PUBLICATION_EXPORT_STORE_KEY,
+} from 'utils/enumsMap';
+import Store from 'utils/Store';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 
@@ -28,7 +34,6 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	if (cellKey === 'model') {
 		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
 	}
-
 	if (cellKey === 'availability') {
 		return (
 			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
@@ -37,46 +42,70 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 };
 
-const renderRow = (row: TColumnsLayout) => (
-	<>
-		{colsOrder.map(cellKey => (
-			<Flex
-				key={cellKey}
-				alignItems="center"
-				justifyContent="flex-start"
-				flex={rowLayout[cellKey]}
-				fontSize="md"
-				p={2}
-				pl={[2, 3]}
-			>
-				{renderCell(row, cellKey)}
-			</Flex>
-		))}
-	</>
-);
-
 const ListView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
-		debounce: 200,
+		debounce: 50,
 	});
 
-	const renderHeader = useCallback(
-		() =>
-			colsOrder.map(cellKey => (
+	const [toExport, setToExport] = useState<string | null>(null);
+	useEffect(() => {
+		Store.set(PUBLICATION_EXPORT_STORE_KEY, toExport);
+	}, [toExport]);
+
+	const renderRow = useCallback(
+		(row: TColumnsLayout) => (
+			<>
 				<Flex
-					key={cellKey}
-					alignItems="center"
-					justifyContent="flex-start"
-					flex={rowLayout[cellKey]}
-					p={2}
 					pl={[2, 3]}
-					fontWeight="bold"
-					color="white"
-					css={css``}
-					/* onClick={() => {
+					alignItems="center"
+					bg={row.pid === toExport ? 'enriched' : 'initial'}
+				>
+					<Checkbox
+						label=""
+						checked={row.pid === toExport}
+						onChange={() => setToExport(row.pid)}
+					/>
+				</Flex>
+				{colsOrder.map(cellKey => (
+					<Flex
+						bg={row.pid === toExport ? 'enriched' : 'initial'}
+						key={cellKey}
+						alignItems="center"
+						justifyContent="flex-start"
+						flex={rowLayout[cellKey]}
+						fontSize="md"
+						p={2}
+						pl={[2, 3]}
+					>
+						{renderCell(row, cellKey)}
+					</Flex>
+				))}
+			</>
+		),
+		[toExport],
+	);
+
+	const renderHeader = useCallback(
+		() => (
+			<>
+				<Flex pl={[2, 3]} alignItems="center">
+					<Checkbox label="" colorVariant="inverted" />
+				</Flex>
+				{colsOrder.map(cellKey => (
+					<Flex
+						key={cellKey}
+						alignItems="center"
+						justifyContent="flex-start"
+						flex={rowLayout[cellKey]}
+						p={2}
+						pl={[2, 3]}
+						fontWeight="bold"
+						color="white"
+						css={css``}
+						/* onClick={() => {
 						if (sort.options[cellKey]) {
 							sort.setSelected(cellKey);
 						}
@@ -89,17 +118,19 @@ const ListView: FC<{
 							? `Zoradiť podľa ${headerLabels[cellKey].text}`
 							: ''
 					} */
-				>
-					<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
+					>
+						<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
 
-					{/* {sort.selected.key === cellKey &&
+						{/* {sort.selected.key === cellKey &&
 						(sort.selected.order === 'ASC' ? (
 							<ArrowDownIcon ml={2} />
 						) : (
 							<ArrowUpIcon ml={2} />
 						))} */}
-				</Flex>
-			)),
+					</Flex>
+				))}
+			</>
+		),
 		[],
 	);
 	const items = data ?? [];

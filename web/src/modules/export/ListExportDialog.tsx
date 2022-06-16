@@ -12,14 +12,47 @@ import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
 import Checkbox from 'components/form/checkbox/Checkbox';
 
+import { api } from 'api';
+
+import {
+	usePublicationChildren,
+	usePublicationDetail,
+} from 'api/publicationsApi';
+
+import Store from 'utils/Store';
+import { PUBLICATION_EXPORT_STORE_KEY } from 'utils/enumsMap';
+
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
 
+export type Sort = {
+	field: string;
+	direction: 'ASC' | 'DESC';
+};
+
+export type Filter = {
+	id: string;
+	field: string;
+	operation: 'EQ';
+	value: string;
+};
+
+type Params = {
+	disablePagination?: boolean;
+	pageOffset?: number;
+	pageSize?: number;
+	sort?: Sort;
+	filters?: Filter[];
+	includeFields?: string[];
+	excludeFields?: string[];
+};
+
 const formatOptions: FormatOption[] = [
-	{ label: 'Formát 1', id: 'format1' },
-	{ label: 'Formát 2', id: 'format2' },
-	{ label: 'Formát 3', id: 'format3' },
-	{ label: 'Formát 4', id: 'format4' },
+	{ label: 'TEXT', id: 'text' },
+	{ label: 'TEI', id: 'tei' },
+	{ label: 'JSON', id: 'json' },
+	{ label: 'CSV', id: 'csv' },
+	{ label: 'ALTO', id: 'alto' },
 ];
 
 const attributesOptions: AtributeOption[] = [
@@ -36,6 +69,13 @@ type ExportFormType = {
 };
 
 const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
+	//const pubId2 = 'uuid:2cc15a70-a7e4-11e6-b707-005056827e51';
+	const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
+
+	const pubDetail = usePublicationDetail(pubId);
+
+	console.log({ pub: pubDetail.data });
+
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
 			format: formatOptions[0],
@@ -43,10 +83,33 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 			exportAll: false,
 		},
 
-		onSubmit: values => {
+		onSubmit: async values => {
 			console.log({ values });
+			const params = {
+				//includeFields: ['author'],
+				sort: [{ field: 'index', direction: 'ASC' }],
+			};
 
-			alert('exporting api');
+			try {
+				const response = await api().post(
+					`exports/${pubId}/${values.format.id}`,
+					{ json: params },
+				);
+				/* const response = await fetch(
+					`https://dl4dh.inqool.cz/api/exports/${pubId}/${values.format.id}`,
+					{
+						method: 'POST',
+						headers: new Headers({ 'Content-Type': 'application/json' }),
+						body: JSON.stringify(params),
+					},
+				);
+ 				*/
+				console.log({ response });
+
+				closeModal();
+			} catch (error) {
+				console.log({ error });
+			}
 			closeModal();
 		},
 	});
@@ -124,7 +187,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
-								<Text ml={2}>10 Stránek</Text>
+								<Text ml={2}>? Stránek</Text>
 							</Flex>
 						</Flex>
 					</Box>

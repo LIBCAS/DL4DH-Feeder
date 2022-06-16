@@ -113,7 +113,7 @@ const Pagination: FC<Props> = ({
 	);
 
 	useEffect(() => {
-		const limit = parseInt(Store.get<string>('vsd-pagination-limit') ?? '');
+		const limit = parseInt(Store.get<string>('feeder-pagination-limit') ?? '');
 		if (limit && pageLimitOptions.some(l => l === limit)) {
 			changeLimit(limit);
 		}
@@ -138,7 +138,7 @@ const Pagination: FC<Props> = ({
 					onChange={e => {
 						const limit = parseInt(e.target.value);
 						changeLimit(limit);
-						Store.set<number>('vsd-pagination-limit', limit);
+						Store.set<number>('feeder-pagination-limit', limit);
 						changePage(0);
 					}}
 				>

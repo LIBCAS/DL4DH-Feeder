@@ -106,3 +106,5 @@ export const NameTagToText: Record<TagNameEnum, string> = {
 	COMPLEX_ADDRESS_EXPRESSION: 'Komplexní vyjádření adresy',
 	COMPLEX_BIBLIO_EXPRESSION: 'COMPLEX_BIBLIO_EXPRESSION',
 };
+
+export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';
