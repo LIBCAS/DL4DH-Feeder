@@ -35,8 +35,9 @@ export const ClickAway: FC<{ onClickAway: () => void }> = ({
 type Props<T extends unknown> = {
 	options: T[];
 	value: T;
-	onChange: (item: T) => void;
-
+	onChange?: (item: T) => void;
+	setFieldValue?: (field: string, value: T) => void;
+	formikId?: string;
 	menuFixedSize?: boolean;
 	nameFromOption?: (value: T | null) => string;
 	keyFromOption?: (value: T | null) => string;
@@ -56,6 +57,8 @@ type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
 const SimpleSelect = <T extends unknown>({
 	nameFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
 	keyFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
+	setFieldValue,
+	formikId,
 	onChange,
 	options,
 	value,
@@ -69,6 +72,7 @@ const SimpleSelect = <T extends unknown>({
 	arrowHidden,
 	isExpanded,
 	menuFixedSize = false,
+
 	...props
 }: ComponentProps<T>) => {
 	const height = props?.height ?? 40;
@@ -107,8 +111,16 @@ const SimpleSelect = <T extends unknown>({
 							${menuItemCss}
 						`}
 						onClick={() => {
-							onChange(o);
-							setShowMenu(false);
+							if (setFieldValue) {
+								setFieldValue(formikId ?? '', o);
+								setShowMenu(false);
+								return;
+							}
+							if (onChange) {
+								onChange(o);
+								setShowMenu(false);
+								return;
+							}
 						}}
 					>
 						{renderMenuItem ? (

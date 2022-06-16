@@ -56,9 +56,11 @@ const PeriodicalDetail = () => {
 	}, [pages, pageId]);
 	//TODO:
 	useEffect(() => {
-		console.log({ detail: detail.data });
-		console.log({ children: pubChildren.data });
-		if (pubChildren.data?.[0]?.model === 'periodicalitem') {
+		if (
+			pubChildren.data?.[0]?.model === 'page' ||
+			pubChildren.data?.[0]?.model === 'periodicalitem' ||
+			pubChildren.data?.[0]?.model === 'periodicalitem/monograph'
+		) {
 			nav('/view/' + pubChildren.data?.[0].pid, { replace: true });
 		}
 	}, [pubChildren.data, detail.data, nav]);
@@ -97,7 +99,7 @@ const PeriodicalDetail = () => {
 				>
 					<Flex pl={3}>
 						<Text>
-							Výsledky: <strong>1</strong>
+							Výsledky: <strong>{pubChildren.data?.length ?? 0}</strong>
 						</Text>
 					</Flex>
 				</Flex>

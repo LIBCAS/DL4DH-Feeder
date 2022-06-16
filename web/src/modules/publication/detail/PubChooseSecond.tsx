@@ -1,43 +1,35 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { css } from '@emotion/react';
 
-import ModalDialog from 'components/modal';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
-import { Box, Flex } from 'components/styled';
+import { Flex } from 'components/styled';
 import Pagination from 'components/table/Pagination';
 import Divider from 'components/styled/Divider';
 
-import ListView from 'modules/searchResult/list';
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
-import MainSearchInput from 'modules/public/mainSearch/MainSearchInput';
+import QuerySearchInput from 'modules/public/mainSearch/QuerySearchInput';
 
 import { useTheme } from 'theme';
 
 import { useSearchPublications } from 'api/publicationsApi';
 
-import { useSearchContext } from 'hooks/useSearchContext';
-
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
-		const { state, dispatch } = useSearchContext();
-		const { data, count, isLoading, hasMore, statistics } =
-			useSearchPublications({
-				start: state.start,
-				pageSize: state.pageSize,
-				...state.searchQuery,
-			});
+		const [query, setQuery] = useState<string | undefined>('');
+		const [page, setPage] = useState(0);
+		const [pageLimit, setPageLimit] = useState(30);
+		const handleQueryChange = (query: string) => setQuery(query);
 
-		const changePage = useCallback(
-			(page: number) => dispatch?.({ type: 'setPage', page }),
-			[dispatch],
-		);
+		const { data, count, isLoading, hasMore } = useSearchPublications({
+			start: page * pageLimit,
+			pageSize: pageLimit,
+			query,
+		});
 
-		const setPageLimit = useCallback(
-			(pageSize: number) => dispatch?.({ type: 'setPageSize', pageSize }),
-			[dispatch],
-		);
+		const changePage = useCallback((page: number) => setPage(page), [setPage]);
+
 		const theme = useTheme();
 
 		return (
@@ -64,19 +56,25 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						box-shadow: -10px 0px 10px 3px rgba(0, 0, 0, 0.1);
 					`}
 				>
-					{/* <MainSearchInput /> */}
+					<Flex px={2}>
+						<QuerySearchInput onQueryUpdate={handleQueryChange} />
+					</Flex>
 					<Flex height={'70vh'} width={1} position="relative">
-						<SplitScreenView data={data} isLoading={isLoading} />
+						<SplitScreenView
+							data={data}
+							isLoading={isLoading}
+							variant={variant}
+						/>
 					</Flex>
 					<Divider my={3} />
 					<Pagination
-						page={state.page}
+						page={page}
 						changePage={changePage}
-						changeLimit={setPageLimit}
-						pageLimit={state.pageSize}
+						changeLimit={limit => setPageLimit(limit)}
+						pageLimit={pageLimit}
 						totalCount={count}
 						hasMore={hasMore}
-						offset={state.start}
+						offset={page * pageLimit}
 						loading={isLoading}
 					/>
 					<Divider my={3} />

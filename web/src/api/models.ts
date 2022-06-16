@@ -92,11 +92,12 @@ export type PublicationChild = {
 	details: {
 		volumeNumber: string;
 		year: string;
+		partNumber: string;
 	};
 	root_pid: string;
 	root_title: string;
 	model: string;
-	enriched;
+	enriched: boolean;
 };
 
 export type InfoDto = {

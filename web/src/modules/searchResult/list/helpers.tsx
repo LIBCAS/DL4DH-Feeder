@@ -7,9 +7,9 @@ export type TColumnsLayout = Pick<
 
 export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	title: 3,
-	model: 2,
-	availability: 2,
-	date: 2,
+	model: 1,
+	availability: 0.5,
+	date: 0.5,
 	pid: 0,
 };
 

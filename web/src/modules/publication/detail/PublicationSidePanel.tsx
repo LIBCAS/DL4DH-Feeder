@@ -56,18 +56,25 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 				width={1}
 				flexDirection="column"
 			>
-				<Flex alignItems="center" justifyContent="center" p={2} width={1}>
-					<Button variant="primary" onClick={() => setChooseSecond(p => !p)}>
-						Vyhledávaní v množině záznamů
-					</Button>
-					{chooseSecond && (
-						<PubChooseSecond
-							onClose={() => setChooseSecond(false)}
-							variant={variant}
-						/>
-					)}
-				</Flex>
-				<Divider />
+				{variant === 'right' && (
+					<>
+						<Flex alignItems="center" justifyContent="center" p={2} width={1}>
+							<Button
+								variant="primary"
+								onClick={() => setChooseSecond(p => !p)}
+							>
+								Vyhledávaní v množině záznamů
+							</Button>
+							{chooseSecond && (
+								<PubChooseSecond
+									onClose={() => setChooseSecond(false)}
+									variant={variant}
+								/>
+							)}
+						</Flex>
+						<Divider />
+					</>
+				)}
 				<Flex
 					height={60}
 					bg="primaryLight"

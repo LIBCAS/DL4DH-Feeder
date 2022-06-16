@@ -39,9 +39,9 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	width: 20px;
-	min-width: 20px;
-	height: 20px;
+	width: 16px;
+	min-width: 16px;
+	height: 16px;
 	border: 1px solid
 		${p => {
 			if (p.disabled) {
@@ -54,6 +54,9 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 
 	&:focus-within {
 		${p => FocusStyle(p.theme)}
+	}
+	&:hover {
+		cursor: pointer;
 	}
 
 	${p =>
@@ -142,6 +145,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
 							`1px solid ${theme.colors.error}`};
 							padding-bottom: ${!!error && touched && '4px'};
 							color: ${colorVariant === 'inverted' && 'white'};
+							cursor: pointer;
 						`}
 					>
 						{label}
