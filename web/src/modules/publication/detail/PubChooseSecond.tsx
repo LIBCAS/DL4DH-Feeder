@@ -19,7 +19,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
 		const [query, setQuery] = useState<string | undefined>('');
 		const [page, setPage] = useState(0);
-		const [pageLimit, setPageLimit] = useState(15);
+		const [pageLimit, setPageLimit] = useState(30);
 		const handleQueryChange = (query: string) => setQuery(query);
 
 		const { data, count, isLoading, hasMore } = useSearchPublications({

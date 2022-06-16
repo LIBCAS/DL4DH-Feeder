@@ -61,6 +61,12 @@ const PeriodicalTiles: FC<Props> = ({ data }) => {
 									<Text mb={2} color="primary" fontWeight="bold">
 										{d.details.year}
 									</Text>
+
+									{d.title && (
+										<Text mb={2} color="primary" fontWeight="bold">
+											{d.title}
+										</Text>
+									)}
 								</Flex>
 								<Flex
 									width="95px"
@@ -109,15 +115,28 @@ const PeriodicalTiles: FC<Props> = ({ data }) => {
 									alignItems="center"
 									color={d.enriched ? 'black' : 'textCommon'}
 								>
-									<Text
-										css={css`
-											text-overflow: ellipsis;
-											overflow: hidden;
-											white-space: nowrap;
-										`}
-									>
-										Ročník {d.details.volumeNumber}
-									</Text>
+									{d.details.volumeNumber !== undefined && (
+										<Text
+											css={css`
+												text-overflow: ellipsis;
+												overflow: hidden;
+												white-space: nowrap;
+											`}
+										>
+											Ročník {d.details.volumeNumber}
+										</Text>
+									)}
+									{d.details.partNumber !== null && (
+										<Text
+											css={css`
+												text-overflow: ellipsis;
+												overflow: hidden;
+												white-space: nowrap;
+											`}
+										>
+											{d.details.partNumber}
+										</Text>
+									)}
 								</Flex>
 							</Flex>
 						</a>

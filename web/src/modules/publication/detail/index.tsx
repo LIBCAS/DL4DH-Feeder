@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useContext, useEffect, useMemo } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { MdLock } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
@@ -9,7 +9,6 @@ import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
-import TileView from 'modules/searchResult/tiles/TileView';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
@@ -18,7 +17,6 @@ import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
-import { TPublication } from 'api/models';
 
 import { PubCtx } from '../ctx/pub-ctx';
 
@@ -33,6 +31,7 @@ const PublicationDetail = () => {
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
 	const [page] = useSearchParams();
 	const pubCtx = useContext(PubCtx);
+	const nav = useNavigate();
 
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
@@ -49,6 +48,14 @@ const PublicationDetail = () => {
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId]);
+
+	useEffect(() => {
+		console.log(pubChildren.isSuccess);
+		if (pubChildren.isSuccess && !pubChildren.data[0].datanode) {
+			console.log('afafasfas');
+			nav(`/periodical/${id}`, { replace: true });
+		}
+	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);
 
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;

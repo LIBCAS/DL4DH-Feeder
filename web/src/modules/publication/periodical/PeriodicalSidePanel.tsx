@@ -8,6 +8,8 @@ import { useTheme } from 'theme';
 
 import { PublicationChild } from 'api/models';
 
+import PubBiblioDetail from '../detail/PubBiblioDetail';
+
 type Props = {
 	variant: 'left' | 'right';
 	defaultView?: 'detail' | 'search';
@@ -32,6 +34,7 @@ const PeriodicalSidePanel: FC<Props> = ({
 			position="relative"
 			width={width}
 			flexShrink={0}
+			height="100vh"
 			css={css`
 				${variant === 'left' &&
 				css`
@@ -43,7 +46,9 @@ const PeriodicalSidePanel: FC<Props> = ({
 				`}
         transition: width 200ms ease-in-out;
 			`}
-		></Flex>
+		>
+			{variant === 'right' && <PubBiblioDetail />}
+		</Flex>
 	);
 };
 
