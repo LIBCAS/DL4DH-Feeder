@@ -31,7 +31,7 @@ const About = () => {
 							{info.data?.krameriusPlus.version ?? '--'}
 						</Text>
 						<Text>feeder:</Text>
-						<Text fontWeight="bold">{info.data?.version ?? '--'}</Text>
+						<Text fontWeight="bold">{info.data?.feeder.version ?? '--'}</Text>
 					</Grid>
 				</Box>
 			</Paper>

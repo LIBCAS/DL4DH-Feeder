@@ -101,16 +101,18 @@ export type PublicationChild = {
 };
 
 export type InfoDto = {
-	version: string;
-	kramerius: {
+	feeder: {
 		version: string;
-		name: string;
-		nameEn: string;
-		logo: string;
 	};
 	krameriusPlus: {
 		version: string;
-		time: string;
+		timeOfLastBuild: string;
+	};
+	kramerius: {
+		version: string;
+		name: string;
+		name_en: string;
+		logo: string;
 	};
 };
 

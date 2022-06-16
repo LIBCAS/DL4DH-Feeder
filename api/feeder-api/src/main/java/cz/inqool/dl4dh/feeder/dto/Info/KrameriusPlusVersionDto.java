@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class KrameriusPlusVersionDto {
     private String version;
-    private String time;
+    private String timeOfLastBuild;
 }

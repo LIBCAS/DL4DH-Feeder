@@ -1,13 +1,16 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.inqool.dl4dh.feeder.dto.Info.FeederVersionDto;
 import cz.inqool.dl4dh.feeder.dto.Info.InfoDto;
-import cz.inqool.dl4dh.feeder.dto.Info.KrameriusInfoDto;
 import cz.inqool.dl4dh.feeder.dto.Info.KrameriusPlusVersionDto;
+import cz.inqool.dl4dh.feeder.dto.Info.KrameriusVersionDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,11 +29,14 @@ public class InfoApi {
 
     @GetMapping
     public InfoDto info() {
-        KrameriusPlusVersionDto plusInfo = krameriusPlus.get()
-                .uri("/info/version").retrieve().bodyToMono(KrameriusPlusVersionDto.class).block();
-        KrameriusInfoDto krameriuInfo = krameriusPlus.get()
-                .uri("/info/kramerius").retrieve().bodyToMono(KrameriusInfoDto.class).block();
-        return new InfoDto(version, krameriuInfo.krameriusInfoDto(), plusInfo);
+        Map<Object, Object> krameriusInfo = krameriusPlus.get()
+                .uri("/info").retrieve().bodyToMono(Map.class).block();
+        ObjectMapper mapper = new ObjectMapper();
+        return new InfoDto(
+                new FeederVersionDto(version),
+                mapper.convertValue(krameriusInfo.get("krameriusPlus"), KrameriusPlusVersionDto.class),
+                mapper.convertValue(krameriusInfo.get("kramerius"), KrameriusVersionDto.class)
+        );
     }
 
     @Resource(name = "krameriusPlusWebClient")

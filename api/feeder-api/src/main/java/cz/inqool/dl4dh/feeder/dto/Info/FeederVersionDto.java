@@ -7,9 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class KrameriusPlusInfoDto {
+public class FeederVersionDto {
     private String version;
-    private String name;
-    private String nameEn;
-    private String logo;
 }

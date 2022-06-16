@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class InfoDto {
-    private String version;
-    private KrameriusPlusInfoDto kramerius;
+    private FeederVersionDto feeder;
     private KrameriusPlusVersionDto krameriusPlus;
+    private KrameriusVersionDto kramerius;
 }
