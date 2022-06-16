@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
-import Button, { NavButton, NavLinkButton } from 'components/styled/Button';
+import Button, { NavLinkButton } from 'components/styled/Button';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import MainSearchInput from 'modules/public/mainSearch/MainSearchInput';

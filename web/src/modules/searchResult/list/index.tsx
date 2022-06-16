@@ -129,7 +129,7 @@ const ListView: FC<{
 						isLoading={isLoading}
 						renderRow={renderRow}
 						renderHeader={renderHeader}
-						minWidth={1500}
+						minWidth={1300}
 					/>
 				</Flex>
 			</Wrapper>

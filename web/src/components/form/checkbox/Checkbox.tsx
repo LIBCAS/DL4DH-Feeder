@@ -55,6 +55,9 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 	&:focus-within {
 		${p => FocusStyle(p.theme)}
 	}
+	&:hover {
+		cursor: pointer;
+	}
 
 	${p =>
 		p.colorVariant === 'inverted' &&
@@ -142,6 +145,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
 							`1px solid ${theme.colors.error}`};
 							padding-bottom: ${!!error && touched && '4px'};
 							color: ${colorVariant === 'inverted' && 'white'};
+							cursor: pointer;
 						`}
 					>
 						{label}
