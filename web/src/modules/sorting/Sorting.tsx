@@ -5,18 +5,18 @@ import Text from 'components/styled/Text';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
+import { FiltersSortEnum } from '../../api/models';
+
 export type SortOption = {
-	id: string;
+	id: FiltersSortEnum;
 	label: string;
 };
 
 export const sortOptions: SortOption[] = [
-	{ id: 'asc1', label: 'Dle autora 1' },
-	{ id: 'asc2', label: 'Dle autora 2' },
-	{ id: 'asc3', label: 'Dle nazvu 3' },
-	{ id: 'asc4', label: 'Dle data pridani 4' },
-	{ id: 'asc5', label: 'Dle jineho 5' },
-	{ id: 'asc6', label: 'ASC 6' },
+	{ id: 'TITLE_ASC', label: 'Abecedně' },
+	{ id: 'CREATED_DESC', label: 'Nově přidané' },
+	{ id: 'DATE_DESC', label: 'Od nejnovějších' },
+	{ id: 'DATE_ASC', label: 'Od nejstarších' },
 ];
 
 const Sorting = () => {

@@ -8,7 +8,7 @@ services:
     environment:
       PGDATA: /var/lib/postgresql/data/db-files/
       POSTGRES_USER: feeder
-      POSTGRES_DB: eas
+      POSTGRES_DB: feeder
       POSTGRES_PASSWORD: changeit
     volumes:
       - feeder_db:/var/lib/postgresql/data/

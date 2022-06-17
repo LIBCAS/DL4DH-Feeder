@@ -24,6 +24,8 @@ import {
 import store from 'utils/Store';
 import { isIntern } from 'utils/FEVersion';
 
+import { SortOption } from '../modules/sorting/Sorting';
+
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
 
@@ -116,18 +118,21 @@ export const infiniteMainSearchEndpoint =
 		promise: (a: ReturnType<typeof api>, ...args: Args) => ResponsePromise,
 	) =>
 	(...args: Args) => {
-		const { start, pageSize } = args[args.length - 1] as {
+		const { start, pageSize, sorting } = args[args.length - 1] as {
 			start: number;
 			pageSize: number;
+			sorting: SortOption;
 		};
 		const { state, dispatch } = useSearchContext();
 		const result = useInfiniteQuery(
 			[...key, ...args],
 			async () => {
+				console.log(sorting);
 				const r = await promise(
 					api('', {
 						start: start,
 						pageSize: pageSize,
+						sort: sorting?.id ?? 'TITLE_ASC',
 						query: state.searchQuery?.query ?? '',
 					}),
 

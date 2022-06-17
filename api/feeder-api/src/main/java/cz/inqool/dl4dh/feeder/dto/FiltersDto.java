@@ -2,6 +2,7 @@ package cz.inqool.dl4dh.feeder.dto;
 
 import cz.inqool.dl4dh.feeder.enums.AvailabilityEnum;
 import cz.inqool.dl4dh.feeder.enums.DocumentModelEnum;
+import cz.inqool.dl4dh.feeder.enums.FiltersSortEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ public class FiltersDto {
     private Set<String> collections = new HashSet<>();
     private Integer from;
     private Integer to;
+    private FiltersSortEnum sort = FiltersSortEnum.TITLE_ASC;
 
     //K+ filters
     private List<NameTagFilterDto> nameTagFilters;

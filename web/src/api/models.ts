@@ -81,6 +81,7 @@ export type FiltersDto = {
 	start: number;
 	pageSize: number;
 	nameTagFilters: NameTagFilterDto[];
+	sort: FiltersSortEnum;
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
 
@@ -116,6 +117,11 @@ export type InfoDto = {
 	};
 };
 
+export type FiltersSortEnum =
+	| 'TITLE_ASC'
+	| 'CREATED_DESC'
+	| 'DATE_ASC'
+	| 'DATE_DESC';
 export type AvailabilityEnum = 'PUBLIC' | 'PRIVATE' | 'ALL';
 export type ModelsEnum =
 	| 'MONOGRAPH'

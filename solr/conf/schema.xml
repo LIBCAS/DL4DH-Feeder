@@ -30,18 +30,22 @@
     <field name="nameTag.complexTimeExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
     <field name="nameTag.complexAddressExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
     <field name="nameTag.complexBiblioExpression" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="import_date" type="date" indexed="true" stored="true" docValues="true"/>
 
 
     <!-- K5 fields -->
     <field name="root_pid" type="string" indexed="true" stored="true"/>
     <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="datum_begin" type="int" default="0" indexed="true" stored="true"/>
+    <field name="datum_end" type="int" default="0" indexed="true" stored="true"/>
     <field name="dc.creator" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
     <field name="dc.title" type="text_fgs" indexed="true" stored="true"/>
     <field name="dostupnost" type="string" indexed="true" stored="true"/>
     <field name="fedora.model" type="string" indexed="true" stored="true" docValues="true"/>
     <field name="keywords" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
     <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="title_sort" type="string" indexed="true" stored="true" docValues="true"/>
+    <field name="created_date" type="date" indexed="true" stored="true" docValues="true"/>
 
 
 
@@ -57,6 +61,7 @@
       Numeric field types that index values using KD-trees.
       Point fields don't support FieldCache, so they must have docValues="true" if needed for sorting, faceting, functions, etc.
     -->
+    <fieldType name="date" class="solr.TrieDateField" omitNorms="true" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
     <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
     <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>

@@ -1,9 +1,12 @@
+import { SortOption } from '../modules/sorting/Sorting';
+
 export type SolrParams = {
 	query?: string;
 	searchAfter?: string;
 	flipDirection?: boolean;
 	start?: number;
 	pageSize?: number;
+	sorting?: SortOption;
 	from?: string;
 	to?: string;
 };

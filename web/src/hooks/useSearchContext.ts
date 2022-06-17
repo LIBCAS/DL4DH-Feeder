@@ -27,7 +27,9 @@ export type TOperation = typeof operationsTuple[number];
 
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
-export type TSearchQuery = Partial<Omit<FiltersDto, 'start' | 'pageSize'>>;
+export type TSearchQuery = Partial<
+	Omit<FiltersDto, 'start' | 'pageSize' | 'sort'>
+>;
 
 type State = {
 	searchQuery: TSearchQuery | null;
@@ -96,6 +98,7 @@ export const reducer = (state: State, action: Actions) => {
 			};
 		}
 		case 'setSorting':
+			console.log(action.sortOption);
 			return {
 				...state,
 				sorting: action.sortOption,

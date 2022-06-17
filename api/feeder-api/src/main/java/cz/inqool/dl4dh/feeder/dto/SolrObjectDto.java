@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.apache.solr.client.solrj.beans.Field;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,23 @@ public class SolrObjectDto {
     @Field
     private Integer datum_begin;
 
+    @Field
+    private Integer datum_end;
+
+    @Field
+    private String import_date;
+
+    @Field
+    private String created_date;
+
     @Field("dc.creator")
     private List<String> creator;
 
     @Field("dc.title")
     private String title;
+
+    @Field
+    private String title_sort;
 
     @Field
     private String dostupnost;

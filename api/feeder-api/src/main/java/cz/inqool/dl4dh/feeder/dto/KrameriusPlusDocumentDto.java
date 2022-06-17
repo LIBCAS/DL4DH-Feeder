@@ -14,4 +14,8 @@ public class KrameriusPlusDocumentDto {
     private String id;
     private List<KrameriusPlusDocumentContextDto> context;
     private List<KrameriusPlusDocumentPageDto> pages;
+    private KrameriusPlusDocumentPublishInfoDto publishInfo;
+    private String title;
+    private String police;
+    private String model;
 }

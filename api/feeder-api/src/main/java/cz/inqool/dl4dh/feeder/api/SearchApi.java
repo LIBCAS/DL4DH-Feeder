@@ -99,6 +99,7 @@ public class SearchApi {
                         .queryParam("facet.field","model_path")
                         .queryParam("facet.field","dostupnost")
                         .queryParam("facet.field","collection")
+                        .queryParam("sort",filters.getSort().toSolrSort())
                         .queryParam("rows",filters.getPageSize())
                         .queryParam("start",filters.getStart())
                         .build())
