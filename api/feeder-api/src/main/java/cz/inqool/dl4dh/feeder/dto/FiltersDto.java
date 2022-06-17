@@ -41,6 +41,19 @@ public class FiltersDto {
         return query.replaceAll(":","\\\\:");
     }
 
+    public String toQuery() {
+        List<String> filters = new ArrayList<>();
+        if (!query.isEmpty()) {
+            filters.add("dc.title:"+getQueryEscaped()+"*");
+        }
+        if (nameTagFilters != null) {
+            for (NameTagFilterDto nameTagFilter : nameTagFilters) {
+                filters.add(nameTagFilter.toFilter());
+            }
+        }
+        return filters.isEmpty() ? "*:*" : String.join(" AND ", filters);
+    }
+
     public String toFqQuery(List<String> base) {
         List<List<String>> list = new ArrayList<>();
         list.add(base);

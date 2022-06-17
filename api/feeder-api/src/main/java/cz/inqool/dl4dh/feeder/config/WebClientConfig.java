@@ -58,4 +58,9 @@ public class WebClientConfig {
     public WebClient webClientKrameriusPlus(@Value("${system.kramerius-plus.api}") String krameriusPlusApi) throws SSLException {
         return getWebClient(krameriusPlusApi);
     }
+
+    @Bean(name = "solrWebClient")
+    public WebClient webClientSolr(@Value("${solr.host.query}") String solrApi) throws SSLException {
+        return getWebClient(solrApi);
+    }
 }

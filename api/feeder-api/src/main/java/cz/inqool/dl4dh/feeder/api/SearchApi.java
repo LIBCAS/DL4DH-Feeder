@@ -3,12 +3,16 @@ package cz.inqool.dl4dh.feeder.api;
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
+import cz.inqool.dl4dh.feeder.kramerius.dto.SolrGroupItemDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 public class SearchApi {
 
     private WebClient kramerius;
+    private WebClient solrWebClient;
 
     private final HttpSolrClient solr;
 
@@ -77,19 +82,30 @@ public class SearchApi {
 
     @PostMapping(value = "")
     public SearchDto search(@RequestBody FiltersDto filters) {
+        List<String> ids = null;
+        if (filters.getNameTagFilters() != null && !filters.getNameTagFilters().isEmpty()) {
+            SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
+                    .uri("/select", uriBuilder -> uriBuilder
+                            .queryParam("fl", "root_pid")
+                            .queryParam("q", filters.toQuery())
+                            .queryParam("group", "true")
+                            .queryParam("group.field", "root_pid")
+                            .queryParam("sort",filters.getSort().toSolrSort())
+                            .queryParam("rows",filters.getPageSize())
+                            .queryParam("start",filters.getStart())
+                            .build())
+                    .acceptCharset(StandardCharsets.UTF_8)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                    .block();
+            ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
+        }
+        List<String> finalIds = ids;
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> uriBuilder
-                        .queryParam("fl", "PID,dostupnost,model_path,dc.creator,root_title,root_pid,dc.title,datum_str,score,dnnt-labels")
-//                        .queryParam("q", "query_:\"{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}\"")
-//                        .queryParam("q1", filters.getQuery())
-//                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article")))
-//                        .queryParam("group", "true")
-//                        .queryParam("group.field root_pid")
-//                        .queryParam("group.ngroups  true")
-//                        .queryParam("group.sort score desc")
-//                        .queryParam("group.truncate true")
                         .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
-                        .queryParam("q", filters.getQuery().isEmpty() ? "*:*" : "dc.title:"+filters.getQueryEscaped()+"*")
+                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) :  filters.toQuery())
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
@@ -122,7 +138,17 @@ public class SearchApi {
                                         (String)d.get("dc.title"),
                                         (String)d.get("PID"),
                                         (String)d.get("root_title"),
-                                        false
+                                        solrWebClient.get()
+                                                .uri("/select", uriBuilder -> uriBuilder
+                                                        .queryParam("fl", "root_pid")
+                                                        .queryParam("q", "PID:\""+d.get("PID")+"\"")
+                                                        .queryParam("rows","0")
+                                                        .build())
+                                                .acceptCharset(StandardCharsets.UTF_8)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .retrieve()
+                                                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                                                .block().getResponse().getNumFound() > 0
                                 )
                         ).collect(Collectors.toList())),
                 result.getFacet_counts().transformed());
@@ -131,5 +157,10 @@ public class SearchApi {
     @Resource(name = "krameriusWebClient")
     public void setWebClient(WebClient webClient) {
         this.kramerius = webClient;
+    }
+
+    @Resource(name = "solrWebClient")
+    public void setSolrWebClient(WebClient webClient) {
+        this.solrWebClient = webClient;
     }
 }
