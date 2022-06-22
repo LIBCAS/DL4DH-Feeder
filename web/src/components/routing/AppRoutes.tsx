@@ -2,10 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Loader } from 'modules/loader';
-import TestTable from 'modules/tests/table/testtable';
-
-// const Home = React.lazy(() => import('./pages/Home'));
-// const About = React.lazy(() => import('./pages/About'));
 
 const NotFound = React.lazy(() => import('modules/notFound'));
 //const Authorize = React.lazy(() => import('modules/public/auth'));
@@ -34,7 +30,7 @@ const AppRoutes: React.FC = () => {
 				path="/test"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<TestTable />
+						<>Empty test</>
 					</React.Suspense>
 				}
 			/>

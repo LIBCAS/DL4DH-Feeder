@@ -5,7 +5,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
-import { Box, Flex } from 'components/styled';
+import { Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Checkbox from 'components/form/checkbox/Checkbox';

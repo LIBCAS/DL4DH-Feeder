@@ -37,7 +37,7 @@ const MainSearch: FC = () => {
 		{
 			start: state.start,
 			pageSize: state.pageSize,
-			sorting: state.sorting,
+			sort: state.sorting.id,
 			...state.searchQuery,
 		},
 	);

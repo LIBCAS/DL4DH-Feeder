@@ -3,12 +3,10 @@ import { useEffect, useState } from 'react';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
-import { SolrParams } from 'utils/SolrTypes';
-
-import { PublicationChild, PublicationDetail } from './models';
+import { FiltersDto, PublicationChild, PublicationDetail } from './models';
 
 export const useSearchPublications = infiniteMainSearchEndpoint<
-	[json: SolrParams]
+	[json: Partial<FiltersDto>]
 >(['search-publication'], (api, json) => api.post('search', { json }));
 
 export const getPublicationDetail = async (uuid: string) => {
