@@ -1,20 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import XMLViewer from 'react-xml-viewer';
 import { FC, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { MdCopyAll } from 'react-icons/md';
+import { useSearchParams } from 'react-router-dom';
+import XMLViewer from 'react-xml-viewer';
 
+import SimpleSelect from 'components/form/select/SimpleSelect';
+import LoaderSpin from 'components/loaders/LoaderSpin';
 import ModalDialog from 'components/modal';
+import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
-import { Flex } from 'components/styled';
-import SimpleSelect from 'components/form/select/SimpleSelect';
 import Text from 'components/styled/Text';
-import IconButton from 'components/styled/IconButton';
-import LoaderSpin from 'components/loaders/LoaderSpin';
-
-import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 

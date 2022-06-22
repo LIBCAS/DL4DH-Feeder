@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
+import _ from 'lodash';
 import { FC, useEffect, useState } from 'react';
 import { MdDownload, MdPrint, MdShare, MdTextFields } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
-import _ from 'lodash';
 import XML from 'xml2js';
 
 import { Box, Flex } from 'components/styled';
-import Text, { H3, H4, H5 } from 'components/styled/Text';
-import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
+import IconButton from 'components/styled/IconButton';
+import Text, { H3, H5 } from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
 
@@ -17,7 +17,7 @@ import { useStreams } from 'api/publicationsApi';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
-const parseDCXML = (xml: any): Partial<Record<string, string[]>> => {
+const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 	const wrapper = 'oai_dc:dc';
 	const getVal = (key: string) =>
 		_.get(xml, `${wrapper}.dc:${key}`) as string[];
@@ -52,7 +52,7 @@ const PubBiblioDetail: FC<Props> = () => {
 
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
 	//const solrInfo = useStreams(id ?? '', 'BIBLIO_MODS');
-	const [parsedXML, setParsedXML] = useState<any>();
+	const [parsedXML, setParsedXML] = useState<unknown>();
 
 	useEffect(() => {
 		XML.parseString(xmlString, (err, result) => setParsedXML(result));

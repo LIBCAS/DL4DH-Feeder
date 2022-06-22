@@ -7,15 +7,15 @@ import {
 	MdClear,
 	MdSearch,
 } from 'react-icons/md';
+import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
-import { useParams, useSearchParams } from 'react-router-dom';
 import { FixedSizeGrid } from 'react-window';
 
-import { Box, Flex } from 'components/styled';
-import Text from 'components/styled/Text';
-import Divider from 'components/styled/Divider';
 import TextInput from 'components/form/input/TextInput';
+import { Box, Flex } from 'components/styled';
+import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
+import Text from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
@@ -31,7 +31,7 @@ type Props = {
 };
 
 const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
-	const { id } = useParams<{ id: string }>();
+	// const { id } = useParams<{ id: string }>();
 	const theme = useTheme();
 	const [toSearch, setToSearch] = useState('');
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({

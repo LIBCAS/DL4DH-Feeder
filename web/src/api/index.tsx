@@ -24,8 +24,6 @@ import {
 import store from 'utils/Store';
 import { isIntern } from 'utils/FEVersion';
 
-import { SortOption } from '../modules/sorting/Sorting';
-
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
 

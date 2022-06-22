@@ -1,26 +1,23 @@
+import { useFormik } from 'formik';
 import { FC } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
-import { useFormik } from 'formik';
 
+import Checkbox from 'components/form/checkbox/Checkbox';
+import SimpleSelect from 'components/form/select/SimpleSelect';
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
-import Paper from 'components/styled/Paper';
-import SimpleSelect from 'components/form/select/SimpleSelect';
-import Text, { H1 } from 'components/styled/Text';
-import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
-import Checkbox from 'components/form/checkbox/Checkbox';
+import IconButton from 'components/styled/IconButton';
+import Paper from 'components/styled/Paper';
+import Text, { H1 } from 'components/styled/Text';
 
 import { api } from 'api';
 
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
+import { usePublicationDetail } from 'api/publicationsApi';
 
-import Store from 'utils/Store';
 import { PUBLICATION_EXPORT_STORE_KEY } from 'utils/enumsMap';
+import Store from 'utils/Store';
 
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
@@ -41,7 +38,7 @@ type Params = {
 	disablePagination?: boolean;
 	pageOffset?: number;
 	pageSize?: number;
-	sort?: Sort;
+	sorting?: Sort[];
 	filters?: Filter[];
 	includeFields?: string[];
 	excludeFields?: string[];
@@ -85,9 +82,9 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 
 		onSubmit: async values => {
 			console.log({ values });
-			const params = {
+			const params: Partial<Params> = {
 				//includeFields: ['author'],
-				sort: [{ field: 'index', direction: 'ASC' }],
+				sorting: [{ field: 'index', direction: 'ASC' }],
 			};
 
 			try {
