@@ -25,11 +25,16 @@ import {
 } from 'hooks/useSearchContext';
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 
-import { NameTagToText } from 'utils/enumsMap';
+import { NameTagIcon, NameTagToText } from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',
 	NOT_EQUAL: '\u{2260}',
+};
+
+export const OperationToWord: Record<TOperation, string> = {
+	EQUAL: 'je',
+	NOT_EQUAL: 'není',
 };
 
 const MainSearchInput = () => {
@@ -219,6 +224,29 @@ const MainSearchInput = () => {
 									}}
 									keyFromOption={item => (item ? item : '')}
 									nameFromOption={item => (item ? NameTagToText[item] : '')}
+									renderMenuItem={(item, currentValue) => {
+										if (!item) {
+											return <></>;
+										}
+										const Icon = NameTagIcon[item];
+										return (
+											<Flex
+												px={1}
+												py={1}
+												alignItems="center"
+												color={item === currentValue ? 'primary' : 'unset'}
+											>
+												<Icon size={22} />
+												<Text
+													fontWeight={item === currentValue ? 'bold' : 'normal'}
+													ml={2}
+												>
+													{' '}
+													{NameTagToText[item]}
+												</Text>
+											</Flex>
+										);
+									}}
 									placeholder=""
 									arrowHidden
 									zIndex={5}
@@ -238,6 +266,7 @@ const MainSearchInput = () => {
 									menuItemCss={css`
 										padding-left: 16px;
 										padding-right: 16px;
+										min-width: 200px;
 									`}
 								/>
 							</ClickAway>
@@ -262,6 +291,29 @@ const MainSearchInput = () => {
 										nameFromOption={item =>
 											item ? OperationToTextLabel[item] : ''
 										}
+										renderMenuItem={(item, currentValue) => {
+											if (!item) {
+												return <></>;
+											}
+
+											return (
+												<Flex
+													px={1}
+													py={1}
+													alignItems="center"
+													color={item === currentValue ? 'primary' : 'unset'}
+												>
+													<Text
+														fontWeight={
+															item === currentValue ? 'bold' : 'normal'
+														}
+													>
+														{OperationToTextLabel[item]}
+													</Text>
+													<Text ml={4}>{OperationToWord[item]}</Text>
+												</Flex>
+											);
+										}}
 										wrapperCss={css`
 											font-size: ${theme.fontSizes.xl}px;
 											border: none;
@@ -276,7 +328,7 @@ const MainSearchInput = () => {
 										menuItemCss={css`
 											padding-left: 16px;
 											padding-right: 16px;
-											font-size: 20px !important;
+											font-size: 16px !important;
 										`}
 									/>
 								</ClickAway>

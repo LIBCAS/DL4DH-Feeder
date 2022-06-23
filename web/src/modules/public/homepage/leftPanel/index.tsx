@@ -1,16 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import { MdExpandMore } from 'react-icons/md';
 import styled from '@emotion/styled/macro';
-import { useSearchParams } from 'react-router-dom';
 import { isEqual } from 'lodash-es';
+import React, { FC, useCallback, useMemo, useState } from 'react';
+import { MdBolt, MdExpandMore } from 'react-icons/md';
+import { useSearchParams } from 'react-router-dom';
 
-import { Box, Flex } from 'components/styled';
-import Text from 'components/styled/Text';
 import MyAccordion from 'components/accordion';
-import Button from 'components/styled/Button';
 import LoaderSpin from 'components/loaders/LoaderSpin';
+import { Box, Flex } from 'components/styled';
+import Button from 'components/styled/Button';
+import Text, { H4 } from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
@@ -19,6 +19,7 @@ import { AvailableFilters, ModelsEnum } from 'api/models';
 import { modelToText } from 'utils/enumsMap';
 
 import ActiveFilters from './ActiveFilters';
+import NameTagFilter from './NameTagFilter';
 import PublishDateFilter from './PublishDateFilter';
 
 type StatItem = {
@@ -286,7 +287,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 				</MyAccordion>
 			)}
 			{languagesItems.length > 0 && (
-				<MyAccordion label="Jazyk" isExpanded isLoading={isLoading}>
+				<MyAccordion label="Jazyk" isLoading={isLoading}>
 					{onRefresh => (
 						<StatList
 							items={languagesItems}
@@ -299,6 +300,18 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			)}
 			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
 				<PublishDateFilter />
+			</MyAccordion>
+			<MyAccordion
+				label={
+					<Flex alignItems="center">
+						<MdBolt size={18} />
+						<H4>NameTag</H4>
+					</Flex>
+				}
+				isExpanded
+				isLoading={isLoading}
+			>
+				<NameTagFilter />
 			</MyAccordion>
 			<Box height="50px" />
 		</Box>

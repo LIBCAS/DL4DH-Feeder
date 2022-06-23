@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
-import * as Sentry from '@sentry/browser';
-import { Extras } from '@sentry/types';
 
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
-import Text from 'components/styled/Text';
-import { NavButton } from 'components/styled/Button';
 import { Flex } from 'components/styled';
-
-import { decodeToken } from 'auth/token';
-
-import Store from 'utils/Store';
-import { ACCESS_TOKEN_CONTEXT } from 'utils/enumsMap';
+import { NavButton } from 'components/styled/Button';
+import Text from 'components/styled/Text';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import * as T from './_typing';
 
@@ -34,23 +27,6 @@ export default class ErrorBoundary extends Component<
 		console.error({
 			error: JSON.stringify(error, null, 4),
 			errorInfo: JSON.stringify(errorInfo, null, 4),
-		});
-		Sentry.withScope(scope => {
-			// Capture user info
-			const token = Store.get<string>(ACCESS_TOKEN_CONTEXT) ?? '';
-			if (token) {
-				const user = decodeToken(token);
-				scope.setUser({
-					id: user?.id,
-					username: user?.sub,
-				});
-			}
-			scope.setTag('FE_VERSION', process.env['REACT_APP_FE_VERSION']);
-			scope.setExtras({ FE_VERSION: process.env['REACT_APP_FE_VERSION'] });
-			// Capture error info
-			scope.setExtras(errorInfo as unknown as Extras);
-			const eventId = Sentry.captureException(error);
-			this.setState({ eventId, errorInfo });
 		});
 	}
 
@@ -94,14 +70,7 @@ export default class ErrorBoundary extends Component<
 						Znovu načítať stránku
 					</NavButton>
 					{process.env.NODE_ENV === 'production' && eventId && (
-						<NavButton
-							ml={[0, 3]}
-							mt={[3, 0]}
-							onClick={() => {
-								Sentry.showReportDialog({ eventId });
-							}}
-							variant="primary"
-						>
+						<NavButton ml={[0, 3]} mt={[3, 0]} variant="primary">
 							Nahlásiť chybu
 						</NavButton>
 					)}

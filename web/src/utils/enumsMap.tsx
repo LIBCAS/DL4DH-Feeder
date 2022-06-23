@@ -1,3 +1,10 @@
+import { BiBody } from 'react-icons/bi';
+import { GiEarthAfricaEurope, GiPorcelainVase } from 'react-icons/gi';
+import { HiLibrary, HiVideoCamera } from 'react-icons/hi';
+import { IconType } from 'react-icons/lib';
+import { MdFormatQuote, MdHome } from 'react-icons/md';
+import { TbClock, TbSum } from 'react-icons/tb';
+
 import { ModelsEnum, TagNameEnum } from 'api/models';
 
 export const SIDE_PANEL_WIDTH = 300;
@@ -96,7 +103,22 @@ export const NameTagToText: Record<TagNameEnum, string> = {
 	COMPLEX_PERSON_NAMES: 'Komplexní osobní jména',
 	COMPLEX_TIME_EXPRESSION: 'Komplexní vyjádření času',
 	COMPLEX_ADDRESS_EXPRESSION: 'Komplexní vyjádření adresy',
-	COMPLEX_BIBLIO_EXPRESSION: 'COMPLEX_BIBLIO_EXPRESSION',
+	COMPLEX_BIBLIO_EXPRESSION: 'Bibliografické položky',
+};
+
+export const NameTagIcon: Record<TagNameEnum, IconType> = {
+	NUMBERS_IN_ADDRESSES: MdHome,
+	GEOGRAPHICAL_NAMES: GiEarthAfricaEurope,
+	INSTITUTIONS: HiLibrary,
+	MEDIA_NAMES: HiVideoCamera,
+	NUMBER_EXPRESSIONS: TbSum,
+	ARTIFACT_NAMES: GiPorcelainVase,
+	PERSONAL_NAMES: BiBody,
+	TIME_EXPRESSIONS: TbClock,
+	COMPLEX_PERSON_NAMES: BiBody,
+	COMPLEX_TIME_EXPRESSION: TbClock,
+	COMPLEX_ADDRESS_EXPRESSION: MdHome,
+	COMPLEX_BIBLIO_EXPRESSION: MdFormatQuote,
 };
 
 export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';

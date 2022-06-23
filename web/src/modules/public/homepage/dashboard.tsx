@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { FC, useState, useMemo } from 'react';
-import GridViewIcon from '@mui/icons-material/GridView';
-import EqualizerIcon from '@mui/icons-material/Equalizer';
-import ListIcon from '@mui/icons-material/List';
+import { BsGridFill } from 'react-icons/bs';
+import { ImMenu } from 'react-icons/im';
+import { MdEqualizer } from 'react-icons/md';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
@@ -14,7 +14,7 @@ import IconButton from 'components/styled/IconButton';
 import Tabs from 'components/tabs';
 
 import Results from 'modules/searchResult/index';
-import SearchResultLeftPanel from 'modules/searchResult/leftPanel';
+import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
 import Sorting from 'modules/sorting/Sorting';
 import ListExportDialog from 'modules/export/ListExportDialog';
 import GraphExportDialog from 'modules/export/GraphExportDialog';
@@ -86,7 +86,7 @@ const Dashboard: FC = () => {
 									key: 'tiles',
 									jsx: (
 										<IconButton color="inherit" mx={2}>
-											<GridViewIcon />
+											<BsGridFill size={20} />
 										</IconButton>
 									),
 								},
@@ -94,7 +94,7 @@ const Dashboard: FC = () => {
 									key: 'list',
 									jsx: (
 										<IconButton color="inherit" mx={2}>
-											<ListIcon />
+											<ImMenu size={20} />
 										</IconButton>
 									),
 								},
@@ -102,7 +102,7 @@ const Dashboard: FC = () => {
 									key: 'graph',
 									jsx: (
 										<IconButton color="inherit" mx={2}>
-											<EqualizerIcon />
+											<MdEqualizer size={20} />
 										</IconButton>
 									),
 								},

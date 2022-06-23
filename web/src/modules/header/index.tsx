@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useMeasure from 'react-use-measure';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { MdArrowBack } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -66,7 +66,7 @@ const Header = () => {
 							pr={3}
 							color="headerColor"
 						>
-							<ArrowBackIcon />
+							<MdArrowBack size={22} />
 							<Flex flexDirection="column" ml={2} justifyContent="center">
 								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
 									{libName}

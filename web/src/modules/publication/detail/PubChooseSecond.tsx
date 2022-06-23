@@ -7,9 +7,9 @@ import Paper from 'components/styled/Paper';
 import { Flex } from 'components/styled';
 import Pagination from 'components/table/Pagination';
 import Divider from 'components/styled/Divider';
+import QuerySearchInput from 'components/search/QuerySearchInput';
 
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
-import QuerySearchInput from 'modules/public/mainSearch/QuerySearchInput';
 
 import { useTheme } from 'theme';
 
