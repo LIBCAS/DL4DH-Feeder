@@ -27,7 +27,7 @@ import { useSearchContext, ViewMode } from 'hooks/useSearchContext';
 
 import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-const MainSearch: FC = () => {
+const Dashboard: FC = () => {
 	const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
 	>('publications');
@@ -210,4 +210,4 @@ const MainSearch: FC = () => {
 	);
 };
 
-export default MainSearch;
+export default Dashboard;

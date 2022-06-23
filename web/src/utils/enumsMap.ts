@@ -1,7 +1,5 @@
 import { ModelsEnum, TagNameEnum } from 'api/models';
 
-import { isIntern } from './FEVersion';
-
 export const SIDE_PANEL_WIDTH = 300;
 
 export const LEFT_PANEL_WIDTH = SIDE_PANEL_WIDTH;
@@ -9,18 +7,12 @@ export const LEFT_PANEL_WIDTH = SIDE_PANEL_WIDTH;
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
 
 /**APP CONTEXT */
-export const EXTERNAL_CONTEXT = '/TODO';
-export const INTERNAL_CONTEXT = '/TODO';
 export const APP_CONTEXT = '';
 
 /**TOKENS */
-export const ACCESS_TOKEN_CONTEXT = isIntern()
-	? 'feeder-access-token'
-	: 'feeder-access-token';
+export const ACCESS_TOKEN_CONTEXT = 'feeder-access-token';
 
-export const REFRESH_TOKEN_CONTEXT = isIntern()
-	? 'feeder-refresh-token'
-	: 'feeder-refresh-token';
+export const REFRESH_TOKEN_CONTEXT = 'feeder-refresh-token';
 
 /**OIDC */
 export const OIDC_URL = 'TODO';

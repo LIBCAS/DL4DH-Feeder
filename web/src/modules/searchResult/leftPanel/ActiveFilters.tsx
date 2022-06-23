@@ -7,8 +7,7 @@ import { Flex, Box } from 'components/styled';
 import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
-
-import { OperationToTextLabel } from 'modules/public/mainSearch/MainSearchInput';
+import { OperationToTextLabel } from 'components/search/MainSearchInput';
 
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';

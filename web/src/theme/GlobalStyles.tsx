@@ -4,7 +4,6 @@ import { Global, css } from '@emotion/core';
 import { Theme } from '.';
 
 // Fonts
-import 'theme/fonts/drive/stylesheet.css';
 import 'theme/fonts/roboto/stylesheet.css';
 
 // https://make.wordpress.org/accessibility/handbook/markup/the-css-class-screen-reader-text/#the-css

@@ -8,7 +8,7 @@ const NotFound = React.lazy(() => import('modules/notFound'));
 
 // Public
 const Homepage = React.lazy(() => import('modules/public/homepage'));
-const MainSearch = React.lazy(() => import('modules/public/mainSearch'));
+const Dashboard = React.lazy(() => import('modules/public/homepage/dashboard'));
 const PublicationView = React.lazy(() => import('modules/publication/detail'));
 const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
@@ -62,7 +62,7 @@ const AppRoutes: React.FC = () => {
 				path="/search"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<MainSearch />
+						<Dashboard />
 					</React.Suspense>
 				}
 			/>

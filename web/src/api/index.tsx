@@ -22,7 +22,6 @@ import {
 	OIDC_USER_INFO_URL,
 } from 'utils/enumsMap';
 import store from 'utils/Store';
-import { isIntern } from 'utils/FEVersion';
 
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
@@ -72,12 +71,6 @@ export const useLoggedInUserProvider = () => {
 							return undefined;
 						}
 
-						if (!isIntern()) {
-							return {
-								personType: 'CUSTOMER',
-								...r,
-							} as VsdUser;
-						}
 						const roles = (await resp.json()) as Backend.Role[];
 						const personType = roles.some(r => r === 'ADMIN')
 							? 'ADMIN'
