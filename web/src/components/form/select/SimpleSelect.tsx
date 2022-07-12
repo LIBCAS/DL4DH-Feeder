@@ -41,7 +41,7 @@ type Props<T extends unknown> = {
 	menuFixedSize?: boolean;
 	nameFromOption?: (value: T | null) => string;
 	keyFromOption?: (value: T | null) => string;
-	renderMenuItem?: (item: T) => JSX.Element;
+	renderMenuItem?: (item: T, currentValue: T | null) => JSX.Element;
 	label?: string;
 	labelMinWidth?: number;
 	variant?: 'outlined' | 'underlined' | 'borderless';
@@ -124,7 +124,7 @@ const SimpleSelect = <T extends unknown>({
 						}}
 					>
 						{renderMenuItem ? (
-							renderMenuItem(o)
+							renderMenuItem(o, value)
 						) : (
 							<Box
 								px={2}

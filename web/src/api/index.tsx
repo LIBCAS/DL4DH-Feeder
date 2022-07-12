@@ -22,9 +22,6 @@ import {
 	OIDC_USER_INFO_URL,
 } from 'utils/enumsMap';
 import store from 'utils/Store';
-import { isIntern } from 'utils/FEVersion';
-
-import { SortOption } from '../modules/sorting/Sorting';
 
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
@@ -74,12 +71,6 @@ export const useLoggedInUserProvider = () => {
 							return undefined;
 						}
 
-						if (!isIntern()) {
-							return {
-								personType: 'CUSTOMER',
-								...r,
-							} as VsdUser;
-						}
 						const roles = (await resp.json()) as Backend.Role[];
 						const personType = roles.some(r => r === 'ADMIN')
 							? 'ADMIN'
@@ -118,21 +109,16 @@ export const infiniteMainSearchEndpoint =
 		promise: (a: ReturnType<typeof api>, ...args: Args) => ResponsePromise,
 	) =>
 	(...args: Args) => {
-		const { start, pageSize, sorting } = args[args.length - 1] as {
-			start: number;
-			pageSize: number;
-			sorting: SortOption;
-		};
+		const { start, pageSize, sort } = args[args.length - 1] as FiltersDto;
 		const { state, dispatch } = useSearchContext();
 		const result = useInfiniteQuery(
 			[...key, ...args],
 			async () => {
-				console.log(sorting);
 				const r = await promise(
 					api('', {
-						start: start,
-						pageSize: pageSize,
-						sort: sorting?.id ?? 'TITLE_ASC',
+						start,
+						pageSize,
+						sort,
 						query: state.searchQuery?.query ?? '',
 					}),
 
@@ -142,7 +128,6 @@ export const infiniteMainSearchEndpoint =
 			},
 			{
 				staleTime: Infinity,
-
 				retry: INFINITE_QUERY_RETRY_COUNT,
 				refetchOnWindowFocus: false,
 				refetchOnReconnect: false,

@@ -1,30 +1,17 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { NavButton } from 'components/styled/Button';
 import Text from 'components/styled/Text';
-
-import { useLoggedInUser } from 'api';
-
-import { isAuthPath } from 'auth/routes';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 //TODO:
 const NotFound: React.FC = () => {
 	// Page title
 	//	usePageTitle('Stránka nenalezena');
 
-	const token = useLoggedInUser();
 	const nav = useNavigate();
 	const { pathname } = useLocation();
-
-	useEffect(() => {
-		if (!token && isAuthPath(pathname)) {
-			console.error('Pre prístup k tejto podstránke je potrebné sa prihlásiť.');
-			nav({ pathname: '/' });
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	return (
 		<ResponsiveWrapper alignItems="flex-start">

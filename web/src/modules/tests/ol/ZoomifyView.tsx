@@ -12,7 +12,7 @@ import {
 	defaults as defaultInteractions,
 } from 'ol/interaction';
 
-import { Box, Flex } from 'components/styled';
+import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';

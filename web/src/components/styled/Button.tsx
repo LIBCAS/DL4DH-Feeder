@@ -88,6 +88,10 @@ const StyledButton = styled.button<Props>`
 			background: ${p.theme.colors.primary};
 			border: 1px solid ${p.theme.colors.primary};
 			font-weight: bold;
+			&:active {
+				filter: brightness(1.2);
+				transition: filter 0.1s;
+			}
 		`}
 		${p =>
 		p.variant === 'primary' &&
@@ -96,6 +100,10 @@ const StyledButton = styled.button<Props>`
 			&:hover {
 				filter: brightness(1.05);
 				box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+				&:active {
+					filter: brightness(1.2);
+					transition: filter 0.1s;
+				}
 			}
 		`}
 

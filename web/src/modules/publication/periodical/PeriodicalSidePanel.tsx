@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 import { Flex } from 'components/styled';
 
@@ -19,15 +19,10 @@ type Props = {
 };
 const PeriodicalSidePanel: FC<Props> = ({
 	variant,
-	defaultView,
-	pages,
+
 	width = 300,
 }) => {
 	const theme = useTheme();
-
-	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
-		defaultView ?? 'detail',
-	);
 
 	return (
 		<Flex

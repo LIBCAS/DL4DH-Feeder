@@ -1,24 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { FC, ReactNode, useContext, useRef, useState } from 'react';
 import {
-	FC,
-	ReactNode,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
-import {
+	MdExpandMore,
+	MdFullscreen,
+	MdFullscreenExit,
 	MdRotateLeft,
 	MdRotateRight,
 	MdZoomIn,
 	MdZoomOut,
-	MdFullscreen,
-	MdExpandMore,
-	MdFullscreenExit,
 } from 'react-icons/md';
-import useMeasure from 'react-use-measure';
 import { useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
@@ -28,7 +19,7 @@ import ZoomifyView from 'modules/tests/ol/ZoomifyView';
 
 import { useTheme } from 'theme';
 
-import { PubCtx, usePublicationCtx } from '../ctx/pub-ctx';
+import { PubCtx } from '../ctx/pub-ctx';
 
 type Props = {
 	page: string;
@@ -62,17 +53,13 @@ const ToolButton: FC<{
 
 const PubMainDetail: FC<Props> = ({ page }) => {
 	const [rotation, setRotation] = useState(0);
-	const [ref, { width: viewportWidth }] = useMeasure({
-		debounce: 10,
-	});
+
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 
 	const pbctx = useContext(PubCtx);
 
 	const [pageUrl, setPageUrl] = useSearchParams();
-
-	const staticWidth = useMemo(() => viewportWidth, [viewportWidth]);
 
 	return (
 		<Flex

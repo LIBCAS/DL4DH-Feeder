@@ -1,11 +1,8 @@
-import { EXTERNAL_CONTEXT, INTERNAL_CONTEXT } from 'utils/enumsMap';
-import { isIntern } from 'utils/FEVersion';
+import { APP_CONTEXT } from 'utils/enumsMap';
 
 import { Backend } from './endpoints';
 
 import { api } from '.';
-
-const APP_CONTEXT = isIntern() ? INTERNAL_CONTEXT : EXTERNAL_CONTEXT;
 
 export const getFile = <T extends Backend.File | undefined>(file: T) =>
 	(file

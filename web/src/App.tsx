@@ -13,11 +13,11 @@ import { PubDetailCtxProvider } from 'modules/publication/ctx/pub-ctx';
 import { useLoggedInUserProvider } from 'api';
 import { GlobalStyles, ThemeProvider } from 'theme';
 
-import { getUserRoutes } from 'auth/routes';
-
 import { useSearchContextProvider } from 'hooks/useSearchContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
+
+// import { getUserRoutes } from 'auth/routes';
 
 const App = () => {
 	const { userResponse, UserContextProvider } = useLoggedInUserProvider();

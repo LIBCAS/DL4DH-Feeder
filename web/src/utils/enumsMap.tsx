@@ -1,6 +1,11 @@
-import { ModelsEnum, TagNameEnum } from 'api/models';
+import { BiBody } from 'react-icons/bi';
+import { GiEarthAfricaEurope, GiPorcelainVase } from 'react-icons/gi';
+import { HiLibrary, HiVideoCamera } from 'react-icons/hi';
+import { IconType } from 'react-icons/lib';
+import { MdFormatQuote, MdHome } from 'react-icons/md';
+import { TbClock, TbSum } from 'react-icons/tb';
 
-import { isIntern } from './FEVersion';
+import { ModelsEnum, TagNameEnum } from 'api/models';
 
 export const SIDE_PANEL_WIDTH = 300;
 
@@ -9,18 +14,12 @@ export const LEFT_PANEL_WIDTH = SIDE_PANEL_WIDTH;
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
 
 /**APP CONTEXT */
-export const EXTERNAL_CONTEXT = '/TODO';
-export const INTERNAL_CONTEXT = '/TODO';
 export const APP_CONTEXT = '';
 
 /**TOKENS */
-export const ACCESS_TOKEN_CONTEXT = isIntern()
-	? 'feeder-access-token'
-	: 'feeder-access-token';
+export const ACCESS_TOKEN_CONTEXT = 'feeder-access-token';
 
-export const REFRESH_TOKEN_CONTEXT = isIntern()
-	? 'feeder-refresh-token'
-	: 'feeder-refresh-token';
+export const REFRESH_TOKEN_CONTEXT = 'feeder-refresh-token';
 
 /**OIDC */
 export const OIDC_URL = 'TODO';
@@ -104,7 +103,22 @@ export const NameTagToText: Record<TagNameEnum, string> = {
 	COMPLEX_PERSON_NAMES: 'Komplexní osobní jména',
 	COMPLEX_TIME_EXPRESSION: 'Komplexní vyjádření času',
 	COMPLEX_ADDRESS_EXPRESSION: 'Komplexní vyjádření adresy',
-	COMPLEX_BIBLIO_EXPRESSION: 'COMPLEX_BIBLIO_EXPRESSION',
+	COMPLEX_BIBLIO_EXPRESSION: 'Bibliografické položky',
+};
+
+export const NameTagIcon: Record<TagNameEnum, IconType> = {
+	NUMBERS_IN_ADDRESSES: MdHome,
+	GEOGRAPHICAL_NAMES: GiEarthAfricaEurope,
+	INSTITUTIONS: HiLibrary,
+	MEDIA_NAMES: HiVideoCamera,
+	NUMBER_EXPRESSIONS: TbSum,
+	ARTIFACT_NAMES: GiPorcelainVase,
+	PERSONAL_NAMES: BiBody,
+	TIME_EXPRESSIONS: TbClock,
+	COMPLEX_PERSON_NAMES: BiBody,
+	COMPLEX_TIME_EXPRESSION: TbClock,
+	COMPLEX_ADDRESS_EXPRESSION: MdHome,
+	COMPLEX_BIBLIO_EXPRESSION: MdFormatQuote,
 };
 
 export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';

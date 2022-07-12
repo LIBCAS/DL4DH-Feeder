@@ -76,6 +76,7 @@ const SplitScreenView: FC<{
 				))}
 			</>
 		),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);
 
@@ -106,6 +107,7 @@ const SplitScreenView: FC<{
 				))}
 			</>
 		),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[selectedRow, data],
 	);
 	const items = data ?? [];

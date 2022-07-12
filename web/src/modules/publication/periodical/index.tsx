@@ -6,11 +6,10 @@ import { MdCode, MdFormatQuote, MdLock, MdShare } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
 import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
-import Text, { H1, H2 } from 'components/styled/Text';
+import Text from 'components/styled/Text';
 import IconButton from 'components/styled/IconButton';
 
 import { Loader } from 'modules/loader';
-import TileView from 'modules/searchResult/tiles/TileView';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
@@ -19,7 +18,6 @@ import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
-import { TPublication } from 'api/models';
 
 import { SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 

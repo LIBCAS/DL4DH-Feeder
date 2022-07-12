@@ -37,7 +37,7 @@ const MyAccordion: FC<Props> = ({ label, isExpanded, children, isLoading }) => {
 				`}
 				onClick={() => setExp(p => !p)}
 			>
-				<H4>{label}</H4>
+				{typeof label === 'string' ? <H4>{label}</H4> : label}
 				<Flex color="primary">
 					<MdExpandMore
 						size={22}
