@@ -21,11 +21,6 @@
     "noImplicitReturns": true,
     "pretty": true,
     "noImplicitAny": false,
-    "plugins": [
-      {
-        "name": "typescript-styled-plugin"
-      }
-    ],
     "downlevelIteration": true,
     "baseUrl": "src",
     "noFallthroughCasesInSwitch": true

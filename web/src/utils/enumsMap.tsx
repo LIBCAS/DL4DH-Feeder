@@ -80,6 +80,19 @@ export const availabilityToText = (value: string) => {
 	}
 };
 
+export const enrichmentToText = (value: string) => {
+	switch (value) {
+		case 'ENRICHED':
+			return 'Pouze obohacené';
+		case 'NOT_ENRICHED':
+			return 'Pouze neobohacené';
+		case 'ALL':
+			return 'Všechny';
+		default:
+			return 'Neznáma hodnota';
+	}
+};
+
 export const availabilityToTextTag = (value: string) => {
 	switch (value) {
 		case 'PUBLIC':

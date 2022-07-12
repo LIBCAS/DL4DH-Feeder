@@ -16,7 +16,12 @@ import { ModelsEnum, NameTagCode, OperationCode } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
-import { availabilityToText, modelToText, NameTagToText } from 'utils/enumsMap';
+import {
+	availabilityToText,
+	modelToText,
+	NameTagToText,
+	enrichmentToText,
+} from 'utils/enumsMap';
 
 // const keyToText: Record<string, string> = {
 // 	keywords: 'Klíčové slovo',
@@ -46,6 +51,8 @@ const enumToText = (type: string, value: string) => {
 			return modelToText(value as ModelsEnum);
 		case 'availability':
 			return availabilityToText(value);
+		case 'enrichment':
+			return enrichmentToText(value);
 		case 'query':
 			return `Řetězec: "${value}"`;
 		case 'yearsInterval':
@@ -74,6 +81,9 @@ const ActiveFilters: React.FC = () => {
 		languages: state.searchQuery?.languages ?? [],
 		availability: state.searchQuery?.availability
 			? [state.searchQuery.availability]
+			: [],
+		enrichment: state.searchQuery?.enrichment
+			? [state.searchQuery.enrichment]
 			: [],
 		query: state.searchQuery?.query ? [state.searchQuery?.query] : [],
 		yearsInterval: yearsInterval.includes('null') ? [] : [yearsInterval],
@@ -139,7 +149,6 @@ const ActiveFilters: React.FC = () => {
 										font-weight: bold;
 										color: ${theme.colors.warning};
 									}
-									,
 									&:hover .filter-cross-icon {
 										visibility: visible;
 										color: ${theme.colors.warning};
@@ -203,7 +212,6 @@ const ActiveFilters: React.FC = () => {
 									font-weight: bold;
 									color: ${theme.colors.warning};
 								}
-								,
 								&:hover .filter-cross-icon {
 									visibility: visible;
 									color: ${theme.colors.warning};

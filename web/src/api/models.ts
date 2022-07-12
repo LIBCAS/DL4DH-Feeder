@@ -82,6 +82,7 @@ export type FiltersDto = {
 	pageSize: number;
 	nameTagFilters: NameTagFilterDto[];
 	sort: FiltersSortEnum;
+	enrichment: EnrichmentFilterType;
 };
 export type TPublication = PublicationDto & Partial<MyPublication>;
 
@@ -166,3 +167,5 @@ export const OperationCode: Record<'EQUAL' | 'NOT_EQUAL', string> = {
 	EQUAL: 'A',
 	NOT_EQUAL: 'B',
 };
+
+export type EnrichmentFilterType = 'ENRICHED' | 'NOT_ENRICHED' | 'ALL';

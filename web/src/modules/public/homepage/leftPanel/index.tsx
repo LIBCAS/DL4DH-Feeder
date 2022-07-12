@@ -131,6 +131,21 @@ type Props = {
 };
 
 const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
+	const enrichedItems: StatItem[] = useMemo(
+		() => [
+			{
+				label: 'Pouze obohacené',
+				value: 0,
+				key: 'ENRICHED',
+			},
+			{
+				key: 'NOT_ENRICHED',
+				label: 'Pouze neobohacené',
+				value: 0,
+			},
+		],
+		[data],
+	);
 	const avalItems: StatItem[] = useMemo(
 		() => [
 			{
@@ -240,6 +255,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 	return (
 		<Box px={0} width={1}>
 			<ActiveFilters />
+
 			{avalItems.length > 0 && (
 				<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
 					{onRefresh => (
@@ -251,6 +267,15 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 					)}
 				</MyAccordion>
 			)}
+			<MyAccordion label="Obohacení" isExpanded isLoading={isLoading}>
+				{onRefresh => (
+					<StatList
+						items={enrichedItems}
+						onClick={handleChangeFilter('enrichment')}
+						refresh={onRefresh}
+					/>
+				)}
+			</MyAccordion>
 			{modelItems.length > 0 && (
 				<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
 					{onRefresh => (
