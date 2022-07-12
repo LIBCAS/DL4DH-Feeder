@@ -14,6 +14,9 @@ public class SolrFacetDto {
     private Map<String, List<Object>> facet_fields;
 
     private static String keyTransform(String key) {
+        if (key.startsWith("nameTag.")) {
+            key = key.substring(8);
+        }
         switch (key) {
             case "facet_autor": return "authors";
             case "model_path": return "models";
@@ -21,6 +24,7 @@ public class SolrFacetDto {
             case "language": return "languages";
             case "collection": return "collections";
             case "keyword": return "keywords";
+            case "datum_begin": return "years";
             default: return key;
         }
     }

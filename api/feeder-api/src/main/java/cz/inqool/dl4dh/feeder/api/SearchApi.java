@@ -1,6 +1,7 @@
 package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
+import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
 import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrGroupItemDto;
@@ -21,7 +22,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -82,25 +85,44 @@ public class SearchApi {
 
     @PostMapping(value = "")
     public SearchDto search(@RequestBody FiltersDto filters) {
+        // Search in Kramerius+
         List<String> ids = null;
-        if (filters.getNameTagFilters() != null && !filters.getNameTagFilters().isEmpty()) {
-            SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
-                    .uri("/select", uriBuilder -> uriBuilder
-                            .queryParam("fl", "root_pid")
-                            .queryParam("q", filters.toQuery())
-                            .queryParam("group", "true")
-                            .queryParam("group.field", "root_pid")
-                            .queryParam("sort",filters.getSort().toSolrSort())
-                            .queryParam("rows",filters.getPageSize())
-                            .queryParam("start",filters.getStart())
-                            .build())
-                    .acceptCharset(StandardCharsets.UTF_8)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                    .block();
+        SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
+                .uri("/select", uriBuilder -> uriBuilder
+                        .queryParam("fl", "root_pid")
+                        .queryParam("q", filters.toQuery())
+                        .queryParam("group", "true")
+                        .queryParam("group.ngroups", "true")
+                        .queryParam("group.field", "root_pid")
+                        .queryParam("facet", "true")
+                        .queryParam("facet.mincount", "1")
+                        .queryParam("facet.field","nameTag.numbersInAddresses")
+                        .queryParam("facet.field","nameTag.geographicalNames")
+                        .queryParam("facet.field","nameTag.institutions")
+                        .queryParam("facet.field","nameTag.mediaNames")
+                        .queryParam("facet.field","nameTag.numberExpressions")
+                        .queryParam("facet.field","nameTag.artifactNames")
+                        .queryParam("facet.field","nameTag.personalNames")
+                        .queryParam("facet.field","nameTag.timeExpression")
+                        .queryParam("facet.field","nameTag.complexPersonNames")
+                        .queryParam("facet.field","nameTag.complexTimeExpression")
+                        .queryParam("facet.field","nameTag.complexAddressExpression")
+                        .queryParam("facet.field","nameTag.complexBiblioExpression")
+                        .queryParam("sort",filters.getSort().toSolrSort())
+                        .queryParam("rows",filters.getPageSize())
+                        .queryParam("start",filters.getStart())
+                        .build())
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                .block();
+        Integer enriched = resultKPlus.getGrouped().get("root_pid").getNgroups();
+        if (filters.useOnlyEnriched()) {
             ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
         }
+
+        // Search in Kramerius
         List<String> finalIds = ids;
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> uriBuilder
@@ -115,6 +137,7 @@ public class SearchApi {
                         .queryParam("facet.field","model_path")
                         .queryParam("facet.field","dostupnost")
                         .queryParam("facet.field","collection")
+                        .queryParam("facet.field","datum_begin")
                         .queryParam("sort",filters.getSort().toSolrSort())
                         .queryParam("rows",filters.getPageSize())
                         .queryParam("start",filters.getStart())
@@ -124,6 +147,15 @@ public class SearchApi {
                 .retrieve()
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .block();
+
+        // Add new facet enrichment as a combination of results from Kramerius and Kramerius+
+        Integer notEnriched = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
+        Map<String, Map<String, Integer>> facets = result.getFacet_counts().transformed();
+        facets.put("enrichment", new HashMap<>(){{
+            put(EnrichmentEnum.ENRICHED.toString(), enriched);
+            put(EnrichmentEnum.NOT_ENRICHED.toString(), notEnriched - enriched);
+            put(EnrichmentEnum.ALL.toString(), notEnriched);
+        }});
 
         return new SearchDto(
                 new PublicationsListDto(
@@ -138,7 +170,7 @@ public class SearchApi {
                                         (String)d.get("dc.title"),
                                         (String)d.get("PID"),
                                         (String)d.get("root_title"),
-                                        solrWebClient.get()
+                                        solrWebClient.get()     // TODO do it only in one request for all publications
                                                 .uri("/select", uriBuilder -> uriBuilder
                                                         .queryParam("fl", "root_pid")
                                                         .queryParam("q", "PID:\""+d.get("PID")+"\"")
@@ -151,7 +183,8 @@ public class SearchApi {
                                                 .block().getResponse().getNumFound() > 0
                                 )
                         ).collect(Collectors.toList())),
-                result.getFacet_counts().transformed());
+                facets,
+                resultKPlus.getFacet_counts().transformed());
     }
 
     @Resource(name = "krameriusWebClient")

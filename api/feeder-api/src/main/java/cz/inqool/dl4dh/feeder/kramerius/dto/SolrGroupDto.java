@@ -12,6 +12,8 @@ public class SolrGroupDto {
     @NotNull
     private Integer matches;
 
+    private Integer ngroups = null;
+
     @NotNull
     private List<SolrGroupItemDto> groups;
 }
