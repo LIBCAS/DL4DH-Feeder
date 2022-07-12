@@ -18,7 +18,7 @@ stages:
 build:
   extends: .build
   rules:
-    - if: '$CI_COMMIT_BRANCH == "solr_test"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 .deploy:
   stage: deploy
@@ -46,7 +46,7 @@ deploy:
   variables:
     CI_ENVIRONMENT_HOSTNAME: $CI_PROJECT_NAME.dev.inqool.cz
   rules:
-    - if: '$CI_COMMIT_BRANCH == "solr_test"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 .undeploy:
   stage: undeploy
@@ -65,6 +65,6 @@ undeploy:
   dependencies:
     - deploy
   rules:
-    - if: '$CI_COMMIT_BRANCH == "solr_test"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
       when: manual
 
