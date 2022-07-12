@@ -62,13 +62,25 @@ services:
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
     ports:
       - "80:80"
+  solr_initializer:
+    image: alpine
+    container_name: solr-initializer
+    restart: "no"
+    entrypoint: |
+      /bin/sh -c "chown -R 8983:8983 /var/solr"
+    volumes:
+      - solr_data:/var/solr
   solr:
     build: ./solr
     image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
+    depends_on:
+      - solr_initializer
     deploy:
       resources:
         limits:
           memory: 500m
+    environment:
+      HTTP_PORT: 
     networks:
       - backend
     volumes:
