@@ -75,13 +75,63 @@ export const useImageProperties = (uuid: string) =>
 	);
 /***************************THUMBNAILS***************************** */
 
-export const useStreams = (uuid: string, stream: string) => {
+type StreamList = Record<string, { label: string; mimeType: string }> | null;
+
+export const useStreamList = (uuid: string) => {
+	const [data, setData] = useState<StreamList>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	const resp = useQuery(
+		['stream-list', uuid],
+		() =>
+			api()
+				.get(`item/${uuid}/streams`, {
+					headers: { accept: 'application/json' },
+				})
+				.json<StreamList>(),
+		{
+			retry: 1,
+			refetchInterval: REFETCH_INTERVAL,
+			refetchOnWindowFocus: false,
+		},
+	);
+
+	const streams = useQueries(
+		Object.keys(data ?? {}).map(k => ({
+			queryKey: ['stream', uuid, k],
+			queryFn: () =>
+				api()
+					.get(`item/${uuid}/streams/${k}`, {
+						headers: { accept: data?.[k].mimeType ?? 'application/json' },
+					})
+					.text(),
+		})),
+	);
+
+	console.log({ streams });
+
+	useEffect(() => {
+		if (!resp.isLoading) {
+			setData(resp.data ?? null);
+			setIsLoading(false);
+		}
+	}, [resp]);
+
+	return { data, isLoading };
+};
+
+export const useStreams = (uuid: string, stream: string, mime?: string) => {
 	const [data, setData] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const resp = useQuery(
 		['stream', stream, uuid],
-		() => api().get(`item/${uuid}/streams/${stream}`).text(),
+		() =>
+			api()
+				.get(`item/${uuid}/streams/${stream}`, {
+					headers: { accept: mime ?? 'application/json' },
+				})
+				.text(),
 		{
 			retry: 1,
 			refetchInterval: REFETCH_INTERVAL,

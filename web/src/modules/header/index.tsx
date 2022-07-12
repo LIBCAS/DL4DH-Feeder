@@ -40,7 +40,7 @@ const Header = () => {
 			mx={0}
 			maxHeight={60}
 			ref={ref}
-			zIndex={1}
+			zIndex={10}
 			css={css`
 				padding-bottom: 0px !important;
 				/* border-bottom: 1px solid ${theme.colors.border}; */

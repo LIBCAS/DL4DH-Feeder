@@ -15,7 +15,7 @@ import Text from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
-import { useStreams } from 'api/publicationsApi';
+import { useStreamList, useStreams } from 'api/publicationsApi';
 
 type Props = {
 	xmlString: string;
@@ -32,6 +32,11 @@ const MetaStreamsDialog: FC<Props> = ({ xmlString, uuid }) => {
 	const theme = useTheme();
 	const modStream = useStreams(uuid, 'BIBLIO_MODS');
 	const ocrStream = useStreams(pageId ?? '', 'TEXT_OCR');
+	/* const allStreams = useStreamList(uuid);
+	if (!allStreams.isLoading) {
+		console.log(allStreams.data);
+	} */
+
 	if (modStream.isLoading || ocrStream.isLoading) {
 		return <LoaderSpin />;
 	}

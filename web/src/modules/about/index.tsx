@@ -22,15 +22,15 @@ const About = () => {
 					</H1>
 					<Text></Text>
 					<Grid gridTemplateColumns="1fr 1fr" gridGap={3} bg="paper" p={3}>
-						<Text>kramerius:</Text>
+						<Text>Kramerius:</Text>
 						<Text fontWeight="bold">
 							{info.data?.kramerius.version ?? '--'}
 						</Text>
-						<Text>kramerius +:</Text>
+						<Text>Kramerius+:</Text>
 						<Text fontWeight="bold">
 							{info.data?.krameriusPlus.version ?? '--'}
 						</Text>
-						<Text>feeder:</Text>
+						<Text>DL4DH Feeder:</Text>
 						<Text fontWeight="bold">{info.data?.feeder.version ?? '--'}</Text>
 					</Grid>
 				</Box>
