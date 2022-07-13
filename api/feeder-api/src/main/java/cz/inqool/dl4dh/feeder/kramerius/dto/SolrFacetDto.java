@@ -3,9 +3,9 @@ package cz.inqool.dl4dh.feeder.kramerius.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Getter
@@ -33,7 +33,7 @@ public class SolrFacetDto {
         return facet_fields.entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> keyTransform(e.getKey()), e -> {
-                    Map<String, Integer> map = new HashMap<>();
+                    Map<String, Integer> map = new TreeMap<>();
                     for (int i = 0; i < e.getValue().size(); i+=2) {
                         String key = (String)e.getValue().get(i);
                         //For models return only base types

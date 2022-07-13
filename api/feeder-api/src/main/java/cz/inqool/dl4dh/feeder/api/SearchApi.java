@@ -138,6 +138,7 @@ public class SearchApi {
                         .queryParam("facet.field","dostupnost")
                         .queryParam("facet.field","collection")
                         .queryParam("facet.field","datum_begin")
+                        .queryParam("f.datum_begin.facet.limit","-1")
                         .queryParam("sort",filters.getSort().toSolrSort())
                         .queryParam("rows",filters.getPageSize())
                         .queryParam("start",filters.getStart())
