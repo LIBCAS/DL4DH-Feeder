@@ -80,7 +80,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500m
+          memory: 1024m
     environment:
       SOLR_PORT: 8983 
     networks:
