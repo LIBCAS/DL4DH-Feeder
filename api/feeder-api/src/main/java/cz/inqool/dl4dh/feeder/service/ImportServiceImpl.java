@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,9 @@ public class ImportServiceImpl implements ImportService {
     public void sync() {
         Setting lastSync = settingRepository.findById(LAST_SYNC_DATE_KEY).orElse(new Setting(LAST_SYNC_DATE_KEY, "2022-01-01T00:00:00.000"));
 
-        LocalDateTime currentDate = LocalDateTime.now();
+        ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
         List<KrameriusPlusDocumentDto> publications = krameriusPlus.get()
-                .uri("/publications/list/published?modifiedAfter="+lastSync.getValue())
+                .uri("/publications/list/published?modifiedAfter="+lastSync.getValue().replace("Z", ""))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<KrameriusPlusDocumentDto>>() {})
                 .block();
