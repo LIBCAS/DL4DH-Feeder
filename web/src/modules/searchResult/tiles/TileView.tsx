@@ -69,10 +69,11 @@ const TileView: FC<Props> = ({ data }) => {
 							>
 								<Flex
 									height="100%"
-									bg={d.enriched ? 'enriched' : 'white'}
+									bg={d.enriched ? '#E4F0F3' : 'white'}
 									p={2}
 									css={css`
-										border: 1px solid ${theme.colors.border};
+										border: 1px solid
+											${d.enriched ? theme.colors.primary : theme.colors.border};
 										&:hover {
 											box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
 											cursor: pointer;
@@ -88,7 +89,10 @@ const TileView: FC<Props> = ({ data }) => {
 										position="relative"
 										p={1}
 										css={css`
-											border: 1px solid ${theme.colors.border};
+											border: 1px solid
+												${d.enriched
+													? theme.colors.primary
+													: theme.colors.border};
 											background-image: url(${`api/item/${d.pid}/thumb`});
 											background-repeat: no-repeat;
 											background-size: cover;
@@ -168,7 +172,7 @@ const TileView: FC<Props> = ({ data }) => {
 											width={1}
 										>
 											{d.enriched && (
-												<Flex bg="error" color="white" opacity="0.8" mr={2}>
+												<Flex bg="primary" color="white" opacity="0.8" mr={2}>
 													<Text py={1} my={0} px={3} fontSize="sm">
 														Obohacená
 													</Text>

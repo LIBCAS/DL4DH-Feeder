@@ -9,15 +9,6 @@
 	meta3: string;
 }; */
 
-export type MyPublication = {
-	published: Date;
-	pages: number;
-	meta1: string;
-	meta2: string;
-	meta3: string;
-	author: string;
-};
-
 export type PublicationDto = {
 	model: ModelsEnum;
 	availability: string;
@@ -46,11 +37,32 @@ export type PublicationsListDto = {
 	docs: PublicationDto[];
 };
 
+export type AvailableNameTagFilters = {
+	artifactNames: Record<string, number>;
+	complexAddressExpression: Record<string, number>;
+	complexBiblioExpression: Record<string, number>;
+	complexPersonNames: Record<string, number>;
+	complexTimeExpression: Record<string, number>;
+	geographicalNames: Record<string, number>;
+	institutions: Record<string, number>;
+	mediaNames: Record<string, number>;
+	numberExpressions: Record<string, number>;
+	numbersInAddresses: Record<string, number>;
+	personalNames: Record<string, number>;
+	timeExpression: Record<string, number>;
+};
+
 export type AvailableFilters = {
 	availability: {
 		private: number;
 		public: number;
 	};
+	enrichment: {
+		ALL: number;
+		ENRICHED: number;
+		NOT_ENRICHED: number;
+	};
+	years: Record<string, number>;
 	models: Record<string, number>;
 	keywords: Record<string, number>;
 	authors: Record<string, number>;
@@ -67,6 +79,7 @@ export type NameTagFilterDto = {
 export type SearchDto = {
 	documents: PublicationsListDto;
 	availableFilters: AvailableFilters;
+	availableNameTagFilters: AvailableNameTagFilters;
 };
 export type FiltersDto = {
 	query: string;
@@ -84,7 +97,7 @@ export type FiltersDto = {
 	sort: FiltersSortEnum;
 	enrichment: EnrichmentFilterType;
 };
-export type TPublication = PublicationDto & Partial<MyPublication>;
+export type TPublication = PublicationDto;
 
 export type PublicationChild = {
 	datanode: boolean;
@@ -161,6 +174,24 @@ export const NameTagCode: Record<TagNameEnum, string> = {
 	COMPLEX_TIME_EXPRESSION: 'J',
 	COMPLEX_ADDRESS_EXPRESSION: 'K',
 	COMPLEX_BIBLIO_EXPRESSION: 'L',
+};
+
+export const NameTagCodeFilter: Record<
+	keyof AvailableNameTagFilters,
+	TagNameEnum
+> = {
+	artifactNames: 'ARTIFACT_NAMES',
+	complexAddressExpression: 'COMPLEX_ADDRESS_EXPRESSION',
+	complexBiblioExpression: 'COMPLEX_BIBLIO_EXPRESSION',
+	complexPersonNames: 'COMPLEX_PERSON_NAMES',
+	complexTimeExpression: 'COMPLEX_TIME_EXPRESSION',
+	geographicalNames: 'GEOGRAPHICAL_NAMES',
+	institutions: 'INSTITUTIONS',
+	mediaNames: 'MEDIA_NAMES',
+	numberExpressions: 'NUMBER_EXPRESSIONS',
+	numbersInAddresses: 'NUMBERS_IN_ADDRESSES',
+	personalNames: 'PERSONAL_NAMES',
+	timeExpression: 'TIME_EXPRESSIONS',
 };
 
 export const OperationCode: Record<'EQUAL' | 'NOT_EQUAL', string> = {

@@ -27,7 +27,13 @@ type Props = {
 	data: AvailableFilters;
 };
 
-const XAxisOptTuple = MakeTuple('authors', 'keywords', 'models', 'languages');
+const XAxisOptTuple = MakeTuple(
+	'authors',
+	'keywords',
+	'models',
+	'languages',
+	'years',
+);
 // type XAxisOpts = typeof XAxisOptTuple[number];
 
 const GraphView: FC<Props> = ({ data }) => {
@@ -35,7 +41,7 @@ const GraphView: FC<Props> = ({ data }) => {
 	const [zoom, setZoom] = useState(50);
 	console.log({ zoom });
 	const [axisX, setAxisX] =
-		useState<keyof Omit<AvailableFilters, 'availability'>>('authors');
+		useState<keyof Omit<AvailableFilters, 'availability'>>('years');
 
 	/* const formattedData = useMemo(
 		() =>
@@ -66,11 +72,12 @@ const GraphView: FC<Props> = ({ data }) => {
 	const chartData = useMemo(
 		() =>
 			Object.keys(formattedData)
+				.filter(k => k !== '0')
 				.map(key => ({
 					year: key,
 					count: formattedData[key],
 				}))
-				.sort((a, b) => b.count - a.count),
+				.sort((a, b) => parseInt(b.year) - parseInt(a.year)),
 		[formattedData],
 	);
 

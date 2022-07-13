@@ -33,16 +33,21 @@ const Dashboard: FC = () => {
 	>('publications');
 
 	const { state, dispatch } = useSearchContext();
-	const { data, count, isLoading, hasMore, statistics } = useSearchPublications(
-		{
-			start: state.start,
-			pageSize: state.pageSize,
-			sort: state.sorting.id,
-			...state.searchQuery,
-		},
-	);
+	const {
+		data,
+		count,
+		isLoading,
+		hasMore,
+		availableFilters,
+		availableNameTagFilters,
+	} = useSearchPublications({
+		start: state.start,
+		pageSize: state.pageSize,
+		sort: state.sorting.id,
+		...state.searchQuery,
+	});
 
-	const statsMemo = useMemo(() => statistics, [statistics]);
+	//const statsMemo = useMemo(() => statistics, [statistics]);
 
 	return (
 		<ResponsiveWrapper
@@ -194,12 +199,16 @@ const Dashboard: FC = () => {
 						transition: width 1s ease-in-out;
 					`}
 				>
-					<SearchResultLeftPanel data={statsMemo} isLoading={isLoading} />
+					<SearchResultLeftPanel
+						data={availableFilters}
+						nameTagData={availableNameTagFilters}
+						isLoading={isLoading}
+					/>
 				</Flex>
 				<Flex width={1} bg="paper">
 					<Results
 						data={data}
-						stats={statsMemo}
+						stats={availableFilters}
 						hasMore={hasMore}
 						isLoading={isLoading}
 						count={count}
