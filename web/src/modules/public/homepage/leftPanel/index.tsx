@@ -3,18 +3,28 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled/macro';
 import { isEqual } from 'lodash-es';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { MdBolt, MdExpandMore } from 'react-icons/md';
+import { MdBolt, MdClose, MdExpandMore } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
+import Dialog from '@reach/dialog';
 
 import MyAccordion from 'components/accordion';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text, { H4 } from 'components/styled/Text';
+import ModalDialog from 'components/modal';
+import Paper from 'components/styled/Paper';
 
 import { useTheme } from 'theme';
 
-import { AvailableFilters, ModelsEnum } from 'api/models';
+import {
+	AvailableFilters,
+	AvailableNameTagFilters,
+	ModelsEnum,
+	NameTagCode,
+	NameTagCodeFilter,
+	OperationCode,
+} from 'api/models';
 
 import { modelToText } from 'utils/enumsMap';
 
@@ -41,9 +51,11 @@ const StatList: FC<{
 	items: StatItem[];
 	maxRows?: number;
 	refresh?: () => void;
-	onClick?: (key: string) => void;
-}> = ({ items, maxRows, refresh, onClick }) => {
+	onClick?: (key: string, operation?: 'EQUAL' | 'NOT_EQUAL') => void;
+	customDialog?: boolean;
+}> = ({ items, maxRows, refresh, onClick, customDialog }) => {
 	const [exp, setExp] = useState<boolean>(!maxRows);
+	const [dialogOpen, setDialogOpen] = useState<string>('');
 	const theme = useTheme();
 
 	return (
@@ -53,10 +65,15 @@ const StatList: FC<{
 					key={item.label + i}
 					justifyContent="space-between"
 					alignItems="center"
+					position="relative"
 					fontWeight={item.bold ? 'bold' : 'unset'}
 					fontSize="13px"
 					onClick={() => {
-						onClick?.(item.key);
+						if (!customDialog) {
+							onClick?.(item.key);
+							return;
+						}
+						setDialogOpen(item.key);
 					}}
 					lineHeight={1}
 					px={2}
@@ -68,6 +85,55 @@ const StatList: FC<{
 						}
 					`}
 				>
+					{' '}
+					{customDialog && dialogOpen === item.key && (
+						<Flex
+							position="absolute"
+							width="100%"
+							height="100%"
+							top="-10px"
+							left="0"
+							bg="white"
+							flexDirection="row"
+							p={2}
+							mb={4}
+							zIndex={30}
+						>
+							<Dialog isOpen>
+								<Paper alignItems="center">
+									<Text>Operace</Text>
+									<Button
+										m={1}
+										variant="primary"
+										onClick={() => {
+											onClick?.(item.key, 'EQUAL');
+										}}
+									>
+										{'JE'}
+									</Button>
+									<Button
+										m={1}
+										variant="primary"
+										onClick={() => {
+											onClick?.(item.key, 'NOT_EQUAL');
+										}}
+									>
+										{'NENÍ'}
+									</Button>
+									<Button
+										m={1}
+										variant="primary"
+										onClick={() => {
+											setDialogOpen('');
+											//	closeModal();
+										}}
+									>
+										Zavřít
+									</Button>
+								</Paper>
+							</Dialog>
+						</Flex>
+					)}
 					<Cell maxWidth={200}>{item.label}</Cell>
 					<Text> {item.value}</Text>
 				</Flex>
@@ -127,21 +193,22 @@ const StatList: FC<{
 
 type Props = {
 	data?: AvailableFilters;
+	nameTagData?: AvailableNameTagFilters;
 	isLoading?: boolean;
 };
 
-const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
+const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	const enrichedItems: StatItem[] = useMemo(
 		() => [
 			{
 				label: 'Pouze obohacené',
-				value: 0,
+				value: data?.enrichment.ENRICHED ?? 0,
 				key: 'ENRICHED',
 			},
 			{
 				key: 'NOT_ENRICHED',
 				label: 'Pouze neobohacené',
-				value: 0,
+				value: data?.enrichment.NOT_ENRICHED ?? 0,
 			},
 		],
 		[data],
@@ -222,6 +289,25 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		[data?.languages],
 	);
 
+	const nameTagKeys = Object.keys(nameTagData ?? {});
+
+	const nameTagItems: { data: StatItem[]; key: string }[] = useMemo(
+		() =>
+			nameTagKeys.map(nKey => ({
+				key: nKey,
+				data: nameTagData?.[nKey]
+					? [
+							...Object.keys(nameTagData?.[nKey]).map(key => ({
+								key,
+								label: key,
+								value: nameTagData[nKey][key],
+							})),
+					  ]
+					: [],
+			})),
+		[nameTagData, nameTagKeys],
+	);
+
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const handleUpdateFilter = useCallback(
@@ -238,6 +324,19 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		},
 		[searchParams, setSearchParams],
 	);
+
+	//TODO: add to handleUpdateFilter
+	const handleUpdateNameTag =
+		(nameTag: keyof AvailableNameTagFilters) =>
+		(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
+			const ntquery = `${NameTagCode[NameTagCodeFilter[nameTag]]}`;
+			searchParams.append(
+				'NT',
+				`${ntquery}${OperationCode[operation ?? 'EQUAL']}${value}`,
+			);
+			setSearchParams(searchParams);
+		};
+
 	const handleChangeFilter = useCallback(
 		(type: string) => (key: string) => {
 			searchParams.set(type, key);
@@ -323,6 +422,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 					)}
 				</MyAccordion>
 			)}
+
 			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
 				<PublishDateFilter />
 			</MyAccordion>
@@ -338,6 +438,25 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 			>
 				<NameTagFilter />
 			</MyAccordion>
+			{nameTagItems.map(nti =>
+				nti.data.length > 0 ? (
+					<MyAccordion key={nti.key} label={nti.key} isLoading={isLoading}>
+						{onRefresh => (
+							<StatList
+								items={nti.data}
+								maxRows={3}
+								refresh={onRefresh}
+								customDialog
+								onClick={handleUpdateNameTag(
+									nti.key as keyof AvailableNameTagFilters,
+								)}
+							/>
+						)}
+					</MyAccordion>
+				) : (
+					<></>
+				),
+			)}
 			<Box height="50px" />
 		</Box>
 	);

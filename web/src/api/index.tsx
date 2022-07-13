@@ -140,8 +140,19 @@ export const infiniteMainSearchEndpoint =
 			[result.data],
 		);
 
-		const statistics = useMemo(
+		const availableFilters = useMemo(
 			() => result.data?.pages?.flatMap(i => i.availableFilters)[0],
+			[result.data],
+		);
+
+		/* const filteredYears = useMemo(
+			() => omit(availableFilters?.years, '0'),
+			[availableFilters],
+		); */
+		/* console.log({ filteredYears }); */
+
+		const availableNameTagFilters = useMemo(
+			() => result.data?.pages?.flatMap(i => i.availableNameTagFilters)[0],
 			[result.data],
 		);
 
@@ -176,6 +187,7 @@ export const infiniteMainSearchEndpoint =
 			count,
 			page,
 			hasMore,
-			statistics,
+			availableFilters,
+			availableNameTagFilters,
 		};
 	};
