@@ -35,10 +35,14 @@ const XAxisOptTuple = MakeTuple(
 	'years',
 );
 // type XAxisOpts = typeof XAxisOptTuple[number];
-
+const SortingText: Record<'key' | 'count', string> = {
+	key: 'Klíč',
+	count: 'Četnost',
+};
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
 	const [zoom, setZoom] = useState(50);
+	const [sorting, setSorting] = useState<'key' | 'count'>('key');
 	console.log({ zoom });
 	const [axisX, setAxisX] =
 		useState<keyof Omit<AvailableFilters, 'availability'>>('years');
@@ -74,11 +78,11 @@ const GraphView: FC<Props> = ({ data }) => {
 			Object.keys(formattedData)
 				.filter(k => k !== '0')
 				.map(key => ({
-					year: key,
+					key,
 					count: formattedData[key],
 				}))
-				.sort((a, b) => parseInt(b.year) - parseInt(a.year)),
-		[formattedData],
+				.sort((a, b) => parseInt(b[sorting]) - parseInt(a[sorting])),
+		[formattedData, sorting],
 	);
 
 	return (
@@ -104,10 +108,11 @@ const GraphView: FC<Props> = ({ data }) => {
 					<Text mr={2} ml={3}>
 						Seřadit dle
 					</Text>
-					<SimpleSelect
-						options={[1, 2, 3]}
-						onChange={() => null}
-						value={2}
+					<SimpleSelect<'key' | 'count'>
+						options={['key', 'count']}
+						nameFromOption={item => SortingText[item ?? 'key']}
+						onChange={newVal => setSorting(newVal)}
+						value={sorting}
 						width={100}
 						variant="outlined"
 						menuItemCss={css`
@@ -163,7 +168,7 @@ const GraphView: FC<Props> = ({ data }) => {
 			>
 				<ResponsiveContainer width={'100%'} height="95%">
 					<BarChart data={chartData}>
-						<XAxis dataKey="year" fontSize={12} />
+						<XAxis dataKey="key" fontSize={12} />
 						<YAxis
 							dataKey="count"
 							fontSize={12}
