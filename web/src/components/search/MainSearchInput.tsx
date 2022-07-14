@@ -15,7 +15,7 @@ import Button from 'components/styled/Button';
 import { useTheme } from 'theme';
 import { api } from 'api';
 
-import { NameTagCode, OperationCode, TagNameEnum } from 'api/models';
+import { TagNameEnum } from 'api/models';
 
 import {
 	fieldsTuple,
@@ -25,7 +25,12 @@ import {
 } from 'hooks/useSearchContext';
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 
-import { NameTagIcon, NameTagToText } from 'utils/enumsMap';
+import {
+	NameTagCode,
+	NameTagIcon,
+	NameTagToText,
+	OperationCode,
+} from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',

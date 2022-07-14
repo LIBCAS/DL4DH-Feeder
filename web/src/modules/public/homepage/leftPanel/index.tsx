@@ -21,12 +21,17 @@ import {
 	AvailableFilters,
 	AvailableNameTagFilters,
 	ModelsEnum,
-	NameTagCode,
-	NameTagCodeFilter,
-	OperationCode,
+	TagNameEnum,
 } from 'api/models';
 
-import { modelToText } from 'utils/enumsMap';
+import {
+	modelToText,
+	NameTagCode,
+	NameTagFilterToNameTagEnum,
+	NameTagIcon,
+	NameTagToText,
+	OperationCode,
+} from 'utils/enumsMap';
 
 import ActiveFilters from './ActiveFilters';
 import NameTagFilter from './NameTagFilter';
@@ -329,7 +334,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	const handleUpdateNameTag =
 		(nameTag: keyof AvailableNameTagFilters) =>
 		(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
-			const ntquery = `${NameTagCode[NameTagCodeFilter[nameTag]]}`;
+			const ntquery = `${NameTagCode[NameTagFilterToNameTagEnum[nameTag]]}`;
 			searchParams.append(
 				'NT',
 				`${ntquery}${OperationCode[operation ?? 'EQUAL']}${value}`,
@@ -429,18 +434,28 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 			<MyAccordion
 				label={
 					<Flex alignItems="center">
-						<MdBolt size={18} />
-						<H4>NameTag</H4>
+						<MdBolt size={14} />
+						<H4 ml={2}>NameTag</H4>
 					</Flex>
 				}
-				isExpanded
 				isLoading={isLoading}
 			>
 				<NameTagFilter />
 			</MyAccordion>
-			{nameTagItems.map(nti =>
-				nti.data.length > 0 ? (
-					<MyAccordion key={nti.key} label={nti.key} isLoading={isLoading}>
+			{nameTagItems.map(nti => {
+				const formattedKey = NameTagFilterToNameTagEnum[nti.key];
+				const Icon = NameTagIcon[formattedKey as TagNameEnum];
+				return nti.data.length > 0 ? (
+					<MyAccordion
+						key={nti.key}
+						label={
+							<Flex alignItems="center">
+								<Icon size={14} />
+								<H4 ml={2}>{NameTagToText[formattedKey]}</H4>
+							</Flex>
+						}
+						isLoading={isLoading}
+					>
 						{onRefresh => (
 							<StatList
 								items={nti.data}
@@ -455,8 +470,8 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 					</MyAccordion>
 				) : (
 					<></>
-				),
-			)}
+				);
+			})}
 			<Box height="50px" />
 		</Box>
 	);
