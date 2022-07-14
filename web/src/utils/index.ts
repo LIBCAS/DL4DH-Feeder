@@ -2,6 +2,13 @@ import { ResponsePromise } from 'ky';
 import normalizeUtility from 'normalize-url';
 
 import { Backend } from 'api/endpoints';
+import { AvailableNameTagFilters, TagNameEnum } from 'api/models';
+
+import {
+	NameTagCode,
+	NameTagFilterToNameTagEnum,
+	OperationCode,
+} from './enumsMap';
 
 export type FilteredKeys<T, C> = {
 	[K in keyof T]: T[K] extends C ? K : never;
@@ -195,3 +202,21 @@ export const getDateTimeString = (date: Date) =>
 	`${getDateString(date)} ${getTimeString(date)}`;
 
 export const MakeTuple = <T extends string[]>(...args: T) => args;
+
+export const nameTagQueryCtor = (
+	nameTag?: keyof AvailableNameTagFilters | TagNameEnum,
+	operation?: 'EQUAL' | 'NOT_EQUAL',
+	value?: string,
+) => {
+	if (!nameTag || !operation || !value) {
+		console.log({ error: 'invalid params', nameTag, operation, value });
+		return null;
+	}
+	let tag = nameTag;
+	if (nameTag in NameTagFilterToNameTagEnum) {
+		tag = NameTagFilterToNameTagEnum[nameTag];
+	}
+	const tagCode = NameTagCode[tag];
+	const opCode = OperationCode[operation];
+	return { name: 'NT', value: `${tagCode}${opCode}${value}` };
+};

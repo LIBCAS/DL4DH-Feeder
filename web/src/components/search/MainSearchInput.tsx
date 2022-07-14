@@ -14,8 +14,9 @@ import Button from 'components/styled/Button';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
+import { nameTagQueryCtor } from 'utils';
 
-import { NameTagCode, OperationCode, TagNameEnum } from 'api/models';
+import { TagNameEnum } from 'api/models';
 
 import {
 	fieldsTuple,
@@ -82,12 +83,15 @@ const MainSearchInput = () => {
 	const handleUpdateContext = useCallback(
 		(newState?: string) => {
 			if (selectedTagName) {
-				searchParams.append(
-					'NT',
-					`${NameTagCode[selectedTagName]}${
-						OperationCode[selectedTagOp ?? 'EQUAL']
-					}${newState ?? localState}`,
+				const nameTagQuery = nameTagQueryCtor(
+					selectedTagName,
+					selectedTagOp ?? 'EQUAL',
+					newState ?? localState,
 				);
+				if (nameTagQuery) {
+					searchParams.append(nameTagQuery.name, nameTagQuery.value);
+				}
+
 				setLocalState('');
 				setSelectedTagName(null);
 				setSelectedTagOp(null);

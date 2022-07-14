@@ -2,13 +2,9 @@ import { omit } from 'lodash-es';
 import { parse } from 'query-string';
 import { useMemo } from 'react';
 
-import {
-	ModelsEnum,
-	NameTagCode,
-	NameTagFilterDto,
-	OperationCode,
-	TagNameEnum,
-} from 'api/models';
+import { ModelsEnum, NameTagFilterDto, TagNameEnum } from 'api/models';
+
+import { NameTagCode, OperationCode } from 'utils/enumsMap';
 
 import { TSearchQuery } from './useSearchContext';
 

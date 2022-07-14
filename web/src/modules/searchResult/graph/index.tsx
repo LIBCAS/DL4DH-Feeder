@@ -10,16 +10,13 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Text from 'components/styled/Text';
 import { Box, Flex } from 'components/styled';
 import TitleText from 'components/styled/TitleText';
 import SimpleSelect from 'components/form/select/SimpleSelect';
-import IconButton from 'components/styled/IconButton';
 
 import { useTheme } from 'theme';
-import { MakeTuple } from 'utils';
 
 import { AvailableFilters } from 'api/models';
 
@@ -27,51 +24,27 @@ type Props = {
 	data: AvailableFilters;
 };
 
-const XAxisOptTuple = MakeTuple(
-	'authors',
-	'keywords',
-	'models',
-	'languages',
-	'years',
-);
-// type XAxisOpts = typeof XAxisOptTuple[number];
-const SortingText: Record<'key' | 'count', string> = {
+type OptionXAxisType = { key: keyof AvailableFilters; label: string };
+type OptionXAxisSorting = 'key' | 'count';
+
+const OptionsXAxis: OptionXAxisType[] = [
+	{ key: 'years', label: 'Léta' },
+	{ key: 'authors', label: 'Autor' },
+	{ key: 'keywords', label: 'Klíčové slovo' },
+	{ key: 'models', label: 'Typ dokumentu' },
+	{ key: 'languages', label: 'Jazyk' },
+];
+
+const SortingText: Record<OptionXAxisSorting, string> = {
 	key: 'Klíč',
 	count: 'Četnost',
 };
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
-	const [zoom, setZoom] = useState(50);
-	const [sorting, setSorting] = useState<'key' | 'count'>('key');
-	console.log({ zoom });
-	const [axisX, setAxisX] =
-		useState<keyof Omit<AvailableFilters, 'availability'>>('years');
-
-	/* const formattedData = useMemo(
-		() =>
-			groupBy(
-				keywords.filter(p => p[axisX] !== undefined),
-				d => {
-					if (axisX === 'date') {
-						const year = parseInt(d.date); //new Date(d.date).getFullYear();
-
-						return Math.round(year / zoom) * zoom;
-					}
-
-					if (axisX === 'authors') {
-						if (typeof d.authors === 'object') {
-							return d.authors[0];
-						} else {
-							return d.authors;
-						}
-					}
-
-					return d.date;
-				},
-			),
-		[zoom, keywords, axisX],
-	); */
-	const formattedData = data[axisX];
+	//const [zoom, setZoom] = useState(50);
+	const [sorting, setSorting] = useState<OptionXAxisSorting>('key');
+	const [axisX, setAxisX] = useState<OptionXAxisType>(OptionsXAxis[0]);
+	const formattedData = data[axisX.key];
 
 	const chartData = useMemo(
 		() =>
@@ -95,8 +68,10 @@ const GraphView: FC<Props> = ({ data }) => {
 					<Text mr={2}>Os X</Text>
 					<SimpleSelect
 						label=""
-						options={XAxisOptTuple}
+						options={OptionsXAxis}
 						onChange={item => setAxisX(item)}
+						nameFromOption={item => item?.label ?? ''}
+						keyFromOption={item => item?.key ?? ''}
 						value={axisX}
 						minWidth={150}
 						width={150}
@@ -108,7 +83,7 @@ const GraphView: FC<Props> = ({ data }) => {
 					<Text mr={2} ml={3}>
 						Seřadit dle
 					</Text>
-					<SimpleSelect<'key' | 'count'>
+					<SimpleSelect<OptionXAxisSorting>
 						options={['key', 'count']}
 						nameFromOption={item => SortingText[item ?? 'key']}
 						onChange={newVal => setSorting(newVal)}
@@ -119,7 +94,7 @@ const GraphView: FC<Props> = ({ data }) => {
 							width: 100px;
 						`}
 					/>
-					<Flex
+					{/* <Flex
 						ml={3}
 						pl={3}
 						css={css`
@@ -153,7 +128,7 @@ const GraphView: FC<Props> = ({ data }) => {
 								<MdZoomIn size={24} />
 							</IconButton>
 						</Flex>
-					</Flex>
+					</Flex> */}
 				</Flex>
 			</Flex>
 			<Flex

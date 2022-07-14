@@ -5,7 +5,7 @@ import { IconType } from 'react-icons/lib';
 import { MdFormatQuote, MdHome } from 'react-icons/md';
 import { TbClock, TbSum } from 'react-icons/tb';
 
-import { ModelsEnum, TagNameEnum } from 'api/models';
+import { AvailableNameTagFilters, ModelsEnum, TagNameEnum } from 'api/models';
 
 export const SIDE_PANEL_WIDTH = 300;
 
@@ -132,6 +132,44 @@ export const NameTagIcon: Record<TagNameEnum, IconType> = {
 	COMPLEX_TIME_EXPRESSION: TbClock,
 	COMPLEX_ADDRESS_EXPRESSION: MdHome,
 	COMPLEX_BIBLIO_EXPRESSION: MdFormatQuote,
+};
+
+export const NameTagCode: Record<TagNameEnum, string> = {
+	NUMBERS_IN_ADDRESSES: 'A',
+	GEOGRAPHICAL_NAMES: 'B',
+	INSTITUTIONS: 'C',
+	MEDIA_NAMES: 'D',
+	NUMBER_EXPRESSIONS: 'E',
+	ARTIFACT_NAMES: 'F',
+	PERSONAL_NAMES: 'G',
+	TIME_EXPRESSIONS: 'H',
+	COMPLEX_PERSON_NAMES: 'I',
+	COMPLEX_TIME_EXPRESSION: 'J',
+	COMPLEX_ADDRESS_EXPRESSION: 'K',
+	COMPLEX_BIBLIO_EXPRESSION: 'L',
+};
+
+export const NameTagFilterToNameTagEnum: Record<
+	keyof AvailableNameTagFilters,
+	TagNameEnum
+> = {
+	artifactNames: 'ARTIFACT_NAMES',
+	complexAddressExpression: 'COMPLEX_ADDRESS_EXPRESSION',
+	complexBiblioExpression: 'COMPLEX_BIBLIO_EXPRESSION',
+	complexPersonNames: 'COMPLEX_PERSON_NAMES',
+	complexTimeExpression: 'COMPLEX_TIME_EXPRESSION',
+	geographicalNames: 'GEOGRAPHICAL_NAMES',
+	institutions: 'INSTITUTIONS',
+	mediaNames: 'MEDIA_NAMES',
+	numberExpressions: 'NUMBER_EXPRESSIONS',
+	numbersInAddresses: 'NUMBERS_IN_ADDRESSES',
+	personalNames: 'PERSONAL_NAMES',
+	timeExpression: 'TIME_EXPRESSIONS',
+};
+
+export const OperationCode: Record<'EQUAL' | 'NOT_EQUAL', string> = {
+	EQUAL: 'A',
+	NOT_EQUAL: 'B',
 };
 
 export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';

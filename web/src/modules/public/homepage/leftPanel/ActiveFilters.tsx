@@ -12,11 +12,13 @@ import { OperationToTextLabel } from 'components/search/MainSearchInput';
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';
 
-import { ModelsEnum, NameTagCode, OperationCode } from 'api/models';
+import { ModelsEnum } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
 import {
+	NameTagCode,
+	OperationCode,
 	availabilityToText,
 	modelToText,
 	NameTagToText,
