@@ -36,10 +36,6 @@ const PublicationDetail = () => {
 	const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
-	useEffect(() => {
-		mapRef.current?.updateSize();
-	}, [rightCollapsed]);
-
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
 		[page, pages],

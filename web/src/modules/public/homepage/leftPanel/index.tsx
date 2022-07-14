@@ -31,6 +31,7 @@ import {
 	NameTagIcon,
 	NameTagToText,
 } from 'utils/enumsMap';
+import { mapLangToCS } from 'utils/languagesMap';
 
 import ActiveFilters from './ActiveFilters';
 import NameTagFilter from './NameTagFilter';
@@ -296,13 +297,15 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				? [
 						...Object.keys(data?.languages).map(key => ({
 							key,
-							label: key,
+							label: mapLangToCS?.[key] ?? key,
 							value: data.languages[key],
 						})),
 				  ].sort((a, b) => b.value - a.value)
 				: [],
 		[data?.languages],
 	);
+
+	console.log({ languagesItems });
 
 	const nameTagKeys = Object.keys(nameTagData ?? {});
 

@@ -24,6 +24,7 @@ import {
 	NameTagToText,
 	enrichmentToText,
 } from 'utils/enumsMap';
+import { mapLangToCS } from 'utils/languagesMap';
 
 // const keyToText: Record<string, string> = {
 // 	keywords: 'Klíčové slovo',
@@ -59,6 +60,8 @@ const enumToText = (type: string, value: string) => {
 			return `Řetězec: "${value}"`;
 		case 'yearsInterval':
 			return `Léta: ${value}`;
+		case 'languages':
+			return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
 
 		default:
 			return value;
