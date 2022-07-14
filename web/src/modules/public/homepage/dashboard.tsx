@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useState, useMemo } from 'react';
+import { FC, useState } from 'react';
 import { BsGridFill } from 'react-icons/bs';
 import { ImMenu } from 'react-icons/im';
 import { MdEqualizer } from 'react-icons/md';
@@ -46,8 +46,6 @@ const Dashboard: FC = () => {
 		sort: state.sorting.id,
 		...state.searchQuery,
 	});
-
-	//const statsMemo = useMemo(() => statistics, [statistics]);
 
 	return (
 		<ResponsiveWrapper

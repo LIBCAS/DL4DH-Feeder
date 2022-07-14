@@ -19,13 +19,19 @@ import PubChooseSecond from './PubChooseSecond';
 type Props = {
 	variant: 'left' | 'right';
 	defaultView?: 'detail' | 'search';
-	//	page: string;
 	pages: PublicationChild[];
+	onCollapse?: (clp?: boolean) => void;
+	isCollapsed?: boolean;
 };
 
-const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
+const PublicationSidePanel: FC<Props> = ({
+	variant,
+	defaultView,
+	pages,
+	onCollapse,
+	isCollapsed,
+}) => {
 	const theme = useTheme();
-	const [leftCollapsed, setLeftCollapsed] = useState(false);
 	const [chooseSecond, setChooseSecond] = useState(false);
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
@@ -35,8 +41,9 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 	return (
 		<Flex
 			position="relative"
-			width={leftCollapsed ? '0px' : 300}
+			width={300}
 			flexShrink={0}
+			bg="primaryLight"
 			css={css`
 				${variant === 'left' &&
 				css`
@@ -124,9 +131,11 @@ const PublicationSidePanel: FC<Props> = ({ variant, defaultView, pages }) => {
 				)}
 			</Flex>
 			<SidePanelHideButton
-				onClick={() => setLeftCollapsed(p => !p)}
+				onClick={() => {
+					onCollapse?.();
+				}}
 				variant={variant}
-				isCollapsed={leftCollapsed}
+				isCollapsed={isCollapsed}
 			/>
 		</Flex>
 	);

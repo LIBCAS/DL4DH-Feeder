@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { MdLock } from 'react-icons/md';
 
@@ -10,6 +10,7 @@ import Text from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
+import { mapRef } from 'modules/zoomify/ZoomifyView';
 
 import { useTheme } from 'theme';
 
@@ -32,6 +33,12 @@ const PublicationDetail = () => {
 	const [page] = useSearchParams();
 	const pubCtx = useContext(PubCtx);
 	const nav = useNavigate();
+	const [rightCollapsed, setRightCollapsed] = useState(false);
+	const [leftCollapsed, setLeftCollapsed] = useState(false);
+
+	useEffect(() => {
+		mapRef.current?.updateSize();
+	}, [rightCollapsed]);
 
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
@@ -73,12 +80,35 @@ const PublicationDetail = () => {
 			width={1}
 			height="100vh"
 		>
-			<Flex width={1}>
-				<PublicationSidePanel
-					variant="left"
-					defaultView="search"
-					pages={pages}
-				/>
+			<Flex
+				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
+				css={css`
+					transition: width 500ms;
+				`}
+				onTransitionEnd={() => {
+					mapRef.current?.updateSize();
+				}}
+			>
+				<Flex
+					overflow="visible"
+					width={leftCollapsed ? 0 : 300}
+					minWidth={0}
+					maxWidth={300}
+					zIndex={3}
+					css={css`
+						transition-duration: 200ms;
+						transition-property: width transform;
+						transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+					`}
+				>
+					<PublicationSidePanel
+						variant="left"
+						defaultView="search"
+						pages={pages}
+						onCollapse={() => setLeftCollapsed(p => !p)}
+						isCollapsed={leftCollapsed}
+					/>
+				</Flex>
 				{isPublic ? (
 					<>
 						{!datanode ? (
@@ -138,7 +168,12 @@ const PublicationDetail = () => {
 					</Flex>
 				)}
 
-				<PublicationSidePanel variant="right" pages={pages} />
+				<PublicationSidePanel
+					variant="right"
+					pages={pages}
+					onCollapse={() => setRightCollapsed(p => !p)}
+					isCollapsed={rightCollapsed}
+				/>
 			</Flex>
 		</ResponsiveWrapper>
 	);

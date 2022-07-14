@@ -13,6 +13,7 @@ import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text, { H4 } from 'components/styled/Text';
 import Paper from 'components/styled/Paper';
+import { OperationToTextLabel } from 'components/search/MainSearchInput';
 
 import { useTheme } from 'theme';
 import { nameTagQueryCtor } from 'utils';
@@ -110,7 +111,10 @@ const StatList: FC<{
 													onClick?.(item.key, 'EQUAL');
 												}}
 											>
-												{'je'}
+												{OperationToTextLabel['EQUAL']}
+												<Text ml="2" my={0} p={0}>
+													je
+												</Text>
 											</Button>
 
 											<Button
@@ -120,7 +124,10 @@ const StatList: FC<{
 													onClick?.(item.key, 'NOT_EQUAL');
 												}}
 											>
-												{'není'}
+												{OperationToTextLabel['NOT_EQUAL']}
+												<Text ml="2" my={0} p={0}>
+													není
+												</Text>
 											</Button>
 										</Flex>
 										<Text fontSize="xl">
@@ -320,29 +327,23 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 
 	const handleUpdateFilter = useCallback(
 		(type: string) => (key: string) => {
-			//TODO: riesi ked je nejaky model nieco/nieco
-			if (type === 'models' && key.split('/').length > 1) {
-				const keyArr = key.split('/');
-				keyArr.forEach(k => searchParams.append(type, k));
-				setSearchParams(searchParams);
-			} else {
-				searchParams.append(type, key);
-				setSearchParams(searchParams);
-			}
+			searchParams.append(type, key);
+			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],
 	);
 
-	//TODO: add to handleUpdateFilter
-	const handleUpdateNameTag =
+	const handleUpdateNameTag = useCallback(
 		(nameTag: keyof AvailableNameTagFilters) =>
-		(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
-			const nameTagQuery = nameTagQueryCtor(nameTag, operation, value);
-			if (nameTagQuery) {
-				searchParams.append(nameTagQuery.name, nameTagQuery.value);
-			}
-			setSearchParams(searchParams);
-		};
+			(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
+				const nameTagQuery = nameTagQueryCtor(nameTag, operation, value);
+				if (nameTagQuery) {
+					searchParams.append(nameTagQuery.name, nameTagQuery.value);
+				}
+				setSearchParams(searchParams);
+			},
+		[setSearchParams, searchParams],
+	);
 
 	const handleChangeFilter = useCallback(
 		(type: string) => (key: string) => {

@@ -7,10 +7,6 @@ import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
 import { FC, useEffect, useRef, useState } from 'react';
 import XML from 'xml2js';
-import {
-	DragRotateAndZoom,
-	defaults as defaultInteractions,
-} from 'ol/interaction';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -21,28 +17,53 @@ import { useImageProperties } from 'api/publicationsApi';
 import 'ol/ol.css';
 
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
-//const ZOOMIFY_URL = 'https://kramerius5.nkp.cz/search/zoomify/';
-//ChangeEvent<HTMLInputElement>
-/*const control = document.getElementById('zoomifyProtocol');
-control?.addEventListener('change', (event: Event) => {
-	const value = event?.currentTarget?.value;
-	if (value === 'zoomify') {
-		layer.setSource(source);
-	} else if (value === 'zoomifyretina') {
-		layer.setSource(retinaSource);
-	}
-});*/
-//openlayers.org/en/latest/examples/zoomify.html
 
 //deep zoom?
 //https://stackoverflow.com/questions/58498434/deepzoom-into-openlayers-images-using-zoomify/58500085#58500085
+
+/*
+setDimensions(width1: number, height1: number, width2: number, height2: number) {
+    this.imageWidth1 = 0;
+    this.imageWidth = width1;
+    this.imageHeight = height1;
+    let extent;
+    if (width2 && height2) {
+      this.imageHeight = Math.max(this.imageHeight, height2);
+      this.imageWidth = width1 + width2;
+      this.imageWidth1 = width1;
+      extent = [-this.imageWidth / 2, -this.imageHeight, this.imageWidth / 2, 0];
+    } else {
+      extent = [0, -this.imageHeight, this.imageWidth, 0];
+    }
+    this.extent = extent;
+    const maxResolution = this.getBestFitResolution() * 1.5;
+    const minResolution = 0.5;
+    const viewOpts: any = {
+      extent: this.extent,
+      minResolution: minResolution,
+      maxResolution: maxResolution,
+      constrainOnlyCenter: true,
+      smoothExtentConstraint: false
+    };
+    const view = new ol.View(viewOpts);
+    this.view.setView(view);
+  }
+*/
+
+/* getBestFitResolution() {
+    const rx = imgWidth / (view.getSize()[0] - 10);
+    const ry = imgHeight / (view.getSize()[1] - 10);
+    return Math.max(rx, ry);
+  } */
+
+export const mapRef: { current: Map | null } = { current: null };
+
 const MapWrapper: FC<{
 	imgId?: string;
 	isLoading?: boolean;
 	imgWidth: number;
 	imgHeight: number;
 	rotation: number;
-	zoom: number;
 }> = ({ imgId, imgWidth, imgHeight, rotation }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
@@ -51,55 +72,55 @@ const MapWrapper: FC<{
 		const source = new Zoomify({
 			url: zoomifyUrl,
 			size: [imgWidth, imgHeight],
+			tilePixelRatio: 1,
 			crossOrigin: 'anonymous',
+			tierSizeCalculation: 'truncated',
 			zDirection: -1, // Ensure we get a tile with the screen resolution or higher
+			//extent: [0, -imgHeight, imgWidth, 0],
 		});
 		const extent = source?.getTileGrid()?.getExtent();
-
-		/*const retinaPixelRatio = 2;
-		 const retinaSource = new Zoomify({
-			url: zoomifyUrl,
-			size: [imgWidth, imgHeight],
-			crossOrigin: 'anonymous',
-			zDirection: -1, // Ensure we get a tile with the screen resolution or higher
-			tilePixelRatio: retinaPixelRatio, // Display retina tiles
-			tileSize: 256 / retinaPixelRatio, // from a higher zoom level
-		}); */
-
 		const layer = new TileLayer({
 			source: source,
 		});
 
 		map.current = new Map({
-			interactions: defaultInteractions().extend([new DragRotateAndZoom()]),
+			//interactions: defaultInteractions().extend([new DragRotateAndZoom()]),
 			layers: [layer],
 			target: mapElement.current as HTMLDivElement,
+			maxTilesLoading: 500,
+			controls: [],
 			view: new View({
 				// adjust zoom levels to those provided by the source
-				resolutions: layer?.getSource()?.getTileGrid()?.getResolutions(),
+				//resolutions: layer?.getSource()?.getTileGrid()?.getResolutions(),
 				// constrain the center: center cannot be set outside this extent
 				extent: extent,
 				constrainOnlyCenter: true,
-				maxZoom: 150,
+				maxResolution: 4.5, // TODO: max a min res vypocitat podla rozlisenia viewportu obrazovky a obrazku, max je zoomout min je zoomin
+				minResolution: 0.2,
+				maxZoom: 15,
 			}),
-			maxTilesLoading: 500,
 		});
 		map.current?.getView().fit(extent as Extent);
 	}, [imgId, imgWidth, imgHeight]);
 
-	map.current?.getView().setRotation((rotation * Math.PI) / 180);
+	//map.current?.getView().setRotation((rotation * Math.PI) / 180);
+	map.current
+		?.getView()
+		.animate({ rotation: (rotation * Math.PI) / 180, duration: 150 });
+
+	useEffect(() => {
+		mapRef.current = map.current;
+	}, [map]);
 
 	return (
-		<>
-			<Box
-				key={imgId}
-				ref={mapElement}
-				css={css`
-					width: 100%;
-					height: 100vh;
-				`}
-			></Box>
-		</>
+		<Box
+			key={imgId}
+			ref={mapElement}
+			css={css`
+				width: 100%;
+				height: 100vh;
+			`}
+		></Box>
 	);
 };
 const ZoomifyView: React.FC<{
@@ -108,7 +129,7 @@ const ZoomifyView: React.FC<{
 	rotation: number;
 }> = ({ id, rotation }) => {
 	const imgProps = useImageProperties(id ?? '');
-	//const [rotation, setRotation] = useState(0);
+
 	const counter = useRef(0);
 	type ImageProps = {
 		IMAGE_PROPERTIES: {
@@ -126,11 +147,9 @@ const ZoomifyView: React.FC<{
 	}, [imgProps.data, id]);
 
 	if (!id) {
-		console.log('OL LOADING');
 		return <Loader />;
 	}
 	if (imgProps.isLoading) {
-		console.log('imgProps loading');
 		return <Loader />;
 	}
 
@@ -138,14 +157,13 @@ const ZoomifyView: React.FC<{
 	const imgHeight = parseInt(parsedXML?.IMAGE_PROPERTIES.$.HEIGHT ?? '0');
 
 	return (
-		<Wrapper width={1} height="100vh">
+		<Wrapper width="100%" height="100vh">
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}
 				imgWidth={imgWidth}
 				imgHeight={imgHeight}
 				rotation={rotation}
-				zoom={0}
 			/>
 		</Wrapper>
 	);
