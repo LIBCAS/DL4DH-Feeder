@@ -15,7 +15,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 
-import ZoomifyView from 'modules/tests/ol/ZoomifyView';
+import ZoomifyView, { mapRef } from 'modules/zoomify/ZoomifyView';
 
 import { useTheme } from 'theme';
 
@@ -105,8 +105,34 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						onClick={() => setRotation(r => (r + 90) % 360)}
 						Icon={<MdRotateRight size={24} />}
 					/>
-					<ToolButton onClick={() => null} Icon={<MdZoomIn size={24} />} />
-					<ToolButton onClick={() => null} Icon={<MdZoomOut size={24} />} />
+					<ToolButton
+						onClick={() => {
+							const currentZoom =
+								mapRef.current?.getView().getResolution() ?? 1;
+							console.log({ mapRef });
+
+							const newZoom = currentZoom / 1.5;
+							mapRef.current?.getView().animate({
+								resolution: newZoom,
+								duration: 300,
+							});
+						}}
+						Icon={<MdZoomIn size={24} />}
+					/>
+					<ToolButton
+						onClick={() => {
+							const currentZoom =
+								mapRef.current?.getView().getResolution() ?? 1;
+							console.log({ mapRef });
+
+							const newZoom = currentZoom * 1.5;
+							mapRef.current?.getView().animate({
+								resolution: newZoom,
+								duration: 300,
+							});
+						}}
+						Icon={<MdZoomOut size={24} />}
+					/>
 
 					<ToolButton
 						onClick={() => {

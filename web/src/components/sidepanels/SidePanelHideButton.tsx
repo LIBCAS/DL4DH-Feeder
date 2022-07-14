@@ -34,6 +34,10 @@ const SidePanelHideButton: FC<Props> = ({ onClick, isCollapsed, variant }) => {
 				border: 1px solid ${theme.colors.border};
 				cursor: pointer;
 				box-shadow: 1px 1px 3px 3px rgba(0, 0, 0, 0.01);
+				&:hover {
+					background-color: ${theme.colors.primary};
+					color: white;
+				}
 				${variant === 'left' &&
 				css`
 					border-left: none;
