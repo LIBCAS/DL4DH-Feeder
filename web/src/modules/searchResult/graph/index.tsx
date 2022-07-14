@@ -20,11 +20,17 @@ import { useTheme } from 'theme';
 
 import { AvailableFilters } from 'api/models';
 
+import { mapLangToCS } from 'utils/languagesMap';
+
 type Props = {
 	data: AvailableFilters;
 };
 
-type OptionXAxisType = { key: keyof AvailableFilters; label: string };
+type OptionXAxisType = {
+	key: keyof AvailableFilters;
+	label: string;
+	itemLabelFunction?: (key: string) => string;
+};
 type OptionXAxisSorting = 'key' | 'count';
 
 const OptionsXAxis: OptionXAxisType[] = [
@@ -32,7 +38,11 @@ const OptionsXAxis: OptionXAxisType[] = [
 	{ key: 'authors', label: 'Autor' },
 	{ key: 'keywords', label: 'Klíčové slovo' },
 	{ key: 'models', label: 'Typ dokumentu' },
-	{ key: 'languages', label: 'Jazyk' },
+	{
+		key: 'languages',
+		label: 'Jazyk',
+		itemLabelFunction: (key: string) => mapLangToCS?.[key] ?? key,
+	},
 ];
 
 const SortingText: Record<OptionXAxisSorting, string> = {
@@ -53,9 +63,10 @@ const GraphView: FC<Props> = ({ data }) => {
 				.map(key => ({
 					key,
 					count: formattedData[key],
+					label: axisX?.itemLabelFunction?.(key) ?? key,
 				}))
 				.sort((a, b) => parseInt(b[sorting]) - parseInt(a[sorting])),
-		[formattedData, sorting],
+		[formattedData, sorting, axisX],
 	);
 
 	return (
@@ -143,7 +154,7 @@ const GraphView: FC<Props> = ({ data }) => {
 			>
 				<ResponsiveContainer width={'100%'} height="95%">
 					<BarChart data={chartData}>
-						<XAxis dataKey="key" fontSize={12} />
+						<XAxis dataKey="label" fontSize={12} />
 						<YAxis
 							dataKey="count"
 							fontSize={12}
