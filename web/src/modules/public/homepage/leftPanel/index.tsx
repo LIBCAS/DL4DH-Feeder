@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled/macro';
 import { isEqual } from 'lodash-es';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { MdBolt, MdClose, MdExpandMore } from 'react-icons/md';
+import { MdBolt, MdExpandMore } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import Dialog from '@reach/dialog';
 
@@ -12,10 +12,10 @@ import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text, { H4 } from 'components/styled/Text';
-import ModalDialog from 'components/modal';
 import Paper from 'components/styled/Paper';
 
 import { useTheme } from 'theme';
+import { nameTagQueryCtor } from 'utils';
 
 import {
 	AvailableFilters,
@@ -26,11 +26,9 @@ import {
 
 import {
 	modelToText,
-	NameTagCode,
 	NameTagFilterToNameTagEnum,
 	NameTagIcon,
 	NameTagToText,
-	OperationCode,
 } from 'utils/enumsMap';
 
 import ActiveFilters from './ActiveFilters';
@@ -58,7 +56,8 @@ const StatList: FC<{
 	refresh?: () => void;
 	onClick?: (key: string, operation?: 'EQUAL' | 'NOT_EQUAL') => void;
 	customDialog?: boolean;
-}> = ({ items, maxRows, refresh, onClick, customDialog }) => {
+	listId?: string;
+}> = ({ items, maxRows, refresh, onClick, customDialog, listId }) => {
 	const [exp, setExp] = useState<boolean>(!maxRows);
 	const [dialogOpen, setDialogOpen] = useState<string>('');
 	const theme = useTheme();
@@ -90,50 +89,54 @@ const StatList: FC<{
 						}
 					`}
 				>
-					{' '}
 					{customDialog && dialogOpen === item.key && (
-						<Flex
-							position="absolute"
-							width="100%"
-							height="100%"
-							top="-10px"
-							left="0"
-							bg="white"
-							flexDirection="row"
-							p={2}
-							mb={4}
-							zIndex={30}
-						>
+						<Flex position="relative">
 							<Dialog isOpen>
-								<Paper alignItems="center">
-									<Text>Operace</Text>
-									<Button
-										m={1}
-										variant="primary"
-										onClick={() => {
-											onClick?.(item.key, 'EQUAL');
-										}}
+								<Paper>
+									<H4>Zvolte operaci</H4>
+									<Flex
+										width={1}
+										alignItems="center"
+										justifyContent="center"
+										flexDirection="column"
 									>
-										{'JE'}
-									</Button>
+										<Text fontSize="xl">{listId}</Text>
+
+										<Flex alignItems="center" flexDirection="row" my={2}>
+											<Button
+												m={1}
+												variant="primary"
+												onClick={() => {
+													onClick?.(item.key, 'EQUAL');
+												}}
+											>
+												{'je'}
+											</Button>
+
+											<Button
+												m={1}
+												variant="primary"
+												onClick={() => {
+													onClick?.(item.key, 'NOT_EQUAL');
+												}}
+											>
+												{'není'}
+											</Button>
+										</Flex>
+										<Text fontSize="xl">
+											{'"'}
+											{item.key}
+											{'"'}
+										</Text>
+									</Flex>
 									<Button
 										m={1}
-										variant="primary"
-										onClick={() => {
-											onClick?.(item.key, 'NOT_EQUAL');
-										}}
-									>
-										{'NENÍ'}
-									</Button>
-									<Button
-										m={1}
-										variant="primary"
+										variant="text"
 										onClick={() => {
 											setDialogOpen('');
-											//	closeModal();
 										}}
 									>
-										Zavřít
+										Zrušit
 									</Button>
 								</Paper>
 							</Dialog>
@@ -334,11 +337,10 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	const handleUpdateNameTag =
 		(nameTag: keyof AvailableNameTagFilters) =>
 		(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
-			const ntquery = `${NameTagCode[NameTagFilterToNameTagEnum[nameTag]]}`;
-			searchParams.append(
-				'NT',
-				`${ntquery}${OperationCode[operation ?? 'EQUAL']}${value}`,
-			);
+			const nameTagQuery = nameTagQueryCtor(nameTag, operation, value);
+			if (nameTagQuery) {
+				searchParams.append(nameTagQuery.name, nameTagQuery.value);
+			}
 			setSearchParams(searchParams);
 		};
 
@@ -458,6 +460,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 					>
 						{onRefresh => (
 							<StatList
+								listId={NameTagToText[formattedKey]}
 								items={nti.data}
 								maxRows={3}
 								refresh={onRefresh}

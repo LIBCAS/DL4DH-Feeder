@@ -14,6 +14,7 @@ import Button from 'components/styled/Button';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
+import { nameTagQueryCtor } from 'utils';
 
 import { TagNameEnum } from 'api/models';
 
@@ -25,12 +26,7 @@ import {
 } from 'hooks/useSearchContext';
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 
-import {
-	NameTagCode,
-	NameTagIcon,
-	NameTagToText,
-	OperationCode,
-} from 'utils/enumsMap';
+import { NameTagIcon, NameTagToText } from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',
@@ -87,12 +83,15 @@ const MainSearchInput = () => {
 	const handleUpdateContext = useCallback(
 		(newState?: string) => {
 			if (selectedTagName) {
-				searchParams.append(
-					'NT',
-					`${NameTagCode[selectedTagName]}${
-						OperationCode[selectedTagOp ?? 'EQUAL']
-					}${newState ?? localState}`,
+				const nameTagQuery = nameTagQueryCtor(
+					selectedTagName,
+					selectedTagOp ?? 'EQUAL',
+					newState ?? localState,
 				);
+				if (nameTagQuery) {
+					searchParams.append(nameTagQuery.name, nameTagQuery.value);
+				}
+
 				setLocalState('');
 				setSelectedTagName(null);
 				setSelectedTagOp(null);
