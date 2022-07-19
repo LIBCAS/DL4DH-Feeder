@@ -15,7 +15,23 @@ import { Loader } from 'modules/loader';
 
 import { useStreams } from 'api/publicationsApi';
 
+import { ModelToText } from 'utils/enumsMap';
+
 import MetaStreamsDialog from './MetaStreamsDialog';
+
+const xmlItemToText = (item: string | string[], key: string) => {
+	if (Array.isArray(item)) {
+		return item
+			.map(it => {
+				if (key === 'type') {
+					return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
+				}
+				return it;
+			})
+			.join('\n');
+	}
+	return '';
+};
 
 const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 	const wrapper = 'oai_dc:dc';
@@ -62,6 +78,8 @@ const PubBiblioDetail: FC<Props> = () => {
 		return <Loader />;
 	}
 	const biblio = parseDCXML(parsedXML);
+
+	console.log({ biblio });
 
 	return (
 		<Box width={1}>
@@ -111,7 +129,7 @@ const PubBiblioDetail: FC<Props> = () => {
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Typ dokumentu
 					</Text>
-					<H5>{biblio.type}</H5>
+					<H5>{xmlItemToText(biblio.type ?? [], 'type')}</H5>
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
