@@ -11,6 +11,8 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { DragBox } from 'ol/interaction';
 import { Geometry } from 'ol/geom';
+import Static from 'ol/source/ImageStatic';
+import ImageLayer from 'ol/layer/Image';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -62,9 +64,18 @@ const MapWrapper: FC<{
 			tilePixelRatio: 1,
 			crossOrigin: 'anonymous',
 			tierSizeCalculation: 'truncated',
-			zDirection: -1, // Ensure we get a tile with the screen resolution or higher
+			imageSmoothing: true,
+			//zDirection: -1, // Ensure we get a tile with the screen resolution or higher
 			//extent: [0, -imgHeight, imgWidth, 0],
 		});
+
+		const staticSource = new Static({
+			url: `${zoomifyUrl}TileGroup0/0-0-0.jpg`,
+			crossOrigin: 'anonymous',
+			imageExtent: [0, -imgHeight, imgWidth, 0],
+		});
+		const staticLayer = new ImageLayer({ source: staticSource });
+
 		const extent = source?.getTileGrid()?.getExtent();
 		const layer = new TileLayer({
 			source: source,
@@ -108,7 +119,7 @@ const MapWrapper: FC<{
 		});
 		dragBoxRef.current = dragBox;
 		map.current = new Map({
-			layers: [layer, vectorLayer],
+			layers: [staticLayer, layer, vectorLayer],
 			target: mapElement.current as HTMLDivElement,
 			maxTilesLoading: 500,
 			controls: [],
