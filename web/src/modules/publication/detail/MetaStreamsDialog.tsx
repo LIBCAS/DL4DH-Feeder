@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useRef, useState } from 'react';
+import React, { FC, useContext, useRef, useState } from 'react';
 import { MdCopyAll } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import XMLViewer from 'react-xml-viewer';
+import ReactJson from 'react-json-view';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
@@ -12,38 +13,99 @@ import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
 import Text from 'components/styled/Text';
+import Tabs from 'components/tabs';
 
 import { useTheme } from 'theme';
 
-import { useStreamList, useStreams } from 'api/publicationsApi';
+import {
+	StreamInfoDto,
+	usePublicationChildren,
+	usePublicationDetail,
+	useStreamList,
+	useStreams,
+} from 'api/publicationsApi';
+import { StreamTypeEnum } from 'api/models';
+
+import { PubCtx } from '../ctx/pub-ctx';
 
 type Props = {
-	xmlString: string;
 	uuid: string;
 };
 
-const MetaStreamsDialog: FC<Props> = ({ xmlString, uuid }) => {
-	const [selectedMod, setSelectedMod] = useState('DC');
+const ViewStream = React.forwardRef<
+	HTMLDivElement,
+	{
+		uuid: string;
+		stream: StreamTypeEnum;
+		mime: string;
+	}
+>(({ uuid, stream, mime }, ref) => {
+	const response = useStreams(uuid, stream, mime);
+	const pageDetail = usePublicationDetail(uuid ?? '');
+	const childrenDetail = usePublicationChildren(uuid ?? '');
+	if (response.isLoading) {
+		return <LoaderSpin />;
+	}
+
+	if (pageDetail.isLoading) {
+		return <LoaderSpin />;
+	}
+
+	return (
+		<div ref={ref}>
+			{stream === 'TEXT_OCR' ? (
+				<Text>
+					<pre>{response.data}</pre>
+				</Text>
+			) : (
+				<>
+					{stream === 'ITEM' || stream === 'CHILDREN' ? (
+						<ReactJson
+							src={
+								stream === 'ITEM'
+									? pageDetail.data ?? {}
+									: childrenDetail.data ?? {}
+							}
+							shouldCollapse={false}
+							displayDataTypes={false}
+							displayObjectSize={false}
+							enableClipboard={false}
+						/>
+					) : (
+						<XMLViewer xml={response.data} />
+					)}
+				</>
+			)}
+		</div>
+	);
+});
+
+ViewStream.displayName = ViewStream.name;
+
+const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
+	const [selectedMod, setSelectedMod] = useState<StreamInfoDto | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
+	const ref2 = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
 	const [searchParams] = useSearchParams();
 	const pageId = searchParams.get('page');
 	const [source, setSource] = useState('BOOK');
 	const theme = useTheme();
-	const modStream = useStreams(uuid, 'BIBLIO_MODS');
-	const ocrStream = useStreams(pageId ?? '', 'TEXT_OCR');
-	/* const allStreams = useStreamList(uuid);
-	if (!allStreams.isLoading) {
-		console.log(allStreams.data);
-	} */
+	const allStreams = useStreamList(source === 'PAGE' ? pageId ?? '' : uuid);
 
-	if (modStream.isLoading || ocrStream.isLoading) {
+	const pub = useContext(PubCtx);
+
+	console.log({ pub });
+
+	if (allStreams.isLoading) {
 		return <LoaderSpin />;
 	}
-	const streams = {
-		DC: xmlString,
-		MODS: modStream.data,
-	};
+
+	const streamsOptions = [
+		{ key: 'ITEM', mimeType: 'json', label: 'item' } as StreamInfoDto,
+		{ key: 'CHILDREN', mimeType: 'json', label: 'children' } as StreamInfoDto,
+		...allStreams.list.filter(s => !s.mimeType.toUpperCase().includes('IMAGE')),
+	];
 
 	return (
 		<ModalDialog
@@ -55,36 +117,54 @@ const MetaStreamsDialog: FC<Props> = ({ xmlString, uuid }) => {
 			)}
 		>
 			{closeModal => (
-				<Paper>
-					<Flex mb={3} justifyContent="space-between">
+				<Paper minHeight="50vh" bg="paper">
+					<Flex
+						mb={3}
+						justifyContent="space-between"
+						alignItems="flex-start"
+						overflow="visible"
+					>
 						<Flex>
 							<SimpleSelect
-								options={['DC', 'MODS', 'OCR']}
+								options={streamsOptions}
 								onChange={item => setSelectedMod(item)}
+								nameFromOption={item => item?.key ?? ''}
+								keyFromOption={item => item?.key ?? ''}
 								value={selectedMod}
-								variant="outlined"
-								width="100px"
-								menuItemCss={css`
+								variant="underlined"
+								minWidth="150px"
+								/* menuItemCss={css`
 									width: 100px;
-								`}
+								`} */
 							/>
-							<SimpleSelect
-								ml={3}
-								options={['PAGE', 'BOOK']}
-								onChange={item => setSource(item)}
-								value={source}
-								variant="outlined"
-								width="100px"
-								menuItemCss={css`
-									width: 100px;
-								`}
-							/>
+							<Tabs
+								tabs={[
+									{
+										key: 'BOOK',
+										jsx: (
+											<Button fontSize="lg" color="inherit" variant="text">
+												Kniha
+											</Button>
+										),
+									},
+									{
+										key: 'PAGE',
+										jsx: (
+											<Button fontSize="lg" color="inherit" variant="text">
+												Stránka
+											</Button>
+										),
+									},
+								]}
+								activeTab={source}
+								setActiveTab={k => setSource(k)}
+							></Tabs>
 						</Flex>
 						<Button
 							className="clpbtn"
 							variant="text"
 							onClick={() => {
-								navigator.clipboard.writeText(modStream.data);
+								navigator.clipboard.writeText(ref2.current?.innerText ?? '');
 							}}
 							title="Kopírovat do schránky"
 							onMouseEnter={() => {
@@ -109,41 +189,31 @@ const MetaStreamsDialog: FC<Props> = ({ xmlString, uuid }) => {
 								}
 							`}
 						>
+							<Flex ref={copyRef}>
+								<Text mx={2} fontSize="lg">
+									Kopírovat do schránky
+								</Text>
+							</Flex>
 							<MdCopyAll size={26} />
 						</Button>
 					</Flex>
 					<Flex
-						//style={{ backgroundColor: 'blue' }}
 						ref={ref}
 						position="relative"
 						overflow="scroll"
 						maxHeight="60vh"
+						minHeight="300px"
 						px={2}
 						css={css`
 							border: 1px solid ${theme.colors.border};
 						`}
 					>
-						<Flex
-							width="100%"
-							height="100%"
-							justifyContent="center"
-							alignItems="center"
-							ref={copyRef}
-							position="absolute"
-							color="white"
-							css={css`
-								visibility: hidden;
-							`}
-						>
-							<Text fontSize="46px">Skopírovat do schránky</Text>
-						</Flex>
-						{selectedMod === 'OCR' ? (
-							<Text>
-								<pre>{ocrStream.data}</pre>
-							</Text>
-						) : (
-							<XMLViewer xml={streams[selectedMod]} />
-						)}
+						<ViewStream
+							ref={ref2}
+							uuid={source === 'PAGE' ? pageId ?? '' : uuid}
+							stream={selectedMod?.key ?? 'ALTO'}
+							mime={selectedMod?.mimeType ?? 'text/plain'}
+						/>
 					</Flex>
 					<Flex>
 						<Button variant="primary" onClick={closeModal} my={3}>

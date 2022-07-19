@@ -54,14 +54,14 @@ const SidePanelHideButton: FC<Props> = ({ onClick, isCollapsed, variant }) => {
 		>
 			{isCollapsed ? (
 				<MdExpandMore
-					size={16}
+					size={24}
 					css={css`
 						transform: rotate(${variant === 'left' ? -90 : 90}deg);
 					`}
 				/>
 			) : (
 				<MdExpandMore
-					size={16}
+					size={24}
 					css={css`
 						transform: rotate(${variant === 'left' ? 90 : -90}deg);
 					`}

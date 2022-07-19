@@ -7,56 +7,31 @@ import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
 import { FC, useEffect, useRef, useState } from 'react';
 import XML from 'xml2js';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import { DragBox } from 'ol/interaction';
+import { Geometry } from 'ol/geom';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 
+import { api } from 'api';
+
 import { useImageProperties } from 'api/publicationsApi';
+
 import 'ol/ol.css';
+import AltoDialog from './AltoDialog';
 
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 
 //deep zoom?
 //https://stackoverflow.com/questions/58498434/deepzoom-into-openlayers-images-using-zoomify/58500085#58500085
 
-/*
-setDimensions(width1: number, height1: number, width2: number, height2: number) {
-    this.imageWidth1 = 0;
-    this.imageWidth = width1;
-    this.imageHeight = height1;
-    let extent;
-    if (width2 && height2) {
-      this.imageHeight = Math.max(this.imageHeight, height2);
-      this.imageWidth = width1 + width2;
-      this.imageWidth1 = width1;
-      extent = [-this.imageWidth / 2, -this.imageHeight, this.imageWidth / 2, 0];
-    } else {
-      extent = [0, -this.imageHeight, this.imageWidth, 0];
-    }
-    this.extent = extent;
-    const maxResolution = this.getBestFitResolution() * 1.5;
-    const minResolution = 0.5;
-    const viewOpts: any = {
-      extent: this.extent,
-      minResolution: minResolution,
-      maxResolution: maxResolution,
-      constrainOnlyCenter: true,
-      smoothExtentConstraint: false
-    };
-    const view = new ol.View(viewOpts);
-    this.view.setView(view);
-  }
-*/
-
-/* getBestFitResolution() {
-    const rx = imgWidth / (view.getSize()[0] - 10);
-    const ry = imgHeight / (view.getSize()[1] - 10);
-    return Math.max(rx, ry);
-  } */
-
 export const mapRef: { current: Map | null } = { current: null };
+
+// https://openlayers.org/en/latest/examples/box-selection.html
 
 const MapWrapper: FC<{
 	imgId?: string;
@@ -67,6 +42,18 @@ const MapWrapper: FC<{
 }> = ({ imgId, imgWidth, imgHeight, rotation }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
+	const dragBoxRef = useRef<DragBox | null>(null);
+	const [dragBoxMode, setDragBoxMode] = useState(false);
+	const vectorLayerRef = useRef<VectorLayer<VectorSource<Geometry>> | null>(
+		null,
+	);
+	const [altoDialogOpen, setAltoDialogOpen] = useState<{
+		open: boolean;
+		box: Extent;
+	}>({ open: false, box: [] });
+
+	// vector layer bude treba asi na vyznacenie slova pri vyhladavani
+
 	useEffect(() => {
 		const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 		const source = new Zoomify({
@@ -83,16 +70,50 @@ const MapWrapper: FC<{
 			source: source,
 		});
 
+		const vectorLayer = new VectorLayer({
+			source: new VectorSource(),
+		});
+
+		vectorLayerRef.current = vectorLayer;
+
+		const dragBox = new DragBox();
+
+		dragBox.on('boxend', () => {
+			const extent = dragBox.getGeometry().getExtent();
+			map.current?.removeInteraction(dragBox);
+
+			//console.log({ imgId });
+			//alert('Suradnice pre ALTO: \n' + extent.join('\n'));
+			//http://localhost:3000/view/uuid:78000b70-7b49-11eb-9d4f-005056827e52?page=uuid%3A12439ed9-ab3c-458f-b8af-50196a4f87b9&fulltext=drah%C3%A9
+			// <String STYLE="bold" CONTENT="BESEDY" HEIGHT="108" WIDTH="452" VPOS="433" HPOS="429"/>
+			// const vpos = 429;
+			// const hpos = 433;
+			// const swidth = 452;
+			// const sheight = 108;
+			// const polygon = new Polygon([
+			// 	[
+			// 		[hpos, -vpos],
+			// 		[hpos + swidth, -vpos],
+			// 		[hpos + swidth, -vpos - sheight],
+			// 		[hpos, -vpos - sheight],
+			// 		[hpos, -vpos],
+			// 	],
+			// ]);
+			// const feature = new Feature(polygon);
+			// vectorLayerRef?.current?.getSource()?.addFeature(feature);
+
+			setAltoDialogOpen({ open: true, box: extent });
+			//map.current?.addLayer(vectorLayer);
+			//console.log({ selection: extent });
+		});
+		dragBoxRef.current = dragBox;
 		map.current = new Map({
-			//interactions: defaultInteractions().extend([new DragRotateAndZoom()]),
-			layers: [layer],
+			layers: [layer, vectorLayer],
 			target: mapElement.current as HTMLDivElement,
 			maxTilesLoading: 500,
 			controls: [],
 			view: new View({
-				// adjust zoom levels to those provided by the source
 				//resolutions: layer?.getSource()?.getTileGrid()?.getResolutions(),
-				// constrain the center: center cannot be set outside this extent
 				extent: extent,
 				constrainOnlyCenter: true,
 				maxResolution: 4.5, // TODO: max a min res vypocitat podla rozlisenia viewportu obrazovky a obrazku, max je zoomout min je zoomin
@@ -119,8 +140,42 @@ const MapWrapper: FC<{
 			css={css`
 				width: 100%;
 				height: 100vh;
+				cursor: ${dragBoxMode ? 'crosshair' : 'initial'};
 			`}
-		></Box>
+		>
+			{altoDialogOpen.open && (
+				<AltoDialog
+					width={imgWidth}
+					height={imgHeight}
+					box={altoDialogOpen.box}
+					uuid={imgId ?? ''}
+					onClose={() => {
+						setDragBoxMode(false);
+						setAltoDialogOpen({ open: false, box: [] });
+					}}
+				/>
+			)}
+			<button
+				style={{
+					width: '100px',
+					height: '100px',
+					position: 'absolute',
+					zIndex: 10,
+					left: '50%',
+					top: '0',
+					visibility: dragBoxMode ? 'hidden' : 'visible',
+				}}
+				disabled={dragBoxMode}
+				onClick={() => {
+					if (dragBoxRef.current) {
+						map.current?.addInteraction(dragBoxRef.current);
+						setDragBoxMode(true);
+					}
+				}}
+			>
+				TEST ALTO
+			</button>
+		</Box>
 	);
 };
 const ZoomifyView: React.FC<{

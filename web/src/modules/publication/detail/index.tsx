@@ -49,11 +49,12 @@ const PublicationDetail = () => {
 			prevPid: pages[childIndex - 1]?.pid,
 			nextPid: pages[childIndex + 1]?.pid,
 		});
+		pubCtx.setPublicationChildren(pages);
+		pubCtx.setPublication(detail?.data ?? null);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId]);
 
 	useEffect(() => {
-		console.log(pubChildren.isSuccess);
 		if (pubChildren.isSuccess && !pubChildren.data[0].datanode) {
 			console.log('afafasfas');
 			nav(`/periodical/${id}`, { replace: true });
@@ -79,7 +80,7 @@ const PublicationDetail = () => {
 			<Flex
 				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
 				css={css`
-					transition: width 500ms;
+					transition: width 200ms;
 				`}
 				onTransitionEnd={() => {
 					mapRef.current?.updateSize();
