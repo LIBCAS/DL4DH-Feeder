@@ -3,7 +3,12 @@ import { useEffect, useState } from 'react';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
-import { FiltersDto, PublicationChild, PublicationDetail } from './models';
+import {
+	FiltersDto,
+	PublicationChild,
+	PublicationDetail,
+	StreamTypeEnum,
+} from './models';
 
 export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: Partial<FiltersDto>]
@@ -75,10 +80,24 @@ export const useImageProperties = (uuid: string) =>
 	);
 /***************************THUMBNAILS***************************** */
 
-type StreamList = Record<string, { label: string; mimeType: string }> | null;
+export type StreamInfoDto = {
+	label: string;
+	mimeType: string;
+	key?: StreamTypeEnum;
+};
 
-export const useStreamList = (uuid: string) => {
-	const [data, setData] = useState<StreamList>(null);
+export type StreamsRecord = Record<StreamTypeEnum, StreamInfoDto> | null;
+
+export type StreamsList = StreamInfoDto[];
+
+export type StreamsOptions = {
+	record: StreamsRecord;
+	isLoading: boolean;
+	list: StreamsList;
+};
+export const useStreamList = (uuid: string): StreamsOptions => {
+	const [record, setRecord] = useState<StreamsRecord | null>(null);
+
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const resp = useQuery(
@@ -88,7 +107,7 @@ export const useStreamList = (uuid: string) => {
 				.get(`item/${uuid}/streams`, {
 					headers: { accept: 'application/json' },
 				})
-				.json<StreamList>(),
+				.json<StreamsRecord>(),
 		{
 			retry: 1,
 			refetchInterval: REFETCH_INTERVAL,
@@ -96,28 +115,62 @@ export const useStreamList = (uuid: string) => {
 		},
 	);
 
-	const streams = useQueries(
-		Object.keys(data ?? {}).map(k => ({
+	/* 	useQueries(
+		Object.keys(list ?? {}).map(k => ({
 			queryKey: ['stream', uuid, k],
 			queryFn: () =>
 				api()
 					.get(`item/${uuid}/streams/${k}`, {
-						headers: { accept: data?.[k].mimeType ?? 'application/json' },
+						headers: { accept: list?.[k].mimeType ?? 'application/json' },
 					})
-					.text(),
-		})),
-	);
+					.then(async r => {
+						if ((list?.[k].mimeType ?? '').includes('json')) {
+							return await r.json();
+						}
+						if ((list?.[k].mimeType ?? '').includes('text')) {
+							return await r.text();
+						}
+						if ((list?.[k].mimeType ?? '').includes('image')) {
+							return await r.blob();
+						}
+						return await r.text();
+					})
 
-	console.log({ streams });
+					.then(r =>
+						setList(p => {
+							const newState = p;
+							if (newState?.[k]) {
+								newState[k].response = r;
+								return newState;
+							}
+							return newState;
+						}),
+					),
+			refetchOnWindowFocus: false,
+			retry: 1,
+			refetchInterval: 0,
+			staleTime: 99999,
+		})),
+	); */
+	//{ refetchOnWindowFocus: false, retry: 0, refetchInterval: 0 }
 
 	useEffect(() => {
 		if (!resp.isLoading) {
-			setData(resp.data ?? null);
+			setRecord(resp.data ?? null);
 			setIsLoading(false);
 		}
 	}, [resp]);
 
-	return { data, isLoading };
+	return {
+		list: record
+			? Object.keys(record).map(k => ({
+					...record[k],
+					key: k,
+			  }))
+			: [],
+		record,
+		isLoading,
+	};
 };
 
 export const useStreams = (uuid: string, stream: string, mime?: string) => {
@@ -125,16 +178,15 @@ export const useStreams = (uuid: string, stream: string, mime?: string) => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const resp = useQuery(
-		['stream', stream, uuid],
+		['stream', uuid, stream],
 		() =>
-			api()
-				.get(`item/${uuid}/streams/${stream}`, {
-					headers: { accept: mime ?? 'application/json' },
-				})
-				.text(),
+			fetch(
+				`https://kramerius5.nkp.cz/search/api/v5.0/item/${uuid}/streams/${stream}`,
+				{ headers: { accept: mime ?? 'application/json' } },
+			).then(r => r.text()),
 		{
-			retry: 1,
-			refetchInterval: REFETCH_INTERVAL,
+			retry: 0,
+			refetchInterval: 600000,
 			refetchOnWindowFocus: false,
 		},
 	);
@@ -147,3 +199,16 @@ export const useStreams = (uuid: string, stream: string, mime?: string) => {
 
 	return { data, isLoading };
 };
+
+/*
+
+api()
+				.get(
+					`https://kramerius5.nkp.cz/search/api/v5.0/item/${uuid}/streams/${stream}`,
+					{
+						headers: { accept: mime ?? 'application/json' },
+						timeout: 250,
+					},
+				)
+				.text(),
+				*/

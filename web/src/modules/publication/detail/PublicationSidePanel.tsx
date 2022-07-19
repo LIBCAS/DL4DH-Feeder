@@ -48,10 +48,12 @@ const PublicationSidePanel: FC<Props> = ({
 				${variant === 'left' &&
 				css`
 					border-right: 1px solid ${theme.colors.border};
+					box-shadow: 1px 60px 10px 2px rgba(0, 0, 0, 0.1);
 				`}
 				${variant === 'right' &&
 				css`
 					border-left: 1px solid ${theme.colors.border};
+					box-shadow: -1px 60px 10px 2px rgba(0, 0, 0, 0.1);
 				`}
 				transition: width 200ms ease-in-out;
 			`}

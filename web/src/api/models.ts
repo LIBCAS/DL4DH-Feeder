@@ -151,3 +151,16 @@ export type TagNameEnum =
 	| 'COMPLEX_BIBLIO_EXPRESSION';
 
 export type EnrichmentFilterType = 'ENRICHED' | 'NOT_ENRICHED' | 'ALL';
+
+export type StreamTypeEnum =
+	| 'ITEM'
+	| 'CHILDREN'
+	| 'IMG_PREVIEW'
+	| 'BIBLIO_MODS'
+	| 'IMG_FULL_ADM'
+	| 'IMG_FULL'
+	| 'TEXT_OCR_ADM'
+	| 'ALTO'
+	| 'TEXT_OCR'
+	| 'IMG_THUMB'
+	| 'DC';

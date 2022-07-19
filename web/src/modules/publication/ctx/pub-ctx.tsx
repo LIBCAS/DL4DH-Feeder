@@ -6,7 +6,11 @@ import React, {
 	useState,
 } from 'react';
 
-import { PublicationChild, PublicationDto } from 'api/models';
+import {
+	PublicationChild,
+	PublicationDetail,
+	PublicationDto,
+} from 'api/models';
 
 import Store from 'utils/Store';
 
@@ -21,8 +25,10 @@ type CurrentPage = {
 };
 
 type PubCtxType = {
-	setPublication: React.Dispatch<React.SetStateAction<PublicationDto | null>>;
-	publication: PublicationDto | null;
+	setPublication: React.Dispatch<
+		React.SetStateAction<PublicationDetail | null>
+	>;
+	publication: PublicationDetail | null;
 
 	setPublicationChildren: React.Dispatch<
 		React.SetStateAction<PublicationChild[] | null>
@@ -30,13 +36,15 @@ type PubCtxType = {
 	publicationChildren: PublicationChild[] | null;
 	currentPage: CurrentPage | null;
 	setCurrentPage: React.Dispatch<React.SetStateAction<CurrentPage | null>>;
-	getCurrentPage: () => CurrentPage | null;
+	//	getCurrentPage: () => CurrentPage | null;
 };
 
 export const PubCtx = createContext<PubCtxType>(undefined as never);
 
-export function usePublicationCtx() {
-	const [publication, setPublication] = useState<PublicationDto | null>(null);
+function usePublicationCtx() {
+	const [publication, setPublication] = useState<PublicationDetail | null>(
+		null,
+	);
 	const [publicationChildren, setPublicationChildren] = useState<
 		PublicationChild[] | null
 	>(
@@ -63,14 +71,14 @@ export function usePublicationCtx() {
 		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
 	}, [currentPage]);
 
-	const getCurrentPage = useCallback(
+	/* const getCurrentPage = useCallback(
 		() =>
 			JSON.parse(
 				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 				(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
 			) as CurrentPage | null,
 		[],
-	);
+	); */
 
 	const ctx: PubCtxType = useMemo(
 		() => ({
@@ -80,7 +88,7 @@ export function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			getCurrentPage,
+			//		getCurrentPage,
 		}),
 		[
 			publication,
@@ -89,7 +97,7 @@ export function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			getCurrentPage,
+			//		getCurrentPage,
 		],
 	);
 	return ctx;
