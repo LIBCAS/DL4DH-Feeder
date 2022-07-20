@@ -10,6 +10,11 @@ export type PublicationDto = {
 	enriched: boolean;
 };
 
+export type PublicationContext = {
+	pid: string;
+	model: string;
+};
+
 export type PublicationDetail = {
 	policy: string;
 	model: string;
@@ -18,6 +23,7 @@ export type PublicationDetail = {
 	root_pid: string;
 	rootTitle: string;
 	title: string;
+	context: PublicationContext[];
 };
 
 export type PublicationsListDto = {

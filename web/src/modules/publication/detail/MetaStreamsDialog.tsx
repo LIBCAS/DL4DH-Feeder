@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useContext, useRef, useState } from 'react';
-import { MdCode, MdCopyAll } from 'react-icons/md';
+import React, { FC, useContext, useMemo, useRef, useState } from 'react';
+import { MdCode, MdCopyAll, MdExpandMore } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import XMLViewer from 'react-xml-viewer';
-import ReactJson from 'react-json-view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
@@ -25,13 +25,11 @@ import {
 	useStreamList,
 	useStreams,
 } from 'api/publicationsApi';
-import { StreamTypeEnum } from 'api/models';
+import { PublicationContext, StreamTypeEnum } from 'api/models';
+
+import { ModelToText } from 'utils/enumsMap';
 
 import { PubCtx } from '../ctx/pub-ctx';
-
-type Props = {
-	uuid: string;
-};
 
 const ViewStream = React.forwardRef<
 	HTMLDivElement,
@@ -44,11 +42,7 @@ const ViewStream = React.forwardRef<
 	const response = useStreams(uuid, stream, mime);
 	const pageDetail = usePublicationDetail(uuid ?? '');
 	const childrenDetail = usePublicationChildren(uuid ?? '');
-	if (response.isLoading) {
-		return <LoaderSpin />;
-	}
-
-	if (pageDetail.isLoading) {
+	if (response.isLoading || pageDetail.isLoading || childrenDetail.isLoading) {
 		return <LoaderSpin />;
 	}
 
@@ -61,19 +55,27 @@ const ViewStream = React.forwardRef<
 			) : (
 				<>
 					{stream === 'ITEM' || stream === 'CHILDREN' ? (
-						<ReactJson
-							src={
+						<SyntaxHighlighter
+							//TODO: Use WINDOW to render
+							language="json"
+							customStyle={{ background: 'transparent!important' }}
+						>
+							{JSON.stringify(
 								stream === 'ITEM'
-									? pageDetail.data ?? {}
-									: childrenDetail.data ?? {}
-							}
-							shouldCollapse={false}
-							displayDataTypes={false}
-							displayObjectSize={false}
-							enableClipboard={false}
-						/>
+									? pageDetail.data ?? '{}'
+									: childrenDetail.data ?? '{}',
+								null,
+								10,
+							)}
+						</SyntaxHighlighter>
 					) : (
-						<XMLViewer xml={response.data} />
+						<>
+							{response.data ? (
+								<XMLViewer xml={response.data} />
+							) : (
+								'Neobsahuje' + stream
+							)}
+						</>
 					)}
 				</>
 			)}
@@ -94,30 +96,47 @@ const childrenStream = {
 	label: 'children',
 } as StreamInfoDto;
 
-const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
+const MetaStreamsDialog: FC = () => {
+	const { publication } = useContext(PubCtx);
+	const [searchParams] = useSearchParams();
+	const pageId = searchParams.get('page');
+	const pageSource = { pid: pageId ?? 'undefined', model: 'PAGE' };
+	const pubContext = publication?.context ?? [];
+	const sources = [...pubContext, pageSource];
+
 	const [selectedMod, setSelectedMod] = useState<StreamInfoDto | null>(
 		itemStream,
 	);
 	const ref = useRef<HTMLDivElement>(null);
 	const ref2 = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
-	const [searchParams] = useSearchParams();
-	const pageId = searchParams.get('page');
-	const [source, setSource] = useState('BOOK');
-	const theme = useTheme();
-	const allStreams = useStreamList(source === 'PAGE' ? pageId ?? '' : uuid);
 
-	const pub = useContext(PubCtx);
+	const [source, setSource] = useState<PublicationContext>(pageSource);
+	const theme = useTheme();
+	const allStreams = useStreamList(source.pid);
+
+	const streamsOptions = useMemo(
+		() => [
+			itemStream,
+			childrenStream,
+			...allStreams.list.filter(
+				s => !s.mimeType.toUpperCase().includes('IMAGE'),
+			),
+		],
+		[allStreams],
+	);
+
+	const isValidStream = useMemo(
+		() =>
+			streamsOptions.some(
+				s => s.key?.toUpperCase() === selectedMod?.key?.toUpperCase(),
+			),
+		[streamsOptions, selectedMod],
+	);
 
 	if (allStreams.isLoading) {
 		return <LoaderSpin />;
 	}
-
-	const streamsOptions = [
-		itemStream,
-		childrenStream,
-		...allStreams.list.filter(s => !s.mimeType.toUpperCase().includes('IMAGE')),
-	];
 
 	return (
 		<ModalDialog
@@ -145,20 +164,25 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 								value={selectedMod}
 								variant="underlined"
 								minWidth="150px"
-								/* menuItemCss={css`
-									width: 100px;
-								`} */
 							/>
+
 							<Tabs
 								tabs={[
-									{
-										key: 'BOOK',
+									...(publication?.context ?? []).map(c => ({
+										key: c.model.toUpperCase(),
 										jsx: (
-											<Button fontSize="lg" color="inherit" variant="text">
-												Kniha
+											<Button
+												fontSize="lg"
+												color="inherit"
+												variant="text"
+												key={c.pid}
+												mx={0}
+												px={1}
+											>
+												{ModelToText[c.model]}
 											</Button>
 										),
-									},
+									})),
 									{
 										key: 'PAGE',
 										jsx: (
@@ -168,9 +192,24 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 										),
 									},
 								]}
-								activeTab={source}
-								setActiveTab={k => setSource(k)}
-							></Tabs>
+								tabsDivider={
+									<Flex alignItems="center" color="inactive">
+										<MdExpandMore
+											size={20}
+											css={css`
+												transform: rotate(-90deg);
+											`}
+										/>
+									</Flex>
+								}
+								activeTab={source.model.toUpperCase()}
+								setActiveTab={k =>
+									setSource(
+										sources.find(s => s.model.toUpperCase() === k) ??
+											pageSource,
+									)
+								}
+							/>
 						</Flex>
 						<Button
 							className="clpbtn"
@@ -220,12 +259,19 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 							border: 1px solid ${theme.colors.border};
 						`}
 					>
-						<ViewStream
-							ref={ref2}
-							uuid={source === 'PAGE' ? pageId ?? '' : uuid}
-							stream={selectedMod?.key ?? 'ALTO'}
-							mime={selectedMod?.mimeType ?? 'text/plain'}
-						/>
+						{isValidStream ? (
+							<ViewStream
+								ref={ref2}
+								uuid={source.pid}
+								stream={selectedMod?.key ?? 'ITEM'}
+								mime={selectedMod?.mimeType ?? 'text/plain'}
+							/>
+						) : (
+							<Text>
+								Stream <b>{selectedMod?.key ?? '--'}</b> není pro{' '}
+								<b>{ModelToText[source.model]}</b> dostupný.
+							</Text>
+						)}
 					</Flex>
 					<Flex>
 						<Button variant="primary" onClick={closeModal} my={3}>
