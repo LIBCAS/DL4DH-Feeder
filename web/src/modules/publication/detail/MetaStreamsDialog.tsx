@@ -4,7 +4,7 @@ import React, { FC, useContext, useMemo, useRef, useState } from 'react';
 import { MdCode, MdCopyAll, MdExpandMore } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import XMLViewer from 'react-xml-viewer';
-import ReactJson from 'react-json-view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
@@ -45,7 +45,6 @@ const ViewStream = React.forwardRef<
 	if (response.isLoading || pageDetail.isLoading || childrenDetail.isLoading) {
 		return <LoaderSpin />;
 	}
-	console.log({ response });
 
 	return (
 		<div ref={ref}>
@@ -56,17 +55,19 @@ const ViewStream = React.forwardRef<
 			) : (
 				<>
 					{stream === 'ITEM' || stream === 'CHILDREN' ? (
-						<ReactJson
-							src={
+						<SyntaxHighlighter
+							//TODO: Use WINDOW to render
+							language="json"
+							customStyle={{ background: 'transparent!important' }}
+						>
+							{JSON.stringify(
 								stream === 'ITEM'
-									? pageDetail.data ?? {}
-									: childrenDetail.data ?? {}
-							}
-							shouldCollapse={false}
-							displayDataTypes={false}
-							displayObjectSize={false}
-							enableClipboard={false}
-						/>
+									? pageDetail.data ?? '{}'
+									: childrenDetail.data ?? '{}',
+								null,
+								10,
+							)}
+						</SyntaxHighlighter>
 					) : (
 						<>
 							{response.data ? (
@@ -113,8 +114,6 @@ const MetaStreamsDialog: FC = () => {
 	const [source, setSource] = useState<PublicationContext>(pageSource);
 	const theme = useTheme();
 	const allStreams = useStreamList(source.pid);
-
-	console.log({ ctx: publication?.context });
 
 	const streamsOptions = useMemo(
 		() => [
