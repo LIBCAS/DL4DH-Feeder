@@ -5,7 +5,6 @@ import Dialog from '@reach/dialog';
 import XML from 'xml2js';
 import get from 'lodash-es/get';
 import { Extent } from 'ol/extent';
-import _ from 'lodash';
 import { MdCopyAll } from 'react-icons/md';
 
 import Paper from 'components/styled/Paper';
@@ -93,8 +92,8 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	const h2 = -box[1] / hc;
 	const matched = deepSearchByKey(printSpace, 'TextLine');
 	const matchedLines = matched.flat().filter(line => {
-		const VPOS = parseInt(_.get(line, '$.VPOS'));
-		const HEIGHT = parseInt(_.get(line, '$.HEIGHT'));
+		const VPOS = parseInt(get(line, '$.VPOS'));
+		const HEIGHT = parseInt(get(line, '$.HEIGHT'));
 		return VPOS >= h1 && VPOS + HEIGHT <= h2;
 	});
 
@@ -102,16 +101,16 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	matchedLines.forEach(line => {
 		const strings = deepSearchByKey(line, 'String');
 		const matchedStrings = strings.flat().filter(str => {
-			const HPOS = parseInt(_.get(str, '$.HPOS'));
-			const VPOS = parseInt(_.get(str, '$.VPOS'));
-			const WIDTH = parseInt(_.get(str, '$.WIDTH'));
-			const HEIGHT = parseInt(_.get(str, '$.HEIGHT'));
+			const HPOS = parseInt(get(str, '$.HPOS'));
+			const VPOS = parseInt(get(str, '$.VPOS'));
+			const WIDTH = parseInt(get(str, '$.WIDTH'));
+			const HEIGHT = parseInt(get(str, '$.HEIGHT'));
 			return (
 				HPOS >= w1 && HPOS + WIDTH <= w2 && VPOS >= h1 && VPOS + HEIGHT <= h2
 			);
 		});
 
-		const filStr = matchedStrings.flat().map(str => _.get(str, '$.CONTENT'));
+		const filStr = matchedStrings.flat().map(str => get(str, '$.CONTENT'));
 		text += filStr.join(' ') + '\n';
 	});
 

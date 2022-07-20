@@ -95,7 +95,10 @@ const MainSearchInput = () => {
 				setLocalState('');
 				setSelectedTagName(null);
 				setSelectedTagOp(null);
+				//TODO: remove all params (like page, fulltext, etc...)
+				searchParams.delete('page');
 				setSearchParams(searchParams);
+
 				//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params
 				if (!location.pathname.includes('/search?')) {
 					nav('/search?' + searchParams);
@@ -105,6 +108,8 @@ const MainSearchInput = () => {
 				setLocalState('');
 				setSelectedTagName(null);
 				setSelectedTagOp(null);
+				//TODO: remove all params (like page, fulltext, etc...)
+				searchParams.delete('page');
 				setSearchParams(searchParams);
 
 				//TODO: FIXME: ked je uzivatel na inej stranke nez search, poriesit aby sa dodali spravne search params

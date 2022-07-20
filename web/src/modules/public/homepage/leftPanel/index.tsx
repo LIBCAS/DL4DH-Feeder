@@ -214,6 +214,18 @@ type Props = {
 };
 
 const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
+	const yearsInterval = useMemo(() => {
+		const years = data?.years;
+		if (years) {
+			const numYears = Object.keys(years)
+				.map(k => parseInt(k))
+				.filter(y => y !== 0);
+			return { maxYear: Math.max(...numYears), minYear: Math.min(...numYears) };
+		} else {
+			return undefined;
+		}
+	}, [data]);
+
 	const enrichedItems: StatItem[] = useMemo(
 		() => [
 			{
@@ -304,8 +316,6 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				: [],
 		[data?.languages],
 	);
-
-	console.log({ languagesItems });
 
 	const nameTagKeys = Object.keys(nameTagData ?? {});
 
@@ -435,7 +445,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 			)}
 
 			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
-				<PublishDateFilter />
+				<PublishDateFilter interval={yearsInterval} />
 			</MyAccordion>
 			<MyAccordion
 				label={
