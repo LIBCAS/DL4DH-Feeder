@@ -95,8 +95,6 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 
 	const pub = useContext(PubCtx);
 
-	console.log({ pub });
-
 	if (allStreams.isLoading) {
 		return <LoaderSpin />;
 	}

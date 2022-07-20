@@ -68,14 +68,8 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 	return (
 		<Box width={1}>
 			<div ref={ref}>
-				<Flex p={3}>
-					<Text>
-						Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam,
-						eum!
-					</Text>
-				</Flex>
 				<Divider />
-				<Flex p={3}>
+				<Flex p={3} py={2}>
 					<TextInput
 						placeholder="Vyhledávat v publikaci"
 						label=""
