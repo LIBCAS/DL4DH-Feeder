@@ -92,7 +92,7 @@ const PubBiblioDetail: FC<Props> = () => {
 				alignItems="center"
 				px={3}
 			>
-				<MetaStreamsDialog uuid={id ?? ''} />
+				<MetaStreamsDialog />
 				<IconButton color="primary">
 					<MdPrint size={24} />
 				</IconButton>
