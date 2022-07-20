@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { FC, useContext, useRef, useState } from 'react';
-import { MdCopyAll } from 'react-icons/md';
+import { MdCode, MdCopyAll } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import XMLViewer from 'react-xml-viewer';
 import ReactJson from 'react-json-view';
@@ -14,6 +14,7 @@ import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
 import Text from 'components/styled/Text';
 import Tabs from 'components/tabs';
+import IconButton from 'components/styled/IconButton';
 
 import { useTheme } from 'theme';
 
@@ -82,8 +83,21 @@ const ViewStream = React.forwardRef<
 
 ViewStream.displayName = ViewStream.name;
 
+const itemStream = {
+	key: 'ITEM',
+	mimeType: 'json',
+	label: 'item',
+} as StreamInfoDto;
+const childrenStream = {
+	key: 'CHILDREN',
+	mimeType: 'json',
+	label: 'children',
+} as StreamInfoDto;
+
 const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
-	const [selectedMod, setSelectedMod] = useState<StreamInfoDto | null>(null);
+	const [selectedMod, setSelectedMod] = useState<StreamInfoDto | null>(
+		itemStream,
+	);
 	const ref = useRef<HTMLDivElement>(null);
 	const ref2 = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
@@ -100,8 +114,8 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 	}
 
 	const streamsOptions = [
-		{ key: 'ITEM', mimeType: 'json', label: 'item' } as StreamInfoDto,
-		{ key: 'CHILDREN', mimeType: 'json', label: 'children' } as StreamInfoDto,
+		itemStream,
+		childrenStream,
 		...allStreams.list.filter(s => !s.mimeType.toUpperCase().includes('IMAGE')),
 	];
 
@@ -109,9 +123,9 @@ const MetaStreamsDialog: FC<Props> = ({ uuid }) => {
 		<ModalDialog
 			label="Info"
 			control={openModal => (
-				<Button variant="primary" onClick={openModal} p={1}>
-					Metadata
-				</Button>
+				<IconButton color="primary" onClick={openModal} p={1}>
+					<MdCode size={24} />
+				</IconButton>
 			)}
 		>
 			{closeModal => (
