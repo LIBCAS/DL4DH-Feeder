@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useFormik } from 'formik';
-import { useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import TextInput from 'components/form/input/TextInput';
@@ -8,15 +8,15 @@ import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
-const maxYear = new Date().getFullYear();
-const minYear = 0;
-const minDefaultYear = 1612;
-
-const PublishDateFilter = () => {
+const PublishDateFilter: FC<{
+	interval?: { maxYear: number; minYear: number };
+}> = ({ interval }) => {
+	const maxYear = interval?.maxYear ?? new Date().getFullYear();
+	const minYear = interval?.minYear ?? 0;
 	const [searchParams, setSearchParams] = useSearchParams();
 	const formik = useFormik<{ yearFrom: string; yearTo: string }>({
 		initialValues: {
-			yearFrom: searchParams.get('from') ?? minDefaultYear.toString(),
+			yearFrom: searchParams.get('from') ?? minYear.toString(),
 			yearTo: searchParams.get('to') ?? maxYear.toString(),
 		},
 
@@ -66,7 +66,7 @@ const PublishDateFilter = () => {
 				);
 			}
 		},
-		[values, setFieldValue],
+		[values, setFieldValue, maxYear, minYear],
 	);
 
 	// validate once url params
@@ -98,7 +98,7 @@ const PublishDateFilter = () => {
 						value={values.yearFrom}
 						onKeyDown={e => {
 							if (e.key === 'Enter') {
-								alert('enter');
+								//alert('enter');
 							}
 						}}
 						inputPadding="8px"

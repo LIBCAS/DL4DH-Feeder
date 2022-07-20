@@ -16,6 +16,7 @@ import { Loader } from 'modules/loader';
 import { useStreams } from 'api/publicationsApi';
 
 import { ModelToText } from 'utils/enumsMap';
+import { mapLangToCS } from 'utils/languagesMap';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
@@ -26,9 +27,12 @@ const xmlItemToText = (item: string | string[], key: string) => {
 				if (key === 'type') {
 					return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
 				}
+				if (key === 'language') {
+					return mapLangToCS[it] ?? 'Neznámy';
+				}
 				return it;
 			})
-			.join('\n');
+			.join(', ');
 	}
 	return '';
 };
@@ -78,8 +82,6 @@ const PubBiblioDetail: FC<Props> = () => {
 		return <Loader />;
 	}
 	const biblio = parseDCXML(parsedXML);
-
-	console.log({ biblio });
 
 	return (
 		<Box width={1}>
@@ -135,13 +137,16 @@ const PubBiblioDetail: FC<Props> = () => {
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Jazyk
 					</Text>
-					<H5>{biblio.language}</H5>
+					<H5>{xmlItemToText(biblio.language ?? [], 'language')}</H5>
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Poznámky
 					</Text>
-					<H5>{biblio.description}</H5>
+					{(biblio?.description ?? []).map(desc => (
+						<H5 key={desc}>{desc}</H5>
+					))}
+					<H5></H5>
 				</Box>
 			</Box>
 		</Box>

@@ -30,7 +30,7 @@ const PublicationDetail = () => {
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
-	const [page] = useSearchParams();
+	const [page, setPageUrlParam] = useSearchParams();
 	const pubCtx = useContext(PubCtx);
 	const nav = useNavigate();
 	const [rightCollapsed, setRightCollapsed] = useState(false);
@@ -51,6 +51,7 @@ const PublicationDetail = () => {
 		});
 		pubCtx.setPublicationChildren(pages);
 		pubCtx.setPublication(detail?.data ?? null);
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId]);
 
@@ -63,6 +64,10 @@ const PublicationDetail = () => {
 
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
+	}
+	if (!page.get('page')) {
+		page.append('page', pages[0]?.pid ?? 'undefined');
+		setPageUrlParam(page, { replace: true });
 	}
 	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail.data?.policy === 'public';

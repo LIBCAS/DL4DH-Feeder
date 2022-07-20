@@ -71,8 +71,6 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 
 	const pubDetail = usePublicationDetail(pubId);
 
-	console.log({ pub: pubDetail.data });
-
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
 			format: formatOptions[0],

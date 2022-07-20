@@ -169,7 +169,7 @@ const MapWrapper: FC<{
 			<button
 				style={{
 					width: '100px',
-					height: '100px',
+					height: '60px',
 					position: 'absolute',
 					zIndex: 10,
 					left: '50%',
