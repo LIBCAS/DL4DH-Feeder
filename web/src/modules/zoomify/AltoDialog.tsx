@@ -25,22 +25,22 @@ type Props = {
 	onClose: () => void;
 };
 
-function deepSearchByKey(
-	object: any,
+function deepSearchByKeyRecursive(
+	object: unknown,
 	originalKey: string,
-	matches: any[] = [],
+	matches: unknown[] = [],
 ) {
-	if (object) {
+	if (object !== null) {
 		if (Array.isArray(object)) {
 			for (const arrayItem of object) {
-				deepSearchByKey(arrayItem, originalKey, matches);
+				deepSearchByKeyRecursive(arrayItem, originalKey, matches);
 			}
-		} else if (typeof object == 'object') {
+		} else if (typeof object == 'object' && object !== null) {
 			for (const key of Object.keys(object)) {
-				if (key === originalKey) {
-					matches.push(object[key]);
-				} else {
-					deepSearchByKey(object[key], originalKey, matches);
+				if (key === originalKey && object !== null) {
+					matches.push(object[key] as unknown);
+				} else if (object !== null) {
+					deepSearchByKeyRecursive(object[key], originalKey, matches);
 				}
 			}
 		}
@@ -48,6 +48,12 @@ function deepSearchByKey(
 
 	return matches;
 }
+
+const deepSearchByKey = (object: unknown, key: string): unknown[] => {
+	const matches = [];
+	deepSearchByKeyRecursive(object, key, matches);
+	return matches;
+};
 
 const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	const [parsedAlto, setParsedAlto] = useState<Record<string, unknown>>({});
@@ -71,8 +77,8 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 		msg = 'Nepodarilo sa nacitat ALTO stream.';
 	}
 
-	const printSpace1 = get(parsedAlto, 'alto.Layout[0].Page[0].PrintSpace[0]');
-	const printSpace2 = get(parsedAlto, 'alto.Layout[0].Page[0]');
+	const printSpace1 = get(parsedAlto, 'alto.Layout[0].Page[0]');
+	const printSpace2 = get(parsedAlto, 'alto.Layout[0].Page[0].PrintSpace[0]');
 	const printSpace = printSpace1;
 	//console.log({ printSpace });
 	const altoHeight =
@@ -85,55 +91,37 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	const w2 = box[2] / wc;
 	const h1 = -box[3] / hc;
 	const h2 = -box[1] / hc;
-	const matched = [];
-
-	deepSearchByKey(printSpace, 'TextLine', matched);
-	const filtered = matched.flat().filter(line => {
-		//console.log({ line });
-		const HPOS = parseInt(_.get(line, '$.HPOS'));
+	const matched = deepSearchByKey(printSpace, 'TextLine');
+	const matchedLines = matched.flat().filter(line => {
 		const VPOS = parseInt(_.get(line, '$.VPOS'));
-		const WIDTH = parseInt(_.get(line, '$.WIDTH'));
 		const HEIGHT = parseInt(_.get(line, '$.HEIGHT'));
-		//const content = _.get(line, 'String[0].$.CONTENT');
-		// console.log({ w1, w2, h1, h2 });
-		// console.log({ HPOS, VPOS, HEIGHT, WIDTH });
-		// console.log({ content });
-		// if (content === 'SEPSAL') {
-		// 	console.log(['HPOS >= w1', HPOS >= w1]);
-		// 	console.log([
-		// 		'HPOS + WIDTH <= w2',
-		// 		HPOS + WIDTH <= w2,
-		// 		{ HPOS, WIDTH, w2, sum: HPOS + WIDTH },
-		// 	]);
-		// 	console.log(['VPOS >= h1', VPOS >= h1]);
-		// 	console.log(['VPOS + HEIGHT <= h2', VPOS + HEIGHT <= h2]);
-		// }
-
-		return (
-			HPOS >= w1 && HPOS + WIDTH <= w2 && VPOS >= h1 && VPOS + HEIGHT <= h2
-		);
+		return VPOS >= h1 && VPOS + HEIGHT <= h2;
 	});
 
-	const strings = [];
-	deepSearchByKey(filtered, 'String', strings);
+	let text = '';
+	matchedLines.forEach(line => {
+		const strings = deepSearchByKey(line, 'String');
+		const matchedStrings = strings.flat().filter(str => {
+			const HPOS = parseInt(_.get(str, '$.HPOS'));
+			const VPOS = parseInt(_.get(str, '$.VPOS'));
+			const WIDTH = parseInt(_.get(str, '$.WIDTH'));
+			const HEIGHT = parseInt(_.get(str, '$.HEIGHT'));
+			return (
+				HPOS >= w1 && HPOS + WIDTH <= w2 && VPOS >= h1 && VPOS + HEIGHT <= h2
+			);
+		});
 
-	const filStr = strings.flat().map(str => _.get(str, '$.CONTENT'));
-	console.log({ filStr });
-
-	const text = filStr.join(' ');
-
-	//deepSearchByKey(printSpace, 'String', matchedFin);
-
-	console.log({ width, height, altoWidth, altoHeight, box, wc, hc });
-	console.log({ w1, w2, h1, h2 });
-
-	console.log({ filtered, matched: matched.flat() });
+		const filStr = matchedStrings.flat().map(str => _.get(str, '$.CONTENT'));
+		text += filStr.join(' ') + '\n';
+	});
 
 	return (
 		<Dialog isOpen>
-			<Paper overflow="auto" maxHeight="50vh" bg="paper">
+			<Paper overflow="auto" maxHeight="60vh" bg="paper">
 				<Text>{msg}</Text>
-				<Text>{text}</Text>
+				<Text>
+					<pre>{text}</pre>
+				</Text>
 				<Divider my={3} />
 				<Flex justifyContent="space-between">
 					<Button
