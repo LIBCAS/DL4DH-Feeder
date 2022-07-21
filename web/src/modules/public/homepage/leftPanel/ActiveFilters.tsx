@@ -142,8 +142,6 @@ const ActiveFilters: React.FC = () => {
 								justifyContent="space-between"
 								alignItems="center"
 								onClick={() => {
-									console.log(k);
-									console.log(val);
 									removeParam(sp, k, val, k === 'models');
 									setSp(sp);
 								}}

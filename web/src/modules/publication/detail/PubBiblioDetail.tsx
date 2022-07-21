@@ -86,7 +86,7 @@ const PubBiblioDetail: FC<Props> = () => {
 	return (
 		<Box width={1}>
 			<Flex
-				my={3}
+				my={2}
 				color="primary"
 				justifyContent="space-between"
 				alignItems="center"

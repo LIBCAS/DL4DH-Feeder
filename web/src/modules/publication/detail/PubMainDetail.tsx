@@ -109,7 +109,6 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						onClick={() => {
 							const currentZoom =
 								mapRef.current?.getView().getResolution() ?? 1;
-							console.log({ mapRef });
 
 							const newZoom = currentZoom / 1.5;
 							mapRef.current?.getView().animate({
@@ -123,7 +122,6 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						onClick={() => {
 							const currentZoom =
 								mapRef.current?.getView().getResolution() ?? 1;
-							console.log({ mapRef });
 
 							const newZoom = currentZoom * 1.5;
 							mapRef.current?.getView().animate({

@@ -14,11 +14,6 @@ export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: Partial<FiltersDto>]
 >(['search-publication'], (api, json) => api.post('search', { json }));
 
-export const getPublicationDetail = async (uuid: string) => {
-	const r = await api().get('item/' + uuid);
-	return r;
-};
-
 export const usePublicationDetail = (uuid: string) =>
 	useQuery(
 		['publication-detail', uuid],
@@ -26,7 +21,7 @@ export const usePublicationDetail = (uuid: string) =>
 			api()
 				.get('item/' + uuid)
 				.json<PublicationDetail>(),
-		{ staleTime: 30000, refetchOnWindowFocus: false },
+		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
 	);
 
 export const usePublicationChildren = (uuid: string) =>
@@ -37,9 +32,8 @@ export const usePublicationChildren = (uuid: string) =>
 				.get('item/' + uuid + '/children')
 				.json<PublicationChild[]>(),
 		{
-			staleTime: REFETCH_INTERVAL,
+			staleTime: Infinity,
 			refetchOnWindowFocus: false,
-			refetchInterval: REFETCH_INTERVAL,
 		},
 	);
 /***************************THUMBNAILS***************************** */
@@ -58,7 +52,6 @@ export const useThumbnails = (pages: PublicationChild[], toIndex: number) =>
 			cacheTime: REFETCH_INTERVAL,
 			staleTime: REFETCH_INTERVAL,
 			refetchOnWindowFocus: false,
-			refetchInterval: REFETCH_INTERVAL,
 			enabled: index < toIndex,
 		})),
 	);
@@ -73,9 +66,8 @@ export const useImageProperties = (uuid: string) =>
 				})
 				.text(),
 		{
-			staleTime: REFETCH_INTERVAL,
+			staleTime: Infinity,
 			refetchOnWindowFocus: false,
-			refetchInterval: REFETCH_INTERVAL,
 		},
 	);
 /***************************THUMBNAILS***************************** */
@@ -109,9 +101,9 @@ export const useStreamList = (uuid: string): StreamsOptions => {
 				})
 				.json<StreamsRecord>(),
 		{
-			retry: 1,
-			refetchInterval: REFETCH_INTERVAL,
+			retry: 0,
 			refetchOnWindowFocus: false,
+			staleTime: Infinity,
 		},
 	);
 

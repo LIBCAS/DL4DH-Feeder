@@ -26,7 +26,7 @@ import store from 'utils/Store';
 import { Backend } from './endpoints';
 import { FiltersDto, SearchDto } from './models';
 
-const FETCH_TIMEOUT = 30000;
+const FETCH_TIMEOUT = 10000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 export const REFETCH_INTERVAL = 30 * 60 * 1000;
 
@@ -36,6 +36,7 @@ export const api = (prefix?: string, json?: Partial<FiltersDto>) =>
 		timeout: FETCH_TIMEOUT,
 		...(json ? { json } : {}),
 		retry: { limit: 3 },
+
 		hooks: {
 			beforeRequest: [
 				request => {
