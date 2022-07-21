@@ -134,7 +134,7 @@ const MainSearchInput = () => {
 
 	useEffect(() => {
 		if (!isEqual(parsed, state.searchQuery)) {
-			console.log('not equal .. dispatching');
+			//console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
 				searchQuery: {

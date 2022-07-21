@@ -66,8 +66,6 @@ function usePublicationCtx() {
 	}, [publicationChildren]);
 
 	useEffect(() => {
-		console.log('context');
-		console.log({ currentPage });
 		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
 	}, [currentPage]);
 

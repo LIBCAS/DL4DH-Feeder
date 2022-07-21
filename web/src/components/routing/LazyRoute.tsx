@@ -21,7 +21,6 @@ export const LazyRoute =
 	) =>
 	() => {
 		const Component = lazy(() => retryPromise(component));
-		console.log('here');
 		return (
 			//TODO: Error boundary
 			<React.Suspense fallback={<Loader />}>

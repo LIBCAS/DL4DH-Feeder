@@ -50,6 +50,14 @@ const PeriodicalDetail = () => {
 			prevPid: pages[childIndex - 1]?.pid,
 			nextPid: pages[childIndex + 1]?.pid,
 		});
+		pubCtx.setPublicationChildren(pages);
+		if (detail?.data) {
+			const context = detail.data?.context?.flat() ?? [];
+			pubCtx.setPublication({
+				...detail.data,
+				context,
+			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId]);
 	//TODO:
@@ -90,6 +98,7 @@ const PeriodicalDetail = () => {
 				<Flex
 					width={PANEL_WIDTH}
 					maxWidth={PANEL_WIDTH}
+					flexShrink={0}
 					css={css`
 						border-right: 1px solid ${theme.colors.border};
 					`}
@@ -101,8 +110,24 @@ const PeriodicalDetail = () => {
 						</Text>
 					</Flex>
 				</Flex>
-				<Flex width="auto" flexGrow={1} px={3} alignItems="center">
-					<Text fontSize="20px" color="textCommon">
+				<Flex
+					width="auto"
+					flexGrow={1}
+					px={2}
+					alignItems="center"
+					overflow="hidden"
+					maxWidth={`calc(100vw - ${2 * PANEL_WIDTH}px)`}
+					flexWrap="wrap"
+				>
+					<Text
+						fontSize="18px"
+						color="textCommon"
+						css={css`
+							text-overflow: ellipsis;
+							overflow: hidden;
+							white-space: nowrap;
+						`}
+					>
 						{detail.data?.title ?? 'Periodikum'}
 					</Text>
 				</Flex>
@@ -110,6 +135,7 @@ const PeriodicalDetail = () => {
 					alignItems="center"
 					justifyContent="flex-end"
 					width={PANEL_WIDTH}
+					flexShrink={0}
 					css={css`
 						border-left: 1px solid ${theme.colors.border};
 					`}

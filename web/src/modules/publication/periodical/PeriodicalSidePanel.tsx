@@ -28,6 +28,7 @@ const PeriodicalSidePanel: FC<Props> = ({
 		<Flex
 			position="relative"
 			width={width}
+			minWidth={width}
 			flexShrink={0}
 			height="100vh"
 			css={css`

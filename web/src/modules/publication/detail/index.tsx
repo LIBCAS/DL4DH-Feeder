@@ -64,7 +64,6 @@ const PublicationDetail = () => {
 
 	useEffect(() => {
 		if (pubChildren.isSuccess && !pubChildren.data[0].datanode) {
-			console.log('afafasfas');
 			nav(`/periodical/${id}`, { replace: true });
 		}
 	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);

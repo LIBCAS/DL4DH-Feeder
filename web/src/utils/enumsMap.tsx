@@ -176,7 +176,7 @@ export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';
 
 export const ModelToText = {
 	monograph: 'Kniha',
-	monographunit: 'Kniha',
+	monographunit: 'Kniha (unit)',
 	monographbundle: 'Svazek knih',
 	periodical: 'Noviny a časopisy',
 	map: 'Mapa',
