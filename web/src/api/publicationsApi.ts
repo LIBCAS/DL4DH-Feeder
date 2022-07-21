@@ -172,10 +172,11 @@ export const useStreams = (uuid: string, stream: string, mime?: string) => {
 	const resp = useQuery(
 		['stream', uuid, stream],
 		() =>
-			fetch(
-				`https://kramerius5.nkp.cz/search/api/v5.0/item/${uuid}/streams/${stream}`,
-				{ headers: { accept: mime ?? 'application/json' } },
-			).then(r => r.text()),
+			api()
+				.get(`item/${uuid}/streams/${stream}`, {
+					headers: { accept: mime ?? 'application/json' },
+				})
+				.then(r => r.text()),
 		{
 			retry: 0,
 			refetchInterval: 600000,
