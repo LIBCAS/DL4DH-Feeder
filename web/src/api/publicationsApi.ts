@@ -1,5 +1,6 @@
 import { useQueries, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
+import { result } from 'lodash-es';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
@@ -14,13 +15,41 @@ export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: Partial<FiltersDto>]
 >(['search-publication'], (api, json) => api.post('search', { json }));
 
-export const usePublicationDetail = (uuid: string) =>
+export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
 	useQuery(
 		['publication-detail', uuid],
 		() =>
-			api()
+			disabled
+				? undefined
+				: api()
+						.get('item/' + uuid)
+						.json<PublicationDetail>(),
+		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
+	);
+
+export const usePublicationDetailWithRoot = (
+	uuid: string,
+	disabled?: boolean,
+) =>
+	useQuery(
+		['publication-detail-with-root', uuid],
+		async () => {
+			if (disabled) {
+				console.log('disabled ==> returning undefined');
+
+				return undefined;
+			}
+			const mainDetail = await api()
 				.get('item/' + uuid)
-				.json<PublicationDetail>(),
+				.json<PublicationDetail>();
+			console.log({ mainDetail });
+			const rootDetail = await api()
+				.get('item/' + mainDetail.root_pid)
+				.json<PublicationDetail>();
+
+			return { mainDetail, rootDetail };
+		},
+
 		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
 	);
 

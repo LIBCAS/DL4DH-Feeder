@@ -3,6 +3,9 @@ import { css } from '@emotion/react';
 import { FC } from 'react';
 
 import { Flex } from 'components/styled';
+import MyAccordion from 'components/accordion';
+
+import PublishDateFilter from 'modules/public/homepage/leftPanel/PublishDateFilter';
 
 import { useTheme } from 'theme';
 
@@ -44,6 +47,11 @@ const PeriodicalSidePanel: FC<Props> = ({
 			`}
 		>
 			{variant === 'right' && <PubBiblioDetail />}
+			{variant === 'left' && (
+				<MyAccordion label="Rok vydání" isExpanded isLoading={false}>
+					<PublishDateFilter />
+				</MyAccordion>
+			)}
 		</Flex>
 	);
 };

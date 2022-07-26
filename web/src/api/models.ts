@@ -21,9 +21,13 @@ export type PublicationDetail = {
 	datanode: boolean;
 	pid: string;
 	root_pid: string;
-	rootTitle: string;
+	root_title: string;
 	title: string;
 	context: PublicationContext[];
+	details: {
+		partNumber: string;
+		title: string;
+	};
 };
 
 export type PublicationsListDto = {
@@ -103,6 +107,7 @@ export type PublicationChild = {
 		volumeNumber: string;
 		year: string;
 		partNumber: string;
+		title: string;
 	};
 	root_pid: string;
 	root_title: string;

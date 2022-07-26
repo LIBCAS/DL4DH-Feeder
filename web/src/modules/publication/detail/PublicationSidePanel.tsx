@@ -85,7 +85,7 @@ const PublicationSidePanel: FC<Props> = ({
 					</>
 				)}
 				<Flex
-					height={60}
+					height={50}
 					bg="primaryLight"
 					width={1}
 					alignItems="center"

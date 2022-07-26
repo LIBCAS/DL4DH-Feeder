@@ -68,14 +68,18 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 	return (
 		<Box width={1}>
 			<div ref={ref}>
-				<Divider />
-				<Flex p={3} py={2}>
+				<Flex px={1} py={0}>
 					<TextInput
 						placeholder="Vyhledávat v publikaci"
 						label=""
 						labelType="inline"
 						color="primary"
 						value={toSearch}
+						wrapperCss={css`
+							border-top: none;
+							border-left: none;
+							border-right: none;
+						`}
 						iconLeft={
 							<Flex color="primary" ml={2}>
 								<MdSearch size={26} />
@@ -100,9 +104,8 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 						}}
 					/>
 				</Flex>
-				<Divider />
 
-				<Flex py={3} px={3} justifyContent="space-between" alignItems="center">
+				<Flex py={2} px={2} justifyContent="space-between" alignItems="center">
 					<IconButton
 						onClick={() => {
 							gridRef.current?.scrollToItem({
@@ -110,6 +113,10 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 								align: 'start',
 							});
 						}}
+						css={css`
+							border-top: 2px solid ${theme.colors.text};
+							color: ${theme.colors.text};
+						`}
 					>
 						<MdArrowUpward size={20} />
 					</IconButton>
@@ -163,6 +170,10 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 								align: 'start',
 							});
 						}}
+						css={css`
+							border-bottom: 2px solid ${theme.colors.text};
+							color: ${theme.colors.text};
+						`}
 					>
 						<MdArrowDownward size={20} />
 					</IconButton>
@@ -173,7 +184,7 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 				ref={wrapperRef}
 				width={300}
 				maxWidth={300}
-				bg="darkGrey"
+				bg="border"
 				height={`calc(100vh - ${
 					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 1
 				}px)`}

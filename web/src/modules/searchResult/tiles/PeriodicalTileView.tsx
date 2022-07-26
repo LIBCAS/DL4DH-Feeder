@@ -62,9 +62,14 @@ const PeriodicalTiles: FC<Props> = ({ data }) => {
 										{d.details.year}
 									</Text>
 
-									{d.title && (
+									{/* {d.details.partNumber && (
 										<Text mb={2} color="primary" fontWeight="bold">
-											{d.title}
+											{d.details.partNumber}
+										</Text>
+									)} */}
+									{d.details.title && (
+										<Text mb={2} color="primary" fontWeight="bold">
+											{d.details.title}
 										</Text>
 									)}
 								</Flex>

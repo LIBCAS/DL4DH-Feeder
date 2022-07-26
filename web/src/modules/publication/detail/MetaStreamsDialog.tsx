@@ -5,11 +5,13 @@ import { MdCode, MdCopyAll, MdExpandMore } from 'react-icons/md';
 import { useParams, useSearchParams } from 'react-router-dom';
 import XMLViewer from 'react-xml-viewer';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import ModalDialog from 'components/modal';
-import { Flex } from 'components/styled';
+import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
 import Text from 'components/styled/Text';
@@ -29,21 +31,23 @@ import { PublicationContext, StreamTypeEnum } from 'api/models';
 
 import { ModelToText } from 'utils/enumsMap';
 
-const ViewStream = React.forwardRef<
-	HTMLDivElement,
-	{
-		uuid: string;
-		stream: StreamTypeEnum;
-		mime: string;
-	}
->(({ uuid, stream, mime }, ref) => {
+const ViewStream: FC<{
+	uuid: string;
+	stream: StreamTypeEnum;
+	mime: string;
+	contentRef: React.MutableRefObject<string>;
+}> = ({ uuid, stream, mime, contentRef }) => {
 	const response = useStreams(uuid, stream, mime);
 	if (response.isLoading) {
 		return <LoaderSpin />;
 	}
+	contentRef.current = response.data ?? '';
 
+	//TODO: IMG_FULL_ADM => niekedy vracia obrazok... pozor mrzne to
+	//TODO: napr http://localhost:3000/view/uuid:93d73550-7099-11e5-99af-005056827e52?page=uuid%3A2f66a5f0-766c-11e5-83b9-5ef3fc9bb22f
+	//TEXT_OCR_ADM => niekedy je OCR a niekedy XML
 	return (
-		<div ref={ref}>
+		<Flex overflow="auto" width={1} p={2}>
 			{stream === 'TEXT_OCR' ? (
 				<Text>
 					<pre>{response.data}</pre>
@@ -57,44 +61,87 @@ const ViewStream = React.forwardRef<
 					)}
 				</>
 			)}
-		</div>
+		</Flex>
 	);
-});
+};
 
-ViewStream.displayName = ViewStream.name;
-
-const ViewJSON = React.forwardRef<
-	HTMLDivElement,
-	{
-		uuid: string;
-		stream: 'ITEM' | 'CHILDREN';
-	}
->(({ uuid, stream }, ref) => {
+const ViewJSON: FC<{
+	uuid: string;
+	stream: 'ITEM' | 'CHILDREN';
+	contentRef: React.MutableRefObject<string>;
+}> = ({ uuid, stream, contentRef }) => {
 	const pageDetail = usePublicationDetail(uuid ?? '');
 	const childrenDetail = usePublicationChildren(uuid ?? '');
+	const dataArr = useMemo(() => {
+		if (stream === 'CHILDREN') {
+			const childrenString = JSON.stringify(
+				childrenDetail.data ?? {},
+				null,
+				10,
+			);
+			contentRef.current = childrenString;
+			return childrenString.split('\n');
+		} else if (stream === 'ITEM') {
+			const itemString = JSON.stringify(pageDetail.data ?? {}, null, 10);
+			contentRef.current = itemString;
+			return itemString.split('\n');
+		}
+		return [] as string[];
+	}, [childrenDetail.data, pageDetail.data, contentRef, stream]);
+
 	if (pageDetail.isLoading || childrenDetail.isLoading) {
 		return <LoaderSpin />;
 	}
-	return (
-		<div ref={ref}>
-			<SyntaxHighlighter
-				//TODO: Use WINDOW to render
-				language="json"
-				customStyle={{ background: 'transparent!important' }}
-			>
-				{JSON.stringify(
-					stream === 'ITEM'
-						? pageDetail.data ?? '{}'
-						: childrenDetail.data ?? '{}',
-					null,
-					10,
-				)}
-			</SyntaxHighlighter>
-		</div>
-	);
-});
 
-ViewJSON.displayName = ViewJSON.name;
+	const ITEM_HEIGHT = 30;
+	const maxWidth = Math.max(...dataArr.map(c => c.length)) * 7;
+
+	return (
+		<Flex
+			flexDirection="column"
+			alignItems="flex-top"
+			css={css`
+				position: absolute;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden !important;
+			`}
+		>
+			<AutoSizer>
+				{({ width, height }) => (
+					<FixedSizeList
+						itemCount={dataArr.length}
+						width={width}
+						height={height}
+						itemSize={ITEM_HEIGHT}
+						style={{ overflow: 'auto' }}
+					>
+						{({ index, style }) => (
+							<Box
+								p={0}
+								m={0}
+								height={ITEM_HEIGHT}
+								style={{ ...style }}
+								minWidth={maxWidth}
+							>
+								<SyntaxHighlighter
+									language="json"
+									customStyle={{
+										background: 'transparent!important',
+										overflow: 'hidden',
+									}}
+								>
+									{dataArr[index]}
+								</SyntaxHighlighter>
+							</Box>
+						)}
+					</FixedSizeList>
+				)}
+			</AutoSizer>
+		</Flex>
+	);
+};
 
 const itemStream = {
 	key: 'ITEM',
@@ -117,8 +164,8 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 		itemStream,
 	);
 	const ref = useRef<HTMLDivElement>(null);
-	const ref2 = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
+	const contentRef = useRef<string>('');
 
 	const [source, setSource] = useState<PublicationContext>(sources[0]);
 	const theme = useTheme();
@@ -152,9 +199,9 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	}
 
 	return (
-		<Paper /* minHeight="70vh" */ bg="paper">
+		<Paper bg="paper" px={2} py={2}>
 			<Flex
-				mb={3}
+				mb={1}
 				justifyContent="space-between"
 				alignItems="flex-start"
 				overflow="visible"
@@ -168,6 +215,9 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 						value={selectedStream}
 						variant="underlined"
 						minWidth="150px"
+						wrapperCss={css`
+							height: 30px;
+						`}
 					/>
 
 					<Tabs
@@ -187,14 +237,6 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 									</Button>
 								),
 							})),
-							/* {
-										key: 'PAGE',
-										jsx: (
-											<Button fontSize="lg" color="inherit" variant="text">
-												Stránka
-											</Button>
-										),
-									}, */
 						]}
 						tabsDivider={
 							<Flex alignItems="center" color="inactive">
@@ -218,9 +260,12 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 				<Button
 					className="clpbtn"
 					variant="text"
+					my={0}
+					py={0}
 					onClick={() => {
 						//TODO: vyzaduje https spojenie, skryt/upozornit ked neni https?
-						navigator.clipboard.writeText(ref2.current?.innerText ?? '');
+						//navigator.clipboard.writeText(ref2.current?.innerText ?? '');
+						navigator.clipboard.writeText(contentRef.current ?? '');
 					}}
 					title="Kopírovat do schránky"
 					onMouseEnter={() => {
@@ -256,10 +301,9 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 			<Flex
 				ref={ref}
 				position="relative"
-				overflow="scroll"
 				maxHeight="60vh"
+				height="60vh"
 				minHeight="300px"
-				px={2}
 				css={css`
 					border: 1px solid ${theme.colors.border};
 				`}
@@ -270,15 +314,15 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 						selectedStream?.key === 'CHILDREN' ? (
 							<ViewJSON
 								uuid={source?.pid ?? 'json_undefined'}
-								ref={ref2}
 								stream={selectedStream.key}
+								contentRef={contentRef}
 							/>
 						) : (
 							<ViewStream
-								ref={ref2}
 								uuid={source?.pid ?? 'stream_undefined'}
 								stream={selectedStream?.key ?? 'DC'}
 								mime={selectedStream?.mimeType ?? 'text/plain'}
+								contentRef={contentRef}
 							/>
 						)}
 					</>
@@ -289,8 +333,8 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 					</Text>
 				)}
 			</Flex>
-			<Flex>
-				<Button variant="primary" onClick={closeModal} my={3}>
+			<Flex width={1} justifyContent="flex-end">
+				<Button variant="primary" onClick={closeModal} mt={2}>
 					Zavřít
 				</Button>
 			</Flex>
