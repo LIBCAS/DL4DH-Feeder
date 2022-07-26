@@ -67,9 +67,15 @@ const PeriodicalDetail = () => {
 			pubChildren.data?.[0]?.model === 'periodicalitem' ||
 			pubChildren.data?.[0]?.model === 'periodicalitem/monograph'
 		) {
-			nav('/view/' + pubChildren.data?.[0].pid, { replace: true });
+			if (pubChildren.data?.[0]?.model === 'page') {
+				nav('/view/' + id + '?page=' + pubChildren.data?.[0].pid, {
+					replace: true,
+				});
+			} else {
+				nav('/periodical/' + pubChildren.data?.[0].pid, { replace: true });
+			}
 		}
-	}, [pubChildren.data, detail.data, nav]);
+	}, [pubChildren.data, detail.data, nav, id]);
 
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;

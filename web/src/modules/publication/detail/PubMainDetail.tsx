@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { FC, ReactNode, useContext, useRef, useState } from 'react';
 import {
+	MdEditNote,
 	MdExpandMore,
 	MdFullscreen,
 	MdFullscreenExit,
@@ -11,6 +12,7 @@ import {
 	MdZoomOut,
 } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
+import { BsCursorText } from 'react-icons/bs';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -20,6 +22,8 @@ import ZoomifyView, { mapRef } from 'modules/zoomify/ZoomifyView';
 import { useTheme } from 'theme';
 
 import { PubCtx } from '../ctx/pub-ctx';
+
+const ICON_SIZE = 32;
 
 type Props = {
 	page: string;
@@ -65,17 +69,17 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 		<Flex
 			ref={zoomRef}
 			width={1}
-			bg="grey"
+			bg="border"
 			alignItems="center"
 			position="relative"
 		>
 			<ZoomifyView id={page} rotation={rotation} />
-			<Flex position="absolute" width={1} bottom={70} justifyContent="center">
+			<Flex position="absolute" width={1} bottom={100} justifyContent="center">
 				<Flex
 					alignItems="center"
 					justifyContent="space-between"
-					px={2}
-					py={2}
+					px={0}
+					py={0}
 					opacity="0.9"
 					bg="primaryLight"
 					css={css`
@@ -89,7 +93,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						}}
 						Icon={
 							<MdExpandMore
-								size={24}
+								size={ICON_SIZE}
 								css={css`
 									transform: rotate(90deg);
 								`}
@@ -99,11 +103,11 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 
 					<ToolButton
 						onClick={() => setRotation(r => (r - 90) % 360)}
-						Icon={<MdRotateLeft size={24} />}
+						Icon={<MdRotateLeft size={ICON_SIZE} />}
 					/>
 					<ToolButton
 						onClick={() => setRotation(r => (r + 90) % 360)}
-						Icon={<MdRotateRight size={24} />}
+						Icon={<MdRotateRight size={ICON_SIZE} />}
 					/>
 					<ToolButton
 						onClick={() => {
@@ -116,7 +120,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 								duration: 300,
 							});
 						}}
-						Icon={<MdZoomIn size={24} />}
+						Icon={<MdZoomIn size={ICON_SIZE} />}
 					/>
 					<ToolButton
 						onClick={() => {
@@ -129,7 +133,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 								duration: 300,
 							});
 						}}
-						Icon={<MdZoomOut size={24} />}
+						Icon={<MdZoomOut size={ICON_SIZE} />}
 					/>
 
 					<ToolButton
@@ -145,11 +149,15 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						}}
 						Icon={
 							fullscreen ? (
-								<MdFullscreenExit size={24} />
+								<MdFullscreenExit size={ICON_SIZE} />
 							) : (
-								<MdFullscreen size={24} />
+								<MdFullscreen size={ICON_SIZE} />
 							)
 						}
+					/>
+					<ToolButton
+						Icon={<BsCursorText size={ICON_SIZE} />}
+						onClick={() => null}
 					/>
 
 					<ToolButton
@@ -159,7 +167,7 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 						}}
 						Icon={
 							<MdExpandMore
-								size={24}
+								size={ICON_SIZE}
 								css={css`
 									transform: rotate(-90deg);
 								`}

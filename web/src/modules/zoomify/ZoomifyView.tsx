@@ -19,8 +19,6 @@ import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 
-import { api } from 'api';
-
 import { useImageProperties } from 'api/publicationsApi';
 
 import 'ol/ol.css';
@@ -216,7 +214,7 @@ const ZoomifyView: React.FC<{
 		return <Loader />;
 	}
 	if (imgProps.isLoading) {
-		return <Loader />;
+		return <Loader color="primary" size={70} />;
 	}
 
 	const imgWidth = parseInt(parsedXML?.IMAGE_PROPERTIES.$.WIDTH ?? '0');
