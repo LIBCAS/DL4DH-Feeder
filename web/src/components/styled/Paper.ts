@@ -8,6 +8,6 @@ Paper.defaultProps = {
 	px: 4,
 	py: 3,
 	my: 2,
-	bg: 'white',
+	bg: 'paper',
 };
 export default Paper;
