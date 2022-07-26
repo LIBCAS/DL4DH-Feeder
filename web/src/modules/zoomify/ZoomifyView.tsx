@@ -5,7 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
-import { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import XML from 'xml2js';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -21,15 +21,23 @@ import { Loader } from 'modules/loader';
 
 import { useImageProperties } from 'api/publicationsApi';
 
-import 'ol/ol.css';
 import AltoDialog from './AltoDialog';
+import ZoomifyToolbar from './ZoomifyToolbar';
+
+import 'ol/ol.css';
 
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 
-//deep zoom?
-//https://stackoverflow.com/questions/58498434/deepzoom-into-openlayers-images-using-zoomify/58500085#58500085
-
 export const mapRef: { current: Map | null } = { current: null };
+
+type ImageProps = {
+	IMAGE_PROPERTIES: {
+		$: {
+			HEIGHT: string;
+			WIDTH: string;
+		};
+	};
+};
 
 // https://openlayers.org/en/latest/examples/box-selection.html
 
@@ -38,8 +46,7 @@ const MapWrapper: FC<{
 	isLoading?: boolean;
 	imgWidth: number;
 	imgHeight: number;
-	rotation: number;
-}> = ({ imgId, imgWidth, imgHeight, rotation }) => {
+}> = ({ imgId, imgWidth, imgHeight }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const dragBoxRef = useRef<DragBox | null>(null);
@@ -51,6 +58,8 @@ const MapWrapper: FC<{
 		open: boolean;
 		box: Extent;
 	}>({ open: false, box: [] });
+
+	const [rotation, setRotation] = useState(0);
 
 	// vector layer bude treba asi na vyznacenie slova pri vyhladavani
 
@@ -164,45 +173,49 @@ const MapWrapper: FC<{
 					}}
 				/>
 			)}
-			<button
-				style={{
-					width: '100px',
-					height: '60px',
-					position: 'absolute',
-					zIndex: 10,
-					left: '50%',
-					top: '0',
-					visibility: dragBoxMode ? 'hidden' : 'visible',
+
+			<ZoomifyToolbar
+				page={imgId ?? ''}
+				onUpdateRotation={setRotation}
+				onZoomIn={() => {
+					const currentZoom = map.current?.getView().getResolution() ?? 1;
+
+					const newZoom = currentZoom / 1.5;
+					map.current?.getView().animate({
+						resolution: newZoom,
+						duration: 300,
+					});
 				}}
-				disabled={dragBoxMode}
-				onClick={() => {
+				onZoomOut={() => {
+					const currentZoom = map.current?.getView().getResolution() ?? 1;
+
+					const newZoom = currentZoom * 1.5;
+					map.current?.getView().animate({
+						resolution: newZoom,
+						duration: 300,
+					});
+				}}
+				onDragBoxModeEnabled={() => {
 					if (dragBoxRef.current) {
 						map.current?.addInteraction(dragBoxRef.current);
 						setDragBoxMode(true);
 					}
 				}}
-			>
-				TEST ALTO
-			</button>
+			/>
 		</Box>
 	);
 };
-const ZoomifyView: React.FC<{
-	id?: string;
-	isLoading?: boolean;
-	rotation: number;
-}> = ({ id, rotation }) => {
+const ZoomifyView = React.forwardRef<
+	HTMLDivElement,
+	{
+		id?: string;
+		isLoading?: boolean;
+	}
+>(({ id }, fullscreenRef) => {
 	const imgProps = useImageProperties(id ?? '');
 
 	const counter = useRef(0);
-	type ImageProps = {
-		IMAGE_PROPERTIES: {
-			$: {
-				HEIGHT: string;
-				WIDTH: string;
-			};
-		};
-	};
+
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
 
 	useEffect(() => {
@@ -227,10 +240,11 @@ const ZoomifyView: React.FC<{
 				imgId={id}
 				imgWidth={imgWidth}
 				imgHeight={imgHeight}
-				rotation={rotation}
 			/>
 		</Wrapper>
 	);
-};
+});
+
+ZoomifyView.displayName = ZoomifyView.name;
 
 export default ZoomifyView;
