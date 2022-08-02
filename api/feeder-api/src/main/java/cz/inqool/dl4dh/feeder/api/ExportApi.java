@@ -32,7 +32,7 @@ public class ExportApi {
     @GetMapping(value="/download/{id}", produces="application/zip")
     public byte[] download(@PathVariable Long id, Principal user) {
         Export export = exportRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        if (!export.getUser().equals(user.getName())){
+        if (!export.getUsername().equals(user.getName())){
             throw new AccessDeniedException();
         }
         // TODO check other roles
@@ -52,7 +52,7 @@ public class ExportApi {
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<Export> getAll(Principal user) {
-        return exportRepository.findByUser(user.getName());
+        return exportRepository.findByUsername(user.getName());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -66,7 +66,7 @@ public class ExportApi {
         export.setPublicationId(job.getPublicationId());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
-        export.setUser(user.getName());
+        export.setUsername(user.getName());
         exportRepository.saveAndFlush(export);
 
         return export;

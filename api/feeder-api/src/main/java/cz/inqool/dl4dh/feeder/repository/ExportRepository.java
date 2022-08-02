@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ExportRepository extends JpaRepository<Export, Long> {
-	List<Export> findByUser(String user);
+	List<Export> findByUsername(String username);
 }

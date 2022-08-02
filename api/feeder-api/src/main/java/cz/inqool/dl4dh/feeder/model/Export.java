@@ -36,7 +36,7 @@ public class Export extends AuditModel {
     )
     private Long id;
 
-    private String user;
+    private String username;
 
     private String publicationId;
 
