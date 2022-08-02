@@ -67,10 +67,18 @@ const Header = () => {
 							<Button
 								onClick={() => nav(-1)}
 								variant="text"
-								pr={3}
+								pr={1}
 								color="headerColor"
 							>
 								<MdArrowBack size={22} />
+							</Button>
+							<Button
+								onClick={() => nav('/search')}
+								variant="text"
+								color="headerColor"
+								pr={2}
+								pl={0}
+							>
 								<Flex flexDirection="column" ml={2} justifyContent="center">
 									<Text
 										textAlign="left"
