@@ -54,3 +54,12 @@ info:
 solr:
   host:
     query: http://solr:8983/solr/feeder
+
+keycloak:
+  auth-server-url: http://localhost:8180
+  realm: DL4DHFeeder
+  resource: feeder
+  public-client: true
+  principal-attribute: preferred_username
+
+#KEYCLOAK_AUTH-SERVER-URL=http://localhost:8180;KEYCLOAK_REALM=DL4DHFeeder;KEYCLOAK_RESOURCE=feeder;KEYCLOAK_PUBLIC-CLIENT=true;KEYCLOAK_PRINCIPAL-ATTRIBUTE=preferred_username
