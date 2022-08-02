@@ -78,7 +78,7 @@ const GraphView: FC<Props> = ({ data }) => {
 	);
 
 	return (
-		<Box position="relative" height="100%" width={1}>
+		<Box position="relative" height="100%" width={1} overflow="hidden">
 			<Flex justifyContent="space-between" m={2} alignItems="center">
 				<TitleText textAlign="left" ml={1}>
 					Záznamy v grafickej podobe
@@ -188,14 +188,13 @@ const GraphView: FC<Props> = ({ data }) => {
 				height="100%"
 				fontSize="xl"
 				fontWeight="bold"
-				overflow="scroll"
 				width={1}
 			>
 				<ResponsiveContainer
-					height="95%"
+					height="90%"
 					/* width={`calc(100% + 150px)`} */
 					//width={3500 + zoom}
-					width="100%"
+					width="99%"
 				>
 					<BarChart data={chartData}>
 						<XAxis dataKey="label" fontSize={12} />

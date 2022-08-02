@@ -35,13 +35,18 @@ export type Filter = {
 };
 
 type Params = {
-	disablePagination?: boolean;
-	pageOffset?: number;
-	pageSize?: number;
-	sorting?: Sort[];
-	filters?: Filter[];
-	includeFields?: string[];
-	excludeFields?: string[];
+	params: {
+		disablePagination?: boolean;
+		paging: {
+			pageOffset?: number;
+			pageSize?: number;
+		};
+
+		sorting?: Sort[];
+		filters?: Filter[];
+		includeFields?: string[];
+		excludeFields?: string[];
+	};
 };
 
 const formatOptions: FormatOption[] = [
@@ -82,12 +87,13 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 			console.log({ values });
 			const params: Partial<Params> = {
 				//includeFields: ['author'],
-				sorting: [{ field: 'index', direction: 'ASC' }],
+				//sorting: [{ field: 'index', direction: 'ASC' }],
+				params: undefined,
 			};
 
 			try {
 				const response = await api().post(
-					`exports/${pubId}/${values.format.id}`,
+					`exports/generate/${pubId}/${values.format.id}`,
 					{ json: params },
 				);
 				/* const response = await fetch(
