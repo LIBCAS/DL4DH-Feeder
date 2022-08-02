@@ -54,6 +54,7 @@ services:
       - solr_data:/var/solr
     environment:
       KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
+      KEYCLOAK_SSL-REQUIRED: none
     labels:
       kompose.volume.size: "2Gi"
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
