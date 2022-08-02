@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import { css } from '@emotion/core';
+import { css, SerializedStyles } from '@emotion/core';
 import React, { FC, useCallback } from 'react';
 
 import Text from 'components/styled/Text';
@@ -19,6 +19,7 @@ const EDIT_COL_WIDTH = 60;
 
 type TableItem = {
 	pid?: string;
+	id?: string;
 };
 
 /** Table interface */
@@ -37,8 +38,8 @@ type Props<T extends TableItem> = {
 	isLoading?: boolean;
 	height?: number;
 	hideEditButton?: boolean;
-
 	openInNewTab?: boolean;
+	rowWrapperCss?: SerializedStyles;
 };
 
 /** Table implementation */
@@ -49,13 +50,15 @@ const Table2 = <T extends TableItem>({
 	renderHeader,
 	minWidth = 1000,
 	headerHeight = 40,
-	//rowHeight = 40,
+	rowHeight,
 	isLoading,
 	hideEditButton,
+	rowWrapperCss,
 }: Props<T>) => {
 	const theme = useTheme();
 	const RenderRow: FC<{ rowIndex: number }> = ({ rowIndex }) => (
 		<Flex
+			height={rowHeight ?? 'unset'}
 			css={css`
 				min-width: ${minWidth}px;
 				border-bottom: 1px solid ${theme.colors.primary};
@@ -70,6 +73,7 @@ const Table2 = <T extends TableItem>({
 				&:hover .table-row-three-dots {
 					cursor: pointer;
 				}
+				${rowWrapperCss}
 			`}
 		>
 			{renderRow(data[rowIndex], rowIndex)}
@@ -126,26 +130,28 @@ const Table2 = <T extends TableItem>({
 			>
 				{renderHeader(false)}
 
-				<Flex
-					alignItems="center"
-					justifyContent="center"
-					flex={1}
-					p={2}
-					bg="primary"
-					css={css`
-						min-width: ${EDIT_COL_WIDTH}px;
-						max-width: ${EDIT_COL_WIDTH}px;
-						padding: 0;
-						position: sticky;
-						right: 0;
-						box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
-					`}
-				>
-					<Flex justifyContent="flex-end" height={headerHeight}></Flex>
-				</Flex>
+				{!hideEditButton && (
+					<Flex
+						alignItems="center"
+						justifyContent="center"
+						flex={1}
+						p={2}
+						bg="primary"
+						css={css`
+							min-width: ${EDIT_COL_WIDTH}px;
+							max-width: ${EDIT_COL_WIDTH}px;
+							padding: 0;
+							position: sticky;
+							right: 0;
+							box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
+						`}
+					>
+						<Flex justifyContent="flex-end" height={headerHeight}></Flex>
+					</Flex>
+				)}
 			</Flex>
 		),
-		[renderHeader, minWidth, headerHeight],
+		[renderHeader, minWidth, headerHeight, hideEditButton],
 	);
 
 	return (

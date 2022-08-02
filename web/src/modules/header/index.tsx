@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import useMeasure from 'react-use-measure';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MdArrowBack } from 'react-icons/md';
+import { MdArrowBack, MdMenu } from 'react-icons/md';
+import Dialog from '@reach/dialog';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -33,6 +34,8 @@ const Header = () => {
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 
+	const [sideMenuExpanded, setSideMenuExpanded] = useState(false);
+
 	return (
 		<ResponsiveWrapper
 			bg="headerBg"
@@ -59,35 +62,43 @@ const Header = () => {
 					color="headerColor"
 					// overflow="hidden"
 				>
-					<Flex flexShrink={0} width={300} color="headerColor">
-						<Button
-							onClick={() => nav(-1)}
-							variant="text"
-							pr={3}
-							color="headerColor"
-						>
-							<MdArrowBack size={22} />
-							<Flex flexDirection="column" ml={2} justifyContent="center">
-								<Text textAlign="left" fontSize="14px" my={0} fontWeight="bold">
-									{libName}
-								</Text>
-								<Text m={0} textAlign="left" fontSize="11px">
-									DL4DH Feeder
-								</Text>
-							</Flex>
-						</Button>
-					</Flex>
+					{!isMobile && (
+						<Flex flexShrink={0} width={300} color="headerColor">
+							<Button
+								onClick={() => nav(-1)}
+								variant="text"
+								pr={3}
+								color="headerColor"
+							>
+								<MdArrowBack size={22} />
+								<Flex flexDirection="column" ml={2} justifyContent="center">
+									<Text
+										textAlign="left"
+										fontSize="14px"
+										my={0}
+										fontWeight="bold"
+									>
+										{libName}
+									</Text>
+									<Text m={0} textAlign="left" fontSize="11px">
+										DL4DH Feeder
+									</Text>
+								</Flex>
+							</Button>
+						</Flex>
+					)}
 
 					<MainSearchInput />
 
 					<Flex ml={1} flexShrink={0} color="headerColor">
-						{!isMobile && (
+						{!isMobile ? (
 							<>
 								<NavLinkButton
 									to="/collections"
 									color="headerColor"
 									variant="primary"
 									minWidth={50}
+									px={1}
 								>
 									Sbírky
 								</NavLinkButton>
@@ -96,6 +107,7 @@ const Header = () => {
 									color="headerColor"
 									variant="primary"
 									minWidth={50}
+									px={1}
 								>
 									Procházet
 								</NavLinkButton>
@@ -104,17 +116,135 @@ const Header = () => {
 									color="headerColor"
 									variant="primary"
 									minWidth={50}
+									px={1}
 								>
 									Informace
 								</NavLinkButton>
-								<Button color="headerColor" variant="primary" minWidth={50}>
+
+								<Button
+									color="headerColor"
+									variant="primary"
+									minWidth={50}
+									px={1}
+								>
 									English
 								</Button>
+								<NavLinkButton
+									to="/exports"
+									color="headerColor"
+									variant="primary"
+									minWidth={50}
+									px={1}
+								>
+									Exporty
+								</NavLinkButton>
+								<Button minWidth={100} variant="primary" px={1}>
+									Přejít do Kraméria
+								</Button>
+							</>
+						) : (
+							<>
+								<Button
+									variant="primary"
+									onClick={() => setSideMenuExpanded(true)}
+								>
+									<MdMenu size={22} />
+								</Button>
+								<Dialog
+									isOpen={sideMenuExpanded}
+									onDismiss={() => setSideMenuExpanded(false)}
+									aria-label="Bočné menu"
+									css={css`
+										position: fixed;
+										top: 0;
+										right: 0;
+										bottom: 0;
+										background-color: white;
+										padding: 0 !important;
+										margin: 0 !important;
+										width: auto;
+										max-width: 400px;
+										min-width: 300px;
+
+										display: flex;
+										flex-direction: column;
+										overflow-y: auto;
+									`}
+								>
+									<Flex
+										flexDirection="column"
+										fontSize="xl"
+										alignItems="flex-start"
+										pl={2}
+									>
+										<NavLinkButton
+											to="/collections"
+											color="primary"
+											variant="text"
+											minWidth={50}
+											px={1}
+											my={2}
+											fontSize="inherit"
+										>
+											Sbírky
+										</NavLinkButton>
+										<NavLinkButton
+											to="/browse"
+											color="primary"
+											variant="text"
+											minWidth={50}
+											px={1}
+											my={2}
+											fontSize="inherit"
+										>
+											Procházet
+										</NavLinkButton>
+										<NavLinkButton
+											to="/about"
+											color="primary"
+											variant="text"
+											minWidth={50}
+											px={1}
+											my={2}
+											fontSize="inherit"
+										>
+											Informace
+										</NavLinkButton>
+
+										<Button
+											color="primary"
+											variant="text"
+											minWidth={50}
+											px={1}
+											my={2}
+											fontSize="inherit"
+										>
+											English
+										</Button>
+										<NavLinkButton
+											to="/exports"
+											color="primary"
+											fontSize="inherit"
+											variant="text"
+											minWidth={50}
+											px={1}
+											my={2}
+										>
+											Exporty
+										</NavLinkButton>
+										<Button
+											minWidth={100}
+											variant="text"
+											px={1}
+											my={2}
+											fontSize="inherit"
+										>
+											Přejít do Kraméria
+										</Button>
+									</Flex>
+								</Dialog>
 							</>
 						)}
-						<Button minWidth={100} variant="primary">
-							Přejít do Kraméria
-						</Button>
 					</Flex>
 				</Flex>
 			) : (
