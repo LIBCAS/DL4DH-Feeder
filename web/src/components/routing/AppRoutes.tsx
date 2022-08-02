@@ -14,6 +14,9 @@ const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
 const About = React.lazy(() => import('modules/about'));
 const Collections = React.lazy(() => import('modules/collections'));
+const ExportsDashboard = React.lazy(
+	() => import('modules/export/ExportsDashboard'),
+);
 
 const AppRoutes: React.FC = () => {
 	return (
@@ -63,6 +66,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<Dashboard />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/exports"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<ExportsDashboard />
 					</React.Suspense>
 				}
 			/>

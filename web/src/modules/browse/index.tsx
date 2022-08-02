@@ -4,7 +4,13 @@ import { Wrapper } from 'components/styled/Wrapper';
 import { Box } from 'components/styled';
 
 const Browse = () => (
-	<Wrapper height="100vh" alignItems="flex-start" p={[4, 0]} width={1}>
+	<Wrapper
+		height="100vh"
+		alignItems="flex-start"
+		p={[4, 0]}
+		width={1}
+		bg="paper"
+	>
 		<Paper color="#444444!important">
 			<Box mt={3} ml={[0, '300px']} width={1}>
 				<H1

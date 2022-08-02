@@ -58,27 +58,29 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 					)}
 				</>
 			)}
-			<Flex
-				position="sticky"
-				bottom={0}
-				mt={1}
-				p={2}
-				css={css`
-					border-top: 1px solid ${theme.colors.border};
-				`}
-				bg="white"
-			>
-				<Pagination
-					page={state.page}
-					changePage={changePage}
-					changeLimit={setPageLimit}
-					pageLimit={state.pageSize}
-					totalCount={count}
-					hasMore={hasMore}
-					offset={state.start}
-					loading={isLoading}
-				/>
-			</Flex>
+			{state?.viewMode !== 'graph' && (
+				<Flex
+					position="sticky"
+					bottom={0}
+					mt={1}
+					p={2}
+					css={css`
+						border-top: 1px solid ${theme.colors.border};
+					`}
+					bg="white"
+				>
+					<Pagination
+						page={state.page}
+						changePage={changePage}
+						changeLimit={setPageLimit}
+						pageLimit={state.pageSize}
+						totalCount={count}
+						hasMore={hasMore}
+						offset={state.start}
+						loading={isLoading}
+					/>
+				</Flex>
+			)}
 		</Wrapper>
 	);
 };

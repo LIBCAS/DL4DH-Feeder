@@ -10,11 +10,14 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
+import { MdZoomOut, MdZoomIn } from 'react-icons/md';
+import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
 import Text from 'components/styled/Text';
 import { Box, Flex } from 'components/styled';
 import TitleText from 'components/styled/TitleText';
 import SimpleSelect from 'components/form/select/SimpleSelect';
+import IconButton from 'components/styled/IconButton';
 
 import { useTheme } from 'theme';
 
@@ -51,9 +54,10 @@ const SortingText: Record<OptionXAxisSorting, string> = {
 };
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
-	//const [zoom, setZoom] = useState(50);
+	const [zoom, setZoom] = useState(50);
 	const [sorting, setSorting] = useState<OptionXAxisSorting>('key');
 	const [axisX, setAxisX] = useState<OptionXAxisType>(OptionsXAxis[0]);
+	const [sortDirection, setSortDirection] = useState<number>(1);
 	const formattedData = data[axisX.key];
 
 	const chartData = useMemo(
@@ -65,8 +69,12 @@ const GraphView: FC<Props> = ({ data }) => {
 					count: formattedData[key],
 					label: axisX?.itemLabelFunction?.(key) ?? key,
 				}))
-				.sort((a, b) => parseInt(b[sorting]) - parseInt(a[sorting])),
-		[formattedData, sorting, axisX],
+				.sort(
+					(a, b) =>
+						parseInt(a[sorting]) * sortDirection -
+						parseInt(b[sorting]) * sortDirection,
+				),
+		[formattedData, sorting, axisX, sortDirection],
 	);
 
 	return (
@@ -105,6 +113,33 @@ const GraphView: FC<Props> = ({ data }) => {
 							width: 100px;
 						`}
 					/>
+					<Flex
+						ml={3}
+						pl={3}
+						css={css`
+							border-left: 1px solid ${theme.colors.border};
+						`}
+					>
+						<Flex
+							bg="primaryLight"
+							alignItems="center"
+							justifyContent="center"
+							width={40}
+							height={36}
+						>
+							<IconButton
+								color="primary"
+								onClick={() => setSortDirection(z => z * -1)}
+								title="Přepnout směr řazení"
+							>
+								{sortDirection === 1 ? (
+									<FaSortAmountUp size={22} />
+								) : (
+									<FaSortAmountDown size={22} />
+								)}
+							</IconButton>
+						</Flex>
+					</Flex>
 					{/* <Flex
 						ml={3}
 						pl={3}
@@ -119,7 +154,10 @@ const GraphView: FC<Props> = ({ data }) => {
 							width={40}
 							height={36}
 						>
-							<IconButton color="primary" onClick={() => setZoom(z => z + 10)}>
+							<IconButton
+								color="primary"
+								onClick={() => setSortDirection(z => z * -1)}
+							>
 								<MdZoomOut size={24} />
 							</IconButton>
 						</Flex>
@@ -134,7 +172,7 @@ const GraphView: FC<Props> = ({ data }) => {
 							<IconButton
 								m={0}
 								color="white"
-								onClick={() => setZoom(z => (z > 10 ? z - 10 : z - 1))}
+								onClick={() => setZoom(z => (z > 10 ? z * 2 : z * 2))}
 							>
 								<MdZoomIn size={24} />
 							</IconButton>
@@ -147,19 +185,25 @@ const GraphView: FC<Props> = ({ data }) => {
 				mr={3}
 				justifyContent="flex-start"
 				alignItems="flex-start"
-				height="90%"
-				width={1}
+				height="100%"
 				fontSize="xl"
 				fontWeight="bold"
+				overflow="scroll"
+				width={1}
 			>
-				<ResponsiveContainer width={'100%'} height="95%">
+				<ResponsiveContainer
+					height="95%"
+					/* width={`calc(100% + 150px)`} */
+					//width={3500 + zoom}
+					width="100%"
+				>
 					<BarChart data={chartData}>
 						<XAxis dataKey="label" fontSize={12} />
 						<YAxis
 							dataKey="count"
 							fontSize={12}
-							max={4}
-							min={4}
+							max={8}
+							min={8}
 							type="number"
 							domain={[0, 'dataMax']}
 						/>
