@@ -49,12 +49,9 @@ export type JobEventDto = {
 export type ExportDto = {
 	id: string;
 	created?: string;
-	updated?: string;
-	deleted?: string;
+	username: string;
 	publicationId: string;
-	publicationTitle: string;
-	fileRef?: File;
-	jobEvent?: JobEventDto;
+	status: JobEventDto;
 };
 
 export type QueryResultsExportDto = {
@@ -72,9 +69,5 @@ export const useJobsList = (page = 0, pageSize = 10) =>
 			.json<QueryResultsJobEventDto>(),
 	);
 
-export const useExportList = (page = 0, pageSize = 10) =>
-	useQuery('export-list', () =>
-		api()
-			.get(`exports/list?page=${page}&pageSize=${pageSize}`)
-			.json<QueryResultsExportDto>(),
-	);
+export const useExportList = () =>
+	useQuery('export-list', () => api().get(`exports`).json<ExportDto[]>());
