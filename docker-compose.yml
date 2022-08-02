@@ -33,7 +33,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128m
+          memory: 300m
     ports:
       - "8180:8080"
     environment:
@@ -52,6 +52,8 @@ services:
           memory: 500m
     volumes:
       - solr_data:/var/solr
+    enviroment:
+      KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
     labels:
       kompose.volume.size: "2Gi"
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
