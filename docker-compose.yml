@@ -52,7 +52,7 @@ services:
           memory: 500m
     volumes:
       - solr_data:/var/solr
-    enviroment:
+    environment:
       KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
     labels:
       kompose.volume.size: "2Gi"
