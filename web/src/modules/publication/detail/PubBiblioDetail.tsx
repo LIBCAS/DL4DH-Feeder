@@ -13,6 +13,8 @@ import Text, { H2, H3, H5 } from 'components/styled/Text';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import Button, { NavLinkButton } from 'components/styled/Button';
 
+import PublicationExportDialog from 'modules/export/PublicationExportDialog';
+
 import {
 	usePublicationDetail,
 	usePublicationDetailWithRoot,
@@ -116,11 +118,9 @@ const PubBiblioDetail: FC<Props> = () => {
 				px={3}
 			>
 				<MetaStreamsDialog />
+				<PublicationExportDialog />
 				<IconButton color="primary">
 					<MdPrint size={24} />
-				</IconButton>
-				<IconButton color="primary">
-					<MdDownload size={24} />
 				</IconButton>
 				<IconButton color="primary">
 					<MdTextFields size={24} />

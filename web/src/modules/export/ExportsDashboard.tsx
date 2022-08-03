@@ -20,8 +20,6 @@ import { api } from 'api';
 import { useExportList } from 'api/exportsApi';
 
 const ExportsDashboard = () => {
-	const [activeTab, setActiveTab] = useState<'JOBS' | 'EXPORTS'>('JOBS');
-
 	const { keycloak } = useKeycloak();
 	console.log({ keycloak });
 
@@ -47,50 +45,13 @@ const ExportsDashboard = () => {
 							color="#444444!important"
 							fontWeight="normal"
 						>
-							{activeTab === 'JOBS' ? 'Úlohy' : 'Exporty'}
+							Exporty
 						</H1>
 
 						<Text>
 							Uzivatel:{' '}
 							{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}
 						</Text>
-						<Flex>
-							<Tabs
-								tabs={[
-									{
-										key: 'JOBS',
-										jsx: (
-											<Button
-												py={1}
-												px={2}
-												minWidth="100px"
-												width={100}
-												variant={activeTab === 'JOBS' ? 'primary' : 'text'}
-											>
-												Úlohy
-											</Button>
-										),
-									},
-									{
-										key: 'EXPORTS',
-										jsx: (
-											<Button
-												py={1}
-												px={2}
-												minWidth="100px"
-												width={100}
-												variant={activeTab === 'EXPORTS' ? 'primary' : 'text'}
-											>
-												Exporty
-											</Button>
-										),
-									},
-								]}
-								activeTab="JOBS"
-								setActiveTab={key => setActiveTab(key as 'JOBS' | 'EXPORTS')}
-								tabsDivider={<Box px={1}></Box>}
-							/>
-						</Flex>
 					</Flex>
 					<Flex
 						width={1}
@@ -126,7 +87,11 @@ const Exportslist = () => {
 						</Box>
 						<Box flex={2}>{row.status}</Box>
 						<Box flex={0.5} maxWidth={100}>
-							<IconButton>
+							<IconButton
+								onClick={() =>
+									window.open(`${window.origin}/api/exports/download/${row.id}`)
+								}
+							>
 								<Flex alignItems="center" pr={1} py={2}>
 									<Text my={0} py={0} px={1}>
 										Stáhnout
