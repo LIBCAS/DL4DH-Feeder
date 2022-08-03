@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { FC } from 'react';
-import { MdClose, MdDownload, MdImportExport, MdInfo } from 'react-icons/md';
+import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useKeycloak } from '@react-keycloak/web';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
@@ -15,13 +15,13 @@ import Text, { H1 } from 'components/styled/Text';
 
 import { api } from 'api';
 
-import { usePublicationDetail } from 'api/publicationsApi';
-
 import { PUBLICATION_EXPORT_STORE_KEY } from 'utils/enumsMap';
 import Store from 'utils/Store';
 
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
+
+//import { usePublicationDetail } from 'api/publicationsApi';
 
 export type Sort = {
 	field: string;
@@ -59,12 +59,12 @@ const formatOptions: FormatOption[] = [
 ];
 
 const attributesOptions: AtributeOption[] = [];
-[
+/* [
 	{ label: 'Atribút 1', id: 'att1' },
 	{ label: 'Atribút 2', id: 'att2' },
 	{ label: 'Atribút 3', id: 'att3' },
 	{ label: 'Atribút 4', id: 'att4' },
-];
+]; */
 
 type ExportFormType = {
 	format: FormatOption;
@@ -79,7 +79,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 
 	console.log({ keycloak });
 
-	const pubDetail = usePublicationDetail(pubId);
+	//const pubDetail = usePublicationDetail(pubId);
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
