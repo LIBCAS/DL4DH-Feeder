@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import { FC } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useKeycloak } from '@react-keycloak/web';
+import { useParams } from 'react-router-dom';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -14,9 +15,6 @@ import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 
 import { api } from 'api';
-
-import { PUBLICATION_EXPORT_STORE_KEY } from 'utils/enumsMap';
-import Store from 'utils/Store';
 
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
@@ -74,11 +72,11 @@ type ExportFormType = {
 
 const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 	//const pubId2 = 'uuid:2cc15a70-a7e4-11e6-b707-005056827e51';
-	const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
+	//const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
 	const { keycloak } = useKeycloak();
 
 	console.log({ keycloak });
-
+	const { id: pubId } = useParams<{ id: string }>();
 	//const pubDetail = usePublicationDetail(pubId);
 
 	const formik = useFormik<ExportFormType>({
@@ -131,7 +129,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat výběr publikací</H1>
+							<H1 my={3}>Exportovat publikaci</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
@@ -174,6 +172,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
+						<Text fontSize="sm">ID: {pubId}</Text>
 						<Text my={2} mt={4}>
 							Formát
 						</Text>

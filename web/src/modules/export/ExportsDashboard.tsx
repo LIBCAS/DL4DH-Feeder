@@ -21,6 +21,7 @@ const ExportsDashboard = () => {
 
 	if (!keycloak.authenticated) {
 		keycloak.login();
+		return <Loader />;
 	}
 
 	return (
