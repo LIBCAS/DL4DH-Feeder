@@ -13,6 +13,8 @@ import Button from 'components/styled/Button';
 
 import { Loader } from 'modules/loader';
 
+import { api } from 'api';
+
 import { useExportList } from 'api/exportsApi';
 
 const ExportsDashboard = () => {
@@ -20,8 +22,36 @@ const ExportsDashboard = () => {
 	console.log({ keycloak });
 
 	if (!keycloak.authenticated) {
-		keycloak.login();
-		return <Loader />;
+		return (
+			<Wrapper
+				height="100vh"
+				alignItems="flex-start"
+				p={[4, 0]}
+				width={1}
+				bg="paper"
+			>
+				<Paper color="#444444!important" width="90%">
+					<Box mt={3}>
+						<H1
+							my={3}
+							textAlign="left"
+							color="#444444!important"
+							fontWeight="normal"
+						>
+							Pro přístup k této stránce je nutné se přihlásit.
+						</H1>
+						<Button
+							variant="primary"
+							onClick={() => {
+								keycloak.login();
+							}}
+						>
+							Přihlásit se
+						</Button>
+					</Box>
+				</Paper>
+			</Wrapper>
+		);
 	}
 
 	return (
@@ -48,6 +78,15 @@ const ExportsDashboard = () => {
 							Uzivatel:{' '}
 							{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}
 						</Text>
+						<Button
+							variant="primary"
+							onClick={async () => {
+								keycloak.clearToken();
+								await api().get('user/logout');
+							}}
+						>
+							Odlasit
+						</Button>
 					</Flex>
 
 					<Exportslist />
