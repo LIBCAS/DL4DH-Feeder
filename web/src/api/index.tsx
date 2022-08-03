@@ -30,8 +30,8 @@ const FETCH_TIMEOUT = 10000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 export const REFETCH_INTERVAL = 30 * 60 * 1000;
 
-export const api = (prefix?: string, json?: Partial<FiltersDto>) =>
-	ky.extend({
+export const api = (prefix?: string, json?: Partial<FiltersDto>) => {
+	return ky.extend({
 		prefixUrl: `${APP_CONTEXT}/api/${prefix ?? ''}`,
 		timeout: FETCH_TIMEOUT,
 		...(json ? { json } : {}),
@@ -50,7 +50,7 @@ export const api = (prefix?: string, json?: Partial<FiltersDto>) =>
 			],
 		},
 	});
-
+};
 const UserContext = createContext<VsdUser | undefined>(undefined);
 
 export const useLoggedInUserProvider = () => {

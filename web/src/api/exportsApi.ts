@@ -70,4 +70,8 @@ export type PageExportDto = {
 };
 
 export const useExportList = () =>
-	useQuery('export-list', () => api().get(`exports`).json<PageExportDto>());
+	useQuery('export-list', () => api().get(`exports`).json<PageExportDto>(), {
+		refetchOnMount: true,
+		refetchOnWindowFocus: true,
+		refetchInterval: 60000,
+	});
