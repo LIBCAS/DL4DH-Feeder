@@ -1,6 +1,7 @@
 import { useFormik } from 'formik';
 import { FC } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
+import { useKeycloak } from '@react-keycloak/web';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -37,7 +38,7 @@ export type Filter = {
 type Params = {
 	params: {
 		disablePagination?: boolean;
-		paging: {
+		paging?: {
 			pageOffset?: number;
 			pageSize?: number;
 		};
@@ -69,10 +70,17 @@ type ExportFormType = {
 	attributes: AtributeOption;
 	exportAll: boolean;
 };
+/*
 
+ "params": "{\n  \"sorting\" : [ {\n    \"field\" : \"index\",\n    \"direction\" : \"ASC\"\n  } ],\n  \"filters\" : [ ],\n  \"includeFields\" : [ \"index\", \"title\", \"nameTagMetadata\", \"tokens.c\", \"index\" ],\n  \"excludeFields\" : [ ]\n}"
+
+*/
 const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 	//const pubId2 = 'uuid:2cc15a70-a7e4-11e6-b707-005056827e51';
 	const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
+	const { keycloak } = useKeycloak();
+
+	console.log({ keycloak });
 
 	const pubDetail = usePublicationDetail(pubId);
 
@@ -86,9 +94,12 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 		onSubmit: async values => {
 			console.log({ values });
 			const params: Partial<Params> = {
-				//includeFields: ['author'],
-				//sorting: [{ field: 'index', direction: 'ASC' }],
-				params: undefined,
+				params: {
+					excludeFields: [],
+					filters: [],
+					includeFields: [],
+					sorting: [],
+				},
 			};
 
 			try {
@@ -96,15 +107,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 					`exports/generate/${pubId}/${values.format.id}`,
 					{ json: params },
 				);
-				/* const response = await fetch(
-					`https://dl4dh.inqool.cz/api/exports/${pubId}/${values.format.id}`,
-					{
-						method: 'POST',
-						headers: new Headers({ 'Content-Type': 'application/json' }),
-						body: JSON.stringify(params),
-					},
-				);
- 				*/
+
 				console.log({ response });
 
 				closeModal();
@@ -114,6 +117,42 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 			closeModal();
 		},
 	});
+
+	if (!keycloak.authenticated) {
+		return (
+			<Flex
+				alignItems="center"
+				justifyContent="center"
+				overflow="visible"
+				m={5}
+			>
+				<Paper
+					bg="paper"
+					maxWidth={600}
+					minWidth={['initial', 500]}
+					overflow="visible"
+				>
+					<Box>
+						<Flex width={1} justifyContent="space-between" alignItems="center">
+							<H1 my={3}>Exportovat výběr publikací</H1>
+							<IconButton color="primary" onClick={closeModal}>
+								<MdClose size={32} />
+							</IconButton>
+						</Flex>
+						<Text>Pro export je nutné se přihlásit</Text>
+						<Button
+							variant="primary"
+							onClick={() => {
+								keycloak.login();
+							}}
+						>
+							Přihlásit se
+						</Button>
+					</Box>
+				</Paper>
+			</Flex>
+		);
+	}
 
 	const { handleSubmit, handleChange, setFieldValue, values } = formik;
 

@@ -17,12 +17,19 @@ import { Loader } from 'modules/loader';
 
 import { api } from 'api';
 
-import { useExportList, useJobsList } from 'api/exportsApi';
+import { useExportList } from 'api/exportsApi';
 
 const ExportsDashboard = () => {
 	const [activeTab, setActiveTab] = useState<'JOBS' | 'EXPORTS'>('JOBS');
+
 	const { keycloak } = useKeycloak();
 	console.log({ keycloak });
+
+	if (!keycloak.authenticated) {
+		keycloak.login();
+		return null;
+	}
+
 	return (
 		<Wrapper
 			height="100vh"
@@ -42,22 +49,11 @@ const ExportsDashboard = () => {
 						>
 							{activeTab === 'JOBS' ? 'Úlohy' : 'Exporty'}
 						</H1>
-						<Button
-							variant="text"
-							onClick={() => {
-								api().get('user/me');
-							}}
-						>
-							{'api/user/me'}
-						</Button>
-						<Button
-							variant="text"
-							onClick={() => {
-								keycloak.login();
-							}}
-						>
-							{'login'}
-						</Button>
+
+						<Text>
+							Uzivatel:{' '}
+							{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}
+						</Text>
 						<Flex>
 							<Tabs
 								tabs={[
@@ -120,7 +116,7 @@ const Exportslist = () => {
 	return (
 		<>
 			<ClassicTable
-				data={response.data ?? []}
+				data={response.data?.content ?? []}
 				rowHeight={40}
 				renderRow={row => (
 					<Flex width={1} alignItems="center" px={2}>
@@ -160,43 +156,6 @@ const Exportslist = () => {
 				`}
 			/>
 		</>
-	);
-};
-
-const JobsList = () => {
-	const response = useJobsList();
-	if (response.isLoading) {
-		return <Loader />;
-	}
-
-	return (
-		<ClassicTable
-			data={response.data?.results ?? []}
-			rowHeight={40}
-			renderRow={row => (
-				<Flex width={1} alignItems="center" px={2}>
-					<Box flex={3}>{row.jobName}</Box>
-					<Box flex={2}>
-						{row.created ? new Date(row.created).toLocaleDateString() : '--'}
-					</Box>
-					<Box flex={2}>{row.lastExecutionStatus}</Box>
-				</Flex>
-			)}
-			renderHeader={() => (
-				<Flex width={1} alignItems="center" px={2} position="sticky">
-					<Box flex={3}>Název publikace</Box>
-					<Box flex={2}>Vytvořeno</Box>
-					<Box flex={2}>Status</Box>
-				</Flex>
-			)}
-			hideEditButton
-			rowWrapperCss={css`
-				&:hover {
-					background-color: unset;
-					color: unset;
-				}
-			`}
-		/>
 	);
 };
 

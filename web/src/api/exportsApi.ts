@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+import { boolean } from 'yup';
 
 import { api } from 'api';
 
@@ -54,20 +55,19 @@ export type ExportDto = {
 	status: JobEventDto;
 };
 
-export type QueryResultsExportDto = {
-	results: ExportDto[];
-} & ExportApiResponse;
-
-export type QueryResultsJobEventDto = {
-	results: JobEventDto[];
-} & ExportApiResponse;
-
-export const useJobsList = (page = 0, pageSize = 10) =>
-	useQuery('export-list', () =>
-		api()
-			.get(`jobs/list/exporting?page=${page}&pageSize=${pageSize}`)
-			.json<QueryResultsJobEventDto>(),
-	);
+export type PageExportDto = {
+	totalPages: number;
+	totalElements: number;
+	first: boolean;
+	last: boolean;
+	pageable: unknown;
+	numberOfElements: number;
+	sort: unknown;
+	size: number;
+	content: ExportDto[];
+	number: number;
+	empty: boolean;
+};
 
 export const useExportList = () =>
-	useQuery('export-list', () => api().get(`exports`).json<ExportDto[]>());
+	useQuery('export-list', () => api().get(`exports`).json<PageExportDto>());
