@@ -96,7 +96,7 @@ const SimpleSelect = <T extends unknown>({
 					border-right: none;
 				`}
 				cursor: pointer;
-				box-shadow: 0px 4px 12px rgb(212 215 217);
+				box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.24);
 			`}
 		>
 			<Box position="relative" bg="white" width={1}>

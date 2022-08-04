@@ -13,8 +13,12 @@ import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
+import RadioButton from 'components/styled/RadioButton';
+import SelectInput from 'components/form/select/SelectInput';
 
 import { api } from 'api';
+
+import { fieldOptions } from './exportModels';
 
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
@@ -45,18 +49,25 @@ type Params = {
 		filters?: Filter[];
 		includeFields?: string[];
 		excludeFields?: string[];
+		delimiter: delimiterEnum;
 	};
 };
 
+enum delimiterEnum {
+	comma = ',',
+	tab = '\t',
+}
+
 const formatOptions: FormatOption[] = [
+	{ label: 'JSON', id: 'json' },
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'TEI', id: 'tei' },
-	{ label: 'JSON', id: 'json' },
+
 	{ label: 'CSV', id: 'csv' },
 	{ label: 'ALTO', id: 'alto' },
 ];
 
-const attributesOptions: AtributeOption[] = [];
+//const attributesOptions: AtributeOption[] = [];
 /* [
 	{ label: 'Atribút 1', id: 'att1' },
 	{ label: 'Atribút 2', id: 'att2' },
@@ -66,34 +77,36 @@ const attributesOptions: AtributeOption[] = [];
 
 type ExportFormType = {
 	format: FormatOption;
-	attributes: AtributeOption;
+	includeFields: AtributeOption[];
+	excludeFields: AtributeOption[];
+	delimiter: delimiterEnum;
 	exportAll: boolean;
 };
 
 const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
-	//const pubId2 = 'uuid:2cc15a70-a7e4-11e6-b707-005056827e51';
-	//const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
 	const { keycloak } = useKeycloak();
 
-	console.log({ keycloak });
 	const { id: pubId } = useParams<{ id: string }>();
 	//const pubDetail = usePublicationDetail(pubId);
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
 			format: formatOptions[0],
-			attributes: attributesOptions[0],
+			includeFields: [],
+			excludeFields: [],
 			exportAll: false,
+			delimiter: delimiterEnum.comma,
 		},
 
 		onSubmit: async values => {
 			console.log({ values });
 			const params: Partial<Params> = {
 				params: {
-					excludeFields: [],
+					excludeFields: values.excludeFields.map(f => f.id),
 					filters: [],
-					includeFields: [],
+					includeFields: values.includeFields.map(f => f.id),
 					sorting: [],
+					delimiter: values.delimiter,
 				},
 			};
 
@@ -103,8 +116,6 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 					{ json: params },
 				);
 
-				console.log({ response });
-
 				closeModal();
 			} catch (error) {
 				console.log({ error });
@@ -113,7 +124,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 		},
 	});
 
-	if (!keycloak.authenticated) {
+	/* if (!keycloak.authenticated) {
 		return (
 			<Flex
 				alignItems="center"
@@ -147,7 +158,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 				</Paper>
 			</Flex>
 		);
-	}
+	} */
 
 	const { handleSubmit, handleChange, setFieldValue, values } = formik;
 
@@ -172,13 +183,15 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text fontSize="sm">ID: {pubId}</Text>
+						<Text fontSize="sm">
+							ID publikace: <b>{pubId}</b>
+						</Text>
 						<Text my={2} mt={4}>
 							Formát
 						</Text>
 						<SimpleSelect
 							formikId="format"
-							mb={3}
+							mb={2}
 							options={formatOptions}
 							nameFromOption={item => item?.label ?? 'unknown'}
 							keyFromOption={item => item?.id ?? 'unknown'}
@@ -188,21 +201,98 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 							width={1}
 							bg="white"
 						/>
-						<Text my={2} mt={4}>
-							Atributy
+
+						<Text fontSize="xl" mt={3}>
+							Parametry
 						</Text>
-						<SimpleSelect
-							formikId="attributes"
-							mb={3}
-							options={attributesOptions}
-							nameFromOption={item => item?.label ?? 'unknown'}
-							keyFromOption={item => item?.id ?? 'unknown'}
-							value={values.attributes}
-							setFieldValue={setFieldValue}
-							variant="outlined"
-							width={1}
-							bg="white"
-						/>
+						<Divider my={3} />
+						{values.format.id === 'csv' && (
+							<Flex
+								mb={3}
+								alignItems="center"
+								justifyContent="space-between"
+								mr={2}
+							>
+								<Text my={2}>Rozdělovač</Text>
+								<RadioButton
+									//mr={5}
+									label="Čárka"
+									name="divider-radio-grp"
+									id="radio-comma"
+									checked={values.delimiter === delimiterEnum.comma}
+									onChange={() => {
+										setFieldValue('delimiter', delimiterEnum.comma);
+									}}
+								/>
+								<RadioButton
+									label="Tabulátor"
+									name="divider-radio-grp"
+									id="radio-tab"
+									checked={values.delimiter === delimiterEnum.tab}
+									onChange={() => {
+										setFieldValue('delimiter', delimiterEnum.tab);
+									}}
+								/>
+							</Flex>
+						)}
+						{values.format.id !== 'text' && values.format.id !== 'alto' && (
+							<>
+								<Text my={2}>Zahrnout pole</Text>
+								<SelectInput
+									key="includeFields"
+									id="includeFields"
+									placeholder="Zvolte pole"
+									options={fieldOptions}
+									nameFromOption={item => item?.label ?? ''}
+									labelFromOption={item => item?.label ?? ''}
+									keyFromOption={item => item?.id ?? ''}
+									value={values.includeFields}
+									onSetValue={setFieldValue}
+									multiselect
+									hideInlineSelectItems
+								/>
+								{/* <SimpleSelect
+									formikId="includeFields"
+									mb={3}
+									options={fieldOptions}
+									nameFromOption={item => item?.label ?? 'unknown'}
+									keyFromOption={item => item?.id ?? 'unknown'}
+									value={values.includeFields[0]}
+									setFieldValue={setFieldValue}
+									variant="outlined"
+									width={1}
+									bg="white"
+								/> */}
+								<Text my={2} mt={4}>
+									Nezahrnout pole
+								</Text>
+								{/* <SimpleSelect
+									formikId="excludeFields"
+									mb={3}
+									options={fieldOptions}
+									nameFromOption={item => item?.label ?? 'unknown'}
+									keyFromOption={item => item?.id ?? 'unknown'}
+									value={values.excludeFields}
+									setFieldValue={setFieldValue}
+									variant="outlined"
+									width={1}
+									bg="white"
+								/> */}
+								<SelectInput
+									key="excludeFields"
+									id="excludeFields"
+									placeholder="Zvolte pole"
+									options={fieldOptions}
+									nameFromOption={item => item?.label ?? ''}
+									labelFromOption={item => item?.label ?? ''}
+									keyFromOption={item => item?.id ?? ''}
+									value={values.excludeFields}
+									onSetValue={setFieldValue}
+									multiselect
+									hideInlineSelectItems
+								/>
+							</>
+						)}
 						<Box mt={4}>
 							<Checkbox
 								id="exportAll"
