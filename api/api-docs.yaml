@@ -1,0 +1,628 @@
+openapi: 3.0.1
+info:
+  title: DL4DH Feeder APIs
+  description: API endpoints
+  version: 0.2.1
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/search:
+    post:
+      tags:
+      - search-api
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FiltersDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SearchDto'
+  /api/search/hint:
+    post:
+      tags:
+      - search-api
+      operationId: hint
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: nameTagType
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - NUMBERS_IN_ADDRESSES
+          - GEOGRAPHICAL_NAMES
+          - INSTITUTIONS
+          - MEDIA_NAMES
+          - NUMBER_EXPRESSIONS
+          - ARTIFACT_NAMES
+          - PERSONAL_NAMES
+          - TIME_EXPRESSIONS
+          - COMPLEX_PERSON_NAMES
+          - COMPLEX_TIME_EXPRESSION
+          - COMPLEX_ADDRESS_EXPRESSION
+          - COMPLEX_BIBLIO_EXPRESSION
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/exports/generate/{id}/{format}:
+    post:
+      tags:
+      - export-api
+      operationId: create
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: format
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Export'
+  /api/zoomify/{uuid}/{group}/{coords}.jpg:
+    get:
+      tags:
+      - zoomify-api
+      operationId: tile
+      parameters:
+      - name: group
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: coords
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+  /api/zoomify/{uuid}/ImageProperties.xml:
+    get:
+      tags:
+      - zoomify-api
+      operationId: properties
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+  /api/user/me:
+    get:
+      tags:
+      - user-api
+      operationId: me
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CurrentUserDto'
+  /api/user/logout:
+    get:
+      tags:
+      - user-api
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+  /api/item/{uuid}:
+    get:
+      tags:
+      - item-api
+      operationId: item
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/item/{uuid}/thumb:
+    get:
+      tags:
+      - item-api
+      operationId: thumb
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+  /api/item/{uuid}/streams:
+    get:
+      tags:
+      - item-api
+      operationId: streams
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/item/{uuid}/streams/{stream}:
+    get:
+      tags:
+      - item-api
+      operationId: streamMods
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: stream
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /api/item/{uuid}/children:
+    get:
+      tags:
+      - item-api
+      operationId: children
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/info:
+    get:
+      tags:
+      - info-api
+      operationId: info
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/InfoDto'
+  /api/exports:
+    get:
+      tags:
+      - export-api
+      operationId: getAll
+      parameters:
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          minimum: 0
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          minimum: 1
+          type: integer
+          default: 10
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          default:
+          - "created,DESC"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageExport'
+  /api/exports/download/{id}:
+    get:
+      tags:
+      - export-api
+      operationId: download
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+components:
+  schemas:
+    FiltersDto:
+      type: object
+      properties:
+        query:
+          type: string
+        availability:
+          type: string
+          enum:
+          - PUBLIC
+          - PRIVATE
+          - ALL
+        models:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - MONOGRAPH
+            - PERIODICAL
+            - MAP
+            - GRAPHICS
+            - ARCHIVAL
+            - MANUSCRIPT
+            - SHEETMUSIC
+        keywords:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        authors:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        languages:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        collections:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        from:
+          type: integer
+          format: int32
+        to:
+          type: integer
+          format: int32
+        sort:
+          type: string
+          enum:
+          - TITLE_ASC
+          - CREATED_DESC
+          - DATE_ASC
+          - DATE_DESC
+        enrichment:
+          type: string
+          enum:
+          - ENRICHED
+          - NOT_ENRICHED
+          - ALL
+        nameTagFilters:
+          type: array
+          items:
+            $ref: '#/components/schemas/NameTagFilterDto'
+        start:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        queryEscaped:
+          type: string
+    NameTagFilterDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - NUMBERS_IN_ADDRESSES
+          - GEOGRAPHICAL_NAMES
+          - INSTITUTIONS
+          - MEDIA_NAMES
+          - NUMBER_EXPRESSIONS
+          - ARTIFACT_NAMES
+          - PERSONAL_NAMES
+          - TIME_EXPRESSIONS
+          - COMPLEX_PERSON_NAMES
+          - COMPLEX_TIME_EXPRESSION
+          - COMPLEX_ADDRESS_EXPRESSION
+          - COMPLEX_BIBLIO_EXPRESSION
+        operator:
+          type: string
+          enum:
+          - EQUAL
+          - NOT_EQUAL
+        values:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+    PublicationDto:
+      required:
+      - authors
+      - availability
+      - date
+      - enriched
+      - model
+      - pid
+      - rootTitle
+      - title
+      type: object
+      properties:
+        model:
+          type: string
+        availability:
+          type: string
+        date:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        title:
+          type: string
+        pid:
+          type: string
+        rootTitle:
+          type: string
+        enriched:
+          type: boolean
+    PublicationsListDto:
+      required:
+      - docs
+      - numFound
+      - start
+      type: object
+      properties:
+        numFound:
+          type: integer
+          format: int64
+        start:
+          type: integer
+          format: int64
+        docs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicationDto'
+    SearchDto:
+      type: object
+      properties:
+        documents:
+          $ref: '#/components/schemas/PublicationsListDto'
+        availableFilters:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+              format: int32
+        availableNameTagFilters:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+              format: int32
+    Export:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        publicationId:
+          type: string
+        created:
+          type: string
+        status:
+          type: string
+          enum:
+          - CREATED
+          - COMPLETED
+          - STARTING
+          - STARTED
+          - STOPPING
+          - STOPPED
+          - FAILED
+          - ABANDONED
+          - UNKNOWN
+    CurrentUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    FeederVersionDto:
+      type: object
+      properties:
+        version:
+          type: string
+    InfoDto:
+      type: object
+      properties:
+        feeder:
+          $ref: '#/components/schemas/FeederVersionDto'
+        krameriusPlus:
+          $ref: '#/components/schemas/KrameriusPlusVersionDto'
+        kramerius:
+          $ref: '#/components/schemas/KrameriusVersionDto'
+    KrameriusPlusVersionDto:
+      type: object
+      properties:
+        version:
+          type: string
+        timeOfLastBuild:
+          type: string
+    KrameriusVersionDto:
+      type: object
+      properties:
+        version:
+          type: string
+        name:
+          type: string
+        name_en:
+          type: string
+        logo:
+          type: string
+    PageExport:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Export'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean

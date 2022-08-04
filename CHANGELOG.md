@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.3.0
+
+- user authentication with keycloak
+- exports enriched publications for authenticated users
+- language codes to names
+- year filter - get minimum and maximum from available filters
+- nametag categories names
+- improved dialog for nametag filters
+- graph axis x correction
+- zoomify animation during rotation
+- improved streams dialog design
+- JSON stream for item and children
+- implementation of publication's structure page for periodicals 
+- openapi documentation version, title and url fix behind a reverse proxy
+- test for text extraction from ALTO
+- UX: static image before loading tiles
+- FIX: side panels hiding
+- FIX: zoom and zoom buttons
+
 ## v0.2.1
 
 - facets for enrichment and years

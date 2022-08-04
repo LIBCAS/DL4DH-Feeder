@@ -40,7 +40,7 @@ public class FiltersDto {
     }
 
     public String getQueryEscaped() {
-        return query.replaceAll(":","\\\\:");
+        return query.replaceAll("\"","\\\\\"");
     }
 
     public boolean useOnlyEnriched() {
@@ -51,7 +51,7 @@ public class FiltersDto {
     public String toQuery() {
         List<String> filters = new ArrayList<>();
         if (!query.isEmpty()) {
-            filters.add("dc.title:"+getQueryEscaped()+"*");
+            filters.add("dc.title:\""+getQueryEscaped()+"*\"");
         }
         if (nameTagFilters != null) {
             for (NameTagFilterDto nameTagFilter : nameTagFilters) {

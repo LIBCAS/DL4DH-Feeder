@@ -18,7 +18,7 @@ public class NameTagFilterDto {
     public String toFilter() {
         return (operator == FilterOperatorEnum.EQUAL ? "" : "NOT ") + "(" +
                 values.stream()
-                    .map(v -> type.getSolrField()+":\""+v+"\"")
+                    .map(v -> type.getSolrField()+":\""+v.replaceAll("\"","\\\\\"")+"\"")
                     .collect(Collectors.joining(" OR "))
                 + ")";
     }
