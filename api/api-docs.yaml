@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.2.1
+  version: 0.3.1
 servers:
 - url: http://localhost:8080
   description: Generated server url
