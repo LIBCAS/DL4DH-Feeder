@@ -124,7 +124,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 		},
 	});
 
-	/* if (!keycloak.authenticated) {
+	if (!keycloak.authenticated) {
 		return (
 			<Flex
 				alignItems="center"
@@ -158,7 +158,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 				</Paper>
 			</Flex>
 		);
-	} */
+	}
 
 	const { handleSubmit, handleChange, setFieldValue, values } = formik;
 
