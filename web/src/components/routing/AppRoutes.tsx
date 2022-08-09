@@ -1,7 +1,11 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { isEqual } from 'lodash';
 
 import { Loader } from 'modules/loader';
+
+import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
+import { useSearchContext } from 'hooks/useSearchContext';
 
 const NotFound = React.lazy(() => import('modules/notFound'));
 //const Authorize = React.lazy(() => import('modules/public/auth'));
@@ -19,6 +23,21 @@ const ExportsDashboard = React.lazy(
 );
 
 const AppRoutes: React.FC = () => {
+	const { search } = useLocation();
+	const parsed = useSanitizeSearchQuery(search);
+	const { state, dispatch } = useSearchContext();
+	useEffect(() => {
+		if (!isEqual(parsed, state.searchQuery)) {
+			//console.log('not equal .. dispatching');
+			dispatch?.({
+				type: 'setSearchQuery',
+				searchQuery: {
+					...parsed,
+				},
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [parsed]);
 	return (
 		<Routes>
 			<Route

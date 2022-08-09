@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Pagination from 'components/table/Pagination';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -28,11 +29,17 @@ type Props = {
 
 const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 	const { state, dispatch } = useSearchContext();
+	const [sp, setSp] = useSearchParams();
 
 	const changePage = useCallback(
-		(page: number) => dispatch?.({ type: 'setPage', page }),
-		[dispatch],
+		(page: number) => {
+			sp.set('page', page.toString());
+			setSp(sp);
+		},
+		[sp, setSp],
 	);
+
+	const currentPage = parseInt(sp.get('page') ?? '1') ?? 1;
 
 	const setPageLimit = useCallback(
 		(pageSize: number) => dispatch?.({ type: 'setPageSize', pageSize }),
@@ -70,7 +77,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 					bg="white"
 				>
 					<Pagination
-						page={state.page}
+						page={currentPage}
 						changePage={changePage}
 						changeLimit={setPageLimit}
 						pageLimit={state.pageSize}

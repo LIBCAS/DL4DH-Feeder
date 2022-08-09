@@ -341,6 +341,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	const handleUpdateFilter = useCallback(
 		(type: string) => (key: string) => {
 			searchParams.append(type, key);
+			searchParams.delete('page');
 			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],
@@ -353,6 +354,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				if (nameTagQuery) {
 					searchParams.append(nameTagQuery.name, nameTagQuery.value);
 				}
+				searchParams.delete('page');
 				setSearchParams(searchParams);
 			},
 		[setSearchParams, searchParams],
@@ -361,6 +363,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	const handleChangeFilter = useCallback(
 		(type: string) => (key: string) => {
 			searchParams.set(type, key);
+			searchParams.delete('page');
 			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],
@@ -494,8 +497,8 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 	);
 };
 
-export default React.memo(SearchResultLeftPanel, (prevProps, nextProps) =>
+/* export default React.memo(SearchResultLeftPanel, (prevProps, nextProps) =>
 	isEqual(prevProps, nextProps),
-);
+); */
 
-//export default SearchResultLeftPanel;
+export default SearchResultLeftPanel;

@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { MdArrowBack, MdMenu } from 'react-icons/md';
 import Dialog from '@reach/dialog';
 
+import IconButton from 'components/styled/IconButton';
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import Button, { NavLinkButton } from 'components/styled/Button';
@@ -64,14 +65,9 @@ const Header = () => {
 				>
 					{!isMobile && (
 						<Flex flexShrink={0} width={300} color="headerColor">
-							<Button
-								onClick={() => nav(-1)}
-								variant="text"
-								pr={1}
-								color="headerColor"
-							>
+							<IconButton onClick={() => nav(-1)} p={1} color="headerColor">
 								<MdArrowBack size={22} />
-							</Button>
+							</IconButton>
 							<Button
 								onClick={() => nav('/search')}
 								variant="text"
