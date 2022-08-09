@@ -1,30 +1,71 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback, useState } from 'react';
+import {
+	FC,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 import { css } from '@emotion/react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
-import { Flex } from 'components/styled';
+import { DetailsCell, Flex } from 'components/styled';
 import Pagination from 'components/table/Pagination';
 import Divider from 'components/styled/Divider';
 import QuerySearchInput from 'components/search/QuerySearchInput';
+import { H2 } from 'components/styled/Text';
 
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
+import { Loader } from 'modules/loader';
+import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
 
-import { useSearchPublications } from 'api/publicationsApi';
+import {
+	usePublicationChildren,
+	usePublicationDetail,
+	useSearchPublications,
+} from 'api/publicationsApi';
+import { PublicationDto } from 'api/models';
+
+import useHeaderHeight from 'utils/useHeaderHeight';
+
+import { PubCtx } from '../ctx/pub-ctx';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
 		const [query, setQuery] = useState<string | undefined>('');
+		const { id, id2 } = useParams<{ id: string; id2: string }>();
+		const nav = useNavigate();
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
 		const handleQueryChange = (query: string) => setQuery(query);
+		const [publicOnly, setPublicOnly] = useState<boolean>(true);
+		const [sp, setSp] = useSearchParams();
+		const [uuid, setUUID] = useState('');
+		const [step, setStep] = useState(0);
+		const headerHeight = useHeaderHeight();
+		const onSelect = (uuid: string) => {
+			setUUID(uuid);
+		};
+
+		console.log({ params: useParams() });
+
+		const handleSecond = () => {
+			//sp.set('secondPublication', uuid);
+			//setSp(sp);
+			setStep(1);
+			//nav(`/multiview/${id}/${uuid}`);
+			//onClose();
+		};
 
 		const { data, count, isLoading, hasMore } = useSearchPublications({
 			start: page * pageLimit,
 			pageSize: pageLimit,
+			availability: publicOnly ? 'PUBLIC' : 'ALL',
 			query,
 		});
 
@@ -39,9 +80,10 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					right={variant == 'left' ? 'initial' : 0}
 					left={variant == 'right' ? 'initial' : 0}
 					top={-8}
-					width={700}
-					height="calc(100vh - 60px)"
+					width="50vw"
+					height={`calc(100vh - ${headerHeight}px)`}
 					zIndex={3}
+					overflow="auto"
 					css={css`
 						${variant === 'right' &&
 						css`
@@ -56,31 +98,47 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						box-shadow: -10px 0px 10px 3px rgba(0, 0, 0, 0.1);
 					`}
 				>
-					<Flex px={2}>
-						<QuerySearchInput onQueryUpdate={handleQueryChange} />
-					</Flex>
-					<Flex height={'70vh'} width={1} position="relative">
-						<SplitScreenView
-							data={data}
-							isLoading={isLoading}
-							variant={variant}
-						/>
-					</Flex>
-					<Divider my={3} />
-					<Pagination
-						page={page}
-						changePage={changePage}
-						changeLimit={limit => setPageLimit(limit)}
-						pageLimit={pageLimit}
-						totalCount={count}
-						hasMore={hasMore}
-						offset={page * pageLimit}
-						loading={isLoading}
-					/>
-					<Divider my={3} />
+					{step === 0 ? (
+						<>
+							<Flex px={2}>
+								<QuerySearchInput
+									onQueryUpdate={handleQueryChange}
+									publicOnly={publicOnly}
+									setPublicOnly={setPublicOnly}
+								/>
+							</Flex>
+							<Flex height={'70vh'} width={1} position="relative">
+								<SplitScreenView
+									data={data}
+									isLoading={isLoading}
+									variant={variant}
+									onSelect={onSelect}
+								/>
+							</Flex>
+							<Divider mt={2} />
+
+							<Pagination
+								page={page}
+								changePage={changePage}
+								changeLimit={limit => setPageLimit(limit)}
+								pageLimit={pageLimit}
+								totalCount={count}
+								hasMore={hasMore}
+								offset={page * pageLimit}
+								loading={isLoading}
+							/>
+
+							<Divider mb={2} />
+						</>
+					) : (
+						<ChoosePeriodical id={uuid} />
+					)}
 					<Flex justifyContent="space-between" alignItems="center">
-						<Button variant="primary" onClick={onClose}>
+						<Button variant="primary" onClick={handleSecond}>
 							Potvrdit výběr
+						</Button>
+						<Button variant="outlined" onClick={() => setStep(0)}>
+							Zpět
 						</Button>
 						<Button variant="outlined" onClick={onClose}>
 							Zavřít
@@ -92,6 +150,72 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	};
 
 export default PubChooseSecond;
+
+const ChoosePeriodical: FC<{ id: string }> = ({ id }) => {
+	const headerHeight = useHeaderHeight();
+	const theme = useTheme();
+	const childrenResponse = usePublicationChildren(id ?? '');
+	const detail = usePublicationDetail(id ?? '');
+	const children = childrenResponse.data ?? [];
+	const [page, setPageUrlParam] = useSearchParams();
+	const pubCtx = useContext(PubCtx);
+	const nav = useNavigate();
+	const [rightCollapsed, setRightCollapsed] = useState(false);
+	const [leftCollapsed, setLeftCollapsed] = useState(false);
+
+	const pageId = useMemo(
+		() => page.get('page') ?? children[0]?.pid ?? undefined,
+		[page, children],
+	);
+
+	/* useEffect(() => {
+		const childIndex = pages.findIndex(p => p.pid === pageId);
+		pubCtx.setCurrentPage({
+			uuid: pageId ?? '',
+			childIndex,
+			prevPid: pages[childIndex - 1]?.pid,
+			nextPid: pages[childIndex + 1]?.pid,
+		});
+		pubCtx.setPublicationChildren(pages);
+
+		if (detail?.data) {
+			const context = detail.data?.context?.flat() ?? [];
+			pubCtx.setPublication({
+				...detail.data,
+				context,
+			});
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pages, pageId]); */
+
+	/* useEffect(() => {
+		if (childrenResponse.isSuccess && !childrenResponse.data?.[0]?.datanode) {
+			nav(`/periodical/${id}`, { replace: true });
+		}
+	}, [childrenResponse.data, nav, childrenResponse.isSuccess, id]); */
+
+	if (childrenResponse.isLoading || detail.isLoading) {
+		return <Loader />;
+	}
+	/* if (!page.get('page')) {
+		page.append('page', children[0]?.pid ?? 'undefined');
+		setPageUrlParam(page, { replace: true });
+	} */
+	return (
+		<>
+			{children?.[0].datanode ? (
+				<>datanode</>
+			) : (
+				<>
+					<H2>Vyberte se seznamu:</H2>
+
+					<PeriodicalTiles data={children} onSelect={uuid => alert(uuid)} />
+				</>
+			)}
+		</>
+	);
+};
 
 {
 	/*

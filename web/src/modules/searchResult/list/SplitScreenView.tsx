@@ -41,7 +41,8 @@ const SplitScreenView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
 	variant: 'left' | 'right';
-}> = ({ data, isLoading, variant }) => {
+	onSelect: (uuid: string) => void;
+}> = ({ data, isLoading, variant, onSelect }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
 		debounce: 200,
 	});
@@ -87,7 +88,10 @@ const SplitScreenView: FC<{
 					pl={[2, 3]}
 					name={`radio-${variant}`}
 					checked={selectedRow === rowIndex}
-					onChange={() => setSelectedRow(rowIndex)}
+					onChange={() => {
+						setSelectedRow(rowIndex);
+						onSelect(row.pid);
+					}}
 					size="sm"
 					bg={selectedRow === rowIndex ? 'enriched' : 'transparent'}
 				/>

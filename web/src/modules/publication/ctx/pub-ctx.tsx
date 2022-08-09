@@ -1,21 +1,12 @@
-import React, {
-	createContext,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 
-import {
-	PublicationChild,
-	PublicationDetail,
-	PublicationDto,
-} from 'api/models';
+import { PublicationChild, PublicationDetail } from 'api/models';
 
 import Store from 'utils/Store';
 
 const STORE_PUB_CHILDREN = 'pub-children';
 const STORE_CURRENT_PAGE = 'pub-current-page';
+const STORE_CURRENT_PAGE_SECOND = 'pub-current-page-second';
 
 type CurrentPage = {
 	uuid: string;
@@ -35,7 +26,11 @@ type PubCtxType = {
 	>;
 	publicationChildren: PublicationChild[] | null;
 	currentPage: CurrentPage | null;
+	currentPageOfSecond: CurrentPage | null;
 	setCurrentPage: React.Dispatch<React.SetStateAction<CurrentPage | null>>;
+	setCurrentPageOfSecond: React.Dispatch<
+		React.SetStateAction<CurrentPage | null>
+	>;
 	//	getCurrentPage: () => CurrentPage | null;
 };
 
@@ -58,6 +53,13 @@ function usePublicationCtx() {
 		JSON.parse(
 			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
+		) as CurrentPage | null,
+	);
+
+	const [currentPageOfSecond, setCurrentPageOfSecond] = useState(
+		JSON.parse(
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+			(Store.get(STORE_CURRENT_PAGE_SECOND) || 'null') as string,
 		) as CurrentPage | null,
 	);
 
@@ -86,7 +88,8 @@ function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			//		getCurrentPage,
+			currentPageOfSecond,
+			setCurrentPageOfSecond,
 		}),
 		[
 			publication,
@@ -95,7 +98,8 @@ function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			//		getCurrentPage,
+			currentPageOfSecond,
+			setCurrentPageOfSecond,
 		],
 	);
 	return ctx;

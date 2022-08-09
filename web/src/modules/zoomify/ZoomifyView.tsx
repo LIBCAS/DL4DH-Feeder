@@ -46,7 +46,8 @@ const MapWrapper: FC<{
 	isLoading?: boolean;
 	imgWidth: number;
 	imgHeight: number;
-}> = ({ imgId, imgWidth, imgHeight }) => {
+	isSecond?: boolean;
+}> = ({ imgId, imgWidth, imgHeight, isSecond }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const dragBoxRef = useRef<DragBox | null>(null);
@@ -176,6 +177,7 @@ const MapWrapper: FC<{
 
 			<ZoomifyToolbar
 				page={imgId ?? ''}
+				isSecond={isSecond}
 				onUpdateRotation={setRotation}
 				onZoomIn={() => {
 					const currentZoom = map.current?.getView().getResolution() ?? 1;
@@ -210,8 +212,9 @@ const ZoomifyView = React.forwardRef<
 	{
 		id?: string;
 		isLoading?: boolean;
+		isSecond?: boolean;
 	}
->(({ id }, fullscreenRef) => {
+>(({ id, isSecond }, fullscreenRef) => {
 	const imgProps = useImageProperties(id ?? '');
 
 	const counter = useRef(0);
@@ -240,6 +243,7 @@ const ZoomifyView = React.forwardRef<
 				imgId={id}
 				imgWidth={imgWidth}
 				imgHeight={imgHeight}
+				isSecond={isSecond}
 			/>
 		</Wrapper>
 	);

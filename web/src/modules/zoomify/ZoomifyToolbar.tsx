@@ -58,6 +58,7 @@ const ToolButton: FC<{
 type Props = {
 	page: string;
 	onUpdateRotation: Dispatch<SetStateAction<number>>;
+	isSecond?: boolean;
 	onDragBoxModeEnabled: () => void;
 	onZoomIn: () => void;
 	onZoomOut: () => void;
@@ -69,10 +70,14 @@ const ZoomifyToolbar: FC<Props> = ({
 	onDragBoxModeEnabled,
 	onZoomIn,
 	onZoomOut,
+	isSecond,
 }) => {
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 	const pbctx = useContext(PubCtx);
 	const [pageUrl, setPageUrl] = useSearchParams();
+
+	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
+	const pageParamName = isSecond ? 'page-secondary' : 'page';
 
 	return (
 		<Flex position="absolute" width={1} bottom={100} justifyContent="center">
@@ -90,7 +95,7 @@ const ZoomifyToolbar: FC<Props> = ({
 			>
 				<ToolButton
 					onClick={() => {
-						pageUrl.set('page', pbctx.currentPage?.prevPid ?? page);
+						pageUrl.set(pageParamName, currentPage?.prevPid ?? page);
 						setPageUrl(pageUrl);
 					}}
 					Icon={
@@ -142,7 +147,7 @@ const ZoomifyToolbar: FC<Props> = ({
 
 				<ToolButton
 					onClick={() => {
-						pageUrl.set('page', pbctx.currentPage?.nextPid ?? page);
+						pageUrl.set(pageParamName, currentPage?.nextPid ?? page);
 						setPageUrl(pageUrl);
 					}}
 					Icon={

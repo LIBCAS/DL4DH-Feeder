@@ -45,9 +45,7 @@ const CircleButton: FC<{
 			justifyContent="center"
 			onClick={() => changePage(page)}
 			css={css`
-				background-color: ${active ? theme.colors.primary : theme.colors.white};
-				border-radius: 0px;
-				border: 1px solid ${active ? theme.colors.primary : 'white'};
+				background-color: ${active ? theme.colors.primary : 'transparent'};
 				font-weight: ${active ? 'bold' : 'normal'};
 				color: ${active ? 'white' : 'black'};
 				cursor: pointer;
@@ -158,12 +156,12 @@ const Pagination: FC<Props> = ({
 						onClick={() => changePage(page - 1)}
 						css={css`
 							border-radius: 0px;
-							border: 1px solid white;
+
 							cursor: ${page === 1 ? 'initial' : 'pointer'};
 							filter: ${page === 1 ? 'opacity(0.5)' : 'none'};
 							&:hover {
 								background-color: ${page === 1
-									? 'white'
+									? 'transparent'
 									: theme.colors.lightGrey};
 							}
 						`}
@@ -229,8 +227,6 @@ const Pagination: FC<Props> = ({
 						m={0}
 						css={css`
 							cursor: ${!hasMore ? 'not-allowed' : 'pointer'};
-							border-radius: 0px;
-							border: 1px solid white;
 							filter: ${!hasMore ? 'opacity(0.5)' : 'none'};
 							&:hover {
 								background-color: ${theme.colors.lightGrey};

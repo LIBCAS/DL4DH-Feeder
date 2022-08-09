@@ -14,6 +14,9 @@ const NotFound = React.lazy(() => import('modules/notFound'));
 const Homepage = React.lazy(() => import('modules/public/homepage'));
 const Dashboard = React.lazy(() => import('modules/public/homepage/dashboard'));
 const PublicationView = React.lazy(() => import('modules/publication/detail'));
+const MultiView = React.lazy(
+	() => import('modules/publication/detail/MultiView'),
+);
 const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
 const About = React.lazy(() => import('modules/about'));
@@ -109,6 +112,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<PublicationView />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/multiview/:id1/:id2"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<MultiView />
 					</React.Suspense>
 				}
 			/>
