@@ -23,7 +23,7 @@
 	<description/>
 
 	<properties>
-		<revision>0.2.0</revision>
+		<revision>0.2.1</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j2.version>2.16.0</log4j2.version>
@@ -51,12 +51,6 @@
 				<groupId>org.mapstruct</groupId>
 				<artifactId>mapstruct</artifactId>
 				<version>${mapstruct.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-ui</artifactId>
-				<version>1.5.8</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

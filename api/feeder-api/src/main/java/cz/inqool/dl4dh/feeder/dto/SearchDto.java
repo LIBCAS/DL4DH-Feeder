@@ -10,4 +10,5 @@ import java.util.Map;
 public class SearchDto {
     private PublicationsListDto documents;
     private Map<String, Map<String, Integer>> availableFilters;
+    private Map<String, Map<String, Integer>> availableNameTagFilters;
 }

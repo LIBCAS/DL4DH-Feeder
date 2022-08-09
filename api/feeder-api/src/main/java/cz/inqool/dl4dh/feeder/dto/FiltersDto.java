@@ -2,6 +2,7 @@ package cz.inqool.dl4dh.feeder.dto;
 
 import cz.inqool.dl4dh.feeder.enums.AvailabilityEnum;
 import cz.inqool.dl4dh.feeder.enums.DocumentModelEnum;
+import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
 import cz.inqool.dl4dh.feeder.enums.FiltersSortEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class FiltersDto {
     private FiltersSortEnum sort = FiltersSortEnum.TITLE_ASC;
 
     //K+ filters
+    private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
     private List<NameTagFilterDto> nameTagFilters;
 
     //Pagination
@@ -38,13 +40,18 @@ public class FiltersDto {
     }
 
     public String getQueryEscaped() {
-        return query.replaceAll(":","\\\\:");
+        return query.replaceAll("\"","\\\\\"");
+    }
+
+    public boolean useOnlyEnriched() {
+        return (nameTagFilters != null && !nameTagFilters.isEmpty()) ||
+                (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED));
     }
 
     public String toQuery() {
         List<String> filters = new ArrayList<>();
         if (!query.isEmpty()) {
-            filters.add("dc.title:"+getQueryEscaped()+"*");
+            filters.add("dc.title:\""+getQueryEscaped()+"*\"");
         }
         if (nameTagFilters != null) {
             for (NameTagFilterDto nameTagFilter : nameTagFilters) {

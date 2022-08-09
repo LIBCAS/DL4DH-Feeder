@@ -1,15 +1,7 @@
 package cz.inqool.dl4dh.feeder.api;
 
-import cz.inqool.dl4dh.feeder.dto.KrameriusPlusDocumentDto;
-import cz.inqool.dl4dh.feeder.dto.KrameriusPlusDocumentNameTagEntityDto;
-import cz.inqool.dl4dh.feeder.dto.KrameriusPlusDocumentPageDto;
-import cz.inqool.dl4dh.feeder.dto.SolrObjectDto;
-import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -57,8 +49,8 @@ public class ItemApi {
     }
 
     @GetMapping("/{uuid}/streams/{stream}")
-    public @ResponseBody ResponseEntity<ByteArrayResource> streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
+    public @ResponseBody ByteArrayResource streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
         return kramerius.get()
-                .uri("/item/"+uuid+"/streams/"+stream).retrieve().toEntity(ByteArrayResource.class).block();
+                .uri("/item/"+uuid+"/streams/"+stream).retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 }

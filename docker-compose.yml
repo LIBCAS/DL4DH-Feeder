@@ -15,10 +15,30 @@ services:
     labels:
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
+    expose:
+      - 5432
     deploy:
       resources:
         limits:
           memory: 300m
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.1
+    command: start-dev
+    restart: always
+    networks:
+      - backend
+    labels:
+      app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
+      app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
+    deploy:
+      resources:
+        limits:
+          memory: 600m
+    ports:
+      - "8180:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
   feeder:
     build:
       context: .
@@ -32,6 +52,9 @@ services:
           memory: 500m
     volumes:
       - solr_data:/var/solr
+    environment:
+      KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
+      KEYCLOAK_SSL-REQUIRED: none
     labels:
       kompose.volume.size: "2Gi"
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
@@ -62,13 +85,25 @@ services:
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
     ports:
       - "80:80"
+  solr_initializer:
+    image: alpine
+    container_name: solr-initializer
+    restart: "no"
+    entrypoint: |
+      /bin/sh -c "chown -R 8983:8983 /var/solr"
+    volumes:
+      - solr_data:/var/solr
   solr:
     build: ./solr
     image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
+    depends_on:
+      - solr_initializer
     deploy:
       resources:
         limits:
-          memory: 500m
+          memory: 1024m
+    environment:
+      SOLR_PORT: 8983 
     networks:
       - backend
     volumes:

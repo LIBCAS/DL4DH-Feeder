@@ -61,7 +61,8 @@ const Table2 = <T extends TableItem>({
 			height={rowHeight ?? 'unset'}
 			css={css`
 				min-width: ${minWidth}px;
-				border-bottom: 1px solid ${theme.colors.primary};
+				border-bottom: ${rowIndex + 1 === data.length ? 0 : 1}px solid
+					${theme.colors.primary};
 				background-color: ${rowIndex % 2
 					? theme.colors.tableRowEven
 					: theme.colors.tableRow};

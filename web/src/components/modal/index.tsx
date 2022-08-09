@@ -29,7 +29,7 @@ const ModalDialog: FC<Props> = ({ label, control, children, customCss }) => {
 					customCss ??
 					(() => css`
 						padding: 0 !important;
-						overflow: hidden;
+						/* overflow: hidden; */
 						min-width: ${theme.breakpoints[0]};
 
 						@media (max-width: ${theme.breakpoints[0]}) {

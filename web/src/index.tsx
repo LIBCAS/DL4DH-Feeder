@@ -1,8 +1,11 @@
 import '@reach/dialog/styles.css';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+
+import keycloak from 'auth/KeycloakService';
 
 import App from './App';
 import './index.css';
@@ -16,10 +19,12 @@ const queryClient = new QueryClient({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<App />
-			<ReactQueryDevtools />
-		</QueryClientProvider>
+		<ReactKeycloakProvider authClient={keycloak}>
+			<QueryClientProvider client={queryClient}>
+				<App />
+				<ReactQueryDevtools />
+			</QueryClientProvider>
+		</ReactKeycloakProvider>
 	</React.StrictMode>,
 	document.getElementById('root'),
 );
