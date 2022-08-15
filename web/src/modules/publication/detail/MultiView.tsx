@@ -42,15 +42,20 @@ const MultiView = () => {
 	const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
-	const pageId = useMemo(
+	const pageId1 = useMemo(
 		() => sp.get('page') ?? pages1[0]?.pid ?? undefined,
 		[sp, pages1],
 	);
 
+	const pageId2 = useMemo(
+		() => sp.get('page2') ?? pages2[0]?.pid ?? undefined,
+		[sp, pages2],
+	);
+
 	useEffect(() => {
-		const childIndex = pages1.findIndex(p => p.pid === pageId);
+		const childIndex = pages1.findIndex(p => p.pid === pageId1);
 		pubCtx.setCurrentPage({
-			uuid: pageId ?? '',
+			uuid: pageId1 ?? '',
 			childIndex,
 			prevPid: pages1[childIndex - 1]?.pid,
 			nextPid: pages1[childIndex + 1]?.pid,
@@ -64,15 +69,27 @@ const MultiView = () => {
 				context,
 			});
 		}
+		/************************ */
+
+		const childIndex2 = pages2.findIndex(p => p.pid === pageId2);
+		pubCtx.setCurrentPageOfSecond({
+			uuid: pageId2 ?? '',
+			childIndex: childIndex2,
+			prevPid: pages2[childIndex2 - 1]?.pid,
+			nextPid: pages2[childIndex2 + 1]?.pid,
+		});
+		pubCtx.setPublicationChildrenOfSecond(pages2);
+
+		if (detail2?.data) {
+			const context = detail2.data?.context?.flat() ?? [];
+			pubCtx.setSecondPublication({
+				...detail2.data,
+				context,
+			});
+		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages1, pageId]);
-
-	useEffect(() => {
-		if (pubChildren1.isSuccess && !pubChildren1.data?.[0]?.datanode) {
-			nav(`/periodical/${id1}`, { replace: true });
-		}
-	}, [pubChildren1.data, nav, pubChildren1.isSuccess, id1]);
+	}, [pages1, pageId1, pages2, pageId2]);
 
 	if (pubChildren1.isLoading || detail1.isLoading) {
 		return <Loader />;
@@ -82,13 +99,13 @@ const MultiView = () => {
 		setSp(sp, { replace: true });
 	}
 
-	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail1.data?.policy === 'public';
-	const datanode = pubChildren1.data?.[0]?.datanode ?? false;
 
 	return (
 		<>
-			{id1} <br /> {id2}
+			<Flex height="100vh" width="100%">
+				<PubMainDetail page={pageId1} pageOfSecond={pageId2} />
+			</Flex>
 		</>
 	);
 };

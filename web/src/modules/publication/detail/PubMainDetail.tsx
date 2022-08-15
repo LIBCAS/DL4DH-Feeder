@@ -1,25 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
 
 import ZoomifyView from 'modules/zoomify/ZoomifyView';
-import { Loader } from 'modules/loader';
-
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
 
 type Props = {
 	page: string;
+	pageOfSecond?: string;
 };
 
-const PubMainDetail: FC<Props> = ({ page }) => {
+const PubMainDetail: FC<Props> = ({ page, pageOfSecond }) => {
 	const zoomRef = useRef<HTMLDivElement | null>(null);
-	const [sp, setSp] = useSearchParams();
-	const multiview = sp.get('secondPublication');
 
 	return (
 		<Flex
@@ -30,20 +22,12 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 			alignItems="center"
 			position="relative"
 		>
-			<ZoomifyView id={page} />
-			{multiview && <SeconZoomify id={multiview} />}
+			<ZoomifyView id={page} isMultiView={!!pageOfSecond} />
+			{pageOfSecond && (
+				<ZoomifyView id={pageOfSecond} isSecond isMultiView={!!pageOfSecond} />
+			)}
 		</Flex>
 	);
-};
-
-const SeconZoomify: FC<{ id: string }> = ({ id }) => {
-	const response = usePublicationChildren(id);
-
-	if (response.isLoading) {
-		return <Loader />;
-	}
-
-	return <ZoomifyView id={response.data?.[0]?.pid ?? ''} isSecond />;
 };
 
 export default PubMainDetail;

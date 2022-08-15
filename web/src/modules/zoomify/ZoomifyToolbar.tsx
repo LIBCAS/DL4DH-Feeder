@@ -59,6 +59,7 @@ type Props = {
 	page: string;
 	onUpdateRotation: Dispatch<SetStateAction<number>>;
 	isSecond?: boolean;
+	isMultiView?: boolean;
 	onDragBoxModeEnabled: () => void;
 	onZoomIn: () => void;
 	onZoomOut: () => void;
@@ -71,16 +72,22 @@ const ZoomifyToolbar: FC<Props> = ({
 	onZoomIn,
 	onZoomOut,
 	isSecond,
+	isMultiView,
 }) => {
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 	const pbctx = useContext(PubCtx);
 	const [pageUrl, setPageUrl] = useSearchParams();
 
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
-	const pageParamName = isSecond ? 'page-secondary' : 'page';
+	const pageParamName = isSecond ? 'page2' : 'page';
 
 	return (
-		<Flex position="absolute" width={1} bottom={100} justifyContent="center">
+		<Flex
+			position="absolute"
+			width={isMultiView ? 1 / 2 : 1}
+			bottom={100}
+			justifyContent="center"
+		>
 			<Flex
 				alignItems="center"
 				justifyContent="space-between"
@@ -119,27 +126,29 @@ const ZoomifyToolbar: FC<Props> = ({
 				<ToolButton onClick={onZoomIn} Icon={<MdZoomIn size={ICON_SIZE} />} />
 				<ToolButton onClick={onZoomOut} Icon={<MdZoomOut size={ICON_SIZE} />} />
 
-				<ToolButton
-					onClick={() => {
-						if (fullscreen) {
-							document?.exitFullscreen();
-							setFullscreen(false);
+				{!isSecond && (
+					<ToolButton
+						onClick={() => {
+							if (fullscreen) {
+								document?.exitFullscreen();
+								setFullscreen(false);
+							}
+							if (!fullscreen) {
+								setFullscreen(true);
+								const fullscreenEl =
+									document.getElementById('ZOOMIFY_PARRENT_EL');
+								fullscreenEl?.requestFullscreen();
+							}
+						}}
+						Icon={
+							fullscreen ? (
+								<MdFullscreenExit size={ICON_SIZE} />
+							) : (
+								<MdFullscreen size={ICON_SIZE} />
+							)
 						}
-						if (!fullscreen) {
-							setFullscreen(true);
-							const fullscreenEl =
-								document.getElementById('ZOOMIFY_PARRENT_EL');
-							fullscreenEl?.requestFullscreen();
-						}
-					}}
-					Icon={
-						fullscreen ? (
-							<MdFullscreenExit size={ICON_SIZE} />
-						) : (
-							<MdFullscreen size={ICON_SIZE} />
-						)
-					}
-				/>
+					/>
+				)}
 				<ToolButton
 					Icon={<BsCursorText size={ICON_SIZE} />}
 					onClick={onDragBoxModeEnabled}

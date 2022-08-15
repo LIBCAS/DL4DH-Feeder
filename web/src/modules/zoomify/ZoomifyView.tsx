@@ -19,6 +19,8 @@ import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 
+import { useTheme } from 'theme';
+
 import { useImageProperties } from 'api/publicationsApi';
 
 import AltoDialog from './AltoDialog';
@@ -47,7 +49,8 @@ const MapWrapper: FC<{
 	imgWidth: number;
 	imgHeight: number;
 	isSecond?: boolean;
-}> = ({ imgId, imgWidth, imgHeight, isSecond }) => {
+	isMultiView?: boolean;
+}> = ({ imgId, imgWidth, imgHeight, isSecond, isMultiView }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const dragBoxRef = useRef<DragBox | null>(null);
@@ -178,6 +181,7 @@ const MapWrapper: FC<{
 			<ZoomifyToolbar
 				page={imgId ?? ''}
 				isSecond={isSecond}
+				isMultiView={isMultiView}
 				onUpdateRotation={setRotation}
 				onZoomIn={() => {
 					const currentZoom = map.current?.getView().getResolution() ?? 1;
@@ -213,9 +217,12 @@ const ZoomifyView = React.forwardRef<
 		id?: string;
 		isLoading?: boolean;
 		isSecond?: boolean;
+		isMultiView?: boolean;
 	}
->(({ id, isSecond }, fullscreenRef) => {
+>(({ id, isSecond, isMultiView }, fullscreenRef) => {
 	const imgProps = useImageProperties(id ?? '');
+
+	const theme = useTheme();
 
 	const counter = useRef(0);
 
@@ -237,13 +244,20 @@ const ZoomifyView = React.forwardRef<
 	const imgHeight = parseInt(parsedXML?.IMAGE_PROPERTIES.$.HEIGHT ?? '0');
 
 	return (
-		<Wrapper width="100%" height="100vh">
+		<Wrapper
+			width="100%"
+			height="100vh"
+			css={css`
+				border: ${isMultiView ? 1 : 0}px solid ${theme.colors.primary};
+			`}
+		>
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}
 				imgWidth={imgWidth}
 				imgHeight={imgHeight}
 				isSecond={isSecond}
+				isMultiView={isMultiView}
 			/>
 		</Wrapper>
 	);

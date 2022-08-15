@@ -17,6 +17,7 @@ import Pagination from 'components/table/Pagination';
 import Divider from 'components/styled/Divider';
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import { H2 } from 'components/styled/Text';
+import { Wrapper } from 'components/styled/Wrapper';
 
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
 import { Loader } from 'modules/loader';
@@ -42,7 +43,10 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 		const nav = useNavigate();
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
-		const handleQueryChange = (query: string) => setQuery(query);
+		const handleQueryChange = (query: string) => {
+			setPage(0);
+			setQuery(query);
+		};
 		const [publicOnly, setPublicOnly] = useState<boolean>(true);
 		const [sp, setSp] = useSearchParams();
 		const [uuid, setUUID] = useState('');
@@ -85,6 +89,9 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					zIndex={3}
 					overflow="auto"
 					css={css`
+						box-sizing: border-box;
+						padding-bottom: 0px !important;
+						padding: 0px !important;
 						${variant === 'right' &&
 						css`
 							border-left: 3px solid ${theme.colors.border};
@@ -100,7 +107,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 				>
 					{step === 0 ? (
 						<>
-							<Flex px={2}>
+							<Flex p={2}>
 								<QuerySearchInput
 									onQueryUpdate={handleQueryChange}
 									publicOnly={publicOnly}
@@ -115,25 +122,37 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 									onSelect={onSelect}
 								/>
 							</Flex>
-							<Divider mt={2} />
-
-							<Pagination
-								page={page}
-								changePage={changePage}
-								changeLimit={limit => setPageLimit(limit)}
-								pageLimit={pageLimit}
-								totalCount={count}
-								hasMore={hasMore}
-								offset={page * pageLimit}
-								loading={isLoading}
-							/>
-
-							<Divider mb={2} />
+							<Flex p={2}>
+								<Pagination
+									page={page}
+									changePage={changePage}
+									changeLimit={limit => setPageLimit(limit)}
+									pageLimit={pageLimit}
+									totalCount={count}
+									hasMore={hasMore}
+									offset={page * pageLimit}
+									loading={isLoading}
+								/>
+							</Flex>
 						</>
 					) : (
-						<ChoosePeriodical id={uuid} />
+						<Flex px={2}>
+							<ChoosePeriodical id={uuid} />
+						</Flex>
 					)}
-					<Flex justifyContent="space-between" alignItems="center">
+					<Flex
+						justifyContent="space-between"
+						alignItems="center"
+						position="sticky"
+						bottom={0}
+						bg="paper"
+						p={3}
+						mt={2}
+						css={css`
+							/* border-top: 1px solid black; */
+							box-shadow: 0px -13px 16px -8px rgb(0 0 0 / 6%);
+						`}
+					>
 						<Button variant="primary" onClick={handleSecond}>
 							Potvrdit výběr
 						</Button>
@@ -151,17 +170,16 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 
 export default PubChooseSecond;
 
-const ChoosePeriodical: FC<{ id: string }> = ({ id }) => {
-	const headerHeight = useHeaderHeight();
-	const theme = useTheme();
+const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
+	const { id: leftId } = useParams<{ id: string }>();
+
+	const [id, setId] = useState(rootId);
 	const childrenResponse = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const children = childrenResponse.data ?? [];
 	const [page, setPageUrlParam] = useSearchParams();
 	const pubCtx = useContext(PubCtx);
 	const nav = useNavigate();
-	const [rightCollapsed, setRightCollapsed] = useState(false);
-	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
 	const pageId = useMemo(
 		() => page.get('page') ?? children[0]?.pid ?? undefined,
@@ -202,16 +220,20 @@ const ChoosePeriodical: FC<{ id: string }> = ({ id }) => {
 		page.append('page', children[0]?.pid ?? 'undefined');
 		setPageUrlParam(page, { replace: true });
 	} */
+
+	if (children?.[0].datanode) {
+		nav(`/multiview/${leftId}/${id}`);
+	}
 	return (
 		<>
 			{children?.[0].datanode ? (
 				<>datanode</>
 			) : (
-				<>
+				<Wrapper>
 					<H2>Vyberte se seznamu:</H2>
 
-					<PeriodicalTiles data={children} onSelect={uuid => alert(uuid)} />
-				</>
+					<PeriodicalTiles data={children} onSelect={id => setId(id)} />
+				</Wrapper>
 			)}
 		</>
 	);
