@@ -31,6 +31,7 @@ import 'ol/ol.css';
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 
 export const mapRef: { current: Map | null } = { current: null };
+export const mapRefOfSecond: { current: Map | null } = { current: null };
 
 type ImageProps = {
 	IMAGE_PROPERTIES: {
@@ -152,8 +153,12 @@ const MapWrapper: FC<{
 		.animate({ rotation: (rotation * Math.PI) / 180, duration: 150 });
 
 	useEffect(() => {
-		mapRef.current = map.current;
-	}, [map]);
+		if (isSecond) {
+			mapRefOfSecond.current = map.current;
+		} else {
+			mapRef.current = map.current;
+		}
+	}, [map, isSecond]);
 
 	return (
 		<Box
@@ -248,7 +253,7 @@ const ZoomifyView = React.forwardRef<
 			width="100%"
 			height="100vh"
 			css={css`
-				border: ${isMultiView ? 1 : 0}px solid ${theme.colors.primary};
+				border-left: ${isSecond ? 2 : 0}px solid ${theme.colors.primary};
 			`}
 		>
 			<MapWrapper

@@ -1,18 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { MdLock } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
-import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
-import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
-import { mapRef } from 'modules/zoomify/ZoomifyView';
-
-import { useTheme } from 'theme';
+import { mapRef, mapRefOfSecond } from 'modules/zoomify/ZoomifyView';
 
 import {
 	usePublicationChildren,
@@ -27,7 +24,6 @@ import PubMainDetail from './PubMainDetail';
 const MultiView = () => {
 	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
 
-	const theme = useTheme();
 	const pubChildren1 = usePublicationChildren(id1 ?? '');
 	const detail1 = usePublicationDetail(id1 ?? '');
 	const pages1 = useMemo(() => pubChildren1.data ?? [], [pubChildren1.data]);
@@ -38,7 +34,6 @@ const MultiView = () => {
 
 	const [sp, setSp] = useSearchParams();
 	const pubCtx = useContext(PubCtx);
-	const nav = useNavigate();
 	const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
@@ -94,19 +89,91 @@ const MultiView = () => {
 	if (pubChildren1.isLoading || detail1.isLoading) {
 		return <Loader />;
 	}
-	if (!sp.get('page')) {
-		sp.append('page', pages1[0]?.pid ?? 'undefined');
+	if (!sp.get('page') || !sp.get('page2')) {
+		if (!sp.get('page')) {
+			sp.append('page', pages1[0]?.pid ?? 'undefined');
+		}
+		if (!sp.get('page2')) {
+			sp.append('page2', pages2[0]?.pid ?? 'undefined');
+		}
 		setSp(sp, { replace: true });
 	}
 
 	const isPublic = detail1.data?.policy === 'public';
 
 	return (
-		<>
-			<Flex height="100vh" width="100%">
-				<PubMainDetail page={pageId1} pageOfSecond={pageId2} />
+		<ResponsiveWrapper
+			bg="primaryLight"
+			px={1}
+			mx={0}
+			alignItems="flex-start"
+			width={1}
+			height="100vh"
+		>
+			<Flex
+				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
+				css={css`
+					transition: width 200ms;
+				`}
+				onTransitionEnd={() => {
+					mapRef.current?.updateSize();
+					mapRefOfSecond.current?.updateSize();
+				}}
+			>
+				<Flex
+					overflow="visible"
+					width={leftCollapsed ? 0 : 300}
+					minWidth={0}
+					maxWidth={300}
+					zIndex={3}
+					css={css`
+						transition-duration: 200ms;
+						transition-property: width transform;
+						transform: translateX(${leftCollapsed ? '-305px' : '0px'});
+					`}
+				>
+					<PublicationSidePanel
+						variant="left"
+						defaultView="search"
+						pages={pages1}
+						onCollapse={() => setLeftCollapsed(p => !p)}
+						isCollapsed={leftCollapsed}
+					/>
+				</Flex>
+				{isPublic ? (
+					<Flex height="100vh" width="100%">
+						<PubMainDetail page={pageId1} pageOfSecond={pageId2} />
+					</Flex>
+				) : (
+					<Flex
+						width="100%"
+						p={4}
+						alignItems="center"
+						justifyContent="center"
+						fontWeight="bold"
+						fontSize="xl"
+						height="100vh"
+					>
+						<Flex
+							justifyContent="center"
+							alignItems="center"
+							flexDirection="column"
+							mt={-100}
+						>
+							<MdLock size={60} />
+							<Text>Tento dokument není veřejný</Text>
+						</Flex>
+					</Flex>
+				)}
+
+				<PublicationSidePanel
+					variant="right"
+					pages={pages2}
+					onCollapse={() => setRightCollapsed(p => !p)}
+					isCollapsed={rightCollapsed}
+				/>
 			</Flex>
-		</>
+		</ResponsiveWrapper>
 	);
 };
 export default MultiView;
