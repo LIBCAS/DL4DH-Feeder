@@ -27,7 +27,7 @@ import { PubCtx } from 'modules/publication/ctx/pub-ctx';
 
 import { useTheme } from 'theme';
 
-const ICON_SIZE = 32;
+import { useMobileView } from 'hooks/useViewport';
 
 const ToolButton: FC<{
 	onClick: () => void;
@@ -80,17 +80,19 @@ const ZoomifyToolbar: FC<Props> = ({
 
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
 	const pageParamName = isSecond ? 'page2' : 'page';
-
+	const isMobile = useMobileView();
+	const ICON_SIZE = isMobile ? 22 : 30;
 	return (
 		<Flex
 			position="absolute"
 			width={isMultiView ? 1 / 2 : 1}
 			bottom={100}
-			justifyContent="center"
+			justifyContent={isMobile ? 'flex-end' : 'center'}
 		>
 			<Flex
 				alignItems="center"
 				justifyContent="space-between"
+				flexDirection={isMobile ? 'column' : 'row'}
 				px={0}
 				py={0}
 				opacity="0.9"
