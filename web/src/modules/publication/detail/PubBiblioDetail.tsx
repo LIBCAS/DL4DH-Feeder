@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 
 import _ from 'lodash';
-import { FC, useEffect, useState } from 'react';
-import { MdDownload, MdPrint, MdShare, MdTextFields } from 'react-icons/md';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { FC, useContext, useEffect, useState } from 'react';
+import { MdPrint, MdShare, MdTextFields } from 'react-icons/md';
 import XML from 'xml2js';
 
 import { Box, Flex } from 'components/styled';
@@ -11,18 +10,16 @@ import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Text, { H2, H3, H5 } from 'components/styled/Text';
 import LoaderSpin from 'components/loaders/LoaderSpin';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import { NavLinkButton } from 'components/styled/Button';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 
-import {
-	usePublicationDetail,
-	usePublicationDetailWithRoot,
-	useStreams,
-} from 'api/publicationsApi';
+import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 
-import { modelToText, ModelToText } from 'utils/enumsMap';
+import { ModelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
+
+import { PubCtx } from '../ctx/pub-ctx';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
@@ -70,21 +67,25 @@ const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 };
 
 type Props = {
-	nic?: boolean;
+	isSecond?: boolean;
 };
 
-const PubBiblioDetail: FC<Props> = () => {
-	const { id } = useParams<{ id: string }>();
-	const [searchParams] = useSearchParams();
-	const pageId = searchParams.get('page');
+const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
+	//const { id } = useParams<{ id: string }>();
+	const pubCtx = useContext(PubCtx);
+	const id = isSecond
+		? pubCtx.secondPublication?.pid ?? 'ctx-right-pub-id-error'
+		: pubCtx.publication?.pid ?? 'ctx-left-pub-id-error';
+	const pageId = isSecond
+		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
+		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
 
 	const pubDetail = usePublicationDetail(id ?? 'biblio_id_undefined');
 	const pageDetail = usePublicationDetail(pageId ?? '', pageId === undefined);
 
-	const detail = usePublicationDetailWithRoot(id ?? 'biblio_id_undefined');
+	//const detail = usePublicationDetailWithRoot(id ?? 'biblio_id_undefined');
 
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
-	//const solrInfo = useStreams(id ?? '', 'BIBLIO_MODS');
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
 	useEffect(() => {
@@ -94,10 +95,7 @@ const PubBiblioDetail: FC<Props> = () => {
 	if (isLoading || pubDetail.isLoading || pageDetail.isLoading) {
 		return <LoaderSpin />;
 	}
-	const { rootDetail, mainDetail } = detail.data ?? {
-		rootDetail: undefined,
-		mainDetail: undefined,
-	};
+
 	const biblio = parseDCXML(parsedXML);
 
 	const rootTitle = pubDetail.data?.root_title ?? 'r';
@@ -105,8 +103,6 @@ const PubBiblioDetail: FC<Props> = () => {
 	const pageContext = pubDetail.data?.context
 		.flat()
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
-	console.log({ pageContext });
-	console.log({ rootDetail, mainDetail });
 
 	return (
 		<Box width={1}>
@@ -117,7 +113,7 @@ const PubBiblioDetail: FC<Props> = () => {
 				alignItems="center"
 				px={3}
 			>
-				<MetaStreamsDialog />
+				<MetaStreamsDialog rootId={id} pageId={pageId} />
 				<PublicationExportDialog />
 				<IconButton color="primary">
 					<MdPrint size={24} />

@@ -99,6 +99,9 @@ function usePublicationCtx() {
 	useEffect(() => {
 		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
 	}, [currentPage]);
+	useEffect(() => {
+		Store.set(STORE_CURRENT_PAGE_SECOND, JSON.stringify(currentPageOfSecond));
+	}, [currentPageOfSecond]);
 
 	/* const getCurrentPage = useCallback(
 		() =>

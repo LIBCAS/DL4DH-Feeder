@@ -342,10 +342,12 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	);
 };
 
-const MetaStreamsDialog = () => {
-	const { id: rootId } = useParams<{ id: string }>();
+const MetaStreamsDialog: FC<{ rootId: string; pageId: string }> = ({
+	rootId,
+	pageId,
+}) => {
 	const [searchParams] = useSearchParams();
-	const pageId = searchParams.get('page');
+	//const pageId = searchParams.get('page');
 	const rootDetailResponse = usePublicationDetail(
 		pageId ?? rootId ?? 'pageId_rootId_undefined',
 	);

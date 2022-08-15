@@ -1,36 +1,26 @@
 /** @jsxImportSource @emotion/react */
-import {
-	FC,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
 import { css } from '@emotion/react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { FC, useCallback, useContext, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import QuerySearchInput from 'components/search/QuerySearchInput';
+import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
-import { DetailsCell, Flex } from 'components/styled';
-import Pagination from 'components/table/Pagination';
-import Divider from 'components/styled/Divider';
-import QuerySearchInput from 'components/search/QuerySearchInput';
 import { H2 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
+import Pagination from 'components/table/Pagination';
 
-import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
 import { Loader } from 'modules/loader';
+import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
 
 import {
 	usePublicationChildren,
-	usePublicationDetail,
 	useSearchPublications,
 } from 'api/publicationsApi';
-import { PublicationDto } from 'api/models';
 
 import useHeaderHeight from 'utils/useHeaderHeight';
 
@@ -39,8 +29,7 @@ import { PubCtx } from '../ctx/pub-ctx';
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
 		const [query, setQuery] = useState<string | undefined>('');
-		const { id, id2 } = useParams<{ id: string; id2: string }>();
-		const nav = useNavigate();
+
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
 		const handleQueryChange = (query: string) => {
@@ -48,7 +37,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 			setQuery(query);
 		};
 		const [publicOnly, setPublicOnly] = useState<boolean>(true);
-		const [sp, setSp] = useSearchParams();
+
 		const [uuid, setUUID] = useState('');
 		const [step, setStep] = useState(0);
 		const headerHeight = useHeaderHeight();
@@ -56,15 +45,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 			setUUID(uuid);
 		};
 
-		console.log({ params: useParams() });
-
-		const handleSecond = () => {
-			//sp.set('secondPublication', uuid);
-			//setSp(sp);
-			setStep(1);
-			//nav(`/multiview/${id}/${uuid}`);
-			//onClose();
-		};
+		const handleSecond = () => setStep(1);
 
 		const { data, count, isLoading, hasMore } = useSearchPublications({
 			start: page * pageLimit,
@@ -171,126 +152,27 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 export default PubChooseSecond;
 
 const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
-	const { id: leftId } = useParams<{ id: string }>();
-
+	const pubCtx = useContext(PubCtx);
+	const leftId = pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
 	const [id, setId] = useState(rootId);
 	const childrenResponse = usePublicationChildren(id ?? '');
-	const detail = usePublicationDetail(id ?? '');
-	const children = childrenResponse.data ?? [];
-	const [page, setPageUrlParam] = useSearchParams();
-	const pubCtx = useContext(PubCtx);
 	const nav = useNavigate();
-
-	const pageId = useMemo(
-		() => page.get('page') ?? children[0]?.pid ?? undefined,
-		[page, children],
+	const children = useMemo(
+		() => childrenResponse.data ?? [],
+		[childrenResponse.data],
 	);
 
-	/* useEffect(() => {
-		const childIndex = pages.findIndex(p => p.pid === pageId);
-		pubCtx.setCurrentPage({
-			uuid: pageId ?? '',
-			childIndex,
-			prevPid: pages[childIndex - 1]?.pid,
-			nextPid: pages[childIndex + 1]?.pid,
-		});
-		pubCtx.setPublicationChildren(pages);
-
-		if (detail?.data) {
-			const context = detail.data?.context?.flat() ?? [];
-			pubCtx.setPublication({
-				...detail.data,
-				context,
-			});
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId]); */
-
-	/* useEffect(() => {
-		if (childrenResponse.isSuccess && !childrenResponse.data?.[0]?.datanode) {
-			nav(`/periodical/${id}`, { replace: true });
-		}
-	}, [childrenResponse.data, nav, childrenResponse.isSuccess, id]); */
-
-	if (childrenResponse.isLoading || detail.isLoading) {
+	if (childrenResponse.isLoading) {
 		return <Loader />;
 	}
-	/* if (!page.get('page')) {
-		page.append('page', children[0]?.pid ?? 'undefined');
-		setPageUrlParam(page, { replace: true });
-	} */
 
-	if (children?.[0].datanode) {
+	if (children?.[0]?.datanode) {
 		nav(`/multiview/${leftId}/${id}`);
 	}
 	return (
-		<>
-			{children?.[0].datanode ? (
-				<>datanode</>
-			) : (
-				<Wrapper>
-					<H2>Vyberte se seznamu:</H2>
-
-					<PeriodicalTiles data={children} onSelect={id => setId(id)} />
-				</Wrapper>
-			)}
-		</>
+		<Wrapper>
+			<H2>Vyberte se seznamu:</H2>
+			<PeriodicalTiles data={children} onSelect={id => setId(id)} />
+		</Wrapper>
 	);
 };
-
-{
-	/*
-
-
-
-<>
-			<ModalDialog
-				label="Info"
-				control={openModal => (
-					<Button variant="primary" onClick={openModal} p={1}>
-						Mnozina
-					</Button>
-				)}
-				customCss={() => css`
-					width: 80vw;
-					margin-top: 0 !important;
-				`}
-			>
-				{closeModal => (
-					<Paper>
-						<Flex height={'80vh'} width={1} position="relative">
-							<ListView data={data} isLoading={isLoading} />
-						</Flex>
-						<Divider my={3} />
-						<Pagination
-							page={state.page}
-							changePage={changePage}
-							changeLimit={setPageLimit}
-							pageLimit={state.pageSize}
-							totalCount={count}
-							hasMore={hasMore}
-							offset={state.start}
-							loading={isLoading}
-						/>
-						<Divider my={3} />
-						<Flex justifyContent="space-between">
-							<Button variant="primary">Zpět</Button>
-							<Button variant="primary">Použít</Button>
-						</Flex>
-					</Paper>
-				)}
-			</ModalDialog>
-		</>
-
-
-
-
-
-
-
-
-
-
-*/
-}

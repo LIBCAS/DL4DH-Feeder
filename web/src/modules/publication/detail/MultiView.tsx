@@ -20,7 +20,7 @@ import { PubCtx } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
-
+//http://localhost:3000/view/uuid:0bec6e50-11e1-11eb-a4cf-005056827e52?page=uuid:18617fd7-cc78-4042-95aa-c7e7ce6363aa
 const MultiView = () => {
 	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
 
@@ -48,6 +48,13 @@ const MultiView = () => {
 	);
 
 	useEffect(() => {
+		if (detail1?.data) {
+			const context = detail1.data?.context?.flat() ?? [];
+			pubCtx.setPublication({
+				...detail1.data,
+				context,
+			});
+		}
 		const childIndex = pages1.findIndex(p => p.pid === pageId1);
 		pubCtx.setCurrentPage({
 			uuid: pageId1 ?? '',
@@ -57,15 +64,18 @@ const MultiView = () => {
 		});
 		pubCtx.setPublicationChildren(pages1);
 
-		if (detail1?.data) {
-			const context = detail1.data?.context?.flat() ?? [];
-			pubCtx.setPublication({
-				...detail1.data,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pages1, pageId1, detail1.data]);
+
+	useEffect(() => {
+		if (detail2?.data) {
+			console.log('yes detail data');
+			const context = detail2.data?.context?.flat() ?? [];
+			pubCtx.setSecondPublication({
+				...detail2.data,
 				context,
 			});
 		}
-		/************************ */
-
 		const childIndex2 = pages2.findIndex(p => p.pid === pageId2);
 		pubCtx.setCurrentPageOfSecond({
 			uuid: pageId2 ?? '',
@@ -75,18 +85,15 @@ const MultiView = () => {
 		});
 		pubCtx.setPublicationChildrenOfSecond(pages2);
 
-		if (detail2?.data) {
-			const context = detail2.data?.context?.flat() ?? [];
-			pubCtx.setSecondPublication({
-				...detail2.data,
-				context,
-			});
-		}
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages1, pageId1, pages2, pageId2]);
+	}, [pages2, pageId2, detail2.data]);
 
-	if (pubChildren1.isLoading || detail1.isLoading) {
+	if (
+		pubChildren1.isLoading ||
+		detail1.isLoading ||
+		pubChildren2.isLoading ||
+		detail2.isLoading
+	) {
 		return <Loader />;
 	}
 	if (!sp.get('page') || !sp.get('page2')) {
@@ -99,6 +106,7 @@ const MultiView = () => {
 		setSp(sp, { replace: true });
 	}
 
+	//FIXME: isPubliuc musi byt pre obe publikacie zvlast
 	const isPublic = detail1.data?.policy === 'public';
 
 	return (
@@ -171,6 +179,7 @@ const MultiView = () => {
 					pages={pages2}
 					onCollapse={() => setRightCollapsed(p => !p)}
 					isCollapsed={rightCollapsed}
+					isSecond
 				/>
 			</Flex>
 		</ResponsiveWrapper>
