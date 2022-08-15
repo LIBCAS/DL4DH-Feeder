@@ -27,7 +27,7 @@ import { PubCtx } from 'modules/publication/ctx/pub-ctx';
 
 import { useTheme } from 'theme';
 
-const ICON_SIZE = 32;
+import { useMobileView } from 'hooks/useViewport';
 
 const ToolButton: FC<{
 	onClick: () => void;
@@ -58,6 +58,8 @@ const ToolButton: FC<{
 type Props = {
 	page: string;
 	onUpdateRotation: Dispatch<SetStateAction<number>>;
+	isSecond?: boolean;
+	isMultiView?: boolean;
 	onDragBoxModeEnabled: () => void;
 	onZoomIn: () => void;
 	onZoomOut: () => void;
@@ -69,16 +71,28 @@ const ZoomifyToolbar: FC<Props> = ({
 	onDragBoxModeEnabled,
 	onZoomIn,
 	onZoomOut,
+	isSecond,
+	isMultiView,
 }) => {
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 	const pbctx = useContext(PubCtx);
 	const [pageUrl, setPageUrl] = useSearchParams();
 
+	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
+	const pageParamName = isSecond ? 'page2' : 'page';
+	const isMobile = useMobileView();
+	const ICON_SIZE = isMobile ? 22 : 30;
 	return (
-		<Flex position="absolute" width={1} bottom={100} justifyContent="center">
+		<Flex
+			position="absolute"
+			width={isMultiView ? 1 / 2 : 1}
+			bottom={100}
+			justifyContent={isMobile ? 'flex-end' : 'center'}
+		>
 			<Flex
 				alignItems="center"
 				justifyContent="space-between"
+				flexDirection={isMobile ? 'column' : 'row'}
 				px={0}
 				py={0}
 				opacity="0.9"
@@ -90,7 +104,7 @@ const ZoomifyToolbar: FC<Props> = ({
 			>
 				<ToolButton
 					onClick={() => {
-						pageUrl.set('page', pbctx.currentPage?.prevPid ?? page);
+						pageUrl.set(pageParamName, currentPage?.prevPid ?? page);
 						setPageUrl(pageUrl);
 					}}
 					Icon={
@@ -114,27 +128,29 @@ const ZoomifyToolbar: FC<Props> = ({
 				<ToolButton onClick={onZoomIn} Icon={<MdZoomIn size={ICON_SIZE} />} />
 				<ToolButton onClick={onZoomOut} Icon={<MdZoomOut size={ICON_SIZE} />} />
 
-				<ToolButton
-					onClick={() => {
-						if (fullscreen) {
-							document?.exitFullscreen();
-							setFullscreen(false);
+				{!isSecond && (
+					<ToolButton
+						onClick={() => {
+							if (fullscreen) {
+								document?.exitFullscreen();
+								setFullscreen(false);
+							}
+							if (!fullscreen) {
+								setFullscreen(true);
+								const fullscreenEl =
+									document.getElementById('ZOOMIFY_PARRENT_EL');
+								fullscreenEl?.requestFullscreen();
+							}
+						}}
+						Icon={
+							fullscreen ? (
+								<MdFullscreenExit size={ICON_SIZE} />
+							) : (
+								<MdFullscreen size={ICON_SIZE} />
+							)
 						}
-						if (!fullscreen) {
-							setFullscreen(true);
-							const fullscreenEl =
-								document.getElementById('ZOOMIFY_PARRENT_EL');
-							fullscreenEl?.requestFullscreen();
-						}
-					}}
-					Icon={
-						fullscreen ? (
-							<MdFullscreenExit size={ICON_SIZE} />
-						) : (
-							<MdFullscreen size={ICON_SIZE} />
-						)
-					}
-				/>
+					/>
+				)}
 				<ToolButton
 					Icon={<BsCursorText size={ICON_SIZE} />}
 					onClick={onDragBoxModeEnabled}
@@ -142,7 +158,7 @@ const ZoomifyToolbar: FC<Props> = ({
 
 				<ToolButton
 					onClick={() => {
-						pageUrl.set('page', pbctx.currentPage?.nextPid ?? page);
+						pageUrl.set(pageParamName, currentPage?.nextPid ?? page);
 						setPageUrl(pageUrl);
 					}}
 					Icon={

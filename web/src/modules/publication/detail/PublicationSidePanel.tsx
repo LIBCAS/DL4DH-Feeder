@@ -22,6 +22,7 @@ type Props = {
 	pages: PublicationChild[];
 	onCollapse?: (clp?: boolean) => void;
 	isCollapsed?: boolean;
+	isSecond?: boolean;
 };
 
 const PublicationSidePanel: FC<Props> = ({
@@ -30,12 +31,13 @@ const PublicationSidePanel: FC<Props> = ({
 	pages,
 	onCollapse,
 	isCollapsed,
+	isSecond,
 }) => {
 	const theme = useTheme();
 	const [chooseSecond, setChooseSecond] = useState(false);
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
-		defaultView ?? 'detail',
+		isSecond ? 'search' : defaultView ?? 'detail',
 	);
 
 	return (
@@ -127,9 +129,9 @@ const PublicationSidePanel: FC<Props> = ({
 				<Divider />
 
 				{viewMode === 'search' ? (
-					<PubThumbnails marginTop={60} pages={pages} />
+					<PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} />
 				) : (
-					<PubBiblioDetail />
+					<PubBiblioDetail isSecond={isSecond} />
 				)}
 			</Flex>
 			<SidePanelHideButton

@@ -41,12 +41,14 @@ const SplitScreenView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
 	variant: 'left' | 'right';
-}> = ({ data, isLoading, variant }) => {
+	onSelect: (uuid: string) => void;
+}> = ({ data, isLoading, variant, onSelect }) => {
 	const [wrapperRef, { height: filterHeight }] = useMeasure({
 		debounce: 200,
 	});
 
-	const [selectedRow, setSelectedRow] = useState<number>(0);
+	const [selectedRow, setSelectedRow] = useState<number | undefined>();
+	console.log({ selectedRow });
 
 	const renderHeader = useCallback(
 		() => (
@@ -87,7 +89,10 @@ const SplitScreenView: FC<{
 					pl={[2, 3]}
 					name={`radio-${variant}`}
 					checked={selectedRow === rowIndex}
-					onChange={() => setSelectedRow(rowIndex)}
+					onChange={() => {
+						setSelectedRow(rowIndex);
+						onSelect(row.pid);
+					}}
 					size="sm"
 					bg={selectedRow === rowIndex ? 'enriched' : 'transparent'}
 				/>
@@ -114,6 +119,10 @@ const SplitScreenView: FC<{
 
 	useEffect(() => {
 		setSelectedRow(0);
+		if (selectedRow === undefined) {
+			onSelect(data?.[0].pid ?? '');
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
 
 	return (

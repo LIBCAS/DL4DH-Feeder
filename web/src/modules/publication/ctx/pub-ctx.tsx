@@ -1,21 +1,13 @@
-import React, {
-	createContext,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 
-import {
-	PublicationChild,
-	PublicationDetail,
-	PublicationDto,
-} from 'api/models';
+import { PublicationChild, PublicationDetail } from 'api/models';
 
 import Store from 'utils/Store';
 
 const STORE_PUB_CHILDREN = 'pub-children';
+const STORE_PUB_CHILDREN_SECOND = 'pub-children-second';
 const STORE_CURRENT_PAGE = 'pub-current-page';
+const STORE_CURRENT_PAGE_SECOND = 'pub-current-page-second';
 
 type CurrentPage = {
 	uuid: string;
@@ -28,14 +20,28 @@ type PubCtxType = {
 	setPublication: React.Dispatch<
 		React.SetStateAction<PublicationDetail | null>
 	>;
+
+	setSecondPublication: React.Dispatch<
+		React.SetStateAction<PublicationDetail | null>
+	>;
+
 	publication: PublicationDetail | null;
+	secondPublication: PublicationDetail | null;
 
 	setPublicationChildren: React.Dispatch<
 		React.SetStateAction<PublicationChild[] | null>
 	>;
+	setPublicationChildrenOfSecond: React.Dispatch<
+		React.SetStateAction<PublicationChild[] | null>
+	>;
 	publicationChildren: PublicationChild[] | null;
+	publicationChildrenOfSecond: PublicationChild[] | null;
 	currentPage: CurrentPage | null;
+	currentPageOfSecond: CurrentPage | null;
 	setCurrentPage: React.Dispatch<React.SetStateAction<CurrentPage | null>>;
+	setCurrentPageOfSecond: React.Dispatch<
+		React.SetStateAction<CurrentPage | null>
+	>;
 	//	getCurrentPage: () => CurrentPage | null;
 };
 
@@ -45,6 +51,9 @@ function usePublicationCtx() {
 	const [publication, setPublication] = useState<PublicationDetail | null>(
 		null,
 	);
+
+	const [secondPublication, setSecondPublication] =
+		useState<PublicationDetail | null>(null);
 	const [publicationChildren, setPublicationChildren] = useState<
 		PublicationChild[] | null
 	>(
@@ -54,10 +63,25 @@ function usePublicationCtx() {
 			| null,
 	);
 
+	const [publicationChildrenOfSecond, setPublicationChildrenOfSecond] =
+		useState<PublicationChild[] | null>(
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+			JSON.parse((Store.get(STORE_PUB_CHILDREN_SECOND) || 'null') as string) as
+				| PublicationChild[]
+				| null,
+		);
+
 	const [currentPage, setCurrentPage] = useState(
 		JSON.parse(
 			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
+		) as CurrentPage | null,
+	);
+
+	const [currentPageOfSecond, setCurrentPageOfSecond] = useState(
+		JSON.parse(
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+			(Store.get(STORE_CURRENT_PAGE_SECOND) || 'null') as string,
 		) as CurrentPage | null,
 	);
 
@@ -66,8 +90,18 @@ function usePublicationCtx() {
 	}, [publicationChildren]);
 
 	useEffect(() => {
+		Store.set(
+			STORE_PUB_CHILDREN_SECOND,
+			JSON.stringify(publicationChildrenOfSecond),
+		);
+	}, [publicationChildrenOfSecond]);
+
+	useEffect(() => {
 		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
 	}, [currentPage]);
+	useEffect(() => {
+		Store.set(STORE_CURRENT_PAGE_SECOND, JSON.stringify(currentPageOfSecond));
+	}, [currentPageOfSecond]);
 
 	/* const getCurrentPage = useCallback(
 		() =>
@@ -81,12 +115,18 @@ function usePublicationCtx() {
 	const ctx: PubCtxType = useMemo(
 		() => ({
 			publication,
+
 			publicationChildren,
 			setPublication,
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			//		getCurrentPage,
+			secondPublication,
+			setSecondPublication,
+			currentPageOfSecond,
+			setCurrentPageOfSecond,
+			publicationChildrenOfSecond,
+			setPublicationChildrenOfSecond,
 		}),
 		[
 			publication,
@@ -95,7 +135,12 @@ function usePublicationCtx() {
 			setPublicationChildren,
 			currentPage,
 			setCurrentPage,
-			//		getCurrentPage,
+			secondPublication,
+			setSecondPublication,
+			currentPageOfSecond,
+			setCurrentPageOfSecond,
+			publicationChildrenOfSecond,
+			setPublicationChildrenOfSecond,
 		],
 	);
 	return ctx;

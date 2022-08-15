@@ -1,4 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+
+import { theme } from 'theme';
+
+const collapseWidth = theme.breakpointsInt[3];
 
 function getWindowDimensions() {
 	const { innerWidth: width, innerHeight: height } = window;
@@ -24,6 +28,12 @@ const useViewport = () => {
 	}, []);
 
 	return windowDimensions;
+};
+
+export const useMobileView = () => {
+	const { width } = useViewport();
+
+	return useMemo(() => width < collapseWidth, [width]);
 };
 
 export default useViewport;

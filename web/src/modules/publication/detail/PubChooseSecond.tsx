@@ -1,30 +1,56 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback, useState } from 'react';
 import { css } from '@emotion/react';
+import { FC, useCallback, useContext, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import QuerySearchInput from 'components/search/QuerySearchInput';
+import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
-import { Flex } from 'components/styled';
+import { H2 } from 'components/styled/Text';
+import { Wrapper } from 'components/styled/Wrapper';
 import Pagination from 'components/table/Pagination';
-import Divider from 'components/styled/Divider';
-import QuerySearchInput from 'components/search/QuerySearchInput';
 
+import { Loader } from 'modules/loader';
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
+import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
 
-import { useSearchPublications } from 'api/publicationsApi';
+import {
+	usePublicationChildren,
+	useSearchPublications,
+} from 'api/publicationsApi';
+
+import useHeaderHeight from 'utils/useHeaderHeight';
+
+import { PubCtx } from '../ctx/pub-ctx';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
 		const [query, setQuery] = useState<string | undefined>('');
+
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
-		const handleQueryChange = (query: string) => setQuery(query);
+		const handleQueryChange = (query: string) => {
+			setPage(0);
+			setQuery(query);
+		};
+		const [publicOnly, setPublicOnly] = useState<boolean>(true);
+
+		const [uuid, setUUID] = useState('');
+		const [step, setStep] = useState(0);
+		const headerHeight = useHeaderHeight();
+		const onSelect = (uuid: string) => {
+			setUUID(uuid);
+		};
+
+		const handleSecond = () => setStep(1);
 
 		const { data, count, isLoading, hasMore } = useSearchPublications({
 			start: page * pageLimit,
 			pageSize: pageLimit,
+			availability: publicOnly ? 'PUBLIC' : 'ALL',
 			query,
 		});
 
@@ -39,10 +65,14 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					right={variant == 'left' ? 'initial' : 0}
 					left={variant == 'right' ? 'initial' : 0}
 					top={-8}
-					width={700}
-					height="calc(100vh - 60px)"
+					width="50vw"
+					height={`calc(100vh - ${headerHeight}px)`}
 					zIndex={3}
+					overflow="auto"
 					css={css`
+						box-sizing: border-box;
+						padding-bottom: 0px !important;
+						padding: 0px !important;
 						${variant === 'right' &&
 						css`
 							border-left: 3px solid ${theme.colors.border};
@@ -56,31 +86,59 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						box-shadow: -10px 0px 10px 3px rgba(0, 0, 0, 0.1);
 					`}
 				>
-					<Flex px={2}>
-						<QuerySearchInput onQueryUpdate={handleQueryChange} />
-					</Flex>
-					<Flex height={'70vh'} width={1} position="relative">
-						<SplitScreenView
-							data={data}
-							isLoading={isLoading}
-							variant={variant}
-						/>
-					</Flex>
-					<Divider my={3} />
-					<Pagination
-						page={page}
-						changePage={changePage}
-						changeLimit={limit => setPageLimit(limit)}
-						pageLimit={pageLimit}
-						totalCount={count}
-						hasMore={hasMore}
-						offset={page * pageLimit}
-						loading={isLoading}
-					/>
-					<Divider my={3} />
-					<Flex justifyContent="space-between" alignItems="center">
-						<Button variant="primary" onClick={onClose}>
+					{step === 0 ? (
+						<>
+							<Flex p={2}>
+								<QuerySearchInput
+									onQueryUpdate={handleQueryChange}
+									publicOnly={publicOnly}
+									setPublicOnly={setPublicOnly}
+								/>
+							</Flex>
+							<Flex height={'70vh'} width={1} position="relative">
+								<SplitScreenView
+									data={data}
+									isLoading={isLoading}
+									variant={variant}
+									onSelect={onSelect}
+								/>
+							</Flex>
+							<Flex p={2}>
+								<Pagination
+									page={page}
+									changePage={changePage}
+									changeLimit={limit => setPageLimit(limit)}
+									pageLimit={pageLimit}
+									totalCount={count}
+									hasMore={hasMore}
+									offset={page * pageLimit}
+									loading={isLoading}
+								/>
+							</Flex>
+						</>
+					) : (
+						<Flex px={2}>
+							<ChoosePeriodical id={uuid} />
+						</Flex>
+					)}
+					<Flex
+						justifyContent="space-between"
+						alignItems="center"
+						position="sticky"
+						bottom={0}
+						bg="paper"
+						p={3}
+						mt={2}
+						css={css`
+							/* border-top: 1px solid black; */
+							box-shadow: 0px -13px 16px -8px rgb(0 0 0 / 6%);
+						`}
+					>
+						<Button variant="primary" onClick={handleSecond}>
 							Potvrdit výběr
+						</Button>
+						<Button variant="outlined" onClick={() => setStep(0)}>
+							Zpět
 						</Button>
 						<Button variant="outlined" onClick={onClose}>
 							Zavřít
@@ -93,58 +151,28 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 
 export default PubChooseSecond;
 
-{
-	/*
+const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
+	const pubCtx = useContext(PubCtx);
+	const leftId = pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
+	const [id, setId] = useState(rootId);
+	const childrenResponse = usePublicationChildren(id ?? '');
+	const nav = useNavigate();
+	const children = useMemo(
+		() => childrenResponse.data ?? [],
+		[childrenResponse.data],
+	);
 
+	if (childrenResponse.isLoading) {
+		return <Loader />;
+	}
 
-
-<>
-			<ModalDialog
-				label="Info"
-				control={openModal => (
-					<Button variant="primary" onClick={openModal} p={1}>
-						Mnozina
-					</Button>
-				)}
-				customCss={() => css`
-					width: 80vw;
-					margin-top: 0 !important;
-				`}
-			>
-				{closeModal => (
-					<Paper>
-						<Flex height={'80vh'} width={1} position="relative">
-							<ListView data={data} isLoading={isLoading} />
-						</Flex>
-						<Divider my={3} />
-						<Pagination
-							page={state.page}
-							changePage={changePage}
-							changeLimit={setPageLimit}
-							pageLimit={state.pageSize}
-							totalCount={count}
-							hasMore={hasMore}
-							offset={state.start}
-							loading={isLoading}
-						/>
-						<Divider my={3} />
-						<Flex justifyContent="space-between">
-							<Button variant="primary">Zpět</Button>
-							<Button variant="primary">Použít</Button>
-						</Flex>
-					</Paper>
-				)}
-			</ModalDialog>
-		</>
-
-
-
-
-
-
-
-
-
-
-*/
-}
+	if (children?.[0]?.datanode) {
+		nav(`/multiview/${leftId}/${id}`);
+	}
+	return (
+		<Wrapper>
+			<H2>Vyberte se seznamu:</H2>
+			<PeriodicalTiles data={children} onSelect={id => setId(id)} />
+		</Wrapper>
+	);
+};

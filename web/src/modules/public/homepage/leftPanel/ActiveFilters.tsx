@@ -46,6 +46,7 @@ function removeParam(
 	const newEntries = entries.filter(entry => entry !== value);
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
+	sp.delete('page');
 }
 
 const enumToText = (type: string, value: string) => {

@@ -19,6 +19,8 @@ import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 
+import { useTheme } from 'theme';
+
 import { useImageProperties } from 'api/publicationsApi';
 
 import AltoDialog from './AltoDialog';
@@ -29,6 +31,7 @@ import 'ol/ol.css';
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 
 export const mapRef: { current: Map | null } = { current: null };
+export const mapRefOfSecond: { current: Map | null } = { current: null };
 
 type ImageProps = {
 	IMAGE_PROPERTIES: {
@@ -46,7 +49,9 @@ const MapWrapper: FC<{
 	isLoading?: boolean;
 	imgWidth: number;
 	imgHeight: number;
-}> = ({ imgId, imgWidth, imgHeight }) => {
+	isSecond?: boolean;
+	isMultiView?: boolean;
+}> = ({ imgId, imgWidth, imgHeight, isSecond, isMultiView }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const dragBoxRef = useRef<DragBox | null>(null);
@@ -148,8 +153,12 @@ const MapWrapper: FC<{
 		.animate({ rotation: (rotation * Math.PI) / 180, duration: 150 });
 
 	useEffect(() => {
-		mapRef.current = map.current;
-	}, [map]);
+		if (isSecond) {
+			mapRefOfSecond.current = map.current;
+		} else {
+			mapRef.current = map.current;
+		}
+	}, [map, isSecond]);
 
 	return (
 		<Box
@@ -176,6 +185,8 @@ const MapWrapper: FC<{
 
 			<ZoomifyToolbar
 				page={imgId ?? ''}
+				isSecond={isSecond}
+				isMultiView={isMultiView}
 				onUpdateRotation={setRotation}
 				onZoomIn={() => {
 					const currentZoom = map.current?.getView().getResolution() ?? 1;
@@ -210,9 +221,13 @@ const ZoomifyView = React.forwardRef<
 	{
 		id?: string;
 		isLoading?: boolean;
+		isSecond?: boolean;
+		isMultiView?: boolean;
 	}
->(({ id }, fullscreenRef) => {
+>(({ id, isSecond, isMultiView }, fullscreenRef) => {
 	const imgProps = useImageProperties(id ?? '');
+
+	const theme = useTheme();
 
 	const counter = useRef(0);
 
@@ -234,12 +249,20 @@ const ZoomifyView = React.forwardRef<
 	const imgHeight = parseInt(parsedXML?.IMAGE_PROPERTIES.$.HEIGHT ?? '0');
 
 	return (
-		<Wrapper width="100%" height="100vh">
+		<Wrapper
+			width="100%"
+			height="100vh"
+			css={css`
+				border-left: ${isSecond ? 2 : 0}px solid ${theme.colors.primary};
+			`}
+		>
 			<MapWrapper
 				key={id + counter.current}
 				imgId={id}
 				imgWidth={imgWidth}
 				imgHeight={imgHeight}
+				isSecond={isSecond}
+				isMultiView={isMultiView}
 			/>
 		</Wrapper>
 	);

@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { debounce, isEqual } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 
 import Text from 'components/styled/Text';
@@ -22,9 +22,7 @@ import {
 	fieldsTuple,
 	operationsTuple,
 	TOperation,
-	useSearchContext,
 } from 'hooks/useSearchContext';
-import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 
 import { NameTagIcon, NameTagToText } from 'utils/enumsMap';
 
@@ -39,7 +37,6 @@ export const OperationToWord: Record<TOperation, string> = {
 };
 
 const MainSearchInput = () => {
-	const { state, dispatch } = useSearchContext();
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
@@ -128,22 +125,6 @@ const MainSearchInput = () => {
 			setSearchParams,
 		],
 	);
-
-	const { search } = useLocation();
-	const parsed = useSanitizeSearchQuery(search);
-
-	useEffect(() => {
-		if (!isEqual(parsed, state.searchQuery)) {
-			//console.log('not equal .. dispatching');
-			dispatch?.({
-				type: 'setSearchQuery',
-				searchQuery: {
-					...parsed,
-				},
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [parsed]);
 
 	const getHint = useCallback(
 		async (q: string) => {
@@ -286,7 +267,6 @@ const MainSearchInput = () => {
 										value={selectedTagOp}
 										options={operationsTuple}
 										onChange={operation => {
-											console.log({ ss: 'defocusing' });
 											setShowTagOpMenu(false);
 											setSelectedTagOp(operation);
 											mainInputRef.current?.focus();

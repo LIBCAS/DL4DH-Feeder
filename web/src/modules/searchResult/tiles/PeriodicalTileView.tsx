@@ -15,9 +15,10 @@ import { PublicationChild } from 'api/models';
 
 type Props = {
 	data?: PublicationChild[];
+	onSelect?: (uuid: string) => void;
 };
 
-const PeriodicalTiles: FC<Props> = ({ data }) => {
+const PeriodicalTiles: FC<Props> = ({ data, onSelect }) => {
 	const push = useNavigate();
 
 	return (
@@ -32,7 +33,11 @@ const PeriodicalTiles: FC<Props> = ({ data }) => {
 							href={url}
 							onClick={e => {
 								e.preventDefault();
-								push(url);
+								if (onSelect) {
+									onSelect(d.pid);
+								} else {
+									push(url);
+								}
 							}}
 							css={css`
 								text-decoration: none;

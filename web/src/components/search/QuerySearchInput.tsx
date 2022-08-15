@@ -1,7 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdSearch, MdClear } from 'react-icons/md';
-import { FC, useCallback, useMemo, useRef, useState } from 'react';
+import {
+	Dispatch,
+	FC,
+	SetStateAction,
+	useCallback,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 
@@ -9,6 +17,7 @@ import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
 import { ClickAway } from 'components/form/select/SimpleSelect';
+import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
@@ -23,9 +32,15 @@ export const OperationToTextLabel: Record<TOperation, string> = {
 type Props = {
 	hintApi?: string;
 	onQueryUpdate: (query: string) => void;
+	publicOnly?: boolean;
+	setPublicOnly: Dispatch<SetStateAction<boolean>>;
 };
 
-const QuerySearchInput: FC<Props> = ({ onQueryUpdate }) => {
+const QuerySearchInput: FC<Props> = ({
+	publicOnly,
+	setPublicOnly,
+	onQueryUpdate,
+}) => {
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
@@ -40,16 +55,21 @@ const QuerySearchInput: FC<Props> = ({ onQueryUpdate }) => {
 
 	const handleUpdateContext = onQueryUpdate;
 
-	const getHint = useCallback(async (q: string) => {
-		const hints = await api()
-			.post(`search/hint?q=${q}`)
-			.json<string[]>()
-			.catch(r => console.log(r));
+	const getHint = useCallback(
+		async (q: string) => {
+			const hints = await api()
+				.post(`search/hint?q=${q}`, {
+					body: JSON.stringify({ availability: publicOnly ? 'PUBLIC' : 'ALL' }),
+				})
+				.json<string[]>()
+				.catch(r => console.log(r));
 
-		if (hints) {
-			setHints(hints);
-		}
-	}, []);
+			if (hints) {
+				setHints(hints);
+			}
+		},
+		[publicOnly],
+	);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 100), [getHint]);
 
@@ -199,6 +219,14 @@ const QuerySearchInput: FC<Props> = ({ onQueryUpdate }) => {
 						</Flex>
 					</ClickAway>
 				)}
+				<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
+					<Checkbox
+						checked={publicOnly}
+						onChange={() => setPublicOnly(p => !p)}
+						aria-label="Pouze veřejné"
+						label="Pouze veřejné"
+					/>
+				</Flex>
 			</Flex>
 		</>
 	);

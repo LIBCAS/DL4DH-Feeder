@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { createRef, FC, useEffect, useState } from 'react';
+import { createRef, FC, useContext, useEffect, useState } from 'react';
 import {
 	MdArrowDownward,
 	MdArrowUpward,
@@ -23,15 +23,23 @@ import { PublicationChild } from 'api/models';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
+import { PubCtx } from '../ctx/pub-ctx';
+
 /** TODO: PUBLICATION THUMBNAILS AND SEARCHING WITHIN */
 
 type Props = {
 	marginTop: number;
 	pages: PublicationChild[];
+	isSecond?: boolean;
 };
 
-const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
-	// const { id } = useParams<{ id: string }>();
+const PubThumbnails: FC<Props> = ({ marginTop, pages, isSecond }) => {
+	const pubCtx = useContext(PubCtx);
+
+	const pageId = isSecond
+		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
+		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
+
 	const theme = useTheme();
 	const [toSearch, setToSearch] = useState('');
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({
@@ -44,15 +52,14 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 
 	const [ref, { height: resultsMargin }] = useMeasure();
 
-	const [page, setPage] = useSearchParams();
+	const [sp, setSp] = useSearchParams();
 
 	const gridRef = createRef<FixedSizeGrid>();
 
 	useEffect(() => {
-		const pid = page.get('page') ?? '';
-		const x = pages.findIndex(p => p.pid === pid);
-		setSelectedPage({ pid, rowIndex: Math.floor(x / 3), index: x });
-	}, [page, pages]);
+		const x = pages.findIndex(p => p.pid === pageId);
+		setSelectedPage({ pid: pageId, rowIndex: Math.floor(x / 3), index: x });
+	}, [pageId, pages]);
 
 	useEffect(() => {
 		gridRef.current?.scrollToItem({
@@ -150,11 +157,11 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 							onKeyDown={e => {
 								if (e.key === 'Enter') {
 									const parsed = parseInt((goToPage ?? Infinity) as string) - 1;
-									page.set(
-										'page',
+									sp.set(
+										isSecond ? 'page2' : 'page',
 										pages[Math.min(pages.length - 1, Math.max(parsed, 0))].pid,
 									);
-									setPage(page);
+									setSp(sp);
 								}
 							}}
 						/>
@@ -230,8 +237,8 @@ const PubThumbnails: FC<Props> = ({ marginTop, pages }) => {
 									}
 								`}
 								onClick={() => {
-									page.set('page', pages[index].pid);
-									setPage(page);
+									sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+									setSp(sp);
 									setSelectedPage({ pid: pages[index].pid, rowIndex, index });
 								}}
 							>

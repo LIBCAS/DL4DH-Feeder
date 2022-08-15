@@ -43,11 +43,9 @@ const CircleButton: FC<{
 			alignItems="center"
 			px={1}
 			justifyContent="center"
-			onClick={() => changePage(page - 1)}
+			onClick={() => changePage(page)}
 			css={css`
-				background-color: ${active ? theme.colors.primary : theme.colors.white};
-				border-radius: 0px;
-				border: 1px solid ${active ? theme.colors.primary : 'white'};
+				background-color: ${active ? theme.colors.primary : 'transparent'};
 				font-weight: ${active ? 'bold' : 'normal'};
 				color: ${active ? 'white' : 'black'};
 				cursor: pointer;
@@ -68,7 +66,7 @@ const collapseWidth = 800;
 
 const Pagination: FC<Props> = ({
 	changeLimit,
-	page: orgPage,
+	page,
 	changePage,
 	pageLimit,
 	totalCount,
@@ -86,7 +84,6 @@ const Pagination: FC<Props> = ({
 	);
 
 	const pagesCount = Math.ceil(totalCount / pageLimit);
-	const page = orgPage + 1;
 	const MAX_PAGES_DISPLAY = isMobile ? 3 : 10;
 
 	const middlePages = useMemo(
@@ -139,7 +136,7 @@ const Pagination: FC<Props> = ({
 						const limit = parseInt(e.target.value);
 						changeLimit(limit);
 						Store.set<number>('feeder-pagination-limit', limit);
-						changePage(0);
+						changePage(1);
 					}}
 				>
 					{pageLimitOptions.map(o => (
@@ -156,15 +153,15 @@ const Pagination: FC<Props> = ({
 						m={0}
 						disabled={page === 1 || loading}
 						variant="text"
-						onClick={() => changePage(orgPage - 1)}
+						onClick={() => changePage(page - 1)}
 						css={css`
 							border-radius: 0px;
-							border: 1px solid white;
+
 							cursor: ${page === 1 ? 'initial' : 'pointer'};
 							filter: ${page === 1 ? 'opacity(0.5)' : 'none'};
 							&:hover {
 								background-color: ${page === 1
-									? 'white'
+									? 'transparent'
 									: theme.colors.lightGrey};
 							}
 						`}
@@ -225,13 +222,11 @@ const Pagination: FC<Props> = ({
 						disabled={!hasMore || loading}
 						style={{}}
 						variant="text"
-						onClick={() => changePage(orgPage + 1)}
+						onClick={() => changePage(page + 1)}
 						p={2}
 						m={0}
 						css={css`
 							cursor: ${!hasMore ? 'not-allowed' : 'pointer'};
-							border-radius: 0px;
-							border: 1px solid white;
 							filter: ${!hasMore ? 'opacity(0.5)' : 'none'};
 							&:hover {
 								background-color: ${theme.colors.lightGrey};

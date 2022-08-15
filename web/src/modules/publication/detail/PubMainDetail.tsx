@@ -7,9 +7,10 @@ import ZoomifyView from 'modules/zoomify/ZoomifyView';
 
 type Props = {
 	page: string;
+	pageOfSecond?: string;
 };
 
-const PubMainDetail: FC<Props> = ({ page }) => {
+const PubMainDetail: FC<Props> = ({ page, pageOfSecond }) => {
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 
 	return (
@@ -21,7 +22,10 @@ const PubMainDetail: FC<Props> = ({ page }) => {
 			alignItems="center"
 			position="relative"
 		>
-			<ZoomifyView id={page} />
+			<ZoomifyView id={page} isMultiView={!!pageOfSecond} />
+			{pageOfSecond && (
+				<ZoomifyView id={pageOfSecond} isSecond isMultiView={!!pageOfSecond} />
+			)}
 		</Flex>
 	);
 };

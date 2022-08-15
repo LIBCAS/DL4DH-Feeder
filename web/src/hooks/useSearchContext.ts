@@ -1,4 +1,5 @@
 import { createContext, Dispatch, useContext, useReducer } from 'react';
+import _ from 'lodash';
 
 import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
@@ -28,7 +29,7 @@ export type TOperation = typeof operationsTuple[number];
 export type ViewMode = 'list' | 'graph' | 'tiles';
 
 export type TSearchQuery = Partial<
-	Omit<FiltersDto, 'start' | 'pageSize' | 'sort'>
+	Omit<FiltersDto, 'start' | 'pageSize' | 'sort'> & { page: number }
 >;
 
 type State = {
@@ -65,11 +66,22 @@ type Actions =
 
 export const reducer = (state: State, action: Actions) => {
 	switch (action.type) {
-		case 'setSearchQuery':
+		case 'setSearchQuery': {
+			const page = action.searchQuery?.page ?? NaN;
+			console.log(action.searchQuery);
+			if (!isNaN(page)) {
+				return {
+					...state,
+					searchQuery: _.omit(action.searchQuery, 'page'),
+					page,
+					start: (page - 1) * state.pageSize,
+				};
+			}
 			return {
 				...state,
 				searchQuery: action.searchQuery,
 			};
+		}
 		case 'changeNameTagFilter': {
 			if (action.nameTagFilter) {
 				const newFilter: NameTagFilterDto[] = [] as NameTagFilterDto[];
@@ -107,7 +119,7 @@ export const reducer = (state: State, action: Actions) => {
 			return {
 				...state,
 				page: action.page,
-				start: action.page * state.pageSize,
+				start: (action.page - 1) * state.pageSize,
 			};
 		case 'setPageSize':
 			return { ...state, pageSize: action.pageSize, page: 0, start: 0 };

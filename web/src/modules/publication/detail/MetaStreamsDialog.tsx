@@ -2,24 +2,24 @@
 import { css } from '@emotion/react';
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { MdCode, MdCopyAll, MdExpandMore } from 'react-icons/md';
-import { useParams, useSearchParams } from 'react-router-dom';
-import XMLViewer from 'react-xml-viewer';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList } from 'react-window';
+import XMLViewer from 'react-xml-viewer';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
+import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import Text from 'components/styled/Text';
 import Tabs from 'components/tabs';
-import IconButton from 'components/styled/IconButton';
 
 import { useTheme } from 'theme';
 
+import { PublicationContext, StreamTypeEnum } from 'api/models';
 import {
 	StreamInfoDto,
 	usePublicationChildren,
@@ -27,7 +27,6 @@ import {
 	useStreamList,
 	useStreams,
 } from 'api/publicationsApi';
-import { PublicationContext, StreamTypeEnum } from 'api/models';
 
 import { ModelToText } from 'utils/enumsMap';
 
@@ -342,10 +341,10 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	);
 };
 
-const MetaStreamsDialog = () => {
-	const { id: rootId } = useParams<{ id: string }>();
-	const [searchParams] = useSearchParams();
-	const pageId = searchParams.get('page');
+const MetaStreamsDialog: FC<{ rootId: string; pageId: string }> = ({
+	rootId,
+	pageId,
+}) => {
 	const rootDetailResponse = usePublicationDetail(
 		pageId ?? rootId ?? 'pageId_rootId_undefined',
 	);
