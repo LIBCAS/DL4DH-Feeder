@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { FC, useContext, useEffect, useState } from 'react';
 import { MdPrint, MdShare, MdTextFields } from 'react-icons/md';
 import XML from 'xml2js';
+import { useParams } from 'react-router-dom';
 
 import { Box, Flex } from 'components/styled';
 import Divider from 'components/styled/Divider';
@@ -71,17 +72,23 @@ type Props = {
 };
 
 const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
-	//const { id } = useParams<{ id: string }>();
+	const { id: urlId } = useParams<{ id: string }>();
 	const pubCtx = useContext(PubCtx);
+
+	//TODO: temp nullish values for debugging, remove after tested
 	const id = isSecond
 		? pubCtx.secondPublication?.pid ?? 'ctx-right-pub-id-error'
-		: pubCtx.publication?.pid ?? 'ctx-left-pub-id-error';
+		: pubCtx.publication?.pid ?? urlId ?? 'ctx-left-pub-id-error';
 	const pageId = isSecond
-		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
-		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
+		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current-page-uuid-error'
+		: pubCtx.currentPage?.uuid ?? 'ctx-left-current-page-uuid-error';
 
 	const pubDetail = usePublicationDetail(id ?? 'biblio_id_undefined');
-	const pageDetail = usePublicationDetail(pageId ?? '', pageId === undefined);
+	const pageDetail = usePublicationDetail(
+		pageId ?? '',
+		pageId === 'ctx-right-current-page-uuid-error' ||
+			pageId === 'ctx-left-current-page-uuid-error',
+	);
 
 	//const detail = usePublicationDetailWithRoot(id ?? 'biblio_id_undefined');
 
