@@ -60,7 +60,7 @@ const PublicationDetail = () => {
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId]);
+	}, [pages, pageId, detail.data]);
 
 	useEffect(() => {
 		if (pubChildren.isSuccess && !pubChildren.data?.[0]?.datanode) {

@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled/macro';
-import { isEqual } from 'lodash-es';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { MdBolt, MdExpandMore } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import Dialog from '@reach/dialog';

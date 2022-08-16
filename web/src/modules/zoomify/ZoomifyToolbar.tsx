@@ -39,6 +39,7 @@ const ToolButton: FC<{
 		<Button
 			variant="text"
 			onClick={onClick}
+			px={[2, 2, 3]}
 			css={css`
 				box-sizing: border-box;
 				border: 1px solid ${theme.colors.lightGrey};
@@ -80,19 +81,19 @@ const ZoomifyToolbar: FC<Props> = ({
 
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
 	const pageParamName = isSecond ? 'page2' : 'page';
-	const isMobile = useMobileView();
-	const ICON_SIZE = isMobile ? 22 : 30;
+	const { isMobile } = useMobileView();
+	const ICON_SIZE = isMobile ? 19 : 24;
 	return (
 		<Flex
 			position="absolute"
 			width={isMultiView ? 1 / 2 : 1}
 			bottom={100}
-			justifyContent={isMobile ? 'flex-end' : 'center'}
+			justifyContent={'center'}
 		>
 			<Flex
 				alignItems="center"
 				justifyContent="space-between"
-				flexDirection={isMobile ? 'column' : 'row'}
+				flexWrap="wrap"
 				px={0}
 				py={0}
 				opacity="0.9"

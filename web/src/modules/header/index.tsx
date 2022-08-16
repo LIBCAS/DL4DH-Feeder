@@ -1,41 +1,39 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import useMeasure from 'react-use-measure';
-import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { MdArrowBack, MdMenu } from 'react-icons/md';
 import Dialog from '@reach/dialog';
+import { useContext, useState } from 'react';
+import { MdArrowBack, MdMenu } from 'react-icons/md';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import IconButton from 'components/styled/IconButton';
-import { Flex } from 'components/styled';
-import Text from 'components/styled/Text';
-import Button, { NavLinkButton } from 'components/styled/Button';
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import MainSearchInput from 'components/search/MainSearchInput';
+import { Flex } from 'components/styled';
+import Button, { NavLinkButton } from 'components/styled/Button';
+import IconButton from 'components/styled/IconButton';
+import Text from 'components/styled/Text';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
+
+import { PubCtx } from 'modules/publication/ctx/pub-ctx';
 
 import { theme } from 'theme';
 
 import { useInfoApi } from 'api/infoApi';
 
+import { useMobileView } from 'hooks/useViewport';
+
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
-const collapseWidth = theme.breakpointsInt[3];
 
 const Header = () => {
-	const [ref, { width: viewportWidth }] = useMeasure({
-		debounce: 200,
-	});
-
 	const { pathname } = useLocation();
 	const nav = useNavigate();
 
-	const isMobile = useMemo(
-		() => viewportWidth < collapseWidth,
-		[viewportWidth],
-	);
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 
 	const [sideMenuExpanded, setSideMenuExpanded] = useState(false);
+
+	const ctx = useContext(PubCtx);
+	const { isMobile, isTablet } = useMobileView();
 
 	return (
 		<ResponsiveWrapper
@@ -43,7 +41,6 @@ const Header = () => {
 			px={1}
 			mx={0}
 			maxHeight={60}
-			ref={ref}
 			zIndex={10}
 			css={css`
 				padding-bottom: 0px !important;
@@ -93,9 +90,21 @@ const Header = () => {
 					)}
 
 					<MainSearchInput />
+					{window.origin === 'http://localhost:3000' ? (
+						<button
+							onClick={() => {
+								console.log(ctx);
+								toast.info('ahoj');
+							}}
+						>
+							ctx
+						</button>
+					) : (
+						<></>
+					)}
 
 					<Flex ml={1} flexShrink={0} color="headerColor">
-						{!isMobile ? (
+						{!isTablet ? (
 							<>
 								<NavLinkButton
 									to="/collections"
