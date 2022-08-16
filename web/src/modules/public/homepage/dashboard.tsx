@@ -36,16 +36,21 @@ const Dashboard: FC = () => {
 	const {
 		data,
 		count,
-		isLoading,
+		isLoading: loading,
+		isFetching,
+		isRefetching,
 		hasMore,
 		availableFilters,
 		availableNameTagFilters,
+		dataUpdatedAt,
 	} = useSearchPublications({
 		start: state.start,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		...state.searchQuery,
 	});
+
+	const isLoading = loading || isFetching || isRefetching;
 
 	return (
 		<ResponsiveWrapper
@@ -198,6 +203,7 @@ const Dashboard: FC = () => {
 					`}
 				>
 					<SearchResultLeftPanel
+						key={dataUpdatedAt}
 						data={availableFilters}
 						nameTagData={availableNameTagFilters}
 						isLoading={isLoading}

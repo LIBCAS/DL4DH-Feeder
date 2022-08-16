@@ -1,6 +1,5 @@
 import React from 'react';
 
-import LoaderBounce from 'components/loaders/LoaderBounce';
 import { Wrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
 import LoaderSpin from 'components/loaders/LoaderSpin';
