@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3.1
+
+- side menu for smaller screens
+- view for periodicals
+- exports history with download option
+- UI publication export
+- virtual scrolling for JSON stream
+- sorting DESC in graph view
+- library name as home button
+- FIX: background for page /about
+- FIX: removed pagination in graph view
+
 ## v0.3.0
 
 - user authentication with keycloak
