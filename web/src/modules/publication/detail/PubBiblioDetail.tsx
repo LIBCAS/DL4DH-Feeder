@@ -121,7 +121,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 				px={3}
 			>
 				<MetaStreamsDialog rootId={id} pageId={pageId} />
-				<PublicationExportDialog />
+				<PublicationExportDialog isSecond={isSecond} />
 				<IconButton color="primary">
 					<MdPrint size={24} />
 				</IconButton>

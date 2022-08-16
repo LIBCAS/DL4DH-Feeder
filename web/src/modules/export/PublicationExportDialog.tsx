@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
@@ -16,14 +16,14 @@ import Text, { H1 } from 'components/styled/Text';
 import RadioButton from 'components/styled/RadioButton';
 import SelectInput from 'components/form/select/SelectInput';
 
+import { PubCtx } from 'modules/publication/ctx/pub-ctx';
+
 import { api } from 'api';
 
 import { fieldOptions } from './exportModels';
 
 type FormatOption = { label: string; id: string };
 type AtributeOption = { label: string; id: string };
-
-//import { usePublicationDetail } from 'api/publicationsApi';
 
 export type Sort = {
 	field: string;
@@ -35,6 +35,15 @@ export type Filter = {
 	field: string;
 	operation: 'EQ';
 	value: string;
+};
+
+type ExportFormType = {
+	format: FormatOption;
+	includeFields: AtributeOption[];
+	excludeFields: AtributeOption[];
+	delimiter: delimiterEnum;
+	exportAll: boolean;
+	isSecond?: boolean;
 };
 
 type Params = {
@@ -62,32 +71,22 @@ const formatOptions: FormatOption[] = [
 	{ label: 'JSON', id: 'json' },
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'TEI', id: 'tei' },
-
 	{ label: 'CSV', id: 'csv' },
 	{ label: 'ALTO', id: 'alto' },
 ];
 
-//const attributesOptions: AtributeOption[] = [];
-/* [
-	{ label: 'Atribút 1', id: 'att1' },
-	{ label: 'Atribút 2', id: 'att2' },
-	{ label: 'Atribút 3', id: 'att3' },
-	{ label: 'Atribút 4', id: 'att4' },
-]; */
-
-type ExportFormType = {
-	format: FormatOption;
-	includeFields: AtributeOption[];
-	excludeFields: AtributeOption[];
-	delimiter: delimiterEnum;
-	exportAll: boolean;
-};
-
-const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
+const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
+	closeModal,
+	isSecond,
+}) => {
 	const { keycloak } = useKeycloak();
 
-	const { id: pubId } = useParams<{ id: string }>();
-	//const pubDetail = usePublicationDetail(pubId);
+	const { id: paramId } = useParams<{ id: string }>();
+
+	const pubCtx = useContext(PubCtx);
+	const pubId = isSecond
+		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
+		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
@@ -323,7 +322,7 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 	);
 };
 
-const PublicationExportDialog = () => {
+const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
 	return (
 		<ModalDialog
 			label="Info"
@@ -333,7 +332,7 @@ const PublicationExportDialog = () => {
 				</IconButton>
 			)}
 		>
-			{closeModal => <ExportForm closeModal={closeModal} />}
+			{closeModal => <ExportForm closeModal={closeModal} isSecond={isSecond} />}
 		</ModalDialog>
 	);
 };
