@@ -3,6 +3,7 @@ import { FC, useContext } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -115,11 +116,22 @@ const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
 					{ json: params },
 				);
 
+				if (response.status === 200) {
+					toast(
+						'Požadavka na export bzla úspěšně vytvořena. Její stav můžete zkontrolovat na podstránke Exporty.',
+					);
+					closeModal();
+				} else {
+					toast.error(
+						`Při zadávaní exporto nastala chyba. \n ${response.status}`,
+					);
+				}
+
 				closeModal();
 			} catch (error) {
+				toast.error(`Při zadávaní exporto nastala chyba. \n ${error}`);
 				console.log({ error });
 			}
-			closeModal();
 		},
 	});
 

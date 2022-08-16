@@ -4,6 +4,7 @@ import Dialog from '@reach/dialog';
 import { useContext, useState } from 'react';
 import { MdArrowBack, MdMenu } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import MainSearchInput from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
@@ -90,7 +91,14 @@ const Header = () => {
 
 					<MainSearchInput />
 					{window.origin === 'http://localhost:3000' ? (
-						<button onClick={() => console.log(ctx)}>ctx</button>
+						<button
+							onClick={() => {
+								console.log(ctx);
+								toast.info('ahoj');
+							}}
+						>
+							ctx
+						</button>
 					) : (
 						<></>
 					)}

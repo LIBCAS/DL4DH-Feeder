@@ -1,5 +1,6 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
+import { ToastContainer, Slide } from 'react-toastify';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -15,6 +16,8 @@ import { GlobalStyles, ThemeProvider } from 'theme';
 import { useSearchContextProvider } from 'hooks/useSearchContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
+
+import ToastifyStyles from 'theme/ToastifyStyles';
 
 const App = () => {
 	const {
@@ -34,8 +37,18 @@ const App = () => {
 							<PubDetailCtxProvider>
 								<SearchContextProvider value={[state, dispatch]}>
 									<GlobalStyles />
+									<ToastifyStyles />
 									<Header />
 									<AppRoutes />
+									<ToastContainer
+										position="bottom-center"
+										newestOnTop={false}
+										closeOnClick
+										draggable
+										pauseOnHover
+										transition={Slide}
+										autoClose={5000}
+									/>
 								</SearchContextProvider>
 							</PubDetailCtxProvider>
 						) : (

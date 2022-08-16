@@ -35,7 +35,6 @@ type Props = {
 
 const PubThumbnails: FC<Props> = ({ marginTop, pages, isSecond }) => {
 	const pubCtx = useContext(PubCtx);
-
 	const pageId = isSecond
 		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
 		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
