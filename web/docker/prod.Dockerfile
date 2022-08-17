@@ -4,10 +4,10 @@
 FROM node:16-alpine AS builder
 WORKDIR /build
 
+ARG REACT_APP_KEYCLOAK_URL
+
 # Switch to yarn 2
 RUN yarn set version 3.1.1
-
-# RUN echo "" > .yarnrc.yml
 
 # Install dependencies
 COPY ./web/package.json ./web/yarn.lock ./
