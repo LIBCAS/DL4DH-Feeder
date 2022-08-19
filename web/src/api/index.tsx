@@ -8,7 +8,6 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
 
 import { OidcUserInfo } from 'modules/public/auth';
 
@@ -31,11 +30,7 @@ const FETCH_TIMEOUT = 10000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 export const REFETCH_INTERVAL = 30 * 60 * 1000;
 
-export const api = (
-	prefix?: string,
-	json?: Partial<FiltersDto>,
-	token?: string,
-) => {
+export const api = (prefix?: string, json?: Partial<FiltersDto>) => {
 	return ky.extend({
 		prefixUrl: `${APP_CONTEXT}/api/${prefix ?? ''}`,
 		timeout: FETCH_TIMEOUT,
@@ -51,6 +46,18 @@ export const api = (
 					}
 
 					return;
+				},
+			],
+			afterResponse: [
+				(_request, _options, response) => {
+					// If response contains bearer, save it as token
+					if (response.headers.has('bearer')) {
+						store.set('feeder-token', response.headers.get('bearer'));
+					}
+					// If unauthorized token, remove it
+					if (response.status === 401) {
+						store.remove('feeder-token');
+					}
 				},
 			],
 		},

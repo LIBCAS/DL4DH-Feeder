@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useKeycloak } from '@react-keycloak/web';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { MdArrowDropDown, MdDownload } from 'react-icons/md';
 
 import MyAccordion from 'components/accordion';
@@ -23,14 +23,7 @@ import { ExportJobStatusToText } from 'utils/enumsMap';
 import Store from 'utils/Store';
 
 const ExportsDashboard = () => {
-	const { initialized, keycloak } = useKeycloak();
-	console.log({ keycloak });
-
-	useEffect(() => {
-		if (initialized && keycloak.authenticated) {
-			Store.set('feeder-token', keycloak.token ?? '');
-		}
-	}, [initialized, keycloak.authenticated, keycloak.token]);
+	const { keycloak } = useKeycloak();
 
 	if (!keycloak.authenticated) {
 		return (
@@ -92,9 +85,10 @@ const ExportsDashboard = () => {
 						<Button
 							variant="primary"
 							onClick={async () => {
+								await api().get('user/logout');
+								keycloak.logout();
 								keycloak.clearToken();
 								Store.remove('feeder-token');
-								await api().get('user/logout');
 							}}
 						>
 							Odlasit
@@ -147,7 +141,7 @@ const HeaderCell: FC<{
 const Exportslist = () => {
 	const [params, setParams] = useState<ExportListParams>({
 		sort: { field: 'created', direction: 'DESC' },
-		size: 5,
+		size: 10,
 		page: 0,
 	});
 	const response = useExportList(params);
