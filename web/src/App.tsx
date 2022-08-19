@@ -1,4 +1,3 @@
-import { useKeycloak } from '@react-keycloak/web';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 
@@ -7,7 +6,6 @@ import AppRoutes from 'components/routing/AppRoutes';
 import { Flex } from 'components/styled';
 
 import Header from 'modules/header';
-import { Loader } from 'modules/loader';
 import { PubDetailCtxProvider } from 'modules/publication/ctx/pub-ctx';
 
 import { GlobalStyles, ThemeProvider } from 'theme';
@@ -24,8 +22,6 @@ const App = () => {
 		dispatch,
 		Provider: SearchContextProvider,
 	} = useSearchContextProvider();
-
-	const { initialized } = useKeycloak();
 
 	return (
 		<ThemeProvider>

@@ -22,6 +22,14 @@ import { ExportListParams, useExportList } from 'api/exportsApi';
 import { ExportJobStatusToText } from 'utils/enumsMap';
 import Store from 'utils/Store';
 
+const Cell = styled(Text)`
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 0;
+	margin: 0;
+`;
+
 const ExportsDashboard = () => {
 	const { keycloak } = useKeycloak();
 
@@ -176,14 +184,20 @@ const Exportslist = () => {
 								label={
 									<>
 										<Box flex={3}>
-											{row.publicationTitle ?? row.publicationId ?? '--'}
+											<Cell>
+												{row.publicationTitle ?? row.publicationId ?? '--'}
+											</Cell>
 										</Box>
 										<Box flex={2}>
-											{row.created
-												? new Date(row.created).toLocaleDateString()
-												: '--'}
+											<Cell>
+												{row.created
+													? new Date(row.created).toLocaleDateString()
+													: '--'}
+											</Cell>
 										</Box>
-										<Box flex={2}>{ExportJobStatusToText[row.status]}</Box>
+										<Box flex={2}>
+											<Cell>{ExportJobStatusToText[row.status]}</Cell>
+										</Box>
 										<Box flex={0.5} maxWidth={100}>
 											{row.status === 'COMPLETED' && (
 												<IconButton
@@ -208,6 +222,9 @@ const Exportslist = () => {
 								<Box py={3} minHeight={100}>
 									<Divider mb={3} opacity={0.5} />
 									<H3>Podrobnosti</H3>
+									<Text color="#757575" fontSize="sm">
+										Název publikace: <b>{row.publicationTitle}</b>
+									</Text>
 									<Text color="#757575" fontSize="sm">
 										ID: <b>{row.publicationId}</b>
 									</Text>
