@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useKeycloak } from '@react-keycloak/web';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { MdArrowDropDown, MdDownload } from 'react-icons/md';
 
 import MyAccordion from 'components/accordion';
@@ -26,9 +26,11 @@ const ExportsDashboard = () => {
 	const { initialized, keycloak } = useKeycloak();
 	console.log({ keycloak });
 
-	if (initialized && !keycloak.authenticated) {
-		Store.set('feeder-token', keycloak.token ?? '');
-	}
+	useEffect(() => {
+		if (initialized && keycloak.authenticated) {
+			Store.set('feeder-token', keycloak.token ?? '');
+		}
+	}, [initialized, keycloak.authenticated, keycloak.token]);
 
 	if (!keycloak.authenticated) {
 		return (
@@ -178,7 +180,9 @@ const Exportslist = () => {
 								`}
 								label={
 									<>
-										<Box flex={3}>{row.publicationId}</Box>
+										<Box flex={3}>
+											{row.publicationTitle ?? row.publicationId ?? '--'}
+										</Box>
 										<Box flex={2}>
 											{row.created
 												? new Date(row.created).toLocaleDateString()
@@ -210,13 +214,10 @@ const Exportslist = () => {
 									<Divider mb={3} opacity={0.5} />
 									<H3>Podrobnosti</H3>
 									<Text color="#757575" fontSize="sm">
-										Lorem ipsum dolor sit amet consectetur adipisicing elit.
-										Nobis nemo error, debitis perferendis delectus voluptas
-										animi facere placeat facilis, quidem sunt voluptate expedita
-										illum libero. Autem quae voluptates sed praesentium rerum
-										natus quisquam ullam! Veritatis neque voluptas ipsa id
-										provident unde quo harum repudiandae, numquam, nam rerum.
-										Vel, officia nesciunt!
+										ID: <b>{row.publicationId}</b>
+									</Text>
+									<Text color="#757575" fontSize="sm">
+										Parametre: <b>{row.parameters}</b>
 									</Text>
 								</Box>
 							</MyAccordion>

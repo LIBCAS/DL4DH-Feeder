@@ -54,6 +54,9 @@ export type ExportDto = {
 	username: string;
 	publicationId: string;
 	status: JobStatusEnum;
+	publicationTitle: string;
+	format: string;
+	parameters: string;
 };
 
 export type PageExportDto = {
