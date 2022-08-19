@@ -5,6 +5,7 @@ import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
 import cz.inqool.dl4dh.feeder.dto.KrameriusPlusExportDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -101,8 +102,8 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(JobDto.class).block();
 
-        PublicationDto publication = kramerius.get()
-                .uri("/item/"+job.getPublicationId()).retrieve().bodyToMono(PublicationDto.class).block();
+        KrameriusItemDto publication = kramerius.get()
+                .uri("/item/"+job.getPublicationId()).retrieve().bodyToMono(KrameriusItemDto.class).block();
 
         Export export = new Export();
         export.setJobId(job.getId());
