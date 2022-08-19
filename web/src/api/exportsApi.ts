@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
-import { boolean } from 'yup';
+
+import { Sort } from 'modules/export/PublicationExportDialog';
 
 import { api } from 'api';
 
@@ -52,7 +53,7 @@ export type ExportDto = {
 	created?: string;
 	username: string;
 	publicationId: string;
-	status: JobEventDto;
+	status: JobStatusEnum;
 };
 
 export type PageExportDto = {
@@ -60,18 +61,34 @@ export type PageExportDto = {
 	totalElements: number;
 	first: boolean;
 	last: boolean;
-	pageable: unknown;
+
 	numberOfElements: number;
 	sort: unknown;
 	size: number;
 	content: ExportDto[];
 	number: number;
 	empty: boolean;
+	pageable: {
+		offset: number;
+		page: number;
+	};
 };
 
-export const useExportList = () =>
-	useQuery('export-list', () => api().get(`exports`).json<PageExportDto>(), {
-		refetchOnMount: true,
-		refetchOnWindowFocus: true,
-		refetchInterval: 60000,
-	});
+export type ExportListParams = { sort: Sort; size: number; page: number };
+
+export const useExportList = ({ sort, size, page }: ExportListParams) =>
+	useQuery(
+		['export-list', { sort, size, page }],
+		() =>
+			api()
+				.get(
+					`exports?sort=${sort.field},${sort.direction}&page=${page}&size=${size}`,
+				)
+				.json<PageExportDto>(),
+		{
+			refetchOnMount: true,
+			refetchOnWindowFocus: true,
+			refetchInterval: 60000,
+		},
+	);
+//?sort=${sort.field},${sort.direction}&page=${page}&size=${size}

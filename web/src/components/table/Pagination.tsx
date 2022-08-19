@@ -12,7 +12,8 @@ import { useTheme } from 'theme';
 
 import Store from 'utils/Store';
 
-const pageLimitOptions = [15, 30, 50, 100];
+const defaultPageLimitOptions = [15, 30, 50, 100];
+const defaultStorageKey = 'feeder-pagination-limit';
 const nameFromOption = (n: number) => (n !== -1 ? n : 'Všetko');
 
 const selectStyle = { fontFamily: 'Calibri', fontSize: '16px' };
@@ -28,6 +29,8 @@ type Props = {
 	offset: number;
 	hasMore?: boolean;
 	loading?: boolean;
+	limitOptions?: number[];
+	localStorageKey?: string;
 };
 
 const CircleButton: FC<{
@@ -72,6 +75,8 @@ const Pagination: FC<Props> = ({
 	totalCount,
 	hasMore,
 	loading,
+	limitOptions,
+	localStorageKey,
 }) => {
 	const [ref, { width: viewportWidth }] = useMeasure({
 		polyfill: ResizeObserver,
@@ -82,6 +87,8 @@ const Pagination: FC<Props> = ({
 		() => viewportWidth < collapseWidth,
 		[viewportWidth],
 	);
+
+	const pageLimitOptions = limitOptions ?? defaultPageLimitOptions;
 
 	const pagesCount = Math.ceil(totalCount / pageLimit);
 	const MAX_PAGES_DISPLAY = isMobile ? 3 : 10;
@@ -110,11 +117,13 @@ const Pagination: FC<Props> = ({
 	);
 
 	useEffect(() => {
-		const limit = parseInt(Store.get<string>('feeder-pagination-limit') ?? '');
+		const limit = parseInt(
+			Store.get<string>(localStorageKey ?? defaultStorageKey) ?? '',
+		);
 		if (limit && pageLimitOptions.some(l => l === limit)) {
 			changeLimit(limit);
 		}
-	}, [changeLimit]);
+	}, [changeLimit, pageLimitOptions, localStorageKey]);
 
 	return (
 		<Flex
@@ -135,7 +144,7 @@ const Pagination: FC<Props> = ({
 					onChange={e => {
 						const limit = parseInt(e.target.value);
 						changeLimit(limit);
-						Store.set<number>('feeder-pagination-limit', limit);
+						Store.set<number>(localStorageKey ?? defaultStorageKey, limit);
 						changePage(1);
 					}}
 				>

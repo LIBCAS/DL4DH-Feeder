@@ -118,7 +118,8 @@ const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
 
 				if (response.status === 200) {
 					toast(
-						'Požadavka na export bzla úspěšně vytvořena. Její stav můžete zkontrolovat na podstránke Exporty.',
+						'Požadavka na export byla úspěšně vytvořena. Její stav můžete zkontrolovat na podstránke Exporty.',
+						{ delay: 10000 },
 					);
 					closeModal();
 				} else {
