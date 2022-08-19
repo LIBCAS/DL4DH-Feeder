@@ -1,9 +1,11 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
 import cz.inqool.dl4dh.feeder.dto.KrameriusPlusExportDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -35,6 +37,8 @@ import java.util.List;
 public class ExportApi {
 
     private static final Logger log = LoggerFactory.getLogger(ExportApi.class);
+
+    private WebClient kramerius;
 
     private WebClient krameriusPlus;
 
@@ -98,19 +102,30 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(JobDto.class).block();
 
+        KrameriusItemDto publication = kramerius.get()
+                .uri("/item/"+job.getPublicationId()).retrieve().bodyToMono(KrameriusItemDto.class).block();
+
         Export export = new Export();
         export.setJobId(job.getId());
         export.setPublicationId(job.getPublicationId());
+        export.setPublicationTitle(publication.getTitle());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
+        export.setDelimiter(job.getConfig().getParameters().getDelimiter());
+        export.setFormat(Export.Format.valueOf(format.toUpperCase()));
+        export.setParameters(job.getConfig().getParameters().getParams());
         export.setUsername(user.getName());
         exportRepository.save(export);
 
         return export;
     }
+    @Resource(name = "krameriusWebClient")
+    public void setKrameriusWebClient(WebClient webClient) {
+        this.kramerius = webClient;
+    }
 
     @Resource(name = "krameriusPlusWebClient")
-    public void setWebClient(WebClient webClient) {
+    public void setKrameriusPlusWebClient(WebClient webClient) {
         this.krameriusPlus = webClient;
     }
 }
