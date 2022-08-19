@@ -16,4 +16,5 @@ public class JobDto {
     private String created;
     private String publicationId;
     private Export.Status lastExecutionStatus;
+    private JobConfigDto config;
 }

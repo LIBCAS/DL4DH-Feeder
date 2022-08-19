@@ -28,6 +28,14 @@ public class Export extends AuditModel {
         UNKNOWN
     }
 
+    public enum Format {
+        TEXT,
+        TEI,
+        JSON,
+        CSV,
+        ALTO
+    }
+
 	@Id
     @GeneratedValue(generator = "export_generator")
     @SequenceGenerator(
@@ -40,10 +48,19 @@ public class Export extends AuditModel {
 
     private String publicationId;
 
+    private String publicationTitle;
+
     private String created;
+
+    private String delimiter;
+
+    private String parameters;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Format format;
 
     @JsonIgnore
     @Column(columnDefinition = "text")
