@@ -7,8 +7,12 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 import keycloak from 'auth/KeycloakService';
 
+import Store from 'utils/Store';
+
 import App from './App';
+
 import './index.css';
+
 const queryCache = new QueryCache();
 const queryClient = new QueryClient({
 	queryCache,
@@ -19,7 +23,14 @@ const queryClient = new QueryClient({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<ReactKeycloakProvider authClient={keycloak}>
+		<ReactKeycloakProvider
+			authClient={keycloak}
+			onTokens={tokens => {
+				Store.set('feeder-token', tokens.token ?? '');
+				console.log('KEYCLOAK LOG:');
+				console.log({ tokens });
+			}}
+		>
 			<QueryClientProvider client={queryClient}>
 				<App />
 				<ReactQueryDevtools />

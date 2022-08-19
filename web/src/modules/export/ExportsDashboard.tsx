@@ -93,6 +93,7 @@ const ExportsDashboard = () => {
 							variant="primary"
 							onClick={async () => {
 								keycloak.clearToken();
+								Store.remove('feeder-token');
 								await api().get('user/logout');
 							}}
 						>
@@ -217,6 +218,9 @@ const Exportslist = () => {
 										ID: <b>{row.publicationId}</b>
 									</Text>
 									<Text color="#757575" fontSize="sm">
+										Formát: <b>{row.format}</b>
+									</Text>
+									<Text color="#757575" fontSize="sm">
 										Parametre: <b>{row.parameters}</b>
 									</Text>
 								</Box>
@@ -227,10 +231,10 @@ const Exportslist = () => {
 						<Flex width={1} alignItems="center" px={2} position="sticky">
 							<HeaderCell
 								flex={3}
-								field="publicationId"
+								field="publicationTitle"
 								updateParams={setParams}
 								params={params}
-								label="ID publikace"
+								label="Název publikace"
 							/>
 							<HeaderCell
 								flex={2}
@@ -281,7 +285,7 @@ const Exportslist = () => {
 						}
 						offset={params.page * params.size}
 						loading={response.isLoading}
-						limitOptions={[2, 3, 5, 10, 15]}
+						limitOptions={[10, 20, 30]}
 						localStorageKey="feeder-export-list-pagination"
 					/>
 				</Flex>
