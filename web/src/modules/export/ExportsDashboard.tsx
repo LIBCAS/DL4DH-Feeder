@@ -20,10 +20,15 @@ import { api } from 'api';
 import { ExportListParams, useExportList } from 'api/exportsApi';
 
 import { ExportJobStatusToText } from 'utils/enumsMap';
+import Store from 'utils/Store';
 
 const ExportsDashboard = () => {
-	const { keycloak } = useKeycloak();
+	const { initialized, keycloak } = useKeycloak();
 	console.log({ keycloak });
+
+	if (initialized && !keycloak.authenticated) {
+		Store.set('feeder-token', keycloak.token ?? '');
+	}
 
 	if (!keycloak.authenticated) {
 		return (
