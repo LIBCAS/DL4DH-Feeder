@@ -80,6 +80,7 @@ services:
       nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
       nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
       nginx.ingress.kubernetes.io/websocket-services: feederfe
+      nginx.ingress.kubernetes.io/enable-cors: "true"
       nginx.org/websocket-services: feederfe
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"
       app.gitlab.com/env: "${CI_ENVIRONMENT_SLUG}"
