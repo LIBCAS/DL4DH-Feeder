@@ -17,12 +17,23 @@ import { useTheme } from 'theme';
 
 import { ExportDto } from 'api/exportsApi';
 
-import { ExportSort, parseFieldOptions } from './exportModels';
+import {
+	AltoParam,
+	ExportSort,
+	parseFieldOptions,
+	PipeParam,
+	TagParam,
+	Delimiter,
+} from './exportModels';
 
 type SerializedExportParameters = {
 	includeFields: string[];
 	excludeFields: string[];
-	sorting: ExportSort;
+	sorting: ExportSort[];
+	delimiter?: Delimiter;
+	altoParams?: AltoParam[];
+	nameTagParams?: TagParam[];
+	udPipeParams?: PipeParam[];
 };
 
 const delimiterOptions = [
@@ -42,19 +53,20 @@ type Props = {
 };
 
 const parseParameters = (parameters?: string) => {
-	const parsedJson = JSON.parse(
-		parameters ?? '{}',
-	) as SerializedExportParameters;
+	const {
+		includeFields: parsedIF,
+		excludeFields: parsedEF,
+		...rest
+	} = JSON.parse(parameters ?? '{}') as SerializedExportParameters;
 
-	const includeFields = parseFieldOptions(parsedJson.includeFields);
-	const excludeFields = parseFieldOptions(parsedJson.excludeFields);
-	const sorting = parsedJson.sorting;
+	const includeFields = parseFieldOptions(parsedIF);
+	const excludeFields = parseFieldOptions(parsedEF);
 
-	return { includeFields, excludeFields, sorting };
+	return { includeFields, excludeFields, ...rest };
 };
 
 const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
-	const { includeFields, excludeFields } = parseParameters(
+	const { includeFields, excludeFields, ...parsed } = parseParameters(
 		exportDto.parameters,
 	);
 	return (
@@ -134,6 +146,48 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								{excludeFields?.map((f, i) => (
 									<Chip mx={2} mb={2} p={2} key={`${f.id}${i}`}>
 										{f.label}
+									</Chip>
+								))}
+							</Flex>
+						</Flex>
+					)}
+					{(parsed.altoParams ?? []).length > 0 && (
+						<Flex my={3} mr={2}>
+							<Text flexShrink={0} my={2}>
+								Alto Params
+							</Text>
+							<Flex flexWrap="wrap">
+								{parsed.altoParams?.map((p, i) => (
+									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
+										{p}
+									</Chip>
+								))}
+							</Flex>
+						</Flex>
+					)}
+					{(parsed.nameTagParams ?? []).length > 0 && (
+						<Flex my={3} mr={2}>
+							<Text flexShrink={0} my={2}>
+								NameTag Params
+							</Text>
+							<Flex flexWrap="wrap">
+								{parsed.nameTagParams?.map((p, i) => (
+									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
+										{p}
+									</Chip>
+								))}
+							</Flex>
+						</Flex>
+					)}
+					{(parsed.udPipeParams ?? []).length > 0 && (
+						<Flex my={3} mr={2}>
+							<Text flexShrink={0} my={2}>
+								udPipe Params
+							</Text>
+							<Flex flexWrap="wrap">
+								{parsed.udPipeParams?.map((p, i) => (
+									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
+										{p}
 									</Chip>
 								))}
 							</Flex>
