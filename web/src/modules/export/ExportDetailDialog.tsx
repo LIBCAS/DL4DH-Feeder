@@ -1,33 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { FC } from 'react';
-import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
-import { BiLinkExternal } from 'react-icons/bi';
 import Dialog from '@reach/dialog';
+import { FC } from 'react';
+import { BiLinkExternal } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
-import Checkbox from 'components/form/checkbox/Checkbox';
-import SelectInput from 'components/form/select/SelectInput';
-import ModalDialog from 'components/modal';
+import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
 import Button, { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
-import { Chip } from 'components/form/input/TextInput';
 
 import { useTheme } from 'theme';
 
 import { ExportDto } from 'api/exportsApi';
 
-import {
-	ExportFieldOption,
-	exportFieldOptions,
-	ExportFormatOption,
-	ExportSort,
-	parseFieldOptions,
-} from './exportModels';
+import { ExportSort, parseFieldOptions } from './exportModels';
 
 type SerializedExportParameters = {
 	includeFields: string[];

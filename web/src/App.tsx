@@ -50,7 +50,7 @@ const App = () => {
 									<Header />
 									<AppRoutes />
 									<ToastContainer
-										position="top-center"
+										position="bottom-center"
 										newestOnTop={false}
 										closeOnClick
 										draggable
