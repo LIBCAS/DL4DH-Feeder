@@ -1,7 +1,3 @@
-/**
- * Param options
- * "?" - means "other character"
- */
 export type PipeParam = 'n' | 'lemma' | 'pos' | 'msd' | 'join' | '?';
 export type TagParam = 'a' | 'g' | 'i' | 'm' | 'n' | 'o' | 'p' | 't' | '?';
 export type AltoParam = 'width' | 'height' | 'vpos' | 'hpos' | '?';
@@ -20,6 +16,8 @@ export type ExportFilter = {
 	operation: 'EQ';
 	value: string;
 };
+
+export type Delimiter = ',' | '\t';
 
 export const exportFieldOptions: ExportFieldOption[] = [
 	{

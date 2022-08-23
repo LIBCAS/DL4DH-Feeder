@@ -24,6 +24,7 @@ import { api } from 'api';
 import {
 	AltoParam,
 	altoParamsOptions,
+	Delimiter,
 	ExportFieldOption,
 	exportFieldOptions,
 	ExportFilter,
@@ -34,8 +35,6 @@ import {
 	TagParam,
 	udPipeParamsOptions,
 } from './exportModels';
-
-type Delimiter = ',' | '\t';
 
 type ExportFormType = {
 	format: ExportFormatOption;
