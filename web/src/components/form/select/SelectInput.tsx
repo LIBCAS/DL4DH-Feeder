@@ -15,7 +15,7 @@ import IconButton from 'components/styled/IconButton';
 import { assert } from 'utils';
 
 //import ErrorFeedback from '../error/ErrorFeedback';
-import { InputCss, InputWrapper, Label } from '../input/TextInput';
+import { Chip, InputCss, InputWrapper, Label } from '../input/TextInput';
 
 import styled from 'theme/styled';
 
@@ -69,9 +69,15 @@ export type SelectInputProps<T> = CommonSelectProps<T> &
 
 const Select = styled.input<{
 	colorVariant?: CommonSelectProps<unknown>['colorVariant'];
+	disabled?: CommonSelectProps<unknown>['disabled'];
 }>`
 	${p => InputCss(p.theme)}
 	appearance: none;
+	${p =>
+		p.disabled &&
+		css`
+			cursor: not-allowed;
+		`}
 
 	${p =>
 		p.colorVariant === 'inverted' &&
@@ -209,21 +215,24 @@ function SelectInput<T>({
 								<Flex maxWidth="100%" flexWrap="wrap" mb={2}>
 									{
 										// eslint-disable-next-line @typescript-eslint/no-unused-vars
-										p.value.map(v => ({
-											/* <Chip
-											key={keyFromOption(v)}
-											variant="withCross"
-											size="small"
-											onDelete={() =>
-												p.onSetValue(
-													id,
-													p.value.filter(val => val !== v),
-												)
-											}
-										>
-											{labelFromOption(v)}
-										</Chip> */
-										}))
+										p.value.map(v => (
+											<Chip
+												key={keyFromOption(v)}
+												withCross={!disabled}
+												size="small"
+												fontSize="sm"
+												onClose={() =>
+													p.onSetValue(
+														id,
+														p.value.filter(val => val !== v),
+													)
+												}
+												p={2}
+												m={1}
+											>
+												{labelFromOption(v)}
+											</Chip>
+										))
 									}
 								</Flex>
 							)}

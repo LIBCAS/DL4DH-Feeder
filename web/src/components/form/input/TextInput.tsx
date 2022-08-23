@@ -10,6 +10,7 @@ import Text from 'components/styled/Text';
 import { Box, Flex, FlexProps } from 'components/styled';
 import ErrorFeedback from 'components/error/ErrorFeedback';
 import LoaderSpin from 'components/loaders/LoaderSpin';
+import IconButton from 'components/styled/IconButton';
 
 import { styled, Theme, theme } from 'theme';
 import { CrossIcon } from 'assets';
@@ -336,11 +337,9 @@ export const InfoBox: FC<
 	);
 };
 
-export const Chip: FC<{ onClose: () => void } & FlexProps> = ({
-	onClose,
-	children,
-	...flexProps
-}) => {
+export const Chip: FC<
+	{ onClose: () => void; withCross?: boolean } & FlexProps
+> = ({ onClose, children, withCross, ...flexProps }) => {
 	return (
 		<Flex
 			alignItems="center"
@@ -352,13 +351,11 @@ export const Chip: FC<{ onClose: () => void } & FlexProps> = ({
 			{...flexProps}
 		>
 			{children}
-			<CrossIcon
-				ml={2}
-				size={12}
-				cursor="pointer"
-				onClick={onClose}
-				justifySelf="flex-end"
-			/>
+			{withCross && (
+				<IconButton onClick={onClose} ml={2} justifySelf="flex-end">
+					<CrossIcon size={12} />
+				</IconButton>
+			)}
 		</Flex>
 	);
 };
