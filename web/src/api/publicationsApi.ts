@@ -1,6 +1,5 @@
 import { useQueries, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
-import { result } from 'lodash-es';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 

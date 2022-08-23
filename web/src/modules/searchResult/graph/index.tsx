@@ -10,7 +10,6 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { MdZoomOut, MdZoomIn } from 'react-icons/md';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
 import Text from 'components/styled/Text';
@@ -54,7 +53,7 @@ const SortingText: Record<OptionXAxisSorting, string> = {
 };
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
-	const [zoom, setZoom] = useState(50);
+	//const [zoom, setZoom] = useState(50);
 	const [sorting, setSorting] = useState<OptionXAxisSorting>('key');
 	const [axisX, setAxisX] = useState<OptionXAxisType>(OptionsXAxis[0]);
 	const [sortDirection, setSortDirection] = useState<number>(1);

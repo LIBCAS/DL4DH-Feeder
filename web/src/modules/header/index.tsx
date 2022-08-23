@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import Dialog from '@reach/dialog';
 import { useContext, useState } from 'react';
-import { MdArrowBack, MdMenu, MdPerson } from 'react-icons/md';
+import { MdArrowBack, MdMenu } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

@@ -14,12 +14,9 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Pagination from 'components/table/Pagination';
 
-import { api } from 'api';
-
 import { ExportListParams, useExportList } from 'api/exportsApi';
 
 import { ExportJobStatusToText } from 'utils/enumsMap';
-import Store from 'utils/Store';
 
 import ExportDetailDialog from './ExportDetailDialog';
 

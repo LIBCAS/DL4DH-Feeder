@@ -40,7 +40,7 @@ export const api = (prefix?: string, json?: Partial<FiltersDto>) => {
 		hooks: {
 			beforeRequest: [
 				request => {
-					const token = store.get<string>('feeder-token', undefined);
+					const token = store.get<string>(store.keys.Token, undefined);
 					if (token) {
 						request.headers.set('Authorization', `Bearer ${token}`);
 					}
@@ -52,11 +52,11 @@ export const api = (prefix?: string, json?: Partial<FiltersDto>) => {
 				(_request, _options, response) => {
 					// If response contains bearer, save it as token
 					if (response.headers.has('bearer')) {
-						store.set('feeder-token', response.headers.get('bearer'));
+						store.set(store.keys.Token, response.headers.get('bearer'));
 					}
 					// If unauthorized token, remove it
 					if (response.status === 401) {
-						store.remove('feeder-token');
+						store.remove(store.keys.Token);
 					}
 				},
 			],
