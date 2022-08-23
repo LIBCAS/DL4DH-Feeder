@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import Dialog from '@reach/dialog';
 import { useContext, useState } from 'react';
-import { MdArrowBack, MdMenu } from 'react-icons/md';
+import { MdArrowBack, MdMenu, MdPerson } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -90,7 +90,7 @@ const Header = () => {
 					)}
 
 					<MainSearchInput />
-					{window.origin === 'http://localhost:3000' ? (
+					{window.origin === 'http://localhost:30000' ? (
 						<button
 							onClick={() => {
 								console.log(ctx);
@@ -142,6 +142,7 @@ const Header = () => {
 								>
 									English
 								</Button>
+
 								<NavLinkButton
 									to="/exports"
 									color="headerColor"
@@ -151,6 +152,10 @@ const Header = () => {
 								>
 									Exporty
 								</NavLinkButton>
+								<Button minWidth={100} variant="primary" px={1}>
+									<MdPerson size={16} />
+									User
+								</Button>
 								<Button minWidth={100} variant="primary" px={1}>
 									Přejít do Kraméria
 								</Button>

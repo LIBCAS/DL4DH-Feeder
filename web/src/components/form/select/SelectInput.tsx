@@ -77,6 +77,10 @@ const Select = styled.input<{
 		p.disabled &&
 		css`
 			cursor: not-allowed;
+			color: grey !important;
+			&::placeholder {
+				color: grey;
+			}
 		`}
 
 	${p =>
@@ -300,7 +304,7 @@ function SelectInput<T>({
 												type={undefined}
 												minWidth="auto"
 												aria-label="open options"
-												color={color}
+												color={disabled ? 'grey' : color}
 												mr={2}
 												mt={1}
 											>

@@ -1,11 +1,12 @@
+import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
 import { FC, useContext } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
-import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
+import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
@@ -13,33 +14,42 @@ import Button from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import Text, { H1 } from 'components/styled/Text';
 import RadioButton from 'components/styled/RadioButton';
-import SelectInput from 'components/form/select/SelectInput';
+import Text, { H1 } from 'components/styled/Text';
 
 import { PubCtx } from 'modules/publication/ctx/pub-ctx';
 
 import { api } from 'api';
 
 import {
+	AltoParam,
+	altoParamsOptions,
 	ExportFieldOption,
 	exportFieldOptions,
 	ExportFilter,
 	ExportFormatOption,
 	ExportSort,
-	parseFieldOptions,
+	nameTagParamsOptions,
+	PipeParam,
+	TagParam,
+	udPipeParamsOptions,
 } from './exportModels';
+
+type Delimiter = ',' | '\t';
 
 type ExportFormType = {
 	format: ExportFormatOption;
 	includeFields: ExportFieldOption[];
 	excludeFields: ExportFieldOption[];
-	delimiter: delimiterEnum;
+	delimiter: Delimiter;
 	exportAll: boolean;
 	isSecond?: boolean;
+	altoParams?: AltoParam[];
+	nameTagParams?: TagParam[];
+	udPipeParams?: PipeParam[];
 };
 
-type Params = {
+type ExportParamsDto = {
 	params: {
 		disablePagination?: boolean;
 		paging?: {
@@ -51,7 +61,10 @@ type Params = {
 		filters?: ExportFilter[];
 		includeFields?: string[];
 		excludeFields?: string[];
-		delimiter: delimiterEnum;
+		delimiter?: Delimiter;
+		altoParams?: AltoParam[];
+		nameTagParams?: TagParam[];
+		udPipeParams?: PipeParam[];
 	};
 };
 
@@ -71,7 +84,48 @@ const formatOptions: ExportFormatOption[] = [
 type Props = {
 	closeModal: () => void;
 	isSecond?: boolean;
-} & Partial<ExportFormType>;
+};
+
+const formatValues = (values: ExportFormType): ExportParamsDto => {
+	const common = { sorting: [], filters: [] };
+	const format = values.format.id;
+	if (format === 'alto' || format === 'text') {
+		return { params: { ...common } };
+	}
+	if (format === 'json') {
+		return {
+			params: {
+				...common,
+				includeFields: values.includeFields.map(f => f.id),
+				excludeFields: values.excludeFields.map(f => f.id),
+			},
+		};
+	}
+
+	if (format === 'csv') {
+		return {
+			params: {
+				...common,
+				includeFields: values.includeFields.map(f => f.id),
+				excludeFields: values.excludeFields.map(f => f.id),
+				delimiter: values.delimiter,
+			},
+		};
+	}
+
+	if (format === 'tei') {
+		return {
+			params: {
+				...common,
+				altoParams: values.altoParams,
+				nameTagParams: values.nameTagParams,
+				udPipeParams: values.udPipeParams,
+			},
+		};
+	}
+
+	return { params: { ...common } };
+};
 
 export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	const { keycloak } = useKeycloak();
@@ -93,16 +147,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		},
 
 		onSubmit: async values => {
-			console.log({ values });
-			const params: Partial<Params> = {
-				params: {
-					excludeFields: values.excludeFields.map(f => f.id),
-					filters: [],
-					includeFields: values.includeFields.map(f => f.id),
-					sorting: [],
-					delimiter: values.delimiter,
-				},
-			};
+			const params = formatValues(values);
 
 			try {
 				const response = await api().post(
@@ -166,7 +211,9 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		);
 	}
 
-	const { handleSubmit, handleChange, setFieldValue, values } = formik;
+	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
+		formik;
+	console.log({ values });
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -241,35 +288,78 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								/>
 							</Flex>
 						)}
-						{values.format.id !== 'text' && values.format.id !== 'alto' && (
+						{values.format.id !== 'text' &&
+							values.format.id !== 'alto' &&
+							values.format.id !== 'tei' && (
+								<>
+									<Text my={2}>Zahrnout pole</Text>
+									<SelectInput
+										key="includeFields"
+										id="includeFields"
+										placeholder="Zvolte pole"
+										options={exportFieldOptions}
+										nameFromOption={item => item?.label ?? ''}
+										labelFromOption={item => item?.label ?? ''}
+										keyFromOption={item => item?.id ?? ''}
+										value={values.includeFields}
+										onSetValue={setFieldValue}
+										multiselect
+										disabled={values.excludeFields.length > 0 || isSubmitting}
+									/>
+
+									<Text my={2} mt={4}>
+										Nezahrnout pole
+									</Text>
+
+									<SelectInput
+										key="excludeFields"
+										id="excludeFields"
+										placeholder="Zvolte pole"
+										options={exportFieldOptions}
+										nameFromOption={item => item?.label ?? ''}
+										labelFromOption={item => item?.label ?? ''}
+										keyFromOption={item => item?.id ?? ''}
+										value={values.excludeFields}
+										onSetValue={setFieldValue}
+										multiselect
+										disabled={values.includeFields.length > 0 || isSubmitting}
+									/>
+								</>
+							)}
+						{values.format.id === 'tei' && (
 							<>
-								<Text my={2}>Zahrnout pole</Text>
+								<Text my={2}>Alto Params</Text>
 								<SelectInput
-									key="includeFields"
-									id="includeFields"
+									key="altoParams"
+									id="altoParams"
 									placeholder="Zvolte pole"
-									options={exportFieldOptions}
-									nameFromOption={item => item?.label ?? ''}
-									labelFromOption={item => item?.label ?? ''}
-									keyFromOption={item => item?.id ?? ''}
-									value={values.includeFields}
+									options={altoParamsOptions}
+									value={values.altoParams ?? []}
 									onSetValue={setFieldValue}
 									multiselect
 								/>
 
 								<Text my={2} mt={4}>
-									Nezahrnout pole
+									NameTag Params
 								</Text>
-
 								<SelectInput
-									key="excludeFields"
-									id="excludeFields"
+									key="nameTagParams"
+									id="nameTagParams"
 									placeholder="Zvolte pole"
-									options={exportFieldOptions}
-									nameFromOption={item => item?.label ?? ''}
-									labelFromOption={item => item?.label ?? ''}
-									keyFromOption={item => item?.id ?? ''}
-									value={values.excludeFields}
+									options={nameTagParamsOptions}
+									value={values.nameTagParams ?? []}
+									onSetValue={setFieldValue}
+									multiselect
+								/>
+								<Text my={2} mt={4}>
+									udPipe Params
+								</Text>
+								<SelectInput
+									key="udPipeParams"
+									id="udPipeParams"
+									placeholder="Zvolte pole"
+									options={udPipeParamsOptions}
+									value={values.udPipeParams ?? []}
 									onSetValue={setFieldValue}
 									multiselect
 								/>
