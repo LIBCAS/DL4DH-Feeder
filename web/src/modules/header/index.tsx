@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import Dialog from '@reach/dialog';
 import { useContext, useState } from 'react';
-import { MdArrowBack, MdMenu, MdPerson } from 'react-icons/md';
+import { MdArrowBack, MdMenu } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -22,6 +22,8 @@ import { useInfoApi } from 'api/infoApi';
 import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
+import UserBadge from './UserBadge';
 
 const Header = () => {
 	const { pathname } = useLocation();
@@ -152,13 +154,11 @@ const Header = () => {
 								>
 									Exporty
 								</NavLinkButton>
-								<Button minWidth={100} variant="primary" px={1}>
-									<MdPerson size={16} />
-									User
-								</Button>
+
 								<Button minWidth={100} variant="primary" px={1}>
 									Přejít do Kraméria
 								</Button>
+								<UserBadge />
 							</>
 						) : (
 							<>

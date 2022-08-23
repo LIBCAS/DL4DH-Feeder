@@ -233,6 +233,8 @@ const ZoomifyView = React.forwardRef<
 
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
 
+	console.log({ fullscreenRef });
+
 	useEffect(() => {
 		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
 		counter.current++;

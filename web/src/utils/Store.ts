@@ -29,7 +29,7 @@ const watch = <T>(key: string, callback: (value: T) => void) =>
 const unwatch = (watchId: string) => store.unwatch(watchId);
 
 const keys = {
-	Token: 'token',
+	Token: 'feeder-token',
 	Redirect: 'redirect',
 	TutorialCompanyProfileStep: 'tut-comp-prof-step',
 };

@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { useFormik } from 'formik';
-import { useSearchParams } from 'react-router-dom';
 
 import TextInput from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -8,7 +7,6 @@ import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
 const NameTagFilter = () => {
-	const [searchParams, setSearchParams] = useSearchParams();
 	const formik = useFormik<{ query: string }>({
 		initialValues: {
 			query: '',
@@ -18,18 +16,12 @@ const NameTagFilter = () => {
 			/* searchParams.set('from', values.yearFrom);
 			searchParams.set('to', values.yearTo);
 			setSearchParams(searchParams); */
+			console.log({ values });
 		},
 	});
 
-	const {
-		handleSubmit,
-		handleChange,
-		handleBlur,
-		setFieldValue,
-		values,
-		errors,
-		touched,
-	} = formik;
+	const { handleSubmit, handleChange, handleBlur, values, errors, touched } =
+		formik;
 
 	return (
 		<form onSubmit={handleSubmit}>

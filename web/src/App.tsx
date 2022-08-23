@@ -36,7 +36,7 @@ const App = () => {
 						authClient={keycloak}
 						LoadingComponent={<Loader />}
 						onTokens={tokens => {
-							Store.set('feeder-token', tokens.token ?? '');
+							Store.set(Store.keys.Token, tokens.token ?? '');
 							console.log('KEYCLOAK LOG:');
 							console.log({ tokens });
 						}}

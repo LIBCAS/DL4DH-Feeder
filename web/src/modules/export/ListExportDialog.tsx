@@ -15,8 +15,6 @@ import Text, { H1 } from 'components/styled/Text';
 
 import { api } from 'api';
 
-import { usePublicationDetail } from 'api/publicationsApi';
-
 import { PUBLICATION_EXPORT_STORE_KEY } from 'utils/enumsMap';
 import Store from 'utils/Store';
 
@@ -81,8 +79,6 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
 	console.log({ keycloak });
-
-	const pubDetail = usePublicationDetail(pubId);
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {

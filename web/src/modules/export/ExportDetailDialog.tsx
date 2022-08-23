@@ -54,7 +54,7 @@ const parseParameters = (parameters?: string) => {
 };
 
 const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
-	const { includeFields, excludeFields, sorting } = parseParameters(
+	const { includeFields, excludeFields } = parseParameters(
 		exportDto.parameters,
 	);
 	return (
