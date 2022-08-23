@@ -1,13 +1,8 @@
 import '@reach/dialog/styles.css';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
-import keycloak from 'auth/KeycloakService';
-
-import Store from 'utils/Store';
 
 import App from './App';
 
@@ -23,19 +18,10 @@ const queryClient = new QueryClient({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<ReactKeycloakProvider
-			authClient={keycloak}
-			onTokens={tokens => {
-				Store.set('feeder-token', tokens.token ?? '');
-				console.log('KEYCLOAK LOG:');
-				console.log({ tokens });
-			}}
-		>
-			<QueryClientProvider client={queryClient}>
-				<App />
-				<ReactQueryDevtools />
-			</QueryClientProvider>
-		</ReactKeycloakProvider>
+		<QueryClientProvider client={queryClient}>
+			<App />
+			<ReactQueryDevtools />
+		</QueryClientProvider>
 	</React.StrictMode>,
 	document.getElementById('root'),
 );
