@@ -77,33 +77,14 @@ const ExportsDashboard = () => {
 		>
 			<Paper color="#444444!important" width="90%">
 				<Box mt={3}>
-					<Flex alignItems="center" justifyContent="space-between">
-						<H1
-							my={3}
-							textAlign="left"
-							color="#444444!important"
-							fontWeight="normal"
-						>
-							Exporty
-						</H1>
-
-						<Text>
-							Uzivatel:{' '}
-							{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}
-						</Text>
-						<Button
-							variant="primary"
-							onClick={async () => {
-								await api().get('user/logout');
-								keycloak.logout();
-								keycloak.clearToken();
-								Store.remove('feeder-token');
-							}}
-						>
-							Odlasit
-						</Button>
-					</Flex>
-
+					<H1
+						my={3}
+						textAlign="left"
+						color="#444444!important"
+						fontWeight="normal"
+					>
+						Exporty
+					</H1>
 					<Exportslist />
 				</Box>
 			</Paper>
@@ -168,7 +149,7 @@ const Exportslist = () => {
 				<ClassicTable
 					data={data}
 					isLoading={response.isLoading}
-					//rowHeight={40}
+					rowHeight={40}
 					renderRow={row => (
 						<Flex
 							width={1}
@@ -274,7 +255,6 @@ const Exportslist = () => {
 					)}
 					hideEditButton
 					rowWrapperCss={css`
-						border: none !important;
 						&:hover {
 							background-color: unset;
 							color: unset;

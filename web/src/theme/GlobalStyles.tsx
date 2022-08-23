@@ -92,6 +92,27 @@ const GlobalStyles = () => (
 			[data-reach-dialog-overlay] {
 				z-index: 999;
 			}
+			[data-reach-popover] {
+				z-index: 999;
+			}
+			[data-reach-menu-list],
+			[data-reach-menu-items] {
+				padding: 0;
+				box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+			}
+			[data-reach-menu-item] {
+				padding: 16px;
+				padding-top: 14px;
+				padding-bottom: 14px;
+			}
+			[data-reach-menu-item][data-selected] {
+				background-color: ${theme.colors.enriched};
+				color: white;
+				padding: 16px;
+				padding-top: 14px;
+				padding-bottom: 14px;
+				box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+			}
 
 			[data-reach-dialog-content] {
 				background-color: unset;

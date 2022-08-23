@@ -23,6 +23,8 @@ import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
+import UserBadge from './UserBadge';
+
 const Header = () => {
 	const { pathname } = useLocation();
 	const nav = useNavigate();
@@ -152,13 +154,11 @@ const Header = () => {
 								>
 									Exporty
 								</NavLinkButton>
-								<Button minWidth={100} variant="primary" px={1}>
-									<MdPerson size={16} />
-									User
-								</Button>
+
 								<Button minWidth={100} variant="primary" px={1}>
 									Přejít do Kraméria
 								</Button>
+								<UserBadge />
 							</>
 						) : (
 							<>
