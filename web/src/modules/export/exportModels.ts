@@ -6,7 +6,22 @@ export type PipeParam = 'n' | 'lemma' | 'pos' | 'msd' | 'join' | '?';
 export type TagParam = 'a' | 'g' | 'i' | 'm' | 'n' | 'o' | 'p' | 't' | '?';
 export type AltoParam = 'width' | 'height' | 'vpos' | 'hpos' | '?';
 
-export const fieldOptions = [
+export type ExportFormatOption = { label: string; id: string };
+export type ExportFieldOption = { label: string; id: string };
+
+export type ExportSort = {
+	field: string;
+	direction: 'ASC' | 'DESC';
+};
+
+export type ExportFilter = {
+	id: string;
+	field: string;
+	operation: 'EQ';
+	value: string;
+};
+
+export const exportFieldOptions: ExportFieldOption[] = [
 	{
 		id: 'title',
 		label: 'Nadpis',
@@ -53,6 +68,9 @@ export const fieldOptions = [
 	},
 ];
 
+export const fieldIdToLabel = (id: string) =>
+	exportFieldOptions.find(fo => fo.id === id)?.label ?? 'Neznámy';
+
 export const udPipeParamsOptions: PipeParam[] = [
 	'n',
 	'lemma',
@@ -80,3 +98,12 @@ export const altoParamsOptions: AltoParam[] = [
 	'hpos',
 	'?',
 ];
+
+export const parseFieldOptions = (
+	fieldIds?: string[],
+): ExportFieldOption[] | undefined =>
+	fieldIds && fieldIds?.length > 0
+		? (fieldIds.map(id =>
+				exportFieldOptions.find(fo => fo.id === id),
+		  ) as ExportFieldOption[])
+		: undefined;

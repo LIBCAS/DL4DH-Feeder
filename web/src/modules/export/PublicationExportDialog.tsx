@@ -21,27 +21,19 @@ import { PubCtx } from 'modules/publication/ctx/pub-ctx';
 
 import { api } from 'api';
 
-import { fieldOptions } from './exportModels';
-
-type FormatOption = { label: string; id: string };
-type AtributeOption = { label: string; id: string };
-
-export type Sort = {
-	field: string;
-	direction: 'ASC' | 'DESC';
-};
-
-export type Filter = {
-	id: string;
-	field: string;
-	operation: 'EQ';
-	value: string;
-};
+import {
+	ExportFieldOption,
+	exportFieldOptions,
+	ExportFilter,
+	ExportFormatOption,
+	ExportSort,
+	parseFieldOptions,
+} from './exportModels';
 
 type ExportFormType = {
-	format: FormatOption;
-	includeFields: AtributeOption[];
-	excludeFields: AtributeOption[];
+	format: ExportFormatOption;
+	includeFields: ExportFieldOption[];
+	excludeFields: ExportFieldOption[];
 	delimiter: delimiterEnum;
 	exportAll: boolean;
 	isSecond?: boolean;
@@ -55,8 +47,8 @@ type Params = {
 			pageSize?: number;
 		};
 
-		sorting?: Sort[];
-		filters?: Filter[];
+		sorting?: ExportSort[];
+		filters?: ExportFilter[];
 		includeFields?: string[];
 		excludeFields?: string[];
 		delimiter: delimiterEnum;
@@ -68,7 +60,7 @@ enum delimiterEnum {
 	tab = '\t',
 }
 
-const formatOptions: FormatOption[] = [
+const formatOptions: ExportFormatOption[] = [
 	{ label: 'JSON', id: 'json' },
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'TEI', id: 'tei' },
@@ -76,10 +68,12 @@ const formatOptions: FormatOption[] = [
 	{ label: 'ALTO', id: 'alto' },
 ];
 
-const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
-	closeModal,
-	isSecond,
-}) => {
+type Props = {
+	closeModal: () => void;
+	isSecond?: boolean;
+} & Partial<ExportFormType>;
+
+export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	const { keycloak } = useKeycloak();
 
 	const { id: paramId } = useParams<{ id: string }>();
@@ -119,7 +113,7 @@ const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
 				if (response.status === 200) {
 					toast.info(
 						'Požadavka na export byla úspěšně vytvořena. Její stav můžete zkontrolovat na podstránke Exporty.',
-						{ delay: 10000 },
+						{ autoClose: 10000 },
 					);
 					closeModal();
 				} else {
@@ -254,54 +248,30 @@ const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
 									key="includeFields"
 									id="includeFields"
 									placeholder="Zvolte pole"
-									options={fieldOptions}
+									options={exportFieldOptions}
 									nameFromOption={item => item?.label ?? ''}
 									labelFromOption={item => item?.label ?? ''}
 									keyFromOption={item => item?.id ?? ''}
 									value={values.includeFields}
 									onSetValue={setFieldValue}
 									multiselect
-									hideInlineSelectItems
 								/>
-								{/* <SimpleSelect
-									formikId="includeFields"
-									mb={3}
-									options={fieldOptions}
-									nameFromOption={item => item?.label ?? 'unknown'}
-									keyFromOption={item => item?.id ?? 'unknown'}
-									value={values.includeFields[0]}
-									setFieldValue={setFieldValue}
-									variant="outlined"
-									width={1}
-									bg="white"
-								/> */}
+
 								<Text my={2} mt={4}>
 									Nezahrnout pole
 								</Text>
-								{/* <SimpleSelect
-									formikId="excludeFields"
-									mb={3}
-									options={fieldOptions}
-									nameFromOption={item => item?.label ?? 'unknown'}
-									keyFromOption={item => item?.id ?? 'unknown'}
-									value={values.excludeFields}
-									setFieldValue={setFieldValue}
-									variant="outlined"
-									width={1}
-									bg="white"
-								/> */}
+
 								<SelectInput
 									key="excludeFields"
 									id="excludeFields"
 									placeholder="Zvolte pole"
-									options={fieldOptions}
+									options={exportFieldOptions}
 									nameFromOption={item => item?.label ?? ''}
 									labelFromOption={item => item?.label ?? ''}
 									keyFromOption={item => item?.id ?? ''}
 									value={values.excludeFields}
 									onSetValue={setFieldValue}
 									multiselect
-									hideInlineSelectItems
 								/>
 							</>
 						)}
@@ -325,7 +295,9 @@ const ExportForm: FC<{ closeModal: () => void; isSecond?: boolean }> = ({
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
-								<Text ml={2}>? Stránek</Text>
+								<Text ml={2}>
+									{pubCtx.publicationChildren?.length ?? '?'} Stránek
+								</Text>
 							</Flex>
 						</Flex>
 					</Box>

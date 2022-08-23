@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 
-import { Sort } from 'modules/export/PublicationExportDialog';
+import { ExportSort } from 'modules/export/exportModels';
 
 import { api } from 'api';
 
@@ -57,6 +57,7 @@ export type ExportDto = {
 	publicationTitle: string;
 	format: string;
 	parameters: string;
+	delimiter: string;
 };
 
 export type PageExportDto = {
@@ -77,9 +78,12 @@ export type PageExportDto = {
 	};
 };
 
-export type ExportListParams = { sort: Sort; size: number; page: number };
+export type ExportListParams = { sort: ExportSort; size: number; page: number };
 
-export const useExportList = ({ sort, size, page }: ExportListParams) =>
+export const useExportList = (
+	{ sort, size, page }: ExportListParams,
+	enabled?: boolean,
+) =>
 	useQuery(
 		['export-list', { sort, size, page }],
 		() =>
@@ -89,9 +93,9 @@ export const useExportList = ({ sort, size, page }: ExportListParams) =>
 				)
 				.json<PageExportDto>(),
 		{
-			refetchOnMount: true,
-			refetchOnWindowFocus: true,
-			refetchInterval: 60000,
+			refetchOnMount: 'always',
+			refetchOnWindowFocus: 'always',
+			refetchInterval: 10000,
+			enabled,
 		},
 	);
-//?sort=${sort.field},${sort.direction}&page=${page}&size=${size}

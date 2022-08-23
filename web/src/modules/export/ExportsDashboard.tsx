@@ -5,13 +5,11 @@ import { useKeycloak } from '@react-keycloak/web';
 import { FC, useState } from 'react';
 import { MdArrowDropDown, MdDownload } from 'react-icons/md';
 
-import MyAccordion from 'components/accordion';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
-import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import Text, { H1, H3 } from 'components/styled/Text';
+import Text, { H1 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Pagination from 'components/table/Pagination';
@@ -22,6 +20,8 @@ import { ExportListParams, useExportList } from 'api/exportsApi';
 
 import { ExportJobStatusToText } from 'utils/enumsMap';
 import Store from 'utils/Store';
+
+import ExportDetailDialog from './ExportDetailDialog';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
@@ -153,17 +153,14 @@ const Exportslist = () => {
 		size: 10,
 		page: 0,
 	});
-	const response = useExportList(params);
+	const [enabled, setEnabled] = useState<string | undefined>(undefined);
+	const response = useExportList(params, enabled === undefined);
 	const data = response.data?.content ?? [];
-
 	return (
 		<Box width={1}>
-			<Button variant="primary" my={3} onClick={() => response.refetch()}>
-				Aktualizovat seznam
-			</Button>
 			<Flex
 				width={1}
-				maxHeight={'calc(80vh - 200px)'} //TODO: FIXME: vyroiesit overflow ked sa expanduju akordeony
+				maxHeight="80vh"
 				css={css`
 					box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.03);
 				`}
@@ -173,74 +170,74 @@ const Exportslist = () => {
 					isLoading={response.isLoading}
 					//rowHeight={40}
 					renderRow={row => (
-						<Flex width={1} alignItems="center" px={2} minHeight={40}>
-							<MyAccordion
-								hideArrow
-								headerCss={css`
-									padding: 0;
-									padding-top: 16px;
-									padding-bottom: 16px;
-									width: 100%;
-								`}
-								label={
-									<>
-										<Box flex={3}>
-											<Cell>
-												{row.publicationTitle ?? row.publicationId ?? '--'}
-											</Cell>
-										</Box>
-										<Box flex={2}>
-											<Cell>
-												{row.created
-													? new Date(row.created).toLocaleDateString()
-													: '--'}
-											</Cell>
-										</Box>
-										<Box flex={2}>
-											<Cell>{ExportJobStatusToText[row.status]}</Cell>
-										</Box>
-										<Box flex={0.5} maxWidth={100}>
-											{row.status === 'COMPLETED' && (
-												<IconButton
-													onClick={() =>
-														window.open(
-															`${window.origin}/api/exports/download/${row.id}`,
-														)
-													}
-												>
-													<Flex alignItems="center" pr={1} py={0}>
-														<Text my={0} py={0} px={1}>
-															Stáhnout
-														</Text>{' '}
-														<MdDownload size={20} />
-													</Flex>
-												</IconButton>
-											)}
-										</Box>
-									</>
-								}
-							>
-								<Box py={3} minHeight={100}>
-									<Divider mb={3} opacity={0.5} />
-									<H3>Podrobnosti</H3>
-									<Text color="#757575" fontSize="sm">
-										Název publikace: <b>{row.publicationTitle}</b>
-									</Text>
-									<Text color="#757575" fontSize="sm">
-										ID: <b>{row.publicationId}</b>
-									</Text>
-									<Text color="#757575" fontSize="sm">
-										Formát: <b>{row.format}</b>
-									</Text>
-									<Text color="#757575" fontSize="sm">
-										Parametre: <b>{row.parameters}</b>
-									</Text>
-								</Box>
-							</MyAccordion>
+						<Flex
+							width={1}
+							alignItems="center"
+							px={2}
+							minHeight={40}
+							onClick={() => setEnabled(row.id)}
+							css={css`
+								cursor: pointer;
+								box-sizing: border-box;
+							`}
+						>
+							<ExportDetailDialog
+								exportDto={row}
+								isOpen={enabled === row.id}
+								onDismiss={() => {
+									setEnabled(undefined);
+									response.refetch();
+								}}
+							/>
+
+							<Box flex={3}>
+								<Cell>{row.publicationTitle ?? row.publicationId ?? '--'}</Cell>
+							</Box>
+							<Box flex={2}>
+								<Cell>
+									{row.created
+										? new Date(row.created).toLocaleDateString()
+										: '--'}
+								</Cell>
+							</Box>
+							<Box flex={2}>
+								<Cell>{ExportJobStatusToText[row.status]}</Cell>
+							</Box>
+							<Box flex={1}>
+								<Cell>{row.format}</Cell>
+							</Box>
+							<Box flex={1} maxWidth={100}>
+								{row.status === 'COMPLETED' && (
+									<IconButton
+										onClick={e => {
+											e.stopPropagation();
+											window.open(
+												`${window.origin}/api/exports/download/${row.id}`,
+											);
+										}}
+									>
+										<Flex alignItems="center" pr={1} py={0}>
+											<Text my={0} py={0} px={1}>
+												Stáhnout
+											</Text>{' '}
+											<MdDownload size={20} />
+										</Flex>
+									</IconButton>
+								)}
+							</Box>
 						</Flex>
 					)}
 					renderHeader={() => (
-						<Flex width={1} alignItems="center" px={2} position="sticky">
+						<Flex
+							width={1}
+							alignItems="center"
+							px={2}
+							position="sticky"
+							fontSize="15px"
+							css={css`
+								box-sizing: border-box;
+							`}
+						>
 							<HeaderCell
 								flex={3}
 								field="publicationTitle"
@@ -262,8 +259,15 @@ const Exportslist = () => {
 								params={params}
 								label="Status"
 							/>
+							<HeaderCell
+								flex={1}
+								field="format"
+								updateParams={setParams}
+								params={params}
+								label="Formát"
+							/>
 
-							<Box flex={0.5} maxWidth={100}>
+							<Box flex={1} maxWidth={100}>
 								Akce
 							</Box>
 						</Flex>
