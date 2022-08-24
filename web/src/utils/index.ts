@@ -191,6 +191,12 @@ export const isDateAttr = (key: string) => key in Dates;
 export const getDateString = (date: Date) =>
 	(typeof date === 'string' ? new Date(date) : date)?.toLocaleDateString(
 		'cs-CZ',
+		{
+			// you can use undefined as first argument
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+		},
 	);
 
 export const getTimeString = (date: Date) =>

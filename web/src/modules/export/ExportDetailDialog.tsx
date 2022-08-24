@@ -154,7 +154,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					{(parsed.altoParams ?? []).length > 0 && (
 						<Flex my={3} mr={2}>
 							<Text flexShrink={0} my={2}>
-								Alto Params
+								Alto Params:
 							</Text>
 							<Flex flexWrap="wrap">
 								{parsed.altoParams?.map((p, i) => (
@@ -168,7 +168,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					{(parsed.nameTagParams ?? []).length > 0 && (
 						<Flex my={3} mr={2}>
 							<Text flexShrink={0} my={2}>
-								NameTag Params
+								NameTag Params:
 							</Text>
 							<Flex flexWrap="wrap">
 								{parsed.nameTagParams?.map((p, i) => (
@@ -182,7 +182,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					{(parsed.udPipeParams ?? []).length > 0 && (
 						<Flex my={3} mr={2}>
 							<Text flexShrink={0} my={2}>
-								udPipe Params
+								udPipe Params:
 							</Text>
 							<Flex flexWrap="wrap">
 								{parsed.udPipeParams?.map((p, i) => (
