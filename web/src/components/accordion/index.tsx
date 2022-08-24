@@ -9,6 +9,12 @@ import { H4 } from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 
+import Store from 'utils/Store';
+
+const keyPrefix = 'feeder-acc-';
+
+//TODO: group LS keys
+
 type Props = {
 	label: string | JSX.Element;
 	isExpanded?: boolean;
@@ -17,6 +23,7 @@ type Props = {
 	children: ((onRefresh: () => void) => ReactNode) | ReactNode;
 	hideArrow?: boolean;
 	headerCss?: SerializedStyles;
+	storeKey?: string;
 };
 
 const MyAccordion: FC<Props> = ({
@@ -26,16 +33,26 @@ const MyAccordion: FC<Props> = ({
 	isLoading,
 	hideArrow,
 	headerCss,
+	storeKey,
 }) => {
-	const [exp, setExp] = useState(isExpanded ?? false);
+	const [exp, setExp] = useState(
+		storeKey ? Store.get(keyPrefix + storeKey) : isExpanded ?? false,
+	);
 	const [refresh, setRefresh] = useState(false);
 	const [height, setHeight] = useState(0);
 	const measureRef = useRef<HTMLDivElement>(null);
 	const onRefresh = useCallback(() => setRefresh(p => !p), [setRefresh]);
-	useEffect(() => setHeight(measureRef.current?.clientHeight ?? 0), [refresh]);
+	useEffect(() => {
+		setHeight(measureRef.current?.clientHeight ?? 0);
+	}, [refresh]);
+	useEffect(() => {
+		if (storeKey) {
+			Store.set(keyPrefix + storeKey, exp);
+		}
+	}, [exp, storeKey]);
 
 	return (
-		<Box overflow="hidden" width={1}>
+		<Box width={1}>
 			<Flex
 				//pb={exp ? 0 : 1}
 				pt={1}
@@ -46,7 +63,9 @@ const MyAccordion: FC<Props> = ({
 					cursor: pointer;
 					${headerCss}
 				`}
-				onClick={() => setExp(p => !p)}
+				onClick={() => {
+					setExp(p => !p);
+				}}
 			>
 				{typeof label === 'string' ? <H4>{label}</H4> : label}
 				{!hideArrow && (
@@ -70,8 +89,10 @@ const MyAccordion: FC<Props> = ({
 					height={exp ? height : 1}
 					minHeight={1}
 					css={css`
-						transition: height 0.1s ease;
-						overflow: hidden;
+						transition: height 0.1s ease, opacity 0.3s ease 0.1s;
+
+						overflow: ${exp ? 'visible' : 'hidden'};
+						opacity: ${exp ? 1 : 0};
 					`}
 				>
 					<div ref={measureRef}>

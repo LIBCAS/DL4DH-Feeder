@@ -1,10 +1,13 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
+import { useContext } from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import AppRoutes from 'components/routing/AppRoutes';
 import { Flex } from 'components/styled';
+import TooltipRender from 'components/tooltip/Tooltip';
+import TooltipContext from 'components/tooltip/TooltipCtx';
 
 import Header from 'modules/header';
 import { PubDetailCtxProvider } from 'modules/publication/ctx/pub-ctx';
@@ -27,6 +30,8 @@ const App = () => {
 		dispatch,
 		Provider: SearchContextProvider,
 	} = useSearchContextProvider();
+
+	const TooltipCtx = useContext(TooltipContext);
 
 	return (
 		<ThemeProvider>
@@ -58,6 +63,7 @@ const App = () => {
 										transition={Slide}
 										autoClose={5000}
 									/>
+									{TooltipCtx.isDisplayed && <TooltipRender />}
 								</SearchContextProvider>
 							</PubDetailCtxProvider>
 						</Router>

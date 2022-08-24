@@ -14,6 +14,8 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Pagination from 'components/table/Pagination';
 
+import { getDateString } from 'utils';
+
 import { ExportListParams, useExportList } from 'api/exportsApi';
 
 import { ExportJobStatusToText } from 'utils/enumsMap';
@@ -111,6 +113,7 @@ const HeaderCell: FC<{
 			}
 			color="white"
 			fontSize="lg"
+			tooltip={`Řadit dle ${label}`}
 		>
 			{label}{' '}
 			{params.sort.field === field && (
@@ -173,9 +176,7 @@ const Exportslist = () => {
 							</Box>
 							<Box flex={2}>
 								<Cell>
-									{row.created
-										? new Date(row.created).toLocaleDateString()
-										: '--'}
+									{row.created ? getDateString(new Date(row.created)) : '--'}
 								</Cell>
 							</Box>
 							<Box flex={2}>

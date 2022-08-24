@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
+import { TooltipContextProvider } from 'components/tooltip/TooltipCtx';
+
 import App from './App';
 
 import './index.css';
@@ -19,7 +21,9 @@ const queryClient = new QueryClient({
 ReactDOM.render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<App />
+			<TooltipContextProvider>
+				<App />
+			</TooltipContextProvider>
 			<ReactQueryDevtools />
 		</QueryClientProvider>
 	</React.StrictMode>,

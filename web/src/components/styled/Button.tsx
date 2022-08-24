@@ -3,24 +3,26 @@ import { css } from '@emotion/core';
 import React, { forwardRef } from 'react';
 import {
 	color,
+	ColorProps,
 	layout,
 	LayoutProps,
-	typography,
-	TypographyProps,
 	space,
 	SpaceProps,
-	ColorProps,
+	typography,
+	TypographyProps,
 } from 'styled-system';
 
-import Link, { HrefLink } from 'components/styled/Link';
-import { Box } from 'components/styled';
 import LoaderSpin from 'components/loaders/LoaderSpin';
+import { Box } from 'components/styled';
+import Link, { HrefLink } from 'components/styled/Link';
+import { TooltipTrigger } from 'components/tooltip/Tooltip';
 
 import styled from 'theme/styled';
 
 type ButtonProps = {
 	variant?: 'default' | 'primary' | 'outlined' | 'text' | 'confirm' | 'error';
 	sizeType?: 'normal' | 'big'; // size is used by 'space'
+	tooltip?: string;
 };
 
 type Props = LayoutProps &
@@ -54,6 +56,13 @@ const StyledButton = styled.button<Props>`
 	align-items: center;
 	justify-content: center;
 	transition: filter 250ms ease;
+
+	/*
+	CSS
+	https://www.youtube.com/watch?v=ujlpzTyJp-M&ab_channel=WebDevSimplified
+	component
+	https://www.youtube.com/watch?v=xacxCb6T4Wk&ab_channel=Grepsoft
+ 	*/
 
 	&:disabled {
 		${p =>
@@ -165,19 +174,28 @@ StyledButton.defaultProps = {
 const Button = forwardRef<
 	HTMLButtonElement,
 	StyledButtonProps & { loading?: boolean; hoverDisable?: boolean }
->(({ children, loading, ...buttonProps }, ref) => (
-	<StyledButton {...buttonProps} ref={ref}>
-		{loading && (
-			<Box display="inline-block" mr={2}>
-				<LoaderSpin
-					color={buttonProps.variant === 'outlined' ? 'primary' : 'white'}
-					size={20}
-				/>
-			</Box>
-		)}
-		{children}
-	</StyledButton>
-));
+>(({ children, loading, tooltip, ...buttonProps }, ref) => {
+	return (
+		<StyledButton
+			{...buttonProps}
+			ref={ref}
+			css={css`
+				position: relative;
+			`}
+		>
+			{tooltip && <TooltipTrigger tooltip={tooltip} />}
+			{loading && (
+				<Box display="inline-block" mr={2}>
+					<LoaderSpin
+						color={buttonProps.variant === 'outlined' ? 'primary' : 'white'}
+						size={20}
+					/>
+				</Box>
+			)}
+			{children}
+		</StyledButton>
+	);
+});
 
 Button.displayName = Button.name;
 
@@ -194,3 +212,28 @@ export const NavHrefButton = styled(NavButton)`
 `.withComponent(HrefLink);
 
 export default Button;
+
+/* ${p =>
+		p.tooltip &&
+		css`
+			&::before {
+				background-color: grey;
+				border: 1px solid #888;
+				border-radius: 2px;
+				color: #fff;
+				content: attr(data-tooltip);
+				display: block;
+				font-size: 14px;
+				padding: 5px 5px;
+				position: absolute;
+				top: -10px;
+				left: 0px;
+				z-index: 1;
+				opacity: 0;
+			}
+
+			&:hover::before {
+				transition: opacity 0s linear 0.3s;
+				opacity: 1;
+			}
+		`} */

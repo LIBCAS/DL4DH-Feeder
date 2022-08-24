@@ -212,7 +212,6 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 
 	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
 		formik;
-	console.log({ values });
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -385,7 +384,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							<Flex alignItems="center">
 								<MdInfo size={20} />
 								<Text ml={2}>
-									{pubCtx.publicationChildren?.length ?? '?'} Stránek
+									{isSecond
+										? pubCtx.publicationChildrenOfSecond?.length ?? '?'
+										: pubCtx.publicationChildren?.length ?? '?'}{' '}
+									Stránek
 								</Text>
 							</Flex>
 						</Flex>

@@ -379,7 +379,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 			<ActiveFilters />
 
 			{avalItems.length > 0 && (
-				<MyAccordion label="Dostupnost" isExpanded isLoading={isLoading}>
+				<MyAccordion
+					label="Dostupnost"
+					isExpanded
+					isLoading={isLoading}
+					storeKey="availability"
+				>
 					{onRefresh => (
 						<StatList
 							items={avalItems}
@@ -389,7 +394,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 					)}
 				</MyAccordion>
 			)}
-			<MyAccordion label="Obohacení" isExpanded isLoading={isLoading}>
+			<MyAccordion
+				label="Obohacení"
+				isExpanded
+				isLoading={isLoading}
+				storeKey="enrichment"
+			>
 				{onRefresh => (
 					<StatList
 						items={enrichedItems}
@@ -399,7 +409,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				)}
 			</MyAccordion>
 			{modelItems.length > 0 && (
-				<MyAccordion label="Typ dokumentu" isExpanded isLoading={isLoading}>
+				<MyAccordion
+					label="Typ dokumentu"
+					isExpanded
+					isLoading={isLoading}
+					storeKey="models"
+				>
 					{onRefresh => (
 						<StatList
 							items={modelItems}
@@ -410,7 +425,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				</MyAccordion>
 			)}
 			{keywordsItems.length > 0 && (
-				<MyAccordion label="Klíčové slovo" isExpanded isLoading={isLoading}>
+				<MyAccordion
+					label="Klíčové slovo"
+					isExpanded
+					isLoading={isLoading}
+					storeKey="keywords"
+				>
 					{onRefresh => (
 						<StatList
 							items={keywordsItems}
@@ -422,7 +442,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				</MyAccordion>
 			)}
 			{authorsItems.length > 0 && (
-				<MyAccordion label="Autor" isExpanded isLoading={isLoading}>
+				<MyAccordion
+					label="Autor"
+					isExpanded
+					isLoading={isLoading}
+					storeKey="authors"
+				>
 					{onRefresh => (
 						<StatList
 							items={authorsItems}
@@ -434,7 +459,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				</MyAccordion>
 			)}
 			{languagesItems.length > 0 && (
-				<MyAccordion label="Jazyk" isLoading={isLoading}>
+				<MyAccordion label="Jazyk" isLoading={isLoading} storeKey="languages">
 					{onRefresh => (
 						<StatList
 							items={languagesItems}
@@ -446,7 +471,12 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 				</MyAccordion>
 			)}
 
-			<MyAccordion label="Rok vydání" isExpanded isLoading={isLoading}>
+			<MyAccordion
+				label="Rok vydání"
+				isExpanded
+				isLoading={isLoading}
+				storeKey="publishDateFilter"
+			>
 				<PublishDateFilter interval={yearsInterval} />
 			</MyAccordion>
 			<MyAccordion
@@ -457,6 +487,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 					</Flex>
 				}
 				isLoading={isLoading}
+				storeKey="nameTagFacetFilter"
 			>
 				<NameTagFilter />
 			</MyAccordion>
@@ -473,6 +504,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 							</Flex>
 						}
 						isLoading={isLoading}
+						storeKey={formattedKey}
 					>
 						{onRefresh => (
 							<StatList
