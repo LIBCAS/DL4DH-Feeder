@@ -24,6 +24,7 @@ import { useMobileView } from 'hooks/useViewport';
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import UserBadge from './UserBadge';
+import { DesktopMenu } from './menuItems';
 
 const Header = () => {
 	const { pathname } = useLocation();
@@ -108,56 +109,7 @@ const Header = () => {
 					<Flex ml={1} flexShrink={0} color="headerColor">
 						{!isTablet ? (
 							<>
-								<NavLinkButton
-									to="/collections"
-									color="headerColor"
-									variant="primary"
-									minWidth={50}
-									px={1}
-								>
-									Sbírky
-								</NavLinkButton>
-								<NavLinkButton
-									to="/browse"
-									color="headerColor"
-									variant="primary"
-									minWidth={50}
-									px={1}
-								>
-									Procházet
-								</NavLinkButton>
-								<NavLinkButton
-									to="/about"
-									color="headerColor"
-									variant="primary"
-									minWidth={50}
-									px={1}
-								>
-									Informace
-								</NavLinkButton>
-
-								<Button
-									color="headerColor"
-									variant="primary"
-									minWidth={50}
-									px={1}
-								>
-									English
-								</Button>
-
-								<NavLinkButton
-									to="/exports"
-									color="headerColor"
-									variant="primary"
-									minWidth={50}
-									px={1}
-								>
-									Exporty
-								</NavLinkButton>
-
-								<Button minWidth={100} variant="primary" px={1}>
-									Přejít do Kraméria
-								</Button>
+								<DesktopMenu variant="desktop" />
 								<UserBadge />
 							</>
 						) : (
@@ -195,70 +147,7 @@ const Header = () => {
 										alignItems="flex-start"
 										pl={2}
 									>
-										<NavLinkButton
-											to="/collections"
-											color="primary"
-											variant="text"
-											minWidth={50}
-											px={1}
-											my={2}
-											fontSize="inherit"
-										>
-											Sbírky
-										</NavLinkButton>
-										<NavLinkButton
-											to="/browse"
-											color="primary"
-											variant="text"
-											minWidth={50}
-											px={1}
-											my={2}
-											fontSize="inherit"
-										>
-											Procházet
-										</NavLinkButton>
-										<NavLinkButton
-											to="/about"
-											color="primary"
-											variant="text"
-											minWidth={50}
-											px={1}
-											my={2}
-											fontSize="inherit"
-										>
-											Informace
-										</NavLinkButton>
-
-										<Button
-											color="primary"
-											variant="text"
-											minWidth={50}
-											px={1}
-											my={2}
-											fontSize="inherit"
-										>
-											English
-										</Button>
-										<NavLinkButton
-											to="/exports"
-											color="primary"
-											fontSize="inherit"
-											variant="text"
-											minWidth={50}
-											px={1}
-											my={2}
-										>
-											Exporty
-										</NavLinkButton>
-										<Button
-											minWidth={100}
-											variant="text"
-											px={1}
-											my={2}
-											fontSize="inherit"
-										>
-											Přejít do Kraméria
-										</Button>
+										<DesktopMenu variant="tablet" />
 									</Flex>
 								</Dialog>
 							</>
