@@ -66,14 +66,16 @@ export const TooltipTrigger: FC<{ tooltip?: string }> = ({ tooltip }) => {
 	return (
 		<div
 			ref={ref}
-			onMouseEnter={e => {
+			onMouseEnter={() => {
 				const rect = ref.current?.getBoundingClientRect();
 				tooltipCtx.displayMsg(tooltip ?? '', 0, 0, rect);
 			}}
 			onMouseLeave={() => {
 				tooltipCtx.onClose();
 			}}
+			onClick={() => tooltipCtx.onClose()}
 			css={css`
+				cursor: inherit;
 				position: absolute;
 				width: 100%;
 				height: 100%;
@@ -82,7 +84,7 @@ export const TooltipTrigger: FC<{ tooltip?: string }> = ({ tooltip }) => {
 				overflow: hidden;
 				background-color: red;
 				opacity: 0;
-				z-index: 9999;
+				z-index: 999;
 			`}
 		></div>
 	);

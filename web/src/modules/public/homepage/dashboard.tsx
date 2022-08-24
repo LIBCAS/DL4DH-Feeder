@@ -4,6 +4,7 @@ import { FC, useState } from 'react';
 import { BsGridFill } from 'react-icons/bs';
 import { ImMenu } from 'react-icons/im';
 import { MdEqualizer } from 'react-icons/md';
+import _ from 'lodash';
 
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
@@ -21,7 +22,10 @@ import GraphExportDialog from 'modules/export/GraphExportDialog';
 
 import { theme } from 'theme';
 
-import { useSearchPublications } from 'api/publicationsApi';
+import {
+	useSearchPublications,
+	useAvailableFilters,
+} from 'api/publicationsApi';
 
 import { useSearchContext, ViewMode } from 'hooks/useSearchContext';
 
@@ -41,14 +45,18 @@ const Dashboard: FC = () => {
 		isRefetching,
 		hasMore,
 		availableFilters,
-		availableNameTagFilters,
-		dataUpdatedAt,
 	} = useSearchPublications({
 		start: state.start,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		...state.searchQuery,
 	});
+
+	const {
+		data: filtersData,
+		dataUpdatedAt: filtersKey,
+		isLoading: isFiltersLoading,
+	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
 	const isLoading = loading || isFetching || isRefetching;
 
@@ -203,10 +211,9 @@ const Dashboard: FC = () => {
 					`}
 				>
 					<SearchResultLeftPanel
-						key={dataUpdatedAt}
-						data={availableFilters}
-						nameTagData={availableNameTagFilters}
-						isLoading={isLoading}
+						key={filtersKey}
+						data={filtersData?.availableFilters}
+						isLoading={isFiltersLoading}
 					/>
 				</Flex>
 				<Flex width={1} bg="paper">

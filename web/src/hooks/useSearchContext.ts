@@ -1,5 +1,4 @@
 import { createContext, Dispatch, useContext, useReducer } from 'react';
-import _ from 'lodash';
 
 import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
@@ -44,7 +43,7 @@ type State = {
 };
 
 export const initState: State = {
-	searchQuery: null,
+	searchQuery: { page: 1, nameTagFacet: '' },
 	viewMode: 'tiles',
 	pageSize: 15,
 	page: 0,
@@ -72,7 +71,7 @@ export const reducer = (state: State, action: Actions) => {
 			if (!isNaN(page)) {
 				return {
 					...state,
-					searchQuery: _.omit(action.searchQuery, 'page'),
+					searchQuery: action.searchQuery, //: _.omit(action.searchQuery, 'page'),
 					page,
 					start: (page - 1) * state.pageSize,
 				};
