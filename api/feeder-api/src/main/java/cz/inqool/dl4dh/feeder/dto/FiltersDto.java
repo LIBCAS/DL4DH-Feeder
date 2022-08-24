@@ -30,6 +30,7 @@ public class FiltersDto {
     //K+ filters
     private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
     private List<NameTagFilterDto> nameTagFilters;
+    private String nameTagFacet = "";
 
     //Pagination
     private Integer start = 0;

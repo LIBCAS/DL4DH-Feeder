@@ -60,6 +60,7 @@ keycloak:
   realm: DL4DHFeeder
   resource: feeder
   public-client: true
+  bearer-only: true
   principal-attribute: preferred_username
 
 server:

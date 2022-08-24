@@ -22,9 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,16 +50,23 @@ public class SearchApi {
         if (nameTagType != null) {
             SolrQuery query = new SolrQuery();
             query.setFacet(true)
-                    .setFacetLimit(filters.getPageSize())
-                    .addFacetField(nameTagType.getSolrField())
-                    .setFacetPrefix(filters.getQuery())
+                    .setFacetLimit(filters.getPageSize());
+            Arrays.stream(nameTagType.getSolrField().split(",")).forEach(query::addFacetField);
+            query.setParam("facet.contains", filters.getQuery())
+                    .setParam("facet.contains.ignoreCase", "true")
                     .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article")));
-            return solr.query(query)
-                    .getFacetField(nameTagType.getSolrField())
-                    .getValues()
-                    .stream()
-                    .map(FacetField.Count::getName)
+            QueryResponse response = solr.query(query);
+            List<String> responseList = Arrays.stream(nameTagType.getSolrField().split(","))
+                    .map(f -> response.getFacetField(f)
+                            .getValues()
+                            .stream()
+                            .map(FacetField.Count::getName)
+                            .collect(Collectors.toList()))
+                    .flatMap(Collection::stream)
+                    .distinct()
+                    .sorted()
                     .collect(Collectors.toList());
+            return responseList.subList(0, Integer.min(filters.getPageSize(), responseList.size()));
         }
 
         SolrQueryResponseDto result = kramerius.get()
@@ -87,8 +92,10 @@ public class SearchApi {
     public SearchDto search(@RequestBody FiltersDto filters) {
         // Search in Kramerius+
         List<String> ids = null;
+
         SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
-                .uri("/select", uriBuilder -> uriBuilder
+                .uri("/select", uriBuilder -> {
+                    uriBuilder
                         .queryParam("fl", "root_pid")
                         .queryParam("q", filters.toQuery())
                         .queryParam("group", "true")
@@ -96,22 +103,16 @@ public class SearchApi {
                         .queryParam("group.field", "root_pid")
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
-                        .queryParam("facet.field","nameTag.numbersInAddresses")
-                        .queryParam("facet.field","nameTag.geographicalNames")
-                        .queryParam("facet.field","nameTag.institutions")
-                        .queryParam("facet.field","nameTag.mediaNames")
-                        .queryParam("facet.field","nameTag.numberExpressions")
-                        .queryParam("facet.field","nameTag.artifactNames")
-                        .queryParam("facet.field","nameTag.personalNames")
-                        .queryParam("facet.field","nameTag.timeExpression")
-                        .queryParam("facet.field","nameTag.complexPersonNames")
-                        .queryParam("facet.field","nameTag.complexTimeExpression")
-                        .queryParam("facet.field","nameTag.complexAddressExpression")
-                        .queryParam("facet.field","nameTag.complexBiblioExpression")
-                        .queryParam("sort",filters.getSort().toSolrSort())
+                        .queryParam("facet.contains.ignoreCase", "true");
+                    if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
+                        uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
+                    }
+                    Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
+                    return uriBuilder.queryParam("sort",filters.getSort().toSolrSort())
                         .queryParam("rows",filters.getPageSize())
                         .queryParam("start",filters.getStart())
-                        .build())
+                        .build();
+                })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()

@@ -18,7 +18,19 @@ public enum NameTagEntityType {
     COMPLEX_PERSON_NAMES('P', "nameTag.complexPersonNames"),
     COMPLEX_TIME_EXPRESSION('T', "nameTag.complexTimeExpression"),
     COMPLEX_ADDRESS_EXPRESSION('A', "nameTag.complexAddressExpression"),
-    COMPLEX_BIBLIO_EXPRESSION('C', "nameTag.complexBiblioExpression");
+    COMPLEX_BIBLIO_EXPRESSION('C', "nameTag.complexBiblioExpression"),
+    ALL('*', "nameTag.numbersInAddresses,"+
+            "nameTag.geographicalNames,"+
+            "nameTag.institutions,"+
+            "nameTag.mediaNames,"+
+            "nameTag.numberExpressions,"+
+            "nameTag.artifactNames,"+
+            "nameTag.personalNames,"+
+            "nameTag.timeExpression,"+
+            "nameTag.complexPersonNames,"+
+            "nameTag.complexTimeExpression,"+
+            "nameTag.complexAddressExpression,"+
+            "nameTag.complexBiblioExpression");
 
     private final char typeSymbol;
     private final String solrField;
