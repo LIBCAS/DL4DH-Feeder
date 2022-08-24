@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import Dialog from '@reach/dialog';
 import { FC } from 'react';
 import { BiLinkExternal } from 'react-icons/bi';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdDownload } from 'react-icons/md';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -14,8 +14,11 @@ import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 
 import { useTheme } from 'theme';
+import { getDateString } from 'utils';
 
 import { ExportDto } from 'api/exportsApi';
+
+import { ExportJobStatusToText } from 'utils/enumsMap';
 
 import {
 	AltoParam,
@@ -102,98 +105,138 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					<Text fontSize="sm">
 						ID publikace: <b>{exportDto.publicationId}</b>
 					</Text>
-					<Text my={2} mt={4}>
-						Formát: <b>{exportDto.format}</b>
+					<Text fontSize="sm">
+						Status: <b>{ExportJobStatusToText[exportDto.status]}</b>
 					</Text>
+					<Text fontSize="sm">
+						Vytvořeno:{' '}
+						<b>
+							{exportDto.created
+								? getDateString(new Date(exportDto.created))
+								: '--'}
+						</b>
+					</Text>
+					{exportDto.status === 'COMPLETED' && (
+						<Text fontSize="sm">
+							Výsledek:
+							<IconButton
+								onClick={e => {
+									e.stopPropagation();
+									window.open(
+										`${window.origin}/api/exports/download/${exportDto.id}`,
+									);
+								}}
+							>
+								<Flex
+									alignItems="center"
+									pr={1}
+									py={0}
+									color="primary"
+									fontWeight="bold"
+								>
+									<Text my={0} py={0} px={1}>
+										Stáhnout
+									</Text>{' '}
+									<MdDownload size={16} />
+								</Flex>
+							</IconButton>
+						</Text>
+					)}
+					<Divider mt={3} mb={3} />
 
-					{exportDto.format === 'CSV' && exportDto.delimiter && (
-						<Flex
-							my={2}
-							alignItems="center"
-							justifyContent="space-between"
-							mr={2}
-						>
-							<Text my={2}>
-								Rozdělovač:{' '}
-								<b>
-									{delimiterOptions.find(d => d.id === exportDto.delimiter)
-										?.label ?? 'neznámy'}
-								</b>
-							</Text>
-						</Flex>
-					)}
-					{(includeFields ?? []).length > 0 && (
-						<Flex my={3} mr={2}>
-							<Text flexShrink={0} my={2}>
-								Zahrnuté pole:
-							</Text>
-							<Flex flexWrap="wrap">
-								{includeFields?.map((f, i) => (
-									<Chip mx={2} mb={2} p={2} key={`${f.id}${i}`}>
-										{f.label}
-									</Chip>
-								))}
-							</Flex>
-						</Flex>
-					)}
+					<Box fontSize="md" mt={2}>
+						<Text my={2}>
+							Formát: <b>{exportDto.format}</b>
+						</Text>
 
-					{(excludeFields ?? []).length > 0 && (
-						<Flex my={3} mr={2}>
-							<Text flexShrink={0} my={2}>
-								Vynechané pole:
-							</Text>
-							<Flex flexWrap="wrap">
-								{excludeFields?.map((f, i) => (
-									<Chip mx={2} mb={2} p={2} key={`${f.id}${i}`}>
-										{f.label}
-									</Chip>
-								))}
+						{exportDto.format === 'CSV' && exportDto.delimiter && (
+							<Flex
+								my={2}
+								alignItems="center"
+								justifyContent="space-between"
+								mr={2}
+							>
+								<Text my={2}>
+									Rozdělovač:{' '}
+									<b>
+										{delimiterOptions.find(d => d.id === exportDto.delimiter)
+											?.label ?? 'neznámy'}
+									</b>
+								</Text>
 							</Flex>
-						</Flex>
-					)}
-					{(parsed.altoParams ?? []).length > 0 && (
-						<Flex my={3} mr={2}>
-							<Text flexShrink={0} my={2}>
-								Alto Params:
-							</Text>
-							<Flex flexWrap="wrap">
-								{parsed.altoParams?.map((p, i) => (
-									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
-										{p}
-									</Chip>
-								))}
+						)}
+						{(includeFields ?? []).length > 0 && (
+							<Flex my={2} mr={2}>
+								<Text flexShrink={0} my={2}>
+									Zahrnuté pole:
+								</Text>
+								<Flex flexWrap="wrap">
+									{includeFields?.map((f, i) => (
+										<Chip mx={2} mb={2} px={2} py={1} key={`${f.id}${i}`}>
+											{f.label}
+										</Chip>
+									))}
+								</Flex>
 							</Flex>
-						</Flex>
-					)}
-					{(parsed.nameTagParams ?? []).length > 0 && (
-						<Flex my={3} mr={2}>
-							<Text flexShrink={0} my={2}>
-								NameTag Params:
-							</Text>
-							<Flex flexWrap="wrap">
-								{parsed.nameTagParams?.map((p, i) => (
-									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
-										{p}
-									</Chip>
-								))}
-							</Flex>
-						</Flex>
-					)}
-					{(parsed.udPipeParams ?? []).length > 0 && (
-						<Flex my={3} mr={2}>
-							<Text flexShrink={0} my={2}>
-								udPipe Params:
-							</Text>
-							<Flex flexWrap="wrap">
-								{parsed.udPipeParams?.map((p, i) => (
-									<Chip mx={2} mb={2} p={2} key={`${p}${i}`}>
-										{p}
-									</Chip>
-								))}
-							</Flex>
-						</Flex>
-					)}
+						)}
 
+						{(excludeFields ?? []).length > 0 && (
+							<Flex my={2} mr={2}>
+								<Text flexShrink={0} my={2}>
+									Vynechané pole:
+								</Text>
+								<Flex flexWrap="wrap">
+									{excludeFields?.map((f, i) => (
+										<Chip mx={2} mb={2} px={2} py={1} key={`${f.id}${i}`}>
+											{f.label}
+										</Chip>
+									))}
+								</Flex>
+							</Flex>
+						)}
+						{(parsed.altoParams ?? []).length > 0 && (
+							<Flex my={2} mr={2}>
+								<Text flexShrink={0} my={2}>
+									Alto Params:
+								</Text>
+								<Flex flexWrap="wrap">
+									{parsed.altoParams?.map((p, i) => (
+										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
+											{p}
+										</Chip>
+									))}
+								</Flex>
+							</Flex>
+						)}
+						{(parsed.nameTagParams ?? []).length > 0 && (
+							<Flex my={2} mr={2}>
+								<Text flexShrink={0} my={2}>
+									NameTag Params:
+								</Text>
+								<Flex flexWrap="wrap">
+									{parsed.nameTagParams?.map((p, i) => (
+										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
+											{p}
+										</Chip>
+									))}
+								</Flex>
+							</Flex>
+						)}
+						{(parsed.udPipeParams ?? []).length > 0 && (
+							<Flex my={2} mr={2}>
+								<Text flexShrink={0} my={2}>
+									udPipe Params:
+								</Text>
+								<Flex flexWrap="wrap">
+									{parsed.udPipeParams?.map((p, i) => (
+										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
+											{p}
+										</Chip>
+									))}
+								</Flex>
+							</Flex>
+						)}
+					</Box>
 					<Divider my={3} />
 					<Flex my={1} justifyContent="flex-end" alignItems="center">
 						<Button variant="primary" ml={3} onClick={closeModal}>

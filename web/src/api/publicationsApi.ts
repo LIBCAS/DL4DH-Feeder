@@ -1,9 +1,14 @@
 import { useQueries, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
+import { TSearchQuery } from 'hooks/useSearchContext';
+
 import {
+	AvailableFilters,
+	AvailableNameTagFilters,
 	FiltersDto,
 	PublicationChild,
 	PublicationDetail,
@@ -25,6 +30,23 @@ export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
 						.json<PublicationDetail>(),
 		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
 	);
+
+export const useAvailableFilters = (searchQuery: TSearchQuery) => {
+	const body: Partial<FiltersDto> = {
+		...searchQuery,
+		query: searchQuery?.query ?? '',
+		pageSize: 1,
+		nameTagFacet: searchQuery.nameTagFacet,
+	};
+	const json =
+		searchQuery.nameTagFacet === '' ? _.omit(body, 'nameTagFacet') : body;
+	return useQuery(['search-filters', _.omit(json, 'page')], () =>
+		api().post('search', { json: json }).json<{
+			availableFilters: AvailableFilters;
+			availableNameTagFilters: AvailableNameTagFilters;
+		}>(),
+	);
+};
 
 export const usePublicationDetailWithRoot = (
 	uuid: string,

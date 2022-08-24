@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 
 import MainSearchInput from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import Button from 'components/styled/Button';
 import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
@@ -23,8 +23,8 @@ import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import UserBadge from './UserBadge';
 import { DesktopMenu } from './menuItems';
+import UserBadge from './UserBadge';
 
 const Header = () => {
 	const { pathname } = useLocation();

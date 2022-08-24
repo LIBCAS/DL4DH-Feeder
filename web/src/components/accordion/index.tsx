@@ -24,6 +24,7 @@ type Props = {
 	hideArrow?: boolean;
 	headerCss?: SerializedStyles;
 	storeKey?: string;
+	overflowHiddenDisabled?: boolean;
 };
 
 const MyAccordion: FC<Props> = ({
@@ -34,6 +35,7 @@ const MyAccordion: FC<Props> = ({
 	hideArrow,
 	headerCss,
 	storeKey,
+	overflowHiddenDisabled,
 }) => {
 	const [exp, setExp] = useState(
 		storeKey ? Store.get(keyPrefix + storeKey) : isExpanded ?? false,
@@ -89,10 +91,12 @@ const MyAccordion: FC<Props> = ({
 					height={exp ? height : 1}
 					minHeight={1}
 					css={css`
-						transition: height 0.1s ease, opacity 0.3s ease 0.1s;
-
-						overflow: ${exp ? 'visible' : 'hidden'};
-						opacity: ${exp ? 1 : 0};
+						transition: height 0.1s ease;
+						overflow: hidden;
+						${overflowHiddenDisabled &&
+						css`
+							overflow: ${exp ? 'visible' : 'hidden'};
+						`}
 					`}
 				>
 					<div ref={measureRef}>

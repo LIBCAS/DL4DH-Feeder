@@ -53,7 +53,7 @@ const SortingText: Record<OptionXAxisSorting, string> = {
 };
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
-	//const [zoom, setZoom] = useState(50);
+	/* const [zoom, setZoom] = useState(50); */
 	const [sorting, setSorting] = useState<OptionXAxisSorting>('key');
 	const [axisX, setAxisX] = useState<OptionXAxisType>(OptionsXAxis[0]);
 	const [sortDirection, setSortDirection] = useState<number>(1);

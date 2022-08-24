@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { isEqual } from 'lodash';
+import { isEqual, omit } from 'lodash';
 
 import { Loader } from 'modules/loader';
 
@@ -30,8 +30,13 @@ const AppRoutes: React.FC = () => {
 	const parsed = useSanitizeSearchQuery(search);
 	const { state, dispatch } = useSearchContext();
 	useEffect(() => {
-		if (!isEqual(parsed, state.searchQuery)) {
-			//console.log('not equal .. dispatching');
+		if (
+			!isEqual(
+				omit(parsed, 'nameTagFacet'),
+				omit(state.searchQuery, 'nameTagFacet'),
+			)
+		) {
+			console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
 				searchQuery: {

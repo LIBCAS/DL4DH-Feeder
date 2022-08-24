@@ -1,42 +1,31 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback, useMemo, useState } from 'react';
-import { MdBolt, MdExpandMore } from 'react-icons/md';
-import { useSearchParams } from 'react-router-dom';
 import Dialog from '@reach/dialog';
+import { FC, useCallback, useMemo, useState } from 'react';
+import { MdExpandMore } from 'react-icons/md';
+import { useSearchParams } from 'react-router-dom';
 
 import MyAccordion from 'components/accordion';
 import LoaderSpin from 'components/loaders/LoaderSpin';
+import { OperationToTextLabel } from 'components/search/MainSearchInput';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
-import Text, { H4 } from 'components/styled/Text';
 import Paper from 'components/styled/Paper';
-import { OperationToTextLabel } from 'components/search/MainSearchInput';
+import Text, { H4 } from 'components/styled/Text';
 
 import { useTheme } from 'theme';
-import { nameTagQueryCtor } from 'utils';
 
-import {
-	AvailableFilters,
-	AvailableNameTagFilters,
-	ModelsEnum,
-	TagNameEnum,
-} from 'api/models';
+import { AvailableFilters, ModelsEnum } from 'api/models';
 
-import {
-	modelToText,
-	NameTagFilterToNameTagEnum,
-	NameTagIcon,
-	NameTagToText,
-} from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
 import ActiveFilters from './ActiveFilters';
 import NameTagFilter from './NameTagFilter';
 import PublishDateFilter from './PublishDateFilter';
 
-type StatItem = {
+export type StatItem = {
 	label: string;
 	value: number;
 	key: string;
@@ -51,7 +40,7 @@ const Cell = styled(Text)`
 	margin: 0;
 `;
 
-const StatList: FC<{
+export const StatList: FC<{
 	items: StatItem[];
 	maxRows?: number;
 	refresh?: () => void;
@@ -208,11 +197,10 @@ const StatList: FC<{
 
 type Props = {
 	data?: AvailableFilters;
-	nameTagData?: AvailableNameTagFilters;
 	isLoading?: boolean;
 };
 
-const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
+const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 	const yearsInterval = useMemo(() => {
 		const years = data?.years;
 		if (years) {
@@ -316,25 +304,6 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 		[data?.languages],
 	);
 
-	const nameTagKeys = Object.keys(nameTagData ?? {});
-
-	const nameTagItems: { data: StatItem[]; key: string }[] = useMemo(
-		() =>
-			nameTagKeys.map(nKey => ({
-				key: nKey,
-				data: nameTagData?.[nKey]
-					? [
-							...Object.keys(nameTagData?.[nKey]).map(key => ({
-								key,
-								label: key,
-								value: nameTagData[nKey][key],
-							})),
-					  ]
-					: [],
-			})),
-		[nameTagData, nameTagKeys],
-	);
-
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const handleUpdateFilter = useCallback(
@@ -344,19 +313,6 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],
-	);
-
-	const handleUpdateNameTag = useCallback(
-		(nameTag: keyof AvailableNameTagFilters) =>
-			(value: string, operation?: 'EQUAL' | 'NOT_EQUAL') => {
-				const nameTagQuery = nameTagQueryCtor(nameTag, operation, value);
-				if (nameTagQuery) {
-					searchParams.append(nameTagQuery.name, nameTagQuery.value);
-				}
-				searchParams.delete('page');
-				setSearchParams(searchParams);
-			},
-		[setSearchParams, searchParams],
 	);
 
 	const handleChangeFilter = useCallback(
@@ -479,57 +435,17 @@ const SearchResultLeftPanel: FC<Props> = ({ data, nameTagData, isLoading }) => {
 			>
 				<PublishDateFilter interval={yearsInterval} />
 			</MyAccordion>
-			<MyAccordion
-				label={
-					<Flex alignItems="center">
-						<MdBolt size={14} />
-						<H4 ml={2}>NameTag</H4>
-					</Flex>
-				}
-				isLoading={isLoading}
-				storeKey="nameTagFacetFilter"
-			>
-				<NameTagFilter />
-			</MyAccordion>
-			{nameTagItems.map(nti => {
-				const formattedKey = NameTagFilterToNameTagEnum[nti.key];
-				const Icon = NameTagIcon[formattedKey as TagNameEnum];
-				return nti.data.length > 0 ? (
-					<MyAccordion
-						key={nti.key}
-						label={
-							<Flex alignItems="center">
-								<Icon size={14} />
-								<H4 ml={2}>{NameTagToText[formattedKey]}</H4>
-							</Flex>
-						}
-						isLoading={isLoading}
-						storeKey={formattedKey}
-					>
-						{onRefresh => (
-							<StatList
-								listId={NameTagToText[formattedKey]}
-								items={nti.data}
-								maxRows={3}
-								refresh={onRefresh}
-								customDialog
-								onClick={handleUpdateNameTag(
-									nti.key as keyof AvailableNameTagFilters,
-								)}
-							/>
-						)}
-					</MyAccordion>
-				) : (
-					<></>
-				);
-			})}
+
+			<NameTagFilter />
+
 			<Box height="50px" />
 		</Box>
 	);
 };
 
-/* export default React.memo(SearchResultLeftPanel, (prevProps, nextProps) =>
-	isEqual(prevProps, nextProps),
-); */
+// export default memo(SearchResultLeftPanel, (prevProps, nextProps) => {
+// 	console.log({ prevProps, nextProps });
+// 	return _.isEqual(prevProps, nextProps);
+// });
 
 export default SearchResultLeftPanel;

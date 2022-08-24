@@ -95,6 +95,7 @@ export type FiltersDto = {
 	nameTagFilters: NameTagFilterDto[];
 	sort: FiltersSortEnum;
 	enrichment: EnrichmentFilterType;
+	nameTagFacet: string;
 };
 export type TPublication = PublicationDto;
 
