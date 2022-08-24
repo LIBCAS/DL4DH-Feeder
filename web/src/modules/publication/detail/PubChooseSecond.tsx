@@ -137,9 +137,11 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						<Button variant="primary" onClick={handleSecond}>
 							Potvrdit výběr
 						</Button>
-						<Button variant="outlined" onClick={() => setStep(0)}>
-							Zpět
-						</Button>
+						{step > 0 && (
+							<Button variant="outlined" onClick={() => setStep(0)}>
+								Zpět
+							</Button>
+						)}
 						<Button variant="outlined" onClick={onClose}>
 							Zavřít
 						</Button>
