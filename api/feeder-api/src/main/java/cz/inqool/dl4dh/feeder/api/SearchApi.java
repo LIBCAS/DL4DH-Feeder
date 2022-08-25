@@ -54,6 +54,7 @@ public class SearchApi {
             Arrays.stream(nameTagType.getSolrField().split(",")).forEach(query::addFacetField);
             query.setParam("facet.contains", filters.getQuery())
                     .setParam("facet.contains.ignoreCase", "true")
+                    .setQuery(filters.toQuery())
                     .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article")));
             QueryResponse response = solr.query(query);
             List<String> responseList = Arrays.stream(nameTagType.getSolrField().split(","))

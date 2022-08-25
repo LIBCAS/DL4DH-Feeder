@@ -1,11 +1,15 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * @author Peter Sekan
@@ -15,16 +19,35 @@ import javax.annotation.Resource;
 public class ItemApi {
 
     private WebClient kramerius;
+    private WebClient solrWebClient;
 
     @Resource(name = "krameriusWebClient")
     public void setWebClient(WebClient webClient) {
         this.kramerius = webClient;
     }
 
+    @Resource(name = "solrWebClient")
+    public void setSolrWebClient(WebClient webClient) {
+        this.solrWebClient = webClient;
+    }
+
     @GetMapping("/{uuid}")
-    public @ResponseBody Object item(@PathVariable(value="uuid") String uuid) {
-        return kramerius.get()
-                .uri("/item/"+uuid).retrieve().bodyToMono(Object.class).block();
+    public @ResponseBody Map<String, Object> item(@PathVariable(value="uuid") String uuid) {
+        Map<String, Object> response = kramerius.get()
+                .uri("/item/"+uuid).retrieve().bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {}).block();
+        Boolean enriched = solrWebClient.get()
+                .uri("/select", uriBuilder -> uriBuilder
+                        .queryParam("fl", "root_pid")
+                        .queryParam("q", "PID:\""+response.get("pid")+"\"")
+                        .queryParam("rows","0")
+                        .build())
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                .block().getResponse().getNumFound() > 0;
+        response.put("enriched", enriched);
+        return response;
     }
 
     @GetMapping(
