@@ -5,7 +5,6 @@ import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import Checkbox from 'components/form/checkbox/Checkbox';
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import ModalDialog from 'components/modal';
@@ -72,7 +71,12 @@ enum delimiterEnum {
 	tab = '\t',
 }
 
-const formatOptions: ExportFormatOption[] = [
+const commonFormatOptions: ExportFormatOption[] = [
+	{ label: 'TEXT', id: 'text' },
+	{ label: 'ALTO', id: 'alto' },
+];
+
+const enrichedFormatOptions: ExportFormatOption[] = [
 	{ label: 'JSON', id: 'json' },
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'TEI', id: 'tei' },
@@ -135,6 +139,17 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	const pubId = isSecond
 		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
 		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
+	const pubTitle = isSecond
+		? pubCtx.secondPublication?.title ?? 'ctx-right-pid-export-error'
+		: pubCtx.publication?.title ?? paramId ?? 'ctx-left-pid-export-error';
+
+	const enriched = isSecond
+		? pubCtx.secondPublication?.enriched
+		: pubCtx.publication?.enriched;
+
+	const formatOptions: ExportFormatOption[] = enriched
+		? enrichedFormatOptions
+		: commonFormatOptions;
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
@@ -210,8 +225,12 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		);
 	}
 
-	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
-		formik;
+	const {
+		handleSubmit,
+		/* handleChange ,*/ setFieldValue,
+		values,
+		isSubmitting,
+	} = formik;
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -235,8 +254,15 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							</IconButton>
 						</Flex>
 						<Text fontSize="sm">
+							Název publikace: <b>{pubTitle}</b>
+						</Text>
+						<Text fontSize="sm">
 							ID publikace: <b>{pubId}</b>
 						</Text>
+						<Text fontSize="sm">
+							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
+						</Text>
+
 						<Text my={2} mt={4}>
 							Formát
 						</Text>
@@ -253,10 +279,15 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							bg="white"
 						/>
 
-						<Text fontSize="xl" mt={3}>
-							Parametry
-						</Text>
-						<Divider my={3} />
+						{values.format.id !== 'text' && values.format.id !== 'alto' && (
+							<>
+								<Text fontSize="xl" mt={3}>
+									Parametry
+								</Text>
+								<Divider my={3} />
+							</>
+						)}
+
 						{values.format.id === 'csv' && (
 							<Flex
 								mb={3}
@@ -363,14 +394,14 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								/>
 							</>
 						)}
-						<Box mt={4}>
+						{/* <Box mt={4}>
 							<Checkbox
 								id="exportAll"
 								label="Exportovat celé publikace"
 								checked={values.exportAll}
 								onChange={handleChange}
 							/>
-						</Box>
+						</Box> */}
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>

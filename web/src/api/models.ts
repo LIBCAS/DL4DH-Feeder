@@ -28,6 +28,7 @@ export type PublicationDetail = {
 		partNumber: string;
 		title: string;
 	};
+	enriched?: boolean;
 };
 
 export type PublicationsListDto = {

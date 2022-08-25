@@ -1,6 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useCallback, useContext, useMemo, useState } from 'react';
+import {
+	FC,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
@@ -164,13 +171,19 @@ const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
 		[childrenResponse.data],
 	);
 
+	useEffect(() => {
+		if (children?.[0]?.datanode) {
+			nav(`/multiview/${leftId}/${id}`);
+		}
+		if (children.length === 1 && !children?.[0]?.datanode) {
+			setId(children[0].pid);
+		}
+	}, [children, id, leftId, nav]);
+
 	if (childrenResponse.isLoading) {
 		return <Loader />;
 	}
 
-	if (children?.[0]?.datanode) {
-		nav(`/multiview/${leftId}/${id}`);
-	}
 	return (
 		<Wrapper>
 			<H2>Vyberte se seznamu:</H2>
