@@ -226,3 +226,19 @@ export const nameTagQueryCtor = (
 	const opCode = OperationCode[operation];
 	return { name: 'NT', value: `${tagCode}${opCode}${value}` };
 };
+
+export const downloadFile = (fileUrl: string, filename: string) => {
+	if (fileUrl !== '') {
+		const a = document.createElement('a');
+		a.href = fileUrl;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(a.href);
+		try {
+			document.body.removeChild(a);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+};
