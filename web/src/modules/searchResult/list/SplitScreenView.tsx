@@ -47,7 +47,7 @@ const SplitScreenView: FC<{
 		debounce: 200,
 	});
 
-	const [selectedRow, setSelectedRow] = useState<number | undefined>();
+	const [selectedRow, setSelectedRow] = useState<number | undefined>(0);
 	console.log({ selectedRow });
 
 	const renderHeader = useCallback(
@@ -120,6 +120,9 @@ const SplitScreenView: FC<{
 	useEffect(() => {
 		setSelectedRow(0);
 		if (selectedRow === undefined) {
+			onSelect(data?.[0].pid ?? '');
+		}
+		if (data?.length === 1) {
 			onSelect(data?.[0].pid ?? '');
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
