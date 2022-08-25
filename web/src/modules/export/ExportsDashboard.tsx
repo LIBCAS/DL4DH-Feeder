@@ -14,7 +14,8 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Pagination from 'components/table/Pagination';
 
-import { getDateString } from 'utils';
+import { downloadFile, getDateString } from 'utils';
+import { api } from 'api';
 
 import { ExportListParams, useExportList } from 'api/exportsApi';
 
@@ -188,11 +189,14 @@ const Exportslist = () => {
 							<Box flex={1} maxWidth={100}>
 								{row.status === 'COMPLETED' && (
 									<IconButton
-										onClick={e => {
+										onClick={async e => {
 											e.stopPropagation();
-											window.open(
-												`${window.origin}/api/exports/download/${row.id}`,
+											const file = await api().get(
+												`exports/download/${row.id}`,
 											);
+											const blob = await file.blob();
+											const url = URL.createObjectURL(blob);
+											downloadFile(url, `${row.id}.zip`);
 										}}
 									>
 										<Flex alignItems="center" pr={1} py={0}>

@@ -14,7 +14,8 @@ import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 
 import { useTheme } from 'theme';
-import { getDateString } from 'utils';
+import { downloadFile, getDateString } from 'utils';
+import { api } from 'api';
 
 import { ExportDto } from 'api/exportsApi';
 
@@ -120,11 +121,15 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						<Text fontSize="sm">
 							Výsledek:
 							<IconButton
-								onClick={e => {
+								onClick={async e => {
 									e.stopPropagation();
-									window.open(
-										`${window.origin}/api/exports/download/${exportDto.id}`,
+									const file = await api().get(
+										`exports/download/${exportDto.id}`,
 									);
+
+									const blob = await file.blob();
+									const url = URL.createObjectURL(blob);
+									downloadFile(url, `${exportDto.id}.zip`);
 								}}
 							>
 								<Flex
