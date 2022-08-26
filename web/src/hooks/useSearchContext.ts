@@ -67,7 +67,6 @@ export const reducer = (state: State, action: Actions) => {
 	switch (action.type) {
 		case 'setSearchQuery': {
 			const page = action.searchQuery?.page ?? NaN;
-			console.log(action.searchQuery);
 			if (!isNaN(page)) {
 				return {
 					...state,

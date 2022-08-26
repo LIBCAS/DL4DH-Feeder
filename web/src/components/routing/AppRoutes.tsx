@@ -7,6 +7,8 @@ import { Loader } from 'modules/loader';
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 import { useSearchContext } from 'hooks/useSearchContext';
 
+import Store from 'utils/Store';
+
 const NotFound = React.lazy(() => import('modules/notFound'));
 //const Authorize = React.lazy(() => import('modules/public/auth'));
 
@@ -26,9 +28,14 @@ const ExportsDashboard = React.lazy(
 );
 
 const AppRoutes: React.FC = () => {
-	const { search } = useLocation();
+	const { search, pathname } = useLocation();
+
 	const parsed = useSanitizeSearchQuery(search);
 	const { state, dispatch } = useSearchContext();
+
+	if (pathname === '/search') {
+		Store.set(Store.keys.PreviousSearchQuery, search);
+	}
 	useEffect(() => {
 		if (
 			!isEqual(

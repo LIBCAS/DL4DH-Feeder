@@ -22,6 +22,7 @@ import { useInfoApi } from 'api/infoApi';
 import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+import Store from 'utils/Store';
 
 import { DesktopMenu } from './menuItems';
 import UserBadge from './UserBadge';
@@ -69,7 +70,11 @@ const Header = () => {
 								<MdArrowBack size={22} />
 							</IconButton>
 							<Button
-								onClick={() => nav('/search')}
+								onClick={() =>
+									nav(
+										`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,
+									)
+								}
 								variant="text"
 								color="headerColor"
 								pr={2}
