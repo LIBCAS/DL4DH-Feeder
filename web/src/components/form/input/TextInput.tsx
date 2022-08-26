@@ -258,14 +258,16 @@ const InlineTextInput = forwardRef<
 				</Box>
 			)}
 
-			<Label
-				htmlFor={id}
-				pr={2}
-				css={[hideLabelOnValue && !isEmpty(value) && OffscreenCSS]}
-				required={required}
-			>
-				{label}
-			</Label>
+			{label !== '' && (
+				<Label
+					htmlFor={id}
+					pr={2}
+					css={[hideLabelOnValue && !isEmpty(value) && OffscreenCSS]}
+					required={required}
+				>
+					{label}
+				</Label>
+			)}
 
 			<Input {...inputProps} id={id} value={value} ref={ref} />
 
