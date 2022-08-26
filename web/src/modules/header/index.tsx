@@ -127,6 +127,9 @@ const Header = () => {
 							<>
 								<Button
 									variant="primary"
+									px={0}
+									mx={0}
+									minWidth={50}
 									onClick={() => setSideMenuExpanded(true)}
 								>
 									<MdMenu size={22} />

@@ -118,7 +118,7 @@ const NameTagFilter = () => {
 				overflowHiddenDisabled
 			>
 				<form onSubmit={handleSubmit}>
-					<Flex flexDirection="column" p={3} overflow="visible">
+					<Flex flexDirection="column" p={1} overflow="visible">
 						<Flex
 							justifyContent="flex-start"
 							alignItems="center"

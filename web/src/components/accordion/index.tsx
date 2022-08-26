@@ -57,7 +57,7 @@ const MyAccordion: FC<Props> = ({
 		<Box width={1}>
 			<Flex
 				//pb={exp ? 0 : 1}
-				pt={1}
+				py={1}
 				px={2}
 				justifyContent="space-between"
 				alignItems="center"
@@ -88,8 +88,8 @@ const MyAccordion: FC<Props> = ({
 				<LoaderSpin />
 			) : (
 				<Box
-					height={exp ? height : 1}
-					minHeight={1}
+					height={exp ? height : 0}
+					minHeight={0}
 					css={css`
 						transition: height 0.1s ease;
 						overflow: hidden;

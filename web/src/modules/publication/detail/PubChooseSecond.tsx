@@ -74,7 +74,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					top={-8}
 					width="50vw"
 					height={`calc(100vh - ${headerHeight}px)`}
-					zIndex={3}
+					zIndex={4}
 					overflow="auto"
 					css={css`
 						box-sizing: border-box;

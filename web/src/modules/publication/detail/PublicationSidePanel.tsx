@@ -34,7 +34,7 @@ const PublicationSidePanel: FC<Props> = ({
 	isSecond,
 }) => {
 	const theme = useTheme();
-	const [chooseSecond, setChooseSecond] = useState(false);
+	const [chooseSecondDialogOpen, setChooseSecondDialogOpen] = useState(false);
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'search' : defaultView ?? 'detail',
@@ -72,13 +72,13 @@ const PublicationSidePanel: FC<Props> = ({
 						<Flex alignItems="center" justifyContent="center" p={2} width={1}>
 							<Button
 								variant="primary"
-								onClick={() => setChooseSecond(p => !p)}
+								onClick={() => setChooseSecondDialogOpen(p => !p)}
 							>
 								Vyhledávaní v množině záznamů
 							</Button>
-							{chooseSecond && (
+							{chooseSecondDialogOpen && (
 								<PubChooseSecond
-									onClose={() => setChooseSecond(false)}
+									onClose={() => setChooseSecondDialogOpen(false)}
 									variant={variant}
 								/>
 							)}
@@ -127,11 +127,14 @@ const PublicationSidePanel: FC<Props> = ({
 					/>
 				</Flex>
 				<Divider />
-
-				{viewMode === 'search' ? (
-					<PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} />
-				) : (
-					<PubBiblioDetail isSecond={isSecond} />
+				{!chooseSecondDialogOpen && (
+					<>
+						{viewMode === 'search' ? (
+							<PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} />
+						) : (
+							<PubBiblioDetail isSecond={isSecond} />
+						)}
+					</>
 				)}
 			</Flex>
 			<SidePanelHideButton

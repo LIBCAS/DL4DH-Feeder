@@ -107,8 +107,8 @@ const ActiveFilters: React.FC = () => {
 	const keys = Object.keys(arrayFilters);
 
 	return (
-		<Box px={2}>
-			<Box my={3}>
+		<Box px={0}>
+			<Box my={3} px={2}>
 				<Flex justifyContent="space-between" alignItems="center" mb={2}>
 					<Text color="warning" fontWeight="bold" my={0}>
 						Aktivní filtry

@@ -434,7 +434,11 @@ const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
 		<ModalDialog
 			label="Info"
 			control={openModal => (
-				<IconButton color="primary" onClick={openModal}>
+				<IconButton
+					color="primary"
+					onClick={openModal}
+					tooltip="Exportovat publikaci"
+				>
 					<MdDownload size={24} />
 				</IconButton>
 			)}
