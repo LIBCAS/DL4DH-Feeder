@@ -160,6 +160,7 @@ const Pagination: FC<Props> = ({
 					<Button
 						p={2}
 						m={0}
+						tooltip="Předchozí stránka"
 						disabled={page === 1 || loading}
 						variant="text"
 						onClick={() => changePage(page - 1)}
@@ -231,6 +232,7 @@ const Pagination: FC<Props> = ({
 						disabled={!hasMore || loading}
 						style={{}}
 						variant="text"
+						tooltip="Další stránka"
 						onClick={() => changePage(page + 1)}
 						p={2}
 						m={0}

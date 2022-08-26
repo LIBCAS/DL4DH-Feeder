@@ -101,25 +101,34 @@ const Dashboard: FC = () => {
 								{
 									key: 'tiles',
 									jsx: (
-										<IconButton color="inherit" mx={2}>
-											<BsGridFill size={20} />
-										</IconButton>
+										<Flex mx={2}>
+											<IconButton color="inherit" tooltip="Zobrazení dlažice">
+												<BsGridFill size={20} />
+											</IconButton>
+										</Flex>
 									),
 								},
 								{
 									key: 'list',
 									jsx: (
-										<IconButton color="inherit" mx={2}>
-											<ImMenu size={20} />
-										</IconButton>
+										<Flex mx={2}>
+											<IconButton color="inherit" tooltip="Zobrazení seznam">
+												<ImMenu size={20} />
+											</IconButton>
+										</Flex>
 									),
 								},
 								{
 									key: 'graph',
 									jsx: (
-										<IconButton color="inherit" mx={2}>
-											<MdEqualizer size={20} />
-										</IconButton>
+										<Flex mx={2}>
+											<IconButton
+												color="inherit"
+												tooltip="Zobrazení grafu statistik"
+											>
+												<MdEqualizer size={20} />
+											</IconButton>
+										</Flex>
 									),
 								},
 							]}

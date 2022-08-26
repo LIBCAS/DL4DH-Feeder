@@ -22,7 +22,10 @@ import styled from 'theme/styled';
 type ButtonProps = {
 	variant?: 'default' | 'primary' | 'outlined' | 'text' | 'confirm' | 'error';
 	sizeType?: 'normal' | 'big'; // size is used by 'space'
+	/** Tooltip string to show */
 	tooltip?: string;
+	/** Optional delay in ms after tooltip is shown */
+	tooltipDelay?: number;
 };
 
 type Props = LayoutProps &
@@ -174,7 +177,7 @@ StyledButton.defaultProps = {
 const Button = forwardRef<
 	HTMLButtonElement,
 	StyledButtonProps & { loading?: boolean; hoverDisable?: boolean }
->(({ children, loading, tooltip, ...buttonProps }, ref) => {
+>(({ children, loading, tooltip, tooltipDelay, ...buttonProps }, ref) => {
 	return (
 		<StyledButton
 			{...buttonProps}
@@ -183,7 +186,9 @@ const Button = forwardRef<
 				position: relative;
 			`}
 		>
-			{tooltip && <TooltipTrigger tooltip={tooltip} />}
+			{tooltip && (
+				<TooltipTrigger tooltip={tooltip} tooltipDelay={tooltipDelay} />
+			)}
 			{loading && (
 				<Box display="inline-block" mr={2}>
 					<LoaderSpin
