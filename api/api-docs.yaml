@@ -2,9 +2,9 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.3.1
+  version: 0.4.0
 servers:
-- url: http://localhost:8080
+- url: https://feeder.nkp.cz
   description: Generated server url
 paths:
   /api/search:
@@ -54,6 +54,7 @@ paths:
           - COMPLEX_TIME_EXPRESSION
           - COMPLEX_ADDRESS_EXPRESSION
           - COMPLEX_BIBLIO_EXPRESSION
+          - ALL
       responses:
         "200":
           description: OK
@@ -178,6 +179,8 @@ paths:
             '*/*':
               schema:
                 type: object
+                additionalProperties:
+                  type: object
   /api/item/{uuid}/thumb:
     get:
       tags:
@@ -400,6 +403,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NameTagFilterDto'
+        nameTagFacet:
+          type: string
         start:
           type: integer
           format: int32
@@ -426,6 +431,7 @@ components:
           - COMPLEX_TIME_EXPRESSION
           - COMPLEX_ADDRESS_EXPRESSION
           - COMPLEX_BIBLIO_EXPRESSION
+          - ALL
         operator:
           type: string
           enum:
@@ -512,7 +518,13 @@ components:
           type: string
         publicationId:
           type: string
+        publicationTitle:
+          type: string
         created:
+          type: string
+        delimiter:
+          type: string
+        parameters:
           type: string
         status:
           type: string
@@ -526,6 +538,14 @@ components:
           - FAILED
           - ABANDONED
           - UNKNOWN
+        format:
+          type: string
+          enum:
+          - TEXT
+          - TEI
+          - JSON
+          - CSV
+          - ALTO
     CurrentUserDto:
       type: object
       properties:
@@ -576,6 +596,20 @@ components:
         totalElements:
           type: integer
           format: int64
+        first:
+          type: boolean
+        last:
+          type: boolean
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        number:
+          type: integer
+          format: int32
         size:
           type: integer
           format: int32
@@ -583,46 +617,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Export'
-        number:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/Sort'
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: '#/components/schemas/Sort'
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
     Sort:
       type: object
       properties:
-        sorted:
-          type: boolean
         unsorted:
+          type: boolean
+        sorted:
           type: boolean
         empty:
           type: boolean
