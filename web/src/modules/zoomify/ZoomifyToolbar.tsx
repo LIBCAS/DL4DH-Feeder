@@ -32,11 +32,12 @@ import { useMobileView } from 'hooks/useViewport';
 const ToolButton: FC<{
 	onClick: () => void;
 	Icon: ReactNode;
-	title?: string;
-}> = ({ onClick, Icon }) => {
+	tooltip?: string;
+}> = ({ onClick, Icon, tooltip }) => {
 	const theme = useTheme();
 	return (
 		<Button
+			tooltip={tooltip}
 			variant="text"
 			onClick={onClick}
 			px={[2, 2, 3]}
@@ -104,6 +105,7 @@ const ZoomifyToolbar: FC<Props> = ({
 				`}
 			>
 				<ToolButton
+					tooltip="Předchozí strana"
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.prevPid ?? page);
 						setPageUrl(pageUrl);
@@ -119,18 +121,29 @@ const ZoomifyToolbar: FC<Props> = ({
 				/>
 
 				<ToolButton
+					tooltip="Rotovat doleva"
 					onClick={() => onUpdateRotation(r => (r - 90) % 360)}
 					Icon={<MdRotateLeft size={ICON_SIZE} />}
 				/>
 				<ToolButton
+					tooltip="Rotovat doprava"
 					onClick={() => onUpdateRotation(r => (r + 90) % 360)}
 					Icon={<MdRotateRight size={ICON_SIZE} />}
 				/>
-				<ToolButton onClick={onZoomIn} Icon={<MdZoomIn size={ICON_SIZE} />} />
-				<ToolButton onClick={onZoomOut} Icon={<MdZoomOut size={ICON_SIZE} />} />
+				<ToolButton
+					tooltip="Přiblížit"
+					onClick={onZoomIn}
+					Icon={<MdZoomIn size={ICON_SIZE} />}
+				/>
+				<ToolButton
+					tooltip="Oddálit"
+					onClick={onZoomOut}
+					Icon={<MdZoomOut size={ICON_SIZE} />}
+				/>
 
 				{!isSecond && (
 					<ToolButton
+						tooltip="Na celou obrazovku"
 						onClick={() => {
 							if (fullscreen) {
 								document?.exitFullscreen();
@@ -153,11 +166,13 @@ const ZoomifyToolbar: FC<Props> = ({
 					/>
 				)}
 				<ToolButton
+					tooltip="Označit oblast a vyhledat text v ALTO"
 					Icon={<BsCursorText size={ICON_SIZE} />}
 					onClick={onDragBoxModeEnabled}
 				/>
 
 				<ToolButton
+					tooltip="Další strana"
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.nextPid ?? page);
 						setPageUrl(pageUrl);

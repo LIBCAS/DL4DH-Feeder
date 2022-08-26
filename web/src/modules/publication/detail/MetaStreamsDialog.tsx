@@ -364,7 +364,11 @@ const MetaStreamsDialog: FC<{ rootId: string; pageId: string }> = ({
 				padding: 0;
 			`}
 			control={openModal => (
-				<IconButton color="primary" onClick={openModal}>
+				<IconButton
+					color="primary"
+					onClick={openModal}
+					tooltip="Zobrazit meta informace"
+				>
 					<MdCode size={24} />
 				</IconButton>
 			)}

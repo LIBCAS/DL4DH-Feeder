@@ -22,6 +22,7 @@ import { useInfoApi } from 'api/infoApi';
 import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+import Store from 'utils/Store';
 
 import { DesktopMenu } from './menuItems';
 import UserBadge from './UserBadge';
@@ -65,11 +66,21 @@ const Header = () => {
 				>
 					{!isMobile && (
 						<Flex flexShrink={0} width={300} color="headerColor">
-							<IconButton onClick={() => nav(-1)} p={1} color="headerColor">
+							<IconButton
+								onClick={() => nav(-1)}
+								p={1}
+								color="headerColor"
+								tooltip="Krok zpět"
+							>
 								<MdArrowBack size={22} />
 							</IconButton>
 							<Button
-								onClick={() => nav('/search')}
+								tooltip="Zpět na vyledávání"
+								onClick={() =>
+									nav(
+										`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,
+									)
+								}
 								variant="text"
 								color="headerColor"
 								pr={2}

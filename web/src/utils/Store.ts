@@ -28,10 +28,25 @@ const watch = <T>(key: string, callback: (value: T) => void) =>
 
 const unwatch = (watchId: string) => store.unwatch(watchId);
 
+const updateGroup = <T>(groupKey: string, itemKey: string, value: T) => {
+	const group = store.get(groupKey) ?? {};
+	group[itemKey] = value;
+	store.set(groupKey, group);
+};
+const getFromGroup = <T>(
+	groupKey: string,
+	itemKey: string,
+	defaultValue?: T,
+) => {
+	const group = store.get(groupKey) ?? {};
+	return (group[itemKey] as T) ?? defaultValue;
+};
+
 const keys = {
 	Token: 'feeder-token',
 	Redirect: 'redirect',
-	TutorialCompanyProfileStep: 'tut-comp-prof-step',
+	PreviousSearchQuery: 'feeder-previous-searchquery',
+	ViewMode: 'feeder-viewmode',
 };
 
 export default {
@@ -41,4 +56,6 @@ export default {
 	watch,
 	unwatch,
 	keys,
+	updateGroup,
+	getFromGroup,
 };

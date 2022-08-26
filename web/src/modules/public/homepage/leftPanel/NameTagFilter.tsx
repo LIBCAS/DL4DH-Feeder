@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import _ from 'lodash';
 import { debounce } from 'lodash-es';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MdBolt, MdClear } from 'react-icons/md';
+import { MdBolt, MdClear, MdSearch } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 
@@ -12,7 +12,7 @@ import MyAccordion from 'components/accordion';
 import TextInput from 'components/form/input/TextInput';
 import { ClickAway } from 'components/form/select/SimpleSelect';
 import { Box, Flex } from 'components/styled';
-import Button from 'components/styled/Button';
+import IconButton from 'components/styled/IconButton';
 import Text, { H4 } from 'components/styled/Text';
 
 import { Loader } from 'modules/loader';
@@ -77,9 +77,14 @@ const NameTagFilter = () => {
 		},
 	});
 
-	if (isLoading) {
-		return <Loader />;
-	}
+	const debouncedSubmit = useMemo(
+		() => debounce(formik.submitForm, 500),
+		[formik.submitForm],
+	);
+
+	// if (isLoading) {
+	// 	return <Loader />;
+	// }
 
 	const availableNameTagFilters = data?.availableNameTagFilters;
 	const {
@@ -93,15 +98,22 @@ const NameTagFilter = () => {
 	} = formik;
 
 	return (
-		<>
+		<Box
+			bg="#E4F0F3"
+			css={css`
+				border-top: 2px solid ${theme.colors.primary};
+				border-bottom: 2px solid ${theme.colors.primary};
+			`}
+		>
 			<MyAccordion
 				label={
 					<Flex alignItems="center">
 						<MdBolt size={14} />
-						<H4 ml={2}>NameTag</H4>
+
+						<H4 mx={2}>Hledat NameTag</H4>
 					</Flex>
 				}
-				isLoading={isLoading}
+				//isLoading={isLoading}
 				storeKey="nameTagFacetFilter"
 				overflowHiddenDisabled
 			>
@@ -121,11 +133,17 @@ const NameTagFilter = () => {
 							<TextInput
 								p={'0px!important'}
 								id="query"
-								label="Vyhledat"
-								labelType="aboveInput"
+								label=""
+								labelType="inline"
 								labelMinWidth="30px"
 								autoComplete="off"
 								width="100%"
+								title={values.query}
+								iconLeft={
+									<Flex p={0} m={0} ml={1}>
+										<MdSearch size={16} />
+									</Flex>
+								}
 								onClick={e => {
 									e.currentTarget?.select?.();
 									e.stopPropagation();
@@ -135,35 +153,43 @@ const NameTagFilter = () => {
 								}}
 								touched={touched.query}
 								onChange={e => {
+									e.stopPropagation();
 									debouncedHint(e.target.value);
+									debouncedSubmit();
 
 									handleChange(e);
 								}}
 								value={values.query}
 								onKeyDown={e => {
+									e.stopPropagation();
 									if (e.key === 'Enter') {
-										alert('enter');
+										formik.submitForm();
 									}
 								}}
-								inputPadding="8px"
+								inputPadding="8px 0px"
+								minHeight={50}
 								iconRight={
 									nameTagFacet !== '' ? (
-										<Button
-											tooltip="Smazat filtr"
-											variant="text"
-											onClick={() => {
-												sp.delete('nameTagFacet');
-												setSp(sp);
-												setNameTagFacet('');
-												setFieldValue('query', '');
-											}}
-										>
-											<MdClear
-												css={css`
-													cursor: pointer;
-												`}
-											/>
-										</Button>
+										<Flex color="primary">
+											<IconButton
+												size={32}
+												color="primary"
+												tooltip="Smazat filtr"
+												//variant="outlined"
+												onClick={() => {
+													sp.delete('nameTagFacet');
+													setSp(sp);
+													setNameTagFacet('');
+													setFieldValue('query', '');
+												}}
+											>
+												<MdClear
+													css={css`
+														cursor: pointer;
+													`}
+												/>
+											</IconButton>
+										</Flex>
 									) : (
 										<></>
 									)
@@ -175,7 +201,7 @@ const NameTagFilter = () => {
 									<Flex
 										position="absolute"
 										left={0}
-										top={62}
+										top={35}
 										bg="white"
 										color="text"
 										css={css`
@@ -224,16 +250,24 @@ const NameTagFilter = () => {
 						<Box>
 							<Text>{errors.query}</Text>
 						</Box>
-						<Box alignSelf="end" mt={1}>
+						{/* <Box alignSelf="end" mt={1}>
 							<Button type="submit" variant="primary">
 								Použít
 							</Button>
-						</Box>
+						</Box> */}
 					</Flex>
 				</form>
 			</MyAccordion>
-			<NameTagList key={dataUpdatedAt} nameTagData={availableNameTagFilters} />
-		</>
+
+			{isLoading ? (
+				<Loader />
+			) : (
+				<NameTagList
+					key={dataUpdatedAt}
+					nameTagData={availableNameTagFilters}
+				/>
+			)}
+		</Box>
 	);
 };
 

@@ -8,6 +8,7 @@ import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import { OperationToTextLabel } from 'components/search/MainSearchInput';
+import Button from 'components/styled/Button';
 
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';
@@ -113,6 +114,7 @@ const ActiveFilters: React.FC = () => {
 						Aktivní filtry
 					</Text>
 					<IconButton
+						tooltip="Smazat všechny filtry"
 						width={22}
 						height={22}
 						color="white"
@@ -136,12 +138,16 @@ const ActiveFilters: React.FC = () => {
 				{keys.map((k, i) => (
 					<Box key={k + i} fontSize="13px">
 						{arrayFilters[k].map(val => (
-							<Flex
+							<Button
 								key={val}
 								py={1}
+								px={0}
 								width={1}
-								justifyContent="space-between"
-								alignItems="center"
+								tooltip={`Smazat filtr: ${enumToText(k, val)}`}
+								variant="text"
+								//justifyContent="space-between"
+								//position="relative"
+								//alignItems="center"
 								onClick={() => {
 									removeParam(sp, k, val, k === 'models');
 									setSp(sp);
@@ -165,39 +171,47 @@ const ActiveFilters: React.FC = () => {
 									}
 								`}
 							>
-								<Flex alignItems="center" position="relative">
-									<IconButton
+								<Flex alignItems="flex-start" position="relative" width={1}>
+									<Box
 										className="filter-cross-icon"
 										mr={2}
 										position="absolute"
 										left={0}
 										top={0}
 									>
-										<MdClose size={15} />
-									</IconButton>
-									<IconButton
+										<IconButton color="warning">
+											<MdClose size={15} />
+										</IconButton>
+									</Box>
+									<Box
 										className="filter-active-icon"
 										mr={2}
 										position="absolute"
 										left={0}
 									>
-										<CheckmarkIcon size={13} color="primary" />
-									</IconButton>
+										<IconButton>
+											<CheckmarkIcon size={13} color="primary" />
+										</IconButton>
+									</Box>
 									<Text ml={3} my={0} py={0}>
 										{enumToText(k, val)}
 									</Text>
 								</Flex>
-							</Flex>
+							</Button>
 						))}
 					</Box>
 				))}
 				{(NT ?? []).map(nt => (
 					<Box key={nt.values + nt.type} fontSize="13px">
-						<Flex
+						<Button
 							py={1}
 							width={1}
-							justifyContent="space-between"
-							alignItems="center"
+							px={0}
+							tooltip={`Smazat filtr: ${NameTagToText[nt.type]} ${
+								OperationToTextLabel[nt.operator]
+							}
+							${nt.values[0]}`}
+							variant="text"
 							onClick={() => {
 								removeParam(
 									sp,
@@ -228,30 +242,39 @@ const ActiveFilters: React.FC = () => {
 								}
 							`}
 						>
-							<Flex alignItems="center" position="relative">
-								<IconButton
+							<Flex
+								alignItems="flex-start"
+								position="relative"
+								width={1}
+								textAlign="left"
+							>
+								<Box
 									className="filter-cross-icon"
 									mr={2}
 									position="absolute"
 									left={0}
 									top={0}
 								>
-									<MdClose size={15} />
-								</IconButton>
-								<IconButton
+									<IconButton color="warning">
+										<MdClose size={15} />
+									</IconButton>
+								</Box>
+								<Box
 									className="filter-active-icon"
 									mr={2}
 									position="absolute"
 									left={0}
 								>
-									<CheckmarkIcon size={13} color="primary" />
-								</IconButton>
+									<IconButton>
+										<CheckmarkIcon size={13} color="primary" />
+									</IconButton>
+								</Box>
 								<Text ml={3} my={0} py={0}>
 									{NameTagToText[nt.type]} {OperationToTextLabel[nt.operator]}{' '}
 									{nt.values[0]}
 								</Text>
 							</Flex>
-						</Flex>
+						</Button>
 					</Box>
 				))}
 			</Box>

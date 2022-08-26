@@ -11,10 +11,6 @@ import LoaderSpin from 'components/loaders/LoaderSpin';
 
 import Store from 'utils/Store';
 
-const keyPrefix = 'feeder-acc-';
-
-//TODO: group LS keys
-
 type Props = {
 	label: string | JSX.Element;
 	isExpanded?: boolean;
@@ -23,7 +19,10 @@ type Props = {
 	children: ((onRefresh: () => void) => ReactNode) | ReactNode;
 	hideArrow?: boolean;
 	headerCss?: SerializedStyles;
+	/** Localstorage key for group, to store state of accordion expansion. If not provided, state is not saved. */
 	storeKey?: string;
+	/** Localstorage key of group where are all states saved.*/
+	storeGroup?: string;
 	overflowHiddenDisabled?: boolean;
 };
 
@@ -36,9 +35,10 @@ const MyAccordion: FC<Props> = ({
 	headerCss,
 	storeKey,
 	overflowHiddenDisabled,
+	storeGroup = 'feeder-accordions-expanded',
 }) => {
 	const [exp, setExp] = useState(
-		storeKey ? Store.get(keyPrefix + storeKey) : isExpanded ?? false,
+		storeKey ? Store.getFromGroup(storeGroup, storeKey) : isExpanded ?? false,
 	);
 	const [refresh, setRefresh] = useState(false);
 	const [height, setHeight] = useState(0);
@@ -49,9 +49,9 @@ const MyAccordion: FC<Props> = ({
 	}, [refresh]);
 	useEffect(() => {
 		if (storeKey) {
-			Store.set(keyPrefix + storeKey, exp);
+			Store.updateGroup(storeGroup, storeKey, exp);
 		}
-	}, [exp, storeKey]);
+	}, [exp, storeKey, storeGroup]);
 
 	return (
 		<Box width={1}>
