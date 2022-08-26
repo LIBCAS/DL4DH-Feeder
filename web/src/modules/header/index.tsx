@@ -42,9 +42,9 @@ const Header = () => {
 	return (
 		<ResponsiveWrapper
 			bg="headerBg"
-			px={1}
+			px={0}
 			mx={0}
-			maxHeight={60}
+			maxHeight={INIT_HEADER_HEIGHT}
 			zIndex={10}
 			css={css`
 				padding-bottom: 0px !important;
@@ -54,7 +54,7 @@ const Header = () => {
 		>
 			{pathname !== '/' ? (
 				<Flex
-					maxHeight={59}
+					maxHeight={INIT_HEADER_HEIGHT}
 					id={HEADER_WRAPPER_ID}
 					alignItems="center"
 					flexDirection="row"
@@ -65,7 +65,13 @@ const Header = () => {
 					// overflow="hidden"
 				>
 					{!isMobile && (
-						<Flex flexShrink={0} width={300} color="headerColor">
+						<Flex
+							flexShrink={0}
+							width={300}
+							color="headerColor"
+							alignItems="center"
+							justifyContent="space-evenly"
+						>
 							<IconButton
 								onClick={() => nav(-1)}
 								p={1}
@@ -85,6 +91,7 @@ const Header = () => {
 								color="headerColor"
 								pr={2}
 								pl={0}
+								ml={-2}
 							>
 								<Flex flexDirection="column" ml={2} justifyContent="center">
 									<Text

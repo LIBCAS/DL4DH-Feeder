@@ -67,6 +67,7 @@ export const DesktopMenu: FC<{ variant: 'desktop' | 'tablet' }> = ({
 							variant="primary"
 							minWidth={50}
 							px={1}
+							mx={1}
 						>
 							{item.label}
 						</NavLinkButton>

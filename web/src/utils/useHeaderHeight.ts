@@ -2,8 +2,8 @@ import { useState, useLayoutEffect } from 'react';
 
 //TODO: to delete?
 export const HEADER_WRAPPER_ID = 'SEARCH_HEADER_ID';
-export const INIT_HEADER_HEIGHT = 60;
-export const SUB_HEADER_HEIGHT = 50;
+export const INIT_HEADER_HEIGHT = 50;
+export const SUB_HEADER_HEIGHT = 40;
 const useHeaderHeight = () => {
 	const [height, setHeight] = useState(0);
 	useLayoutEffect(() => {

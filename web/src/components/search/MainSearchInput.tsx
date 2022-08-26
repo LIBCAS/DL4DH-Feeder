@@ -165,6 +165,7 @@ const MainSearchInput = () => {
 					color="primary"
 					value={localState}
 					ref={mainInputRef}
+					inputPadding="10px 8px"
 					onChange={e => {
 						setShowTagNameMenu(false);
 						setShowTagOpMenu(false);
