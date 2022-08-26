@@ -12,9 +12,10 @@ import TooltipContext from './TooltipCtx';
 
 const TooltipRender = () => {
 	const TooltipCtx = useContext(TooltipContext);
-	const [ref, { width: tooltipWidth, height: tooltipHeight }] = useMeasure({
-		debounce: 10,
-	});
+	const [ref, { width: tooltipWidthRaw, height: tooltipHeightRaw }] =
+		useMeasure({
+			debounce: 10,
+		});
 	const { width: clientWidth, height: clientHeight } = useViewport();
 
 	const { rect } = TooltipCtx;
@@ -23,17 +24,19 @@ const TooltipRender = () => {
 		return <></>;
 	}
 
-	//const left = tooltipWidth + X >= clientWidth ? clientWidth - tooltipWidth : X;
-	const left = (rect?.left ?? 0) + (rect?.width ?? 0) + 10;
-	const top = rect?.top ?? 0;
+	const left = rect?.left ?? 9999;
+	const right = rect?.right ?? 9999;
+	const top = rect?.top ?? 9999;
+	const bottom = rect?.bottom ?? 9999;
+
+	const tooltipHeight = tooltipHeightRaw === 0 ? 9999 : tooltipHeightRaw;
+	const tooltipWidth = tooltipWidthRaw === 0 ? 9999 : tooltipWidthRaw;
+
 	const alignedLeft =
-		left + tooltipWidth >= clientWidth ? clientWidth - tooltipWidth - 20 : left;
-	const alignedTopHorizontal =
-		left !== alignedLeft ? top + (rect?.height ?? 0) + 10 : top;
+		left > clientWidth - tooltipWidth ? right - (tooltipWidth + 10) : left + 10;
+
 	const alignedTop =
-		alignedTopHorizontal + tooltipHeight >= clientHeight
-			? clientHeight - tooltipHeight - 50
-			: alignedTopHorizontal;
+		top > clientHeight / 2 ? top - (tooltipHeight + 10) : bottom + 10;
 
 	if (TooltipCtx.debugMode) {
 		console.log({ alignedLeft, alignedTop });

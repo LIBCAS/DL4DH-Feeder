@@ -46,6 +46,7 @@ const keys = {
 	Token: 'feeder-token',
 	Redirect: 'redirect',
 	PreviousSearchQuery: 'feeder-previous-searchquery',
+	ViewMode: 'feeder-viewmode',
 };
 
 export default {

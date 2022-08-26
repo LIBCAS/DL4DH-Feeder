@@ -59,6 +59,7 @@ export const StatList: FC<{
 					key={item.label + i}
 					justifyContent="space-between"
 					alignItems="center"
+					title={`Přidat filtr: ${item.label}`}
 					position="relative"
 					fontWeight={item.bold ? 'bold' : 'unset'}
 					fontSize="13px"

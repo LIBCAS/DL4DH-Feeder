@@ -1,6 +1,8 @@
 import React, { FC, useState } from 'react';
 
-const TOOLTIP_DEBUG_MODE_ON = false;
+import { DEV_ENV } from 'utils/enumsMap';
+
+const TOOLTIP_DEBUG_MODE_ON = DEV_ENV ? false : false;
 const TOOLTIP_DELAY_TIME = 400; // ms
 
 type TooltipContextType = {
@@ -11,6 +13,7 @@ type TooltipContextType = {
 	msg: string;
 	debugMode?: boolean;
 	msgDisplayDelay: number;
+	rectCustomOffset?: { top?: number; left?: number }; //TODO: na pripadne posunutie, napr dole
 };
 
 const TooltipContext = React.createContext<TooltipContextType>(

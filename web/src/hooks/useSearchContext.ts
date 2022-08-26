@@ -6,6 +6,8 @@ import { MakeTuple } from 'utils';
 
 import { FiltersDto, NameTagFilterDto } from 'api/models';
 
+import Store from 'utils/Store';
+
 export const fieldsTuple = MakeTuple(
 	'NUMBERS_IN_ADDRESSES',
 	'GEOGRAPHICAL_NAMES',
@@ -44,7 +46,7 @@ type State = {
 
 export const initState: State = {
 	searchQuery: { page: 1, nameTagFacet: '' },
-	viewMode: 'tiles',
+	viewMode: Store.get(Store.keys.ViewMode) ?? 'tiles',
 	pageSize: 15,
 	page: 0,
 	start: 0,
@@ -127,8 +129,10 @@ export const reducer = (state: State, action: Actions) => {
 				totalCount: action.totalCount,
 				hasMore: action.hasMore,
 			};
-		case 'setViewMode':
+		case 'setViewMode': {
+			Store.set(Store.keys.ViewMode, action.viewMode);
 			return { ...state, viewMode: action.viewMode };
+		}
 
 		default:
 			return state;

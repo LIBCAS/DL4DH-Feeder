@@ -66,10 +66,16 @@ const Header = () => {
 				>
 					{!isMobile && (
 						<Flex flexShrink={0} width={300} color="headerColor">
-							<IconButton onClick={() => nav(-1)} p={1} color="headerColor">
+							<IconButton
+								onClick={() => nav(-1)}
+								p={1}
+								color="headerColor"
+								tooltip="Krok zpět"
+							>
 								<MdArrowBack size={22} />
 							</IconButton>
 							<Button
+								tooltip="Zpět na vyledávání"
 								onClick={() =>
 									nav(
 										`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,

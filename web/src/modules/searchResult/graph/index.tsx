@@ -9,6 +9,7 @@ import {
 	CartesianGrid,
 	Tooltip,
 	ResponsiveContainer,
+	Brush,
 } from 'recharts';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
@@ -155,7 +156,7 @@ const GraphView: FC<Props> = ({ data }) => {
 						>
 							<IconButton
 								color="primary"
-								onClick={() => setSortDirection(z => z * -1)}
+								onClick={() => setZoom(z => (z > 10 ? z / 2 : z / 2))}
 							>
 								<MdZoomOut size={24} />
 							</IconButton>
@@ -179,6 +180,7 @@ const GraphView: FC<Props> = ({ data }) => {
 					</Flex> */}
 				</Flex>
 			</Flex>
+
 			<Flex
 				mt={3}
 				mr={3}
@@ -188,6 +190,7 @@ const GraphView: FC<Props> = ({ data }) => {
 				fontSize="xl"
 				fontWeight="bold"
 				width={1}
+				//width={`calc(100% + ${0}px)`}
 			>
 				<ResponsiveContainer
 					height="90%"
@@ -214,6 +217,7 @@ const GraphView: FC<Props> = ({ data }) => {
 							strokeDasharray="3 3"
 						/>
 						<Bar dataKey="count" fill={theme.colors.primary} barSize={20} />
+						<Brush dataKey="index" height={40} stroke={theme.colors.primary} />
 					</BarChart>
 				</ResponsiveContainer>
 			</Flex>
