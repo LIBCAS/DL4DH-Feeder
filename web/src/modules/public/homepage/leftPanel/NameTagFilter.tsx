@@ -102,6 +102,7 @@ const NameTagFilter = () => {
 			bg="#E4F0F3"
 			css={css`
 				border-top: 2px solid ${theme.colors.primary};
+				border-bottom: 2px solid ${theme.colors.primary};
 			`}
 		>
 			<MyAccordion
