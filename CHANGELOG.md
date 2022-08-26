@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.4.0
+
+- authentication:
+  - sign out integration
+  - top bar menu information about logger in user
+  - top bar menu for export only for logged in user
+  - FIX: refresh token
+- exports:
+  - all parameters and formats available from Kramerius+ with different options for enriched and not enriched publication
+  - fetching number of publication pages
+  - sorting, pagination, publication name, new columns and detail of an export in a modal
+  - chips used as parameters during export request
+  - FIX: downloading of successful exports
+  - FIX: notification shows immediately after submitting an export request
+- sidebar:
+  - localstorage used for storing information about opened sections
+  - improved rendering - do not needed to rerender while moving to another page
+  - nameTag filter with autocompleted hinting
+- item endpoint - information about enrichment
+- Kramerius item DTO
+- extend of an export object with publication name, format, params
+- prepared tooltip component for showing a help text and buttons
+- FIX: CORS problems with keycloak
+
 ## v0.3.1
 
 - side menu for smaller screens
