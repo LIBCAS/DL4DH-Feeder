@@ -46,6 +46,7 @@ system:
     api: https://www.ndk.cz/search/zoomify
   kramerius-plus:
     api: https://plus.nkp.cz/api
+    secret: kramerius-plus
 
 info:
   app:

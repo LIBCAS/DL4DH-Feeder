@@ -23,7 +23,7 @@ public class WebClientConfig {
 
     private static final int MAX_MEMORY_SIZE = 16777216;
 
-    private WebClient getWebClient(String url) throws SSLException {
+    private WebClient.Builder prepareBuilder(String url) throws SSLException {
         SslContext sslContext = SslContextBuilder
                 .forClient()
                 .trustManager(InsecureTrustManagerFactory.INSTANCE)
@@ -40,8 +40,15 @@ public class WebClientConfig {
                 .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
                             configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
                             configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder(MimeTypeUtils.TEXT_XML, MimeTypeUtils.TEXT_PLAIN)); })
-                        .build())
-                .build();
+                        .build());
+    }
+
+    private WebClient getWebClient(String url) throws SSLException {
+        return prepareBuilder(url).build();
+    }
+
+    private WebClient getWebClient(String url, String secret) throws SSLException {
+        return prepareBuilder(url).defaultHeader("Authorization", "Feeder "+secret).build();
     }
 
     @Bean(name = "krameriusWebClient")
@@ -55,8 +62,8 @@ public class WebClientConfig {
     }
 
     @Bean(name = "krameriusPlusWebClient")
-    public WebClient webClientKrameriusPlus(@Value("${system.kramerius-plus.api}") String krameriusPlusApi) throws SSLException {
-        return getWebClient(krameriusPlusApi);
+    public WebClient webClientKrameriusPlus(@Value("${system.kramerius-plus.api}") String krameriusPlusApi, @Value("${system.kramerius-plus.secret}") String secret) throws SSLException {
+        return getWebClient(krameriusPlusApi, secret);
     }
 
     @Bean(name = "solrWebClient")
