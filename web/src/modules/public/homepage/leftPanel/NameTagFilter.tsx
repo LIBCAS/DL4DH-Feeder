@@ -82,10 +82,6 @@ const NameTagFilter = () => {
 		[formik.submitForm],
 	);
 
-	// if (isLoading) {
-	// 	return <Loader />;
-	// }
-
 	const availableNameTagFilters = data?.availableNameTagFilters;
 	const {
 		handleSubmit,
@@ -96,6 +92,18 @@ const NameTagFilter = () => {
 		errors,
 		touched,
 	} = formik;
+
+	const hasNameTags = useMemo(
+		() =>
+			Object.keys(availableNameTagFilters ?? {}).some(
+				k => Object.keys(availableNameTagFilters?.[k] ?? {}).length > 0,
+			),
+		[availableNameTagFilters],
+	);
+
+	if (!hasNameTags && !nameTagFacet) {
+		return <></>;
+	}
 
 	return (
 		<Box
@@ -118,7 +126,7 @@ const NameTagFilter = () => {
 				overflowHiddenDisabled
 			>
 				<form onSubmit={handleSubmit}>
-					<Flex flexDirection="column" p={3} overflow="visible">
+					<Flex flexDirection="column" p={1} overflow="visible">
 						<Flex
 							justifyContent="flex-start"
 							alignItems="center"

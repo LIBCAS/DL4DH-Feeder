@@ -15,59 +15,51 @@ import { GlobalStyles, ThemeProvider } from 'theme';
 
 import keycloak from 'auth/KeycloakService';
 
-import { useSearchContextProvider } from 'hooks/useSearchContext';
+import { SearchContextProvider } from 'hooks/useSearchContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 import Store from 'utils/Store';
 
 import ToastifyStyles from 'theme/ToastifyStyles';
 
-const App = () => {
-	const {
-		state,
-		dispatch,
-		Provider: SearchContextProvider,
-	} = useSearchContextProvider();
-
-	return (
-		<ThemeProvider>
-			<ErrorBoundary>
-				<Flex as="main" flexDirection="column" minHeight="100vh">
-					<ReactKeycloakProvider
-						authClient={keycloak}
-						LoadingComponent={<Loader />}
-						onTokens={tokens => {
-							Store.set(Store.keys.Token, tokens.token ?? '');
-							console.log('KEYCLOAK LOG:');
-							console.log({ tokens });
-						}}
-						onEvent={event => console.log({ event })}
-					>
-						<Router basename={APP_CONTEXT}>
-							<PubDetailCtxProvider>
-								<SearchContextProvider value={[state, dispatch]}>
-									<GlobalStyles />
-									<ToastifyStyles />
-									<Header />
-									<AppRoutes />
-									<ToastContainer
-										position="bottom-center"
-										newestOnTop={false}
-										closeOnClick
-										draggable
-										pauseOnHover
-										transition={Slide}
-										autoClose={5000}
-									/>
-									<TooltipRender />
-								</SearchContextProvider>
-							</PubDetailCtxProvider>
-						</Router>
-					</ReactKeycloakProvider>
-				</Flex>
-			</ErrorBoundary>
-		</ThemeProvider>
-	);
-};
+const App = () => (
+	<ThemeProvider>
+		<ErrorBoundary>
+			<Flex as="main" flexDirection="column" minHeight="100vh">
+				<ReactKeycloakProvider
+					authClient={keycloak}
+					LoadingComponent={<Loader />}
+					onTokens={tokens => {
+						Store.set(Store.keys.Token, tokens.token ?? '');
+						// console.log('KEYCLOAK LOG:');
+						// console.log({ tokens });
+					}}
+					//onEvent={event => console.log({ event })}
+				>
+					<Router basename={APP_CONTEXT}>
+						<PubDetailCtxProvider>
+							<SearchContextProvider>
+								<GlobalStyles />
+								<ToastifyStyles />
+								<Header />
+								<AppRoutes />
+								<ToastContainer
+									position="bottom-center"
+									newestOnTop={false}
+									closeOnClick
+									draggable
+									pauseOnHover
+									transition={Slide}
+									autoClose={5000}
+								/>
+								<TooltipRender />
+							</SearchContextProvider>
+						</PubDetailCtxProvider>
+					</Router>
+				</ReactKeycloakProvider>
+			</Flex>
+		</ErrorBoundary>
+	</ThemeProvider>
+);
 
 export default App;

@@ -165,6 +165,7 @@ const MainSearchInput = () => {
 					color="primary"
 					value={localState}
 					ref={mainInputRef}
+					inputPadding="10px 8px"
 					onChange={e => {
 						setShowTagNameMenu(false);
 						setShowTagOpMenu(false);
@@ -438,13 +439,15 @@ const MainSearchInput = () => {
 			</Flex>
 			<Flex flexShrink={0}>
 				<Button
-					width={120}
+					width={80}
+					minWidth={80}
 					variant="primary"
 					py={2}
+					px={0}
 					mr={[2, 2, 2, 0]}
 					onClick={() => localState !== '' && handleUpdateContext()}
 					css={css`
-						box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.15);
+						box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.12);
 					`}
 					//disabled={localState === ''}
 				>

@@ -1,13 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import {
-	FC,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
@@ -31,7 +24,7 @@ import {
 
 import useHeaderHeight from 'utils/useHeaderHeight';
 
-import { PubCtx } from '../ctx/pub-ctx';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
@@ -74,7 +67,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					top={-8}
 					width="50vw"
 					height={`calc(100vh - ${headerHeight}px)`}
-					zIndex={3}
+					zIndex={4}
 					overflow="auto"
 					css={css`
 						box-sizing: border-box;
@@ -161,7 +154,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 export default PubChooseSecond;
 
 const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 	const leftId = pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
 	const [id, setId] = useState(rootId);
 	const childrenResponse = usePublicationChildren(id ?? '');

@@ -1,4 +1,4 @@
-import { createContext, Dispatch, useContext, useReducer } from 'react';
+import { createContext, Dispatch, FC, useContext, useReducer } from 'react';
 
 import { SortOption, sortOptions } from 'modules/sorting/Sorting';
 
@@ -37,7 +37,6 @@ type State = {
 	searchQuery: TSearchQuery | null;
 	viewMode: ViewMode;
 	pageSize: number;
-	page: number;
 	start: number;
 	totalCount: number;
 	hasMore: boolean;
@@ -48,7 +47,6 @@ export const initState: State = {
 	searchQuery: { page: 1, nameTagFacet: '' },
 	viewMode: Store.get(Store.keys.ViewMode) ?? 'tiles',
 	pageSize: 15,
-	page: 0,
 	start: 0,
 	totalCount: 0,
 	hasMore: false,
@@ -61,7 +59,6 @@ type Actions =
 	| { type: 'addNameTagFilter'; nameTagFilter: NameTagFilterDto }
 	| { type: 'setSorting'; sortOption: SortOption }
 	| { type: 'setTotalCount'; totalCount: number; hasMore: boolean }
-	| { type: 'setPage'; page: number }
 	| { type: 'setPageSize'; pageSize: number }
 	| { type: 'setViewMode'; viewMode: ViewMode };
 
@@ -110,17 +107,11 @@ export const reducer = (state: State, action: Actions) => {
 			};
 		}
 		case 'setSorting':
-			console.log(action.sortOption);
 			return {
 				...state,
 				sorting: action.sortOption,
 			};
-		case 'setPage':
-			return {
-				...state,
-				page: action.page,
-				start: (action.page - 1) * state.pageSize,
-			};
+
 		case 'setPageSize':
 			return { ...state, pageSize: action.pageSize, page: 0, start: 0 };
 		case 'setTotalCount':
@@ -143,24 +134,17 @@ const SearchContext = createContext<[State, Dispatch<Actions> | null]>([
 	initState,
 	null,
 ]);
-export const SearchContextProvider = SearchContext.Provider;
 export const useSearchContext = () => {
 	const [state, dispatch] = useContext(SearchContext);
-
 	return { state, dispatch };
 };
 
-export const useSearchContextProvider = () => {
+export const SearchContextProvider: FC = ({ children }) => {
 	const [state, dispatch] = useReducer(reducer, { ...initState });
-	//	const { search } = useLocation();
-	//	const parsed = parse(search) as unknown as Partial<TSearchQuery>;
-	/* 
-	useEffect(() => {
-		dispatch?.({
-			type: 'setSearchQuery',
-			searchQuery: { ...state.searchQuery, q: parsed.q },
-		});
-	}, []);
- */
-	return { state, dispatch, Provider: SearchContext.Provider } as const;
+
+	return (
+		<SearchContext.Provider value={[state, dispatch]}>
+			{children}
+		</SearchContext.Provider>
+	);
 };

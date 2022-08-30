@@ -1,40 +1,41 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useState } from 'react';
+import _ from 'lodash';
+import { FC } from 'react';
 import { BsGridFill } from 'react-icons/bs';
 import { ImMenu } from 'react-icons/im';
 import { MdEqualizer } from 'react-icons/md';
-import _ from 'lodash';
 
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
-import Text from 'components/styled/Text';
-import Button from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
+import Text from 'components/styled/Text';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Tabs from 'components/tabs';
+import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
 
-import Results from 'modules/searchResult/index';
-import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
-import Sorting from 'modules/sorting/Sorting';
-import ListExportDialog from 'modules/export/ListExportDialog';
 import GraphExportDialog from 'modules/export/GraphExportDialog';
+import ListExportDialog from 'modules/export/ListExportDialog';
+import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
+import Results from 'modules/searchResult/index';
+import Sorting from 'modules/sorting/Sorting';
 
 import { theme } from 'theme';
 
 import {
-	useSearchPublications,
 	useAvailableFilters,
+	useSearchPublications,
 } from 'api/publicationsApi';
 
 import { useSearchContext, ViewMode } from 'hooks/useSearchContext';
+import { useMobileView } from 'hooks/useViewport';
 
 import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 const Dashboard: FC = () => {
-	const [pagesPublications, setPagesPublications] = useState<
+	/* const [pagesPublications, setPagesPublications] = useState<
 		'publications' | 'pages'
-	>('publications');
+	>('publications'); */
 
 	const { state, dispatch } = useSearchContext();
 	const {
@@ -58,12 +59,14 @@ const Dashboard: FC = () => {
 		isLoading: isFiltersLoading,
 	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
+	const { isMobile } = useMobileView();
+
 	const isLoading = loading || isFetching || isRefetching;
 
 	return (
 		<ResponsiveWrapper
 			bg="primaryLight"
-			px={1}
+			px={0}
 			mx={0}
 			css={css`
 				padding-bottom: 0px !important;
@@ -75,11 +78,11 @@ const Dashboard: FC = () => {
 					flexShrink={0}
 					alignItems="center"
 					justifyContent="flex-start"
-					width={300}
+					width={isMobile ? 0 : 300}
 					overflow="hidden"
 					css={css`
 						border-right: 1px solid ${theme.colors.border};
-						transition: width 1s ease-in-out;
+						transition: width 0.1s ease-in-out;
 					`}
 				>
 					<Text pl={3} fontSize="sm" fontWeight="bold">
@@ -88,7 +91,16 @@ const Dashboard: FC = () => {
 						{state.totalCount}
 					</Text>
 				</Flex>
-				<Flex width={1} alignItems="center" justifyContent="flex-end" py={2}>
+				<Flex
+					width={1}
+					alignItems="center"
+					justifyContent="flex-end"
+					py={2}
+					zIndex={1}
+					css={css`
+						box-shadow: 7px -2px 5px 5px rgba(0, 0, 0, 0.08);
+					`}
+				>
 					{/**MODES SWITCHES */}
 					<Flex
 						mx={3}
@@ -140,7 +152,7 @@ const Dashboard: FC = () => {
 						/>
 					</Flex>
 					{/**publikace / stranky */}
-					<Flex
+					{/* <Flex
 						mr={3}
 						pr={3}
 						alignItems="center"
@@ -191,7 +203,7 @@ const Dashboard: FC = () => {
 							}
 							activeTab={pagesPublications}
 						/>
-					</Flex>
+					</Flex> */}
 					<Flex mr={3} alignItems="center">
 						<Sorting />
 
@@ -206,25 +218,15 @@ const Dashboard: FC = () => {
 					width: 100%;
 					height: calc(100vh - ${INIT_HEADER_HEIGHT + SUB_HEADER_HEIGHT}px);
 				`}
-				bg="paper"
+				bg="white"
 			>
-				<Flex
-					position="relative"
-					alignItems="flex-start"
-					flexShrink={0}
-					width={300}
-					overflowY="auto"
-					css={css`
-						border-right: 1px solid ${theme.colors.border};
-						transition: width 1s ease-in-out;
-					`}
-				>
+				<LeftMenuContainer>
 					<SearchResultLeftPanel
 						key={filtersKey}
 						data={filtersData?.availableFilters}
 						isLoading={isFiltersLoading}
 					/>
-				</Flex>
+				</LeftMenuContainer>
 				<Flex width={1} bg="paper">
 					<Results
 						data={data}

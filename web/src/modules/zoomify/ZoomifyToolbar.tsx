@@ -1,13 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import {
-	Dispatch,
-	FC,
-	ReactNode,
-	SetStateAction,
-	useContext,
-	useState,
-} from 'react';
+import { Dispatch, FC, ReactNode, SetStateAction, useState } from 'react';
+import { BsCursorText } from 'react-icons/bs';
 import {
 	MdExpandMore,
 	MdFullscreen,
@@ -18,12 +12,11 @@ import {
 	MdZoomOut,
 } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
-import { BsCursorText } from 'react-icons/bs';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 
-import { PubCtx } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { useTheme } from 'theme';
 
@@ -77,7 +70,7 @@ const ZoomifyToolbar: FC<Props> = ({
 	isMultiView,
 }) => {
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
-	const pbctx = useContext(PubCtx);
+	const pbctx = usePublicationContext();
 	const [pageUrl, setPageUrl] = useSearchParams();
 
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;

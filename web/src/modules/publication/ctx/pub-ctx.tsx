@@ -1,13 +1,6 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 import { PublicationChild, PublicationDetail } from 'api/models';
-
-import Store from 'utils/Store';
-
-const STORE_PUB_CHILDREN = 'pub-children';
-const STORE_PUB_CHILDREN_SECOND = 'pub-children-second';
-const STORE_CURRENT_PAGE = 'pub-current-page';
-const STORE_CURRENT_PAGE_SECOND = 'pub-current-page-second';
 
 type CurrentPage = {
 	uuid: string;
@@ -45,9 +38,9 @@ type PubCtxType = {
 	//	getCurrentPage: () => CurrentPage | null;
 };
 
-export const PubCtx = createContext<PubCtxType>(undefined as never);
+const PublicationContext = createContext<PubCtxType>(undefined as never);
 
-function usePublicationCtx() {
+export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 	const [publication, setPublication] = useState<PublicationDetail | null>(
 		null,
 	);
@@ -56,61 +49,15 @@ function usePublicationCtx() {
 		useState<PublicationDetail | null>(null);
 	const [publicationChildren, setPublicationChildren] = useState<
 		PublicationChild[] | null
-	>(
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-		JSON.parse((Store.get(STORE_PUB_CHILDREN) || 'null') as string) as
-			| PublicationChild[]
-			| null,
-	);
+	>(null);
 
 	const [publicationChildrenOfSecond, setPublicationChildrenOfSecond] =
-		useState<PublicationChild[] | null>(
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			JSON.parse((Store.get(STORE_PUB_CHILDREN_SECOND) || 'null') as string) as
-				| PublicationChild[]
-				| null,
-		);
+		useState<PublicationChild[] | null>(null);
 
-	const [currentPage, setCurrentPage] = useState(
-		JSON.parse(
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
-		) as CurrentPage | null,
-	);
+	const [currentPage, setCurrentPage] = useState<CurrentPage | null>(null);
 
-	const [currentPageOfSecond, setCurrentPageOfSecond] = useState(
-		JSON.parse(
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			(Store.get(STORE_CURRENT_PAGE_SECOND) || 'null') as string,
-		) as CurrentPage | null,
-	);
-
-	useEffect(() => {
-		Store.set(STORE_PUB_CHILDREN, JSON.stringify(publicationChildren));
-	}, [publicationChildren]);
-
-	useEffect(() => {
-		Store.set(
-			STORE_PUB_CHILDREN_SECOND,
-			JSON.stringify(publicationChildrenOfSecond),
-		);
-	}, [publicationChildrenOfSecond]);
-
-	useEffect(() => {
-		Store.set(STORE_CURRENT_PAGE, JSON.stringify(currentPage));
-	}, [currentPage]);
-	useEffect(() => {
-		Store.set(STORE_CURRENT_PAGE_SECOND, JSON.stringify(currentPageOfSecond));
-	}, [currentPageOfSecond]);
-
-	/* const getCurrentPage = useCallback(
-		() =>
-			JSON.parse(
-				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-				(Store.get(STORE_CURRENT_PAGE) || 'null') as string,
-			) as CurrentPage | null,
-		[],
-	); */
+	const [currentPageOfSecond, setCurrentPageOfSecond] =
+		useState<CurrentPage | null>(null);
 
 	const ctx: PubCtxType = useMemo(
 		() => ({
@@ -143,11 +90,12 @@ function usePublicationCtx() {
 			setPublicationChildrenOfSecond,
 		],
 	);
-	return ctx;
+
+	return (
+		<PublicationContext.Provider value={ctx}>
+			{props.children}
+		</PublicationContext.Provider>
+	);
 }
 
-export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
-	const pubCtx = usePublicationCtx();
-
-	return <PubCtx.Provider value={pubCtx}>{props.children}</PubCtx.Provider>;
-}
+export const usePublicationContext = () => useContext(PublicationContext);

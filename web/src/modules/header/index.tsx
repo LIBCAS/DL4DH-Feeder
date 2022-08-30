@@ -1,10 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import Dialog from '@reach/dialog';
-import { useContext, useState } from 'react';
-import { MdArrowBack, MdMenu } from 'react-icons/md';
+import { MdArrowBack } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import MainSearchInput from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
@@ -13,19 +10,19 @@ import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
-import { PubCtx } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { theme } from 'theme';
 
 import { useInfoApi } from 'api/infoApi';
 
+import { useSearchContext } from 'hooks/useSearchContext';
 import { useMobileView } from 'hooks/useViewport';
 
-import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 import Store from 'utils/Store';
+import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { DesktopMenu } from './menuItems';
-import UserBadge from './UserBadge';
+import { HeaderMenu } from './menuItems';
 
 const Header = () => {
 	const { pathname } = useLocation();
@@ -34,17 +31,16 @@ const Header = () => {
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 
-	const [sideMenuExpanded, setSideMenuExpanded] = useState(false);
-
-	const ctx = useContext(PubCtx);
-	const { isMobile, isTablet } = useMobileView();
+	const ctx = usePublicationContext();
+	const searchCtx = useSearchContext();
+	const { isMobile } = useMobileView();
 
 	return (
 		<ResponsiveWrapper
 			bg="headerBg"
-			px={1}
+			px={0}
 			mx={0}
-			maxHeight={60}
+			maxHeight={INIT_HEADER_HEIGHT}
 			zIndex={10}
 			css={css`
 				padding-bottom: 0px !important;
@@ -54,7 +50,7 @@ const Header = () => {
 		>
 			{pathname !== '/' ? (
 				<Flex
-					maxHeight={59}
+					maxHeight={INIT_HEADER_HEIGHT}
 					id={HEADER_WRAPPER_ID}
 					alignItems="center"
 					flexDirection="row"
@@ -62,10 +58,15 @@ const Header = () => {
 					height={INIT_HEADER_HEIGHT}
 					bg="headerBg"
 					color="headerColor"
-					// overflow="hidden"
 				>
 					{!isMobile && (
-						<Flex flexShrink={0} width={300} color="headerColor">
+						<Flex
+							flexShrink={0}
+							width={300}
+							color="headerColor"
+							alignItems="center"
+							justifyContent="space-evenly"
+						>
 							<IconButton
 								onClick={() => nav(-1)}
 								p={1}
@@ -85,6 +86,7 @@ const Header = () => {
 								color="headerColor"
 								pr={2}
 								pl={0}
+								ml={-2}
 							>
 								<Flex flexDirection="column" ml={2} justifyContent="center">
 									<Text
@@ -104,11 +106,11 @@ const Header = () => {
 					)}
 
 					<MainSearchInput />
-					{window.origin === 'http://localhost:30000' ? (
+					{window.origin === 'http://localhost:3000' ? (
 						<button
 							onClick={() => {
+								console.log(searchCtx);
 								console.log(ctx);
-								toast.info('ahoj');
 							}}
 						>
 							ctx
@@ -117,68 +119,11 @@ const Header = () => {
 						<></>
 					)}
 
-					<Flex ml={1} flexShrink={0} color="headerColor">
-						{!isTablet ? (
-							<>
-								<DesktopMenu variant="desktop" />
-								<UserBadge />
-							</>
-						) : (
-							<>
-								<Button
-									variant="primary"
-									onClick={() => setSideMenuExpanded(true)}
-								>
-									<MdMenu size={22} />
-								</Button>
-								<Dialog
-									isOpen={sideMenuExpanded}
-									onDismiss={() => setSideMenuExpanded(false)}
-									aria-label="Bočné menu"
-									css={css`
-										position: fixed;
-										top: 0;
-										right: 0;
-										bottom: 0;
-										background-color: white;
-										padding: 0 !important;
-										margin: 0 !important;
-										width: auto;
-										max-width: 400px;
-										min-width: 300px;
-
-										display: flex;
-										flex-direction: column;
-										overflow-y: auto;
-									`}
-								>
-									<Flex
-										flexDirection="column"
-										fontSize="xl"
-										alignItems="flex-start"
-										pl={2}
-									>
-										<DesktopMenu variant="tablet" />
-									</Flex>
-								</Dialog>
-							</>
-						)}
-					</Flex>
+					<HeaderMenu />
 				</Flex>
 			) : (
 				<Flex alignSelf="flex-end">
-					<Button color="headerColor" variant="text">
-						Sbírky
-					</Button>
-					<Button color="headerColor" variant="text">
-						Procházet
-					</Button>
-					<Button color="headerColor" variant="text">
-						Informace
-					</Button>
-					<Button color="headerColor" variant="text">
-						English
-					</Button>
+					<HeaderMenu />
 				</Flex>
 			)}
 		</ResponsiveWrapper>

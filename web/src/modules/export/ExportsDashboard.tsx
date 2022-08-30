@@ -199,8 +199,8 @@ const Exportslist = () => {
 											downloadFile(url, `${row.id}.zip`);
 										}}
 									>
-										<Flex alignItems="center" pr={1} py={0}>
-											<Text my={0} py={0} px={1}>
+										<Flex alignItems="center" pr={1} py={0} color="black">
+											<Text my={0} py={2} px={1}>
 												Stáhnout
 											</Text>{' '}
 											<MdDownload size={20} />

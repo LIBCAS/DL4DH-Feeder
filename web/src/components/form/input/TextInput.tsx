@@ -346,6 +346,7 @@ export const Chip: FC<
 		<Flex
 			alignItems="center"
 			p={3}
+			bg="white"
 			css={css`
 				border: 1px solid ${theme.colors.border};
 				border-radius: 10px;
@@ -354,9 +355,11 @@ export const Chip: FC<
 		>
 			{children}
 			{withCross && (
-				<IconButton onClick={onClose} ml={2} justifySelf="flex-end">
-					<CrossIcon size={12} />
-				</IconButton>
+				<Flex ml={2} color="primary">
+					<IconButton onClick={onClose} justifySelf="flex-end" color="primary">
+						<CrossIcon size={10} fontSize={12} color="primary" />
+					</IconButton>
+				</Flex>
 			)}
 		</Flex>
 	);

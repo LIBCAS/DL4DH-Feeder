@@ -1,6 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -16,7 +16,7 @@ import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
 
-import { PubCtx } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { api } from 'api';
 
@@ -60,9 +60,11 @@ type ExportParamsDto = {
 		includeFields?: string[];
 		excludeFields?: string[];
 		delimiter?: Delimiter;
+	};
+	teiExportParams?: {
+		udPipeParams?: PipeParam[];
 		altoParams?: AltoParam[];
 		nameTagParams?: TagParam[];
-		udPipeParams?: PipeParam[];
 	};
 };
 
@@ -120,6 +122,8 @@ const formatValues = (values: ExportFormType): ExportParamsDto => {
 		return {
 			params: {
 				...common,
+			},
+			teiExportParams: {
 				altoParams: values.altoParams,
 				nameTagParams: values.nameTagParams,
 				udPipeParams: values.udPipeParams,
@@ -135,7 +139,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 
 	const { id: paramId } = useParams<{ id: string }>();
 
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 	const pubId = isSecond
 		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
 		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
@@ -434,7 +438,11 @@ const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
 		<ModalDialog
 			label="Info"
 			control={openModal => (
-				<IconButton color="primary" onClick={openModal}>
+				<IconButton
+					color="primary"
+					onClick={openModal}
+					tooltip="Exportovat publikaci"
+				>
 					<MdDownload size={24} />
 				</IconButton>
 			)}

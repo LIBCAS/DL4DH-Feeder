@@ -64,6 +64,8 @@ const enumToText = (type: string, value: string) => {
 			return `Léta: ${value}`;
 		case 'languages':
 			return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
+		case 'collections':
+			return `Sbírka: ${value}`;
 
 		default:
 			return value;
@@ -86,6 +88,7 @@ const ActiveFilters: React.FC = () => {
 		models: state.searchQuery?.models ?? [],
 		authors: state.searchQuery?.authors ?? [],
 		languages: state.searchQuery?.languages ?? [],
+		collections: state.searchQuery?.collections ?? [],
 		availability: state.searchQuery?.availability
 			? [state.searchQuery.availability]
 			: [],
@@ -107,8 +110,8 @@ const ActiveFilters: React.FC = () => {
 	const keys = Object.keys(arrayFilters);
 
 	return (
-		<Box px={2}>
-			<Box my={3}>
+		<Box px={0}>
+			<Box my={3} px={2}>
 				<Flex justifyContent="space-between" alignItems="center" mb={2}>
 					<Text color="warning" fontWeight="bold" my={0}>
 						Aktivní filtry

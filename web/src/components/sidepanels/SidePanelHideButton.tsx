@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { MdExpandMore } from 'react-icons/md';
 import { FC } from 'react';
+import { MdExpandMore } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
+import { TooltipTrigger } from 'components/tooltip/Tooltip';
 
 import { useTheme } from 'theme';
 
@@ -17,8 +18,8 @@ const SidePanelHideButton: FC<Props> = ({ onClick, isCollapsed, variant }) => {
 	const theme = useTheme();
 	return (
 		<Flex
-			bg="primaryLight"
 			position="absolute"
+			bg="primaryLight"
 			right={variant === 'left' ? 0 : 'unset'}
 			left={variant === 'right' ? 0 : 'unset'}
 			top={2}
@@ -52,6 +53,9 @@ const SidePanelHideButton: FC<Props> = ({ onClick, isCollapsed, variant }) => {
 				`}
 			`}
 		>
+			<TooltipTrigger
+				tooltip={isCollapsed ? 'Rozbalit panel' : 'Skrýt panel'}
+			/>
 			{isCollapsed ? (
 				<MdExpandMore
 					size={24}

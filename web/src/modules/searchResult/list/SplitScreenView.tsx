@@ -48,7 +48,6 @@ const SplitScreenView: FC<{
 	});
 
 	const [selectedRow, setSelectedRow] = useState<number | undefined>(0);
-	console.log({ selectedRow });
 
 	const renderHeader = useCallback(
 		() => (

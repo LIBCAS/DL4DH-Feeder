@@ -37,6 +37,9 @@ const sanitizeSearchQuery = (q: TRawSearchQuery) => {
 	if (typeof q.languages === 'string') {
 		sanitized.languages = [q.languages];
 	}
+	if (typeof q.collections === 'string') {
+		sanitized.collections = [q.collections];
+	}
 
 	if (sanitized.models) {
 		sanitized.models = sanitized.models.map(
