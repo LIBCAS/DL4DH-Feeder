@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { MdLock } from 'react-icons/md';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
-import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Text from 'components/styled/Text';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 import { mapRef, mapRefOfSecond } from 'modules/zoomify/ZoomifyView';
@@ -16,7 +16,7 @@ import {
 	usePublicationDetail,
 } from 'api/publicationsApi';
 
-import { PubCtx } from '../ctx/pub-ctx';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
@@ -33,7 +33,7 @@ const MultiView = () => {
 	const pages2 = useMemo(() => pubChildren2.data ?? [], [pubChildren2.data]);
 
 	const [sp, setSp] = useSearchParams();
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 	const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 

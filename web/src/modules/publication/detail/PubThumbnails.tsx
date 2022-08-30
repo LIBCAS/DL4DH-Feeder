@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { createRef, FC, useContext, useEffect, useState } from 'react';
+import { createRef, FC, useEffect, useState } from 'react';
 import {
 	MdArrowDownward,
 	MdArrowUpward,
@@ -23,7 +23,7 @@ import { PublicationChild } from 'api/models';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { PubCtx } from '../ctx/pub-ctx';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 /** TODO: PUBLICATION THUMBNAILS AND SEARCHING WITHIN */
 
@@ -34,7 +34,7 @@ type Props = {
 };
 
 const PubThumbnails: FC<Props> = ({ marginTop, pages, isSecond }) => {
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 	const pageId = isSecond
 		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
 		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';

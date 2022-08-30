@@ -1,13 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useContext, useEffect, useMemo } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
 import { MdCode, MdFormatQuote, MdLock, MdShare } from 'react-icons/md';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
-import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
-import Text from 'components/styled/Text';
 import IconButton from 'components/styled/IconButton';
+import Text from 'components/styled/Text';
+import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
@@ -21,7 +21,7 @@ import {
 
 import { SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { PubCtx } from '../ctx/pub-ctx';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PeriodicalSidePanel from './PeriodicalSidePanel';
 
@@ -34,7 +34,7 @@ const PeriodicalDetail = () => {
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
 	const [page] = useSearchParams();
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 	const nav = useNavigate();
 
 	const pageId = useMemo(

@@ -103,7 +103,7 @@
 			"react-app/jest"
 		]
 	},
-	"proxy": "http://feeder.dev.inqool.cz/",
+	"proxy": "https://feeder.nkp.cz/",
 	"lint-staged": {
 		"{src/**,.storybook,.}/*.{js,jsx,ts,tsx,json,md}": [
 			"prettier --write",

@@ -1,17 +1,17 @@
 /** @jsxImportSource @emotion/react */
 
 import _ from 'lodash';
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { MdPrint, MdShare, MdTextFields } from 'react-icons/md';
-import XML from 'xml2js';
 import { useParams } from 'react-router-dom';
+import XML from 'xml2js';
 
+import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
+import { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Text, { H2, H3, H5 } from 'components/styled/Text';
-import LoaderSpin from 'components/loaders/LoaderSpin';
-import { NavLinkButton } from 'components/styled/Button';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 
@@ -20,7 +20,7 @@ import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 import { ModelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
-import { PubCtx } from '../ctx/pub-ctx';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
@@ -73,7 +73,7 @@ type Props = {
 
 const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 	const { id: urlId } = useParams<{ id: string }>();
-	const pubCtx = useContext(PubCtx);
+	const pubCtx = usePublicationContext();
 
 	//TODO: temp nullish values for debugging, remove after tested
 	const id = isSecond
@@ -110,7 +110,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 	const pageContext = pubDetail.data?.context
 		.flat()
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
-
+	console.log('PubBiblioDetail rendereing');
 	return (
 		<Box width={1}>
 			<Flex
