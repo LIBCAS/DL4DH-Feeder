@@ -12,6 +12,7 @@ import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import Tabs from 'components/tabs';
+import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
 
 import GraphExportDialog from 'modules/export/GraphExportDialog';
 import ListExportDialog from 'modules/export/ListExportDialog';
@@ -219,24 +220,13 @@ const Dashboard: FC = () => {
 				`}
 				bg="white"
 			>
-				<Flex
-					position="relative"
-					alignItems="flex-start"
-					flexShrink={0}
-					width={isMobile ? 0 : 300}
-					overflowY="auto"
-					css={css`
-						border-right: 1px solid ${theme.colors.border};
-						transition: width 0.1s ease-in-out;
-						box-shadow: 5px -3px 7px -4px rgba(0, 0, 0, 0.08);
-					`}
-				>
+				<LeftMenuContainer>
 					<SearchResultLeftPanel
 						key={filtersKey}
 						data={filtersData?.availableFilters}
 						isLoading={isFiltersLoading}
 					/>
-				</Flex>
+				</LeftMenuContainer>
 				<Flex width={1} bg="paper">
 					<Results
 						data={data}

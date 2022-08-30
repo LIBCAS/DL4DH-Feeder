@@ -64,6 +64,8 @@ const enumToText = (type: string, value: string) => {
 			return `Léta: ${value}`;
 		case 'languages':
 			return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
+		case 'collections':
+			return `Sbírka: ${value}`;
 
 		default:
 			return value;
@@ -86,6 +88,7 @@ const ActiveFilters: React.FC = () => {
 		models: state.searchQuery?.models ?? [],
 		authors: state.searchQuery?.authors ?? [],
 		languages: state.searchQuery?.languages ?? [],
+		collections: state.searchQuery?.collections ?? [],
 		availability: state.searchQuery?.availability
 			? [state.searchQuery.availability]
 			: [],

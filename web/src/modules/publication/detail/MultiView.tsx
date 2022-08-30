@@ -69,7 +69,6 @@ const MultiView = () => {
 
 	useEffect(() => {
 		if (detail2?.data) {
-			console.log('yes detail data');
 			const context = detail2.data?.context?.flat() ?? [];
 			pubCtx.setSecondPublication({
 				...detail2.data,

@@ -31,10 +31,10 @@ const App = () => (
 					LoadingComponent={<Loader />}
 					onTokens={tokens => {
 						Store.set(Store.keys.Token, tokens.token ?? '');
-						console.log('KEYCLOAK LOG:');
-						console.log({ tokens });
+						// console.log('KEYCLOAK LOG:');
+						// console.log({ tokens });
 					}}
-					onEvent={event => console.log({ event })}
+					//onEvent={event => console.log({ event })}
 				>
 					<Router basename={APP_CONTEXT}>
 						<PubDetailCtxProvider>

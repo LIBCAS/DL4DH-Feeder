@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import { FC } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { useKeycloak } from '@react-keycloak/web';
+import { toast } from 'react-toastify';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -78,8 +79,6 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 	const pubId = Store.get<string>(PUBLICATION_EXPORT_STORE_KEY) ?? '';
 	const { keycloak } = useKeycloak();
 
-	console.log({ keycloak });
-
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
 			format: formatOptions[0],
@@ -88,7 +87,6 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 		},
 
 		onSubmit: async values => {
-			console.log({ values });
 			const params: Partial<Params> = {
 				params: {
 					excludeFields: [],
@@ -103,8 +101,9 @@ const ExportForm: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 					`exports/generate/${pubId}/${values.format.id}`,
 					{ json: params },
 				);
-
-				console.log({ response });
+				if (!response.ok) {
+					toast.error('Pri exporte došlo k chybě');
+				}
 
 				closeModal();
 			} catch (error) {

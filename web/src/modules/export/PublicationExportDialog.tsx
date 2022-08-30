@@ -60,9 +60,11 @@ type ExportParamsDto = {
 		includeFields?: string[];
 		excludeFields?: string[];
 		delimiter?: Delimiter;
+	};
+	teiExportParams?: {
+		udPipeParams?: PipeParam[];
 		altoParams?: AltoParam[];
 		nameTagParams?: TagParam[];
-		udPipeParams?: PipeParam[];
 	};
 };
 
@@ -120,6 +122,8 @@ const formatValues = (values: ExportFormType): ExportParamsDto => {
 		return {
 			params: {
 				...common,
+			},
+			teiExportParams: {
 				altoParams: values.altoParams,
 				nameTagParams: values.nameTagParams,
 				udPipeParams: values.udPipeParams,

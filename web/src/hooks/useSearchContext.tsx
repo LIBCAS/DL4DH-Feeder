@@ -107,7 +107,6 @@ export const reducer = (state: State, action: Actions) => {
 			};
 		}
 		case 'setSorting':
-			console.log(action.sortOption);
 			return {
 				...state,
 				sorting: action.sortOption,

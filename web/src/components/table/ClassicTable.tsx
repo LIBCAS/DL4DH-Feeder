@@ -30,7 +30,7 @@ type Props<T extends TableItem> = {
 	rowHeight?: number;
 	data: T[];
 	renderRow: (row: T, rowIndex: number) => React.ReactNode;
-	renderHeader: (
+	renderHeader?: (
 		collapsed: boolean,
 		setSortColumn?: (key: string) => void,
 	) => React.ReactNode;
@@ -40,6 +40,7 @@ type Props<T extends TableItem> = {
 	hideEditButton?: boolean;
 	openInNewTab?: boolean;
 	rowWrapperCss?: SerializedStyles;
+	borderless?: boolean;
 };
 
 /** Table implementation */
@@ -54,6 +55,7 @@ const Table2 = <T extends TableItem>({
 	isLoading,
 	hideEditButton,
 	rowWrapperCss,
+	borderless,
 }: Props<T>) => {
 	const theme = useTheme();
 	const RenderRow: FC<{ rowIndex: number }> = ({ rowIndex }) => (
@@ -69,7 +71,7 @@ const Table2 = <T extends TableItem>({
 				&:hover,
 				&:hover .table-row-edit-button {
 					background-color: ${theme.colors.primaryBright};
-					color: white;
+					color: ${theme.colors.text};
 				}
 				&:hover .table-row-three-dots {
 					cursor: pointer;
@@ -116,42 +118,45 @@ const Table2 = <T extends TableItem>({
 	);
 
 	const renderTableHeader = useCallback(
-		(isEmpty?: boolean) => (
-			<Flex
-				bg="primary"
-				color="white"
-				position="sticky"
-				zIndex={1}
-				top={0}
-				left={0}
-				css={css`
-					height: ${headerHeight}px;
-					min-width: ${isEmpty ? 'unset' : minWidth}px;
-				`}
-			>
-				{renderHeader(false)}
+		(isEmpty?: boolean) =>
+			renderHeader ? (
+				<Flex
+					bg="primary"
+					color="white"
+					position="sticky"
+					zIndex={1}
+					top={0}
+					left={0}
+					css={css`
+						height: ${headerHeight}px;
+						min-width: ${isEmpty ? 'unset' : minWidth}px;
+					`}
+				>
+					{renderHeader?.(false) ?? <></>}
 
-				{!hideEditButton && (
-					<Flex
-						alignItems="center"
-						justifyContent="center"
-						flex={1}
-						p={2}
-						bg="primary"
-						css={css`
-							min-width: ${EDIT_COL_WIDTH}px;
-							max-width: ${EDIT_COL_WIDTH}px;
-							padding: 0;
-							position: sticky;
-							right: 0;
-							box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
-						`}
-					>
-						<Flex justifyContent="flex-end" height={headerHeight}></Flex>
-					</Flex>
-				)}
-			</Flex>
-		),
+					{!hideEditButton && (
+						<Flex
+							alignItems="center"
+							justifyContent="center"
+							flex={1}
+							p={2}
+							bg="primary"
+							css={css`
+								min-width: ${EDIT_COL_WIDTH}px;
+								max-width: ${EDIT_COL_WIDTH}px;
+								padding: 0;
+								position: sticky;
+								right: 0;
+								box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
+							`}
+						>
+							<Flex justifyContent="flex-end" height={headerHeight}></Flex>
+						</Flex>
+					)}
+				</Flex>
+			) : (
+				<></>
+			),
 		[renderHeader, minWidth, headerHeight, hideEditButton],
 	);
 
@@ -161,9 +166,12 @@ const Table2 = <T extends TableItem>({
 			position="relative"
 			overflowX="auto"
 			css={css`
-				border: ${data.length < 1
-					? `1px solid ${theme.colors.border}`
-					: `1px solid ${theme.colors.border}`};
+				${!borderless &&
+				css`
+					border: ${data.length < 1
+						? `1px solid ${theme.colors.border}`
+						: `1px solid ${theme.colors.border}`};
+				`}
 			`}
 		>
 			{renderTableHeader(data.length < 1)}

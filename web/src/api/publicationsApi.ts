@@ -56,14 +56,12 @@ export const usePublicationDetailWithRoot = (
 		['publication-detail-with-root', uuid],
 		async () => {
 			if (disabled) {
-				console.log('disabled ==> returning undefined');
-
 				return undefined;
 			}
 			const mainDetail = await api()
 				.get('item/' + uuid)
 				.json<PublicationDetail>();
-			console.log({ mainDetail });
+
 			const rootDetail = await api()
 				.get('item/' + mainDetail.root_pid)
 				.json<PublicationDetail>();

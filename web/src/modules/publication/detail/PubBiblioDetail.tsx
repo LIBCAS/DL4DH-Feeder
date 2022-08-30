@@ -110,7 +110,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 	const pageContext = pubDetail.data?.context
 		.flat()
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
-	console.log('PubBiblioDetail rendereing');
+
 	return (
 		<Box width={1}>
 			<Flex
