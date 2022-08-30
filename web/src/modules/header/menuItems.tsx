@@ -105,7 +105,9 @@ export const HeaderMenu: FC = () => {
 					</Dialog>
 				</>
 			) : (
-				<MenuButtons variant="desktop" />
+				<Flex alignItems="center">
+					<MenuButtons variant="desktop" />
+				</Flex>
 			)}
 		</Flex>
 	);
@@ -148,7 +150,7 @@ const MenuButtons: FC<{ variant: 'desktop' | 'tablet' }> = ({ variant }) => {
 					)}
 				</>
 			))}
-			<Divider mr={2} my={2} />
+			{variant === 'tablet' && <Divider mr={2} my={2} />}
 			<UserBadge variant={variant} />
 		</>
 	);
