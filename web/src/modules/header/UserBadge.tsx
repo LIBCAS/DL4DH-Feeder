@@ -19,18 +19,19 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 
 	if (!keycloak.authenticated) {
 		return (
-			<Button
-				onClick={() => keycloak.login()}
-				variant={variant === 'tablet' ? 'text' : 'primary'}
-				color={variant === 'tablet' ? 'primary' : 'white'}
-				minWidth={50}
-				px={1}
-				my={2}
-				fontSize="inherit"
-				mx={1}
-			>
-				<Text>Přihlásit</Text>
-			</Button>
+			<Flex alignItems="center">
+				<Button
+					onClick={() => keycloak.login()}
+					variant={variant === 'tablet' ? 'text' : 'primary'}
+					color={variant === 'tablet' ? 'primary' : 'white'}
+					minWidth={50}
+					fontSize={variant === 'tablet' ? 'inherit' : '12px'}
+					px={1}
+					mx={1}
+				>
+					<Text my={0}>Přihlásit</Text>
+				</Button>
+			</Flex>
 		);
 	}
 

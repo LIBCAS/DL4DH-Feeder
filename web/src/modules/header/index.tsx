@@ -106,7 +106,7 @@ const Header = () => {
 					)}
 
 					<MainSearchInput />
-					{window.origin === 'http://localhost:3000' ? (
+					{window.origin === 'http://localhost:3000000' ? (
 						<button
 							onClick={() => {
 								console.log(searchCtx);
