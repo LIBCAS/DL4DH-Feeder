@@ -82,10 +82,6 @@ const NameTagFilter = () => {
 		[formik.submitForm],
 	);
 
-	// if (isLoading) {
-	// 	return <Loader />;
-	// }
-
 	const availableNameTagFilters = data?.availableNameTagFilters;
 	const {
 		handleSubmit,
@@ -96,6 +92,18 @@ const NameTagFilter = () => {
 		errors,
 		touched,
 	} = formik;
+
+	const hasNameTags = useMemo(
+		() =>
+			Object.keys(availableNameTagFilters ?? {}).some(
+				k => Object.keys(availableNameTagFilters?.[k] ?? {}).length > 0,
+			),
+		[availableNameTagFilters],
+	);
+
+	if (!hasNameTags && !nameTagFacet) {
+		return <></>;
+	}
 
 	return (
 		<Box
