@@ -22,7 +22,7 @@ const MultiView = React.lazy(
 const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
 const About = React.lazy(() => import('modules/about'));
-const Collections = React.lazy(() => import('modules/collections'));
+const Collections = React.lazy(() => import('modules/browse/collections'));
 const ExportsDashboard = React.lazy(
 	() => import('modules/export/ExportsDashboard'),
 );

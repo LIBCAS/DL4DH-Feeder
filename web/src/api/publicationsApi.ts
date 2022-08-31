@@ -31,17 +31,17 @@ export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
 		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
 	);
 
-export const useAvailableFilters = (searchQuery: TSearchQuery) => {
+export const useAvailableFilters = (searchQuery?: TSearchQuery) => {
 	const body: Partial<FiltersDto> = {
 		...searchQuery,
 		query: searchQuery?.query ?? '',
 		pageSize: 1,
-		nameTagFacet: searchQuery.nameTagFacet,
+		nameTagFacet: searchQuery?.nameTagFacet,
 	};
 	const json =
-		searchQuery.nameTagFacet === '' ? _.omit(body, 'nameTagFacet') : body;
+		searchQuery?.nameTagFacet === '' ? _.omit(body, 'nameTagFacet') : body;
 	return useQuery(['search-filters', _.omit(json, 'page')], () =>
-		api().post('search', { json: json }).json<{
+		api().post('search', { json }).json<{
 			availableFilters: AvailableFilters;
 			availableNameTagFilters: AvailableNameTagFilters;
 		}>(),
