@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.4.0
+  version: 0.4.1
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url
@@ -526,6 +526,8 @@ components:
           type: string
         parameters:
           type: string
+        teiParameters:
+          type: string
         status:
           type: string
           enum:
@@ -587,29 +589,28 @@ components:
           type: string
         logo:
           type: string
+        url:
+          type: string
     PageExport:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
+        totalPages:
+          type: integer
+          format: int32
         first:
           type: boolean
         last:
           type: boolean
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
         numberOfElements:
           type: integer
           format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
         sort:
           $ref: '#/components/schemas/Sort'
-        number:
-          type: integer
-          format: int32
         size:
           type: integer
           format: int32
@@ -617,14 +618,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Export'
+        number:
+          type: integer
+          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        unpaged:
-          type: boolean
         paged:
+          type: boolean
+        unpaged:
           type: boolean
         pageNumber:
           type: integer
