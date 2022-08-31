@@ -15,6 +15,7 @@ const LeftMenuContainer: FC = ({ children }) => {
 		<Flex
 			position="relative"
 			alignItems="flex-start"
+			flexDirection="column"
 			flexShrink={0}
 			width={isMobile ? 0 : 300}
 			overflowY="auto"

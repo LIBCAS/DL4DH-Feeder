@@ -3,26 +3,28 @@ import { css } from '@emotion/core';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import SimpleSelect from 'components/form/select/SimpleSelect';
+import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
+import { Flex } from 'components/styled';
+import SubHeader from 'components/styled/SubHeader';
 import Text, { H1 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
-import { Flex } from 'components/styled';
 import ClassicTable from 'components/table/ClassicTable';
-import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
-import SubHeader from 'components/styled/SubHeader';
-import SimpleSelect from 'components/form/select/SimpleSelect';
 
 import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 
 import { useCollections } from 'api/collectionsApi';
+import { useAvailableFilters } from 'api/publicationsApi';
 
-import { SUB_HEADER_HEIGHT, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 const Collections = () => {
 	const response = useCollections();
 	const nav = useNavigate();
 	const theme = useTheme();
+	//const avalFilters = useAvailableFilters();
 
 	const collections = useMemo(
 		() =>
@@ -39,7 +41,7 @@ const Collections = () => {
 			<SubHeader
 				leftJsx={
 					<Flex px={2} alignItems="center" justifyContent="center">
-						Výsledky: 0 / 0
+						Výsledky: {collections.length} / {collections.length}
 					</Flex>
 				}
 				mainJsx={
@@ -70,7 +72,13 @@ const Collections = () => {
 				`}
 				bg="white"
 			>
-				<LeftMenuContainer></LeftMenuContainer>
+				<LeftMenuContainer>
+					{/* <AvailabilityFilter
+						data={avalFilters.data?.availableFilters}
+						isLoading={avalFilters.isLoading}
+						updateFilter={() => () => null}
+					/> */}
+				</LeftMenuContainer>
 				<Flex
 					width={1}
 					css={css`
@@ -94,7 +102,7 @@ const Collections = () => {
 								onClick={() => nav(`/search?collections=${row.pid}`)}
 							>
 								<Text flex={7}>{row.descs.cs}</Text>
-								<Text flex={1}>{row.numberOfDocs}</Text>
+								<Text flex={1}>{row.numberOfDocs}x</Text>
 							</Flex>
 						)}
 					/>

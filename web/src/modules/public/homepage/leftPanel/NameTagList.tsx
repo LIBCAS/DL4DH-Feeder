@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import MyAccordion from 'components/accordion';
 import { Flex } from 'components/styled';
 import { H4 } from 'components/styled/Text';
+import StatList, { StatItem } from 'components/filters/Accordions/StatList';
 
 import { nameTagQueryCtor } from 'utils';
 
@@ -14,8 +15,6 @@ import {
 	NameTagIcon,
 	NameTagToText,
 } from 'utils/enumsMap';
-
-import { StatItem, StatList } from '.';
 
 export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 	nameTagData,
