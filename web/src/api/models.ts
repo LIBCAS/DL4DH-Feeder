@@ -131,6 +131,7 @@ export type InfoDto = {
 		name: string;
 		name_en: string;
 		logo: string;
+		url: string;
 	};
 };
 

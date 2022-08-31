@@ -57,6 +57,7 @@ export type ExportDto = {
 	publicationTitle: string;
 	format: string;
 	parameters: string;
+	teiParameters: string;
 	delimiter: string;
 };
 

@@ -6,8 +6,12 @@ import Dialog from '@reach/dialog';
 import { MdMenu } from 'react-icons/md';
 
 import Divider from 'components/styled/Divider';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import Button, { NavHrefButton, NavLinkButton } from 'components/styled/Button';
 import { Flex } from 'components/styled';
+
+import { Loader } from 'modules/loader';
+
+import { useInfoApi } from 'api/infoApi';
 
 import { useMobileView } from 'hooks/useViewport';
 
@@ -15,6 +19,8 @@ import UserBadge from './UserBadge';
 
 type MenuItem = {
 	to?: string;
+	href?: string | 'HOOK';
+	external?: boolean;
 	label: string;
 	component?: React.ReactNode;
 	newTab?: boolean;
@@ -51,9 +57,10 @@ const menuItems: MenuItem[] = [
 	},
 
 	{
-		to: 'https://kramerius5.nkp.cz/',
+		href: 'HOOK',
 		label: 'Přejít do Kraméria',
 		newTab: true,
+		external: true,
 		order: 5,
 	},
 ];
@@ -113,6 +120,48 @@ export const HeaderMenu: FC = () => {
 	);
 };
 
+const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
+	item,
+	variant,
+}) => {
+	const ButtonComponent = item.href ? NavHrefButton : NavLinkButton;
+	const info = useInfoApi(item.external && item.href === 'HOOK');
+	const href = info.data?.kramerius.url ?? undefined;
+	if (info.isLoading) {
+		return <Loader />;
+	}
+
+	return (
+		<>
+			{variant === 'desktop' ? (
+				<ButtonComponent
+					to={item.to ?? '#'}
+					href={href ?? '#'}
+					color="white"
+					variant="primary"
+					minWidth={50}
+					px={1}
+					mx={1}
+				>
+					{item.label}
+				</ButtonComponent>
+			) : (
+				<ButtonComponent
+					to={item.to ?? '#'}
+					color="primary"
+					variant="text"
+					minWidth={50}
+					px={1}
+					my={2}
+					fontSize="inherit"
+				>
+					{item.label}
+				</ButtonComponent>
+			)}
+		</>
+	);
+};
+
 const MenuButtons: FC<{ variant: 'desktop' | 'tablet' }> = ({ variant }) => {
 	const { keycloak } = useKeycloak();
 	const items = (
@@ -121,34 +170,7 @@ const MenuButtons: FC<{ variant: 'desktop' | 'tablet' }> = ({ variant }) => {
 	return (
 		<>
 			{items.map((item, i) => (
-				<>
-					{variant === 'desktop' ? (
-						<NavLinkButton
-							key={`${item.label}-${i}`}
-							to={item.to ?? '#'}
-							color="white"
-							variant="primary"
-							minWidth={50}
-							px={1}
-							mx={1}
-						>
-							{item.label}
-						</NavLinkButton>
-					) : (
-						<NavLinkButton
-							key={`${item.label}-${i}`}
-							to={item.to ?? '#'}
-							color="primary"
-							variant="text"
-							minWidth={50}
-							px={1}
-							my={2}
-							fontSize="inherit"
-						>
-							{item.label}
-						</NavLinkButton>
-					)}
-				</>
+				<MenuButton item={item} variant={variant} key={`${item.label}-${i}`} />
 			))}
 			{variant === 'tablet' && <Divider mr={2} my={2} />}
 			<UserBadge variant={variant} />
