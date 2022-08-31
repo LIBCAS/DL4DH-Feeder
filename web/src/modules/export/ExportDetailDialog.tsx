@@ -28,11 +28,22 @@ import {
 	PipeParam,
 	TagParam,
 	Delimiter,
+	ExportFieldOption,
 } from './exportModels';
 
 type SerializedExportParameters = {
 	includeFields: string[];
 	excludeFields: string[];
+	sorting: ExportSort[];
+	delimiter?: Delimiter;
+	altoParams?: AltoParam[];
+	nameTagParams?: TagParam[];
+	udPipeParams?: PipeParam[];
+};
+
+type ParsedExportParameters = {
+	includeFields: ExportFieldOption[];
+	excludeFields: ExportFieldOption[];
 	sorting: ExportSort[];
 	delimiter?: Delimiter;
 	altoParams?: AltoParam[];
@@ -56,7 +67,17 @@ type Props = {
 	exportDto: ExportDto;
 };
 
-const parseParameters = (parameters?: string) => {
+const parseParameters = (
+	parameters?: string,
+	variant: 'teiParameters' | 'parameters' = 'parameters',
+): Partial<ParsedExportParameters> => {
+	if (variant === 'teiParameters') {
+		const { altoParams, nameTagParams, udPipeParams } = JSON.parse(
+			parameters ?? '{}',
+		) as SerializedExportParameters;
+
+		return { altoParams, nameTagParams, udPipeParams };
+	}
 	const {
 		includeFields: parsedIF,
 		excludeFields: parsedEF,
@@ -70,9 +91,14 @@ const parseParameters = (parameters?: string) => {
 };
 
 const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
-	const { includeFields, excludeFields, ...parsed } = parseParameters(
+	const { includeFields, excludeFields } = parseParameters(
 		exportDto.parameters,
 	);
+	const { altoParams, nameTagParams, udPipeParams } = parseParameters(
+		exportDto.teiParameters,
+		'teiParameters',
+	);
+
 	return (
 		<Flex
 			alignItems="center"
@@ -199,13 +225,13 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								</Flex>
 							</Flex>
 						)}
-						{(parsed.altoParams ?? []).length > 0 && (
+						{(altoParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
 									Alto Params:
 								</Text>
 								<Flex flexWrap="wrap">
-									{parsed.altoParams?.map((p, i) => (
+									{altoParams?.map((p, i) => (
 										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
 											{p}
 										</Chip>
@@ -213,13 +239,13 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								</Flex>
 							</Flex>
 						)}
-						{(parsed.nameTagParams ?? []).length > 0 && (
+						{(nameTagParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
 									NameTag Params:
 								</Text>
 								<Flex flexWrap="wrap">
-									{parsed.nameTagParams?.map((p, i) => (
+									{nameTagParams?.map((p, i) => (
 										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
 											{p}
 										</Chip>
@@ -227,13 +253,13 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								</Flex>
 							</Flex>
 						)}
-						{(parsed.udPipeParams ?? []).length > 0 && (
+						{(udPipeParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
 									udPipe Params:
 								</Text>
 								<Flex flexWrap="wrap">
-									{parsed.udPipeParams?.map((p, i) => (
+									{udPipeParams?.map((p, i) => (
 										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
 											{p}
 										</Chip>
