@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.1
+
+- tooltips login improved and positioning
+- collections draft
+- top bar refactoring
+- FIX: url link to Kramerius
+- FIX: TEI export parameters
+- FIX: export download button styling
+- FIX: hide nameTagFilter if empty
+
 ## v0.4.0
 
 - authentication:
