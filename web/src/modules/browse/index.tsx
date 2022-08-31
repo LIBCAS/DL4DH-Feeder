@@ -174,6 +174,7 @@ const Browse = () => {
 							updateFilter={handleChangeFilter}
 							withoutCount
 							activeItem={availability}
+							storeKey="browse-availability"
 						/>
 						<BrowseFilter
 							updateFilter={handleChangeFilter}
