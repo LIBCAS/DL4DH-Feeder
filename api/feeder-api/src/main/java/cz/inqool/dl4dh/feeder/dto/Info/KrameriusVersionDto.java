@@ -14,4 +14,5 @@ public class KrameriusVersionDto {
     private String name;
     private String name_en;
     private String logo;
+    private String url;
 }
