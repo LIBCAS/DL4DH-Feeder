@@ -114,6 +114,7 @@ public class ExportApi {
         export.setDelimiter(job.getConfig().getParameters().getDelimiter());
         export.setFormat(Export.Format.valueOf(format.toUpperCase()));
         export.setParameters(job.getConfig().getParameters().getParams());
+        export.setTeiParameters(job.getConfig().getParameters().getTeiExportParams());
         export.setUsername(user.getName());
         exportRepository.save(export);
 

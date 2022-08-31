@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class JobConfigParamsDto {
     private String params;
+    private String teiExportParams;
     private String delimiter;
 }

@@ -56,6 +56,8 @@ public class Export extends AuditModel {
 
     private String parameters;
 
+    private String teiParameters;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
