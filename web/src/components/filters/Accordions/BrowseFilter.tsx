@@ -12,7 +12,7 @@ type Props = {
 };
 const browseItems: StatItem[] = [
 	{
-		label: 'Typy dokumentov',
+		label: 'Typy dokumentů',
 		key: 'models',
 	},
 	{
@@ -48,9 +48,10 @@ const BrowseFilter: FC<Props> = ({ isLoading, updateFilter, activeItem }) => {
 	);
 	return (
 		<AccordionFilter
+			isExpanded
 			items={items}
 			isLoading={isLoading}
-			label="Klíčové slovo"
+			label="Procházet"
 			storeKey="browse"
 			updateFilter={updateFilter('category')}
 		/>
