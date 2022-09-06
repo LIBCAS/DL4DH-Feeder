@@ -1,16 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import _ from 'lodash';
-import { FC, useState } from 'react';
-import { MdArrowBack, MdArrowForward } from 'react-icons/md';
+import { FC } from 'react';
 
-import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
+import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
-import Divider from 'components/styled/Divider';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
-import SubHeader from 'components/styled/SubHeader';
-import IconButton from 'components/styled/IconButton';
 
 import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
 import Results from 'modules/searchResult/index';
@@ -22,16 +18,12 @@ import {
 } from 'api/publicationsApi';
 
 import { useSearchContext } from 'hooks/useSearchContext';
-import { useMobileView } from 'hooks/useViewport';
-
-import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 
 const Dashboard: FC = () => {
 	const { state } = useSearchContext();
-	const [mobileOverride, setMobileOverride] = useState(false);
-	const { isMobile } = useMobileView();
+
 	const {
 		data,
 		count,
@@ -65,29 +57,20 @@ const Dashboard: FC = () => {
 				overflow: hidden !important;
 			`}
 		>
-			<SubHeader
-				leftJsx={
-					<Flex alignItems="center" justifyContent="center">
-						<Text pl={3} fontSize="sm" fontWeight="bold">
-							Výsledky: {state.start + 1} -{' '}
-							{state.hasMore ? state.start + state.pageSize : state.totalCount}/{' '}
-							{state.totalCount}
-						</Text>
-					</Flex>
-				}
-				mainJsx={
-					<Flex width={1}>
-						{isMobile && (
-							<IconButton onClick={() => setMobileOverride(p => !p)}>
-								<Text color="primary">
-									{mobileOverride ? (
-										<MdArrowBack size={22} />
-									) : (
-										<MdArrowForward size={22} />
-									)}
-								</Text>
-							</IconButton>
-						)}
+			<MainContainer
+				subHeader={{
+					leftJsx: (
+						<Flex alignItems="center" justifyContent="center">
+							<Text pl={3} fontSize="sm" fontWeight="bold">
+								Výsledky: {state.start + 1} -{' '}
+								{state.hasMore
+									? state.start + state.pageSize
+									: state.totalCount}
+								/ {state.totalCount}
+							</Text>
+						</Flex>
+					),
+					mainJsx: (
 						<Flex width={1} justifyContent="flex-end">
 							<DashboardViewModeSwitcher />
 							<Flex mr={3} alignItems="center">
@@ -96,43 +79,26 @@ const Dashboard: FC = () => {
 								{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
 							</Flex>
 						</Flex>
-					</Flex>
-				}
-			/>
-
-			<Divider />
-			<Flex
-				css={css`
-					/* width: ${mobileOverride ? 0 : '100%'}; */
-					width: 100%;
-
-					height: calc(100vh - ${INIT_HEADER_HEIGHT + SUB_HEADER_HEIGHT}px);
-				`}
-				bg="white"
+					),
+				}}
+				body={{
+					leftJsx: (
+						<SearchResultLeftPanel
+							key={filtersKey}
+							data={filtersData?.availableFilters}
+							isLoading={isFiltersLoading}
+						/>
+					),
+				}}
 			>
-				<LeftMenuContainer mobileOverride={mobileOverride}>
-					<SearchResultLeftPanel
-						key={filtersKey}
-						data={filtersData?.availableFilters}
-						isLoading={isFiltersLoading}
-					/>
-				</LeftMenuContainer>
-				<Flex
-					width={1}
-					bg="paper"
-					css={css`
-						display: ${mobileOverride ? 'none' : 'flex'};
-					`}
-				>
-					<Results
-						data={data}
-						stats={availableFilters}
-						hasMore={hasMore}
-						isLoading={isLoading}
-						count={count}
-					/>
-				</Flex>
-			</Flex>
+				<Results
+					data={data}
+					stats={availableFilters}
+					hasMore={hasMore}
+					isLoading={isLoading}
+					count={count}
+				/>
+			</MainContainer>
 		</ResponsiveWrapper>
 	);
 };

@@ -191,7 +191,8 @@ const Table2 = <T extends TableItem>({
 							bg="formBg"
 						>
 							<Text fontSize="xl" fontWeight="600">
-								Nenašli sa žiadne záznamy.
+								Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný
+								dotaz.
 							</Text>
 						</Flex>
 					) : (

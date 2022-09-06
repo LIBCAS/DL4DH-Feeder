@@ -8,10 +8,10 @@ import { useTheme } from 'theme';
 
 import { useMobileView } from 'hooks/useViewport';
 
-const LeftMenuContainer: FC<{ mobileOverride?: boolean }> = ({
-	mobileOverride,
-	children,
-}) => {
+const SideMenuContainer: FC<{
+	mobileOverride?: boolean;
+	variant: 'left' | 'right';
+}> = ({ mobileOverride, children, variant = 'left' }) => {
 	const { isMobile } = useMobileView();
 	const theme = useTheme();
 	return (
@@ -24,7 +24,15 @@ const LeftMenuContainer: FC<{ mobileOverride?: boolean }> = ({
 			width={mobileOverride ? 1 : isMobile ? 0 : 300}
 			overflowY="auto"
 			css={css`
-				border-right: 1px solid ${theme.colors.border};
+				${variant === 'left' &&
+				css`
+					border-right: 1px solid ${theme.colors.border};
+				`}
+				${variant === 'right' &&
+				css`
+					border-left: 1px solid ${theme.colors.border};
+				`}
+
 				transition: width 0.1s ease-in-out;
 				/* box-shadow: 5px -3px 7px -4px rgba(0, 0, 0, 0.08); */
 			`}
@@ -33,4 +41,4 @@ const LeftMenuContainer: FC<{ mobileOverride?: boolean }> = ({
 		</Flex>
 	);
 };
-export default LeftMenuContainer;
+export default SideMenuContainer;

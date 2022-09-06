@@ -135,7 +135,7 @@ const Pagination: FC<Props> = ({
 		>
 			<Flex pr={2}>
 				<label htmlFor="pagination-select">
-					<Text mr={1}>Počet záznamov na stránku:</Text>
+					<Text mr={1}>Záznamů na stránku:</Text>
 				</label>
 				<select
 					id="pagination-select"
@@ -251,7 +251,7 @@ const Pagination: FC<Props> = ({
 				<>
 					{totalCount ? (
 						<Flex alignItems="center" justifyContent="center">
-							Celkový počet záznamov: {totalCount}
+							Celkem záznamů: {totalCount}
 						</Flex>
 					) : (
 						<></>

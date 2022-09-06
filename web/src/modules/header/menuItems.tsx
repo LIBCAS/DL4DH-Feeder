@@ -30,7 +30,7 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
 	{
-		to: '/collections',
+		to: '/browse?category=collections',
 		label: 'Sbírky',
 		order: 0,
 	},

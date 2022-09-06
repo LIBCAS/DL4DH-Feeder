@@ -149,7 +149,7 @@ const NameTagFilter = () => {
 								title={values.query}
 								iconLeft={
 									<Flex p={0} m={0} ml={1}>
-										<MdSearch size={16} />
+										<MdSearch size={22} />
 									</Flex>
 								}
 								onClick={e => {
@@ -178,9 +178,8 @@ const NameTagFilter = () => {
 								minHeight={50}
 								iconRight={
 									nameTagFacet !== '' ? (
-										<Flex color="primary">
+										<Flex color="primary" mr={1}>
 											<IconButton
-												size={32}
 												color="primary"
 												tooltip="Smazat filtr"
 												//variant="outlined"
@@ -192,6 +191,7 @@ const NameTagFilter = () => {
 												}}
 											>
 												<MdClear
+													size={22}
 													css={css`
 														cursor: pointer;
 													`}
