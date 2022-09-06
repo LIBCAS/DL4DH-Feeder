@@ -137,9 +137,11 @@ const Browse = () => {
 					></H1>
 				}
 				rightJsx={
-					<Flex px={3} width={1} alignItems="center" justifyContent="flex-end">
-						Řazení:
+					<Flex mr={3} width={1} alignItems="center" justifyContent="flex-end">
+						<Text>Řazení:</Text>
 						<SimpleSelect
+							//label="Řazení:"
+							minWidth={150}
 							options={sortOptions}
 							value={sorting}
 							variant="borderless"
@@ -190,7 +192,7 @@ const Browse = () => {
 				>
 					<ClassicTable
 						borderless
-						minWidth={500}
+						minWidth={400}
 						data={tableData}
 						hideEditButton
 						rowWrapperCss={css`
@@ -211,8 +213,11 @@ const Browse = () => {
 									)
 								}
 							>
-								<Text flex={7}>{getLabel(row.label, category)}</Text>
-								<Text flex={1}>{row.count}x</Text>
+								<Text flex={[5, 6, 7]}>{getLabel(row.label, category)}</Text>
+
+								<Text textAlign="right" flex={1} mx={2}>
+									{row.count} x
+								</Text>
 							</Flex>
 						)}
 					/>

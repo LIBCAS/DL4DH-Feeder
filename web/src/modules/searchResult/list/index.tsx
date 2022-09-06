@@ -2,13 +2,14 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
 import { FC, useCallback, useEffect, useState } from 'react';
-import useMeasure from 'react-use-measure';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
+
+import { useTheme } from 'theme';
 
 import { TPublication } from 'api/models';
 
@@ -46,9 +47,7 @@ const ListView: FC<{
 	data?: TPublication[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
-	const [wrapperRef, { height: filterHeight }] = useMeasure({
-		debounce: 50,
-	});
+	const theme = useTheme();
 
 	const [toExport, setToExport] = useState<string | null>(null);
 	useEffect(() => {
@@ -91,7 +90,7 @@ const ListView: FC<{
 	const renderHeader = useCallback(
 		() => (
 			<>
-				<Flex pl={[2, 3]} alignItems="center">
+				<Flex pl={[2, 3]} alignItems="center" py={0}>
 					<Checkbox label="" colorVariant="inverted" />
 				</Flex>
 				{colsOrder.map(cellKey => (
@@ -100,33 +99,13 @@ const ListView: FC<{
 						alignItems="center"
 						justifyContent="flex-start"
 						flex={rowLayout[cellKey]}
-						p={2}
+						p={1}
 						pl={[2, 3]}
-						fontWeight="bold"
+						fontWeight="normal"
 						color="white"
 						css={css``}
-						/* onClick={() => {
-						if (sort.options[cellKey]) {
-							sort.setSelected(cellKey);
-						}
-					}}
-					css={css`
-						cursor: ${sort.options[cellKey] ? 'pointer' : 'unset'};
-					`}
-					title={
-						sort.options[cellKey]
-							? `Zoradiť podľa ${headerLabels[cellKey].text}`
-							: ''
-					} */
 					>
 						<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
-
-						{/* {sort.selected.key === cellKey &&
-						(sort.selected.order === 'ASC' ? (
-							<ArrowDownIcon ml={2} />
-						) : (
-							<ArrowUpIcon ml={2} />
-						))} */}
 					</Flex>
 				))}
 			</>
@@ -137,32 +116,19 @@ const ListView: FC<{
 
 	return (
 		<>
-			<Wrapper p={2} position="relative">
-				<Flex
-					position="absolute"
-					height="100%"
-					top={0}
-					left={0}
-					ref={wrapperRef}
-				></Flex>
-				<Flex
-					flexDirection="column"
-					position="absolute"
-					width="calc(100% - 20px)"
-					overflowY="auto"
-					overflowX="hidden"
-					pr={2}
-					height={`calc(${filterHeight}px - 10px)`}
-					//height={500}
-				>
-					<ClassicTable
-						data={items as unknown as TColumnsLayout[]}
-						isLoading={isLoading}
-						renderRow={renderRow}
-						renderHeader={renderHeader}
-						minWidth={1300}
-					/>
-				</Flex>
+			<Wrapper p={0} my={0} position="relative" overflowX="auto">
+				<ClassicTable
+					borderless
+					headerHeight={30}
+					data={items as unknown as TColumnsLayout[]}
+					isLoading={isLoading}
+					renderRow={renderRow}
+					renderHeader={renderHeader}
+					minWidth={1000}
+					rowWrapperCss={css`
+						border-bottom: 1px solid ${theme.colors.border};
+					`}
+				/>
 			</Wrapper>
 		</>
 	);

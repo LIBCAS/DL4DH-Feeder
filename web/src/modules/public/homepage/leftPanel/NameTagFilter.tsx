@@ -8,7 +8,7 @@ import { MdBolt, MdClear, MdSearch } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 
-import MyAccordion from 'components/accordion';
+import Accordion from 'components/accordion';
 import TextInput from 'components/form/input/TextInput';
 import { ClickAway } from 'components/form/select/SimpleSelect';
 import { Box, Flex } from 'components/styled';
@@ -113,7 +113,7 @@ const NameTagFilter = () => {
 				border-bottom: 2px solid ${theme.colors.primary};
 			`}
 		>
-			<MyAccordion
+			<Accordion
 				label={
 					<Flex alignItems="center">
 						<MdBolt size={14} />
@@ -265,7 +265,7 @@ const NameTagFilter = () => {
 						</Box> */}
 					</Flex>
 				</form>
-			</MyAccordion>
+			</Accordion>
 
 			{isLoading ? (
 				<Loader />

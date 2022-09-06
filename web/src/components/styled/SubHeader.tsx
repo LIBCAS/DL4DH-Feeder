@@ -22,7 +22,7 @@ const SubHeader: FC<{
 			css={css`
 				width: 100%;
 				height: ${SUB_HEADER_HEIGHT}px;
-				box-shadow: 7px -2px 5px 5px rgba(0, 0, 0, 0.03);
+				/* box-shadow: 7px -2px 5px 5px rgba(0, 0, 0, 0.03); */
 			`}
 			bg="white"
 			zIndex={1}

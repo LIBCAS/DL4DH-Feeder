@@ -139,9 +139,9 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					href={href ?? '#'}
 					color="white"
 					variant="primary"
-					minWidth={50}
+					minWidth={30}
 					px={1}
-					mx={1}
+					mr={1}
 				>
 					{item.label}
 				</ButtonComponent>
@@ -150,7 +150,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					to={item.to ?? '#'}
 					color="primary"
 					variant="text"
-					minWidth={50}
+					minWidth={30}
 					px={1}
 					my={2}
 					fontSize="inherit"
