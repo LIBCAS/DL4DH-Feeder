@@ -113,8 +113,8 @@ const Checkbox: React.FC<CheckboxProps> = ({
 				as={p => <label htmlFor={id} {...p} />}
 				width={1}
 				alignItems="center"
-				py={1}
-				mb={1}
+				//py={1}
+				//mb={1}
 				fontSize="sm"
 			>
 				<StyledCheckbox

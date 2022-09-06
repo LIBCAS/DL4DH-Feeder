@@ -265,7 +265,8 @@ const Table = <T extends TableItem>({
 									justifyContent="center"
 								>
 									<Text fontSize="xl" fontWeight="600">
-										Nenašli sa žiadne záznamy.
+										Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste
+										jiný dotaz.
 									</Text>
 								</Flex>
 							) : (

@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import MyAccordion from 'components/accordion';
+import Accordion from 'components/accordion';
 import { Flex } from 'components/styled';
 import { H4 } from 'components/styled/Text';
 import StatList, { StatItem } from 'components/filters/Accordions/StatList';
@@ -59,7 +59,7 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 				const formattedKey = NameTagFilterToNameTagEnum[nti.key];
 				const Icon = NameTagIcon[formattedKey as TagNameEnum];
 				return nti.data.length > 0 ? (
-					<MyAccordion
+					<Accordion
 						key={nti.key}
 						label={
 							<Flex alignItems="center">
@@ -82,7 +82,7 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 								)}
 							/>
 						)}
-					</MyAccordion>
+					</Accordion>
 				) : (
 					<></>
 				);

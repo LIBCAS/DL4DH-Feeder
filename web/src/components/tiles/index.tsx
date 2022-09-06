@@ -17,7 +17,7 @@ type Props = {
 const TileGrid: FC<Props> = ({
 	isEmpty,
 	isLoading,
-	noResults = 'Žádné položky nevyhovují požadavkům',
+	noResults = 'Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný dotaz.',
 	fullWidthItems,
 	tileSize = '320px',
 	children,
@@ -52,7 +52,6 @@ const TileGrid: FC<Props> = ({
 			<Grid
 				gridGap={4}
 				gridTemplateColumns={[
-					`1fr`,
 					`repeat(auto-fill, ${
 						fullWidthItems ? '1fr' : `minmax(${tileSize}, 1fr)`
 					})`,

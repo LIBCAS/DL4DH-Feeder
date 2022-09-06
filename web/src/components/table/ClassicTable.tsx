@@ -70,7 +70,8 @@ const Table2 = <T extends TableItem>({
 					: theme.colors.tableRow};
 				&:hover,
 				&:hover .table-row-edit-button {
-					background-color: ${theme.colors.primaryBright};
+					background-color: ${theme.colors.primaryLight};
+					/* background-color: red; */
 					color: ${theme.colors.text};
 				}
 				&:hover .table-row-three-dots {
@@ -98,7 +99,7 @@ const Table2 = <T extends TableItem>({
 							: theme.colors.tableRow};
 						/* border-left: 1px solid white; */
 
-						box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
+						box-shadow: -2px 0px 8px 1px rgba(0, 0, 0, 0.05);
 					`}
 				>
 					<NavLinkButton
@@ -147,7 +148,7 @@ const Table2 = <T extends TableItem>({
 								padding: 0;
 								position: sticky;
 								right: 0;
-								box-shadow: -6px 0px 4px rgba(0, 0, 0, 0.05);
+								box-shadow: -2px 0px 8px 1px rgba(0, 0, 0, 0.05);
 							`}
 						>
 							<Flex justifyContent="flex-end" height={headerHeight}></Flex>
@@ -190,7 +191,8 @@ const Table2 = <T extends TableItem>({
 							bg="formBg"
 						>
 							<Text fontSize="xl" fontWeight="600">
-								Nenašli sa žiadne záznamy.
+								Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný
+								dotaz.
 							</Text>
 						</Flex>
 					) : (

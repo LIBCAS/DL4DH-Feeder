@@ -2,7 +2,7 @@
 import { FC, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import MyAccordion from 'components/accordion';
+import Accordion from 'components/accordion';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box } from 'components/styled';
 import AvailabilityFilter from 'components/filters/Accordions/AvailabilityFilter';
@@ -110,7 +110,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 				isLoading={isLoading}
 			/>
 			{authorsItems.length > 0 && (
-				<MyAccordion
+				<Accordion
 					label="Autor"
 					isExpanded
 					isLoading={isLoading}
@@ -124,10 +124,10 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 							onClick={handleUpdateFilter('authors')}
 						/>
 					)}
-				</MyAccordion>
+				</Accordion>
 			)}
 			{languagesItems.length > 0 && (
-				<MyAccordion label="Jazyk" isLoading={isLoading} storeKey="languages">
+				<Accordion label="Jazyk" isLoading={isLoading} storeKey="languages">
 					{onRefresh => (
 						<StatList
 							items={languagesItems}
@@ -136,17 +136,17 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 							onClick={handleUpdateFilter('languages')}
 						/>
 					)}
-				</MyAccordion>
+				</Accordion>
 			)}
 
-			<MyAccordion
+			<Accordion
 				label="Rok vydání"
 				isExpanded
 				isLoading={isLoading}
 				storeKey="publishDateFilter"
 			>
 				<PublishDateFilter interval={yearsInterval} />
-			</MyAccordion>
+			</Accordion>
 
 			<NameTagFilter />
 

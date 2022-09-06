@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import MyAccordion from 'components/accordion';
+import Accordion from 'components/accordion';
 
 import StatList, { StatItem } from './StatList';
 
@@ -10,7 +10,7 @@ type AccProps = {
 	storeKey?: string;
 	items: StatItem[];
 	updateFilter: (key: string) => void;
-} & Partial<React.ComponentProps<typeof MyAccordion>> &
+} & Partial<React.ComponentProps<typeof Accordion>> &
 	Partial<React.ComponentProps<typeof StatList>>;
 
 const AccordionFilter: FC<AccProps> = ({
@@ -22,7 +22,7 @@ const AccordionFilter: FC<AccProps> = ({
 	...props
 }) => {
 	return items.length > 0 ? (
-		<MyAccordion
+		<Accordion
 			{...props}
 			label={label}
 			isExpanded
@@ -37,7 +37,7 @@ const AccordionFilter: FC<AccProps> = ({
 					refresh={onRefresh}
 				/>
 			)}
-		</MyAccordion>
+		</Accordion>
 	) : (
 		<></>
 	);

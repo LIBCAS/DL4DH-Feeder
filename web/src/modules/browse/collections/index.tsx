@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
-import LeftMenuContainer from 'components/sidepanels/LeftMenuContainer';
+import LeftMenuContainer from 'components/sidepanels/SideMenuContainer';
 import { Flex } from 'components/styled';
 import SubHeader from 'components/styled/SubHeader';
 import Text, { H1 } from 'components/styled/Text';
@@ -72,13 +72,6 @@ const Collections = () => {
 				`}
 				bg="white"
 			>
-				<LeftMenuContainer>
-					{/* <AvailabilityFilter
-						data={avalFilters.data?.availableFilters}
-						isLoading={avalFilters.isLoading}
-						updateFilter={() => () => null}
-					/> */}
-				</LeftMenuContainer>
 				<Flex
 					width={1}
 					css={css`
