@@ -26,7 +26,7 @@ type Props = {
 	overflowHiddenDisabled?: boolean;
 };
 
-const MyAccordion: FC<Props> = ({
+const Accordion: FC<Props> = ({
 	label,
 	isExpanded,
 	children,
@@ -38,7 +38,9 @@ const MyAccordion: FC<Props> = ({
 	storeGroup = 'feeder-accordions-expanded',
 }) => {
 	const [exp, setExp] = useState(
-		storeKey ? Store.getFromGroup(storeGroup, storeKey) : isExpanded ?? false,
+		storeKey
+			? Store.getFromGroup(storeGroup, storeKey) ?? isExpanded
+			: isExpanded ?? false,
 	);
 	const [refresh, setRefresh] = useState(false);
 	const [height, setHeight] = useState(0);
@@ -111,4 +113,4 @@ const MyAccordion: FC<Props> = ({
 	);
 };
 
-export default MyAccordion;
+export default Accordion;
