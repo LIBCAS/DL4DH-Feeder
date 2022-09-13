@@ -19,6 +19,8 @@ import {
 	usePublicationDetail,
 } from 'api/publicationsApi';
 
+import { useMobileView } from 'hooks/useViewport';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
@@ -33,8 +35,9 @@ const PublicationDetail = () => {
 	const [page, setPageUrlParam] = useSearchParams();
 	const pubCtx = usePublicationContext();
 	const nav = useNavigate();
-	const [rightCollapsed, setRightCollapsed] = useState(false);
-	const [leftCollapsed, setLeftCollapsed] = useState(false);
+	const { isMobile } = useMobileView();
+	const [rightCollapsed, setRightCollapsed] = useState(isMobile);
+	const [leftCollapsed, setLeftCollapsed] = useState(isMobile);
 
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,

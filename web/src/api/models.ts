@@ -67,7 +67,7 @@ export type AvailableFilters = {
 	keywords: Record<string, number>;
 	authors: Record<string, number>;
 	languages: Record<string, number>;
-	collections: Record<string, number>;
+	collections: Record<string, Collection>;
 };
 
 export type NameTagFilterDto = {
@@ -111,6 +111,7 @@ export type PublicationChild = {
 		year: string;
 		partNumber: string;
 		title: string;
+		pagenumber: string;
 	};
 	root_pid: string;
 	root_title: string;
@@ -133,6 +134,17 @@ export type InfoDto = {
 		logo: string;
 		url: string;
 	};
+};
+
+export type Collection = {
+	canLeave: boolean;
+	descs: {
+		cs: string;
+		en: string;
+	};
+	label: string;
+	numberOfDocs: number;
+	pid: string;
 };
 
 export type FiltersSortEnum =

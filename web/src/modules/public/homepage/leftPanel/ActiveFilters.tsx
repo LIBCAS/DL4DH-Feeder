@@ -10,10 +10,13 @@ import Divider from 'components/styled/Divider';
 import { OperationToTextLabel } from 'components/search/MainSearchInput';
 import Button from 'components/styled/Button';
 
+import { Loader } from 'modules/loader';
+
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';
 
-import { ModelsEnum } from 'api/models';
+import { Collection, ModelsEnum } from 'api/models';
+import { useAvailableFilters } from 'api/publicationsApi';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 
@@ -50,7 +53,11 @@ function removeParam(
 	sp.delete('page');
 }
 
-const enumToText = (type: string, value: string) => {
+const enumToText = (
+	type: string,
+	value: string,
+	collectionLabels: Record<string, Collection>,
+) => {
 	switch (type) {
 		case 'models':
 			return modelToText(value as ModelsEnum);
@@ -65,7 +72,7 @@ const enumToText = (type: string, value: string) => {
 		case 'languages':
 			return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
 		case 'collections':
-			return `Sbírka: ${value}`;
+			return `Sbírka: ${collectionLabels?.[value]?.descs?.cs ?? value}`;
 
 		default:
 			return value;
@@ -77,6 +84,7 @@ const ActiveFilters: React.FC = () => {
 	const { state } = useSearchContext();
 	const [sp, setSp] = useSearchParams();
 	const nav = useNavigate();
+	const aval = useAvailableFilters();
 	const NT = state.searchQuery?.nameTagFilters;
 
 	const yearsInterval = `${state.searchQuery?.from ?? null} - ${
@@ -106,6 +114,11 @@ const ActiveFilters: React.FC = () => {
 	) {
 		return null;
 	}
+
+	if (aval.isLoading) {
+		return <Loader />;
+	}
+	const collectionLabels = aval.data?.availableFilters.collections ?? {};
 
 	const keys = Object.keys(arrayFilters);
 
@@ -146,7 +159,11 @@ const ActiveFilters: React.FC = () => {
 								py={1}
 								px={0}
 								width={1}
-								tooltip={`Smazat filtr: ${enumToText(k, val)}`}
+								tooltip={`Smazat filtr: ${enumToText(
+									k,
+									val,
+									collectionLabels,
+								)}`}
 								variant="text"
 								//justifyContent="space-between"
 								//position="relative"
@@ -159,7 +176,6 @@ const ActiveFilters: React.FC = () => {
 									cursor: pointer;
 									&:hover,
 									&:hover {
-										font-weight: bold;
 										color: ${theme.colors.warning};
 									}
 									&:hover .filter-cross-icon {
@@ -197,7 +213,7 @@ const ActiveFilters: React.FC = () => {
 										</IconButton>
 									</Box>
 									<Text ml={3} my={0} py={0}>
-										{enumToText(k, val)}
+										{enumToText(k, val, collectionLabels)}
 									</Text>
 								</Flex>
 							</Button>
@@ -230,7 +246,6 @@ const ActiveFilters: React.FC = () => {
 								cursor: pointer;
 								&:hover,
 								&:hover {
-									font-weight: bold;
 									color: ${theme.colors.warning};
 								}
 								&:hover .filter-cross-icon {

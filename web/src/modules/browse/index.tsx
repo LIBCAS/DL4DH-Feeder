@@ -17,7 +17,7 @@ import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 
-import { AvailabilityEnum, ModelsEnum } from 'api/models';
+import { AvailabilityEnum, Collection, ModelsEnum } from 'api/models';
 import { useAvailableFilters } from 'api/publicationsApi';
 
 import { modelToText } from 'utils/enumsMap';
@@ -27,9 +27,10 @@ type TableItem = {
 	id: string;
 	label: string;
 	count: number;
+	key: string;
 };
-//mapLangToCS
-//modelToText
+
+//TODO: presunut toto do makeList funkcie
 const categoryHandlers = {
 	languages: {
 		onClick: () => null,
@@ -63,15 +64,33 @@ const sortOptions: SortOption[] = [
 	},
 ];
 
-const getLabel = (label: string, category: string) =>
-	categoryHandlers[category]?.labelMapper?.(label) ?? label;
+const getLabel = (
+	label: string,
+	category: string,
+	collections?: Collection[],
+) =>
+	categoryHandlers[category]?.labelMapper?.(label, collections ?? []) ?? label;
 
-const makeList = (data: Record<string, number>): TableItem[] =>
-	Object.keys(data).map((key, index) => ({
-		id: `${index}-${key}`,
-		label: key,
-		count: data[key],
-	}));
+const makeList = (data: Record<string, number | Collection>): TableItem[] => {
+	return Object.keys(data).map((key, index) => {
+		let count = 0;
+		let label = '';
+		if (typeof data[key] === 'object') {
+			count = (data[key] as Collection).numberOfDocs;
+			label = (data[key] as Collection).descs.cs;
+		} else {
+			count = data[key] as number;
+			label = key;
+		}
+
+		return {
+			id: `${index}-${key}`,
+			label,
+			count,
+			key,
+		};
+	});
+};
 
 const sortList = (data: TableItem[], sorting: SortOption, category: string) => {
 	return sorting.id === 'label'
@@ -201,7 +220,7 @@ const Browse = () => {
 							`}
 							onClick={() =>
 								nav(
-									`/search?${category}=${row.label}&availability=${availability}`,
+									`/search?${category}=${row.key}&availability=${availability}`,
 								)
 							}
 						>

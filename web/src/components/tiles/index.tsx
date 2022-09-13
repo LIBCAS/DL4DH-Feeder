@@ -12,6 +12,7 @@ type Props = {
 	noResults?: string | ReactNode;
 	fullWidthItems?: boolean;
 	tileSize?: string;
+	gridGap?: number;
 };
 
 const TileGrid: FC<Props> = ({
@@ -21,6 +22,7 @@ const TileGrid: FC<Props> = ({
 	fullWidthItems,
 	tileSize = '320px',
 	children,
+	gridGap = 4,
 }) => (
 	<>
 		{isLoading && <Loader />}
@@ -50,7 +52,7 @@ const TileGrid: FC<Props> = ({
 		)}
 		{!isLoading && !isEmpty && (
 			<Grid
-				gridGap={4}
+				gridGap={gridGap}
 				gridTemplateColumns={[
 					`repeat(auto-fill, ${
 						fullWidthItems ? '1fr' : `minmax(${tileSize}, 1fr)`

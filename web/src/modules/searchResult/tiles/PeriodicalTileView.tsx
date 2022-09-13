@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/core';
-import { FC } from 'react';
+import { css, SerializedStyles } from '@emotion/core';
+import { FC, ReactComponentElement } from 'react';
 import { MdLock } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,14 +16,25 @@ import { PublicationChild } from 'api/models';
 type Props = {
 	data?: PublicationChild[];
 	onSelect?: (uuid: string) => void;
+	gridGap?: number;
+	tileWrapperCss?: (uuid: string) => SerializedStyles;
 };
 
-const PeriodicalTiles: FC<Props> = ({ data, onSelect }) => {
+const PeriodicalTiles: FC<Props> = ({
+	tileWrapperCss,
+	data,
+	onSelect,
+	gridGap = 4,
+}) => {
 	const push = useNavigate();
 
 	return (
 		<Wrapper p={2}>
-			<TileGrid tileSize="90px" isEmpty={data === undefined || data.length < 1}>
+			<TileGrid
+				tileSize="120px"
+				isEmpty={data === undefined || data.length < 1}
+				gridGap={gridGap}
+			>
 				{(data ?? []).map(d => {
 					const isPeriodical = d.model.includes('periodical');
 					const url = `/${isPeriodical ? 'periodical' : 'view'}/${d.pid}`;
@@ -48,13 +59,17 @@ const PeriodicalTiles: FC<Props> = ({ data, onSelect }) => {
 								flexDirection="column"
 								alignItems="center"
 								justifyContent="center"
-								p={2}
+								position="relative"
+								px={1}
+								m={1}
 								css={css`
 									border: 1px solid ${theme.colors.border};
+									box-sizing: border-box;
 									&:hover {
-										box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
+										box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.5);
 										cursor: pointer;
 									}
+									${tileWrapperCss?.(d.pid) ?? ``}
 								`}
 							>
 								<Flex
@@ -125,7 +140,18 @@ const PeriodicalTiles: FC<Props> = ({ data, onSelect }) => {
 									alignItems="center"
 									color={d.enriched ? 'black' : 'textCommon'}
 								>
-									{d.details.volumeNumber !== undefined && (
+									{d.details.pagenumber !== null && (
+										<Text
+											css={css`
+												text-overflow: ellipsis;
+												overflow: hidden;
+												white-space: nowrap;
+											`}
+										>
+											{d.details.pagenumber}
+										</Text>
+									)}
+									{d.details.volumeNumber && (
 										<Text
 											css={css`
 												text-overflow: ellipsis;
@@ -136,7 +162,18 @@ const PeriodicalTiles: FC<Props> = ({ data, onSelect }) => {
 											Ročník {d.details.volumeNumber}
 										</Text>
 									)}
-									{d.details.partNumber !== null && (
+									{d.details.partNumber && (
+										<Text
+											css={css`
+												text-overflow: ellipsis;
+												overflow: hidden;
+												white-space: nowrap;
+											`}
+										>
+											{d.details.partNumber}
+										</Text>
+									)}
+									{d.details.partNumber && (
 										<Text
 											css={css`
 												text-overflow: ellipsis;
