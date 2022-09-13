@@ -17,9 +17,8 @@ import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
 
-import { AvailabilityEnum, ModelsEnum } from 'api/models';
+import { AvailabilityEnum, Collection, ModelsEnum } from 'api/models';
 import { useAvailableFilters } from 'api/publicationsApi';
-import { Collection, useCollections } from 'api/collectionsApi';
 
 import { modelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
@@ -28,9 +27,10 @@ type TableItem = {
 	id: string;
 	label: string;
 	count: number;
+	key: string;
 };
-//mapLangToCS
-//modelToText
+
+//TODO: presunut toto do makeList funkcie
 const categoryHandlers = {
 	languages: {
 		onClick: () => null,
@@ -45,12 +45,6 @@ const categoryHandlers = {
 	},
 	authors: {
 		onClick: () => null,
-	},
-	collections: {
-		labelMapper: (key: string, collections: Collection[]) => {
-			console.log({ collections });
-			return collections.find(c => c.label === key)?.descs.cs ?? key;
-		},
 	},
 };
 
@@ -77,12 +71,26 @@ const getLabel = (
 ) =>
 	categoryHandlers[category]?.labelMapper?.(label, collections ?? []) ?? label;
 
-const makeList = (data: Record<string, number>): TableItem[] =>
-	Object.keys(data).map((key, index) => ({
-		id: `${index}-${key}`,
-		label: key,
-		count: data[key],
-	}));
+const makeList = (data: Record<string, number | Collection>): TableItem[] => {
+	return Object.keys(data).map((key, index) => {
+		let count = 0;
+		let label = '';
+		if (typeof data[key] === 'object') {
+			count = (data[key] as Collection).numberOfDocs;
+			label = (data[key] as Collection).descs.cs;
+		} else {
+			count = data[key] as number;
+			label = key;
+		}
+
+		return {
+			id: `${index}-${key}`,
+			label,
+			count,
+			key,
+		};
+	});
+};
 
 const sortList = (data: TableItem[], sorting: SortOption, category: string) => {
 	return sorting.id === 'label'
@@ -102,16 +110,6 @@ const Browse = () => {
 	const nav = useNavigate();
 	const theme = useTheme();
 	const response = useAvailableFilters({ availability, query: browseQuery });
-
-	const responseColl = useCollections();
-
-	const collections = useMemo(
-		() =>
-			(responseColl.data ?? []).sort(
-				(c1, c2) => c2.numberOfDocs - c1.numberOfDocs,
-			),
-		[responseColl.data],
-	);
 
 	const [tableData, setTableData] = useState<TableItem[]>([]);
 
@@ -222,13 +220,11 @@ const Browse = () => {
 							`}
 							onClick={() =>
 								nav(
-									`/search?${category}=${row.label}&availability=${availability}`,
+									`/search?${category}=${row.key}&availability=${availability}`,
 								)
 							}
 						>
-							<Text flex={[5, 6, 7]}>
-								{getLabel(row.label, category, collections)}
-							</Text>
+							<Text flex={[5, 6, 7]}>{getLabel(row.label, category)}</Text>
 
 							<Text textAlign="right" flex={1} mx={2}>
 								{row.count} x

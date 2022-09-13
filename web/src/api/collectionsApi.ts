@@ -2,16 +2,7 @@ import { useQuery } from 'react-query';
 
 import { api } from 'api';
 
-export type Collection = {
-	canLeave: boolean;
-	descs: {
-		cs: string;
-		en: string;
-	};
-	label: string;
-	numberOfDocs: number;
-	pid: string;
-};
+import { Collection } from './models';
 
 export const useCollections = () =>
 	useQuery(['collections-labels'], () =>

@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import { FC, useEffect, useState } from 'react';
-import { MdPrint, MdShare, MdTextFields } from 'react-icons/md';
+import { MdShare, MdTextFields } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
 
@@ -21,6 +21,7 @@ import { ModelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
+import PrintDialog from '../print/PrintDialog';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
@@ -122,9 +123,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 			>
 				<MetaStreamsDialog rootId={id} pageId={pageId} />
 				<PublicationExportDialog isSecond={isSecond} />
-				<IconButton color="primary">
-					<MdPrint size={24} />
-				</IconButton>
+				<PrintDialog isSecond={isSecond} />
 				<IconButton color="primary">
 					<MdTextFields size={24} />
 				</IconButton>
