@@ -2,19 +2,18 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
-import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
+import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrGroupItemDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -188,6 +187,11 @@ public class SearchApi {
                         ).collect(Collectors.toList())),
                 facets,
                 resultKPlus.getFacet_counts().transformed());
+    }
+
+    @GetMapping(value = "/collections")
+    public @ResponseBody List<CollectionDto> collections() {
+        return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {}).block();
     }
 
     @Resource(name = "krameriusWebClient")
