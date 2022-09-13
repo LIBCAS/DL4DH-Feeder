@@ -19,6 +19,7 @@ import { useTheme } from 'theme';
 
 import { AvailabilityEnum, ModelsEnum } from 'api/models';
 import { useAvailableFilters } from 'api/publicationsApi';
+import { Collection, useCollections } from 'api/collectionsApi';
 
 import { modelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
@@ -45,6 +46,12 @@ const categoryHandlers = {
 	authors: {
 		onClick: () => null,
 	},
+	collections: {
+		labelMapper: (key: string, collections: Collection[]) => {
+			console.log({ collections });
+			return collections.find(c => c.label === key)?.descs.cs ?? key;
+		},
+	},
 };
 
 type SortOption = {
@@ -63,8 +70,12 @@ const sortOptions: SortOption[] = [
 	},
 ];
 
-const getLabel = (label: string, category: string) =>
-	categoryHandlers[category]?.labelMapper?.(label) ?? label;
+const getLabel = (
+	label: string,
+	category: string,
+	collections?: Collection[],
+) =>
+	categoryHandlers[category]?.labelMapper?.(label, collections ?? []) ?? label;
 
 const makeList = (data: Record<string, number>): TableItem[] =>
 	Object.keys(data).map((key, index) => ({
@@ -91,6 +102,16 @@ const Browse = () => {
 	const nav = useNavigate();
 	const theme = useTheme();
 	const response = useAvailableFilters({ availability, query: browseQuery });
+
+	const responseColl = useCollections();
+
+	const collections = useMemo(
+		() =>
+			(responseColl.data ?? []).sort(
+				(c1, c2) => c2.numberOfDocs - c1.numberOfDocs,
+			),
+		[responseColl.data],
+	);
 
 	const [tableData, setTableData] = useState<TableItem[]>([]);
 
@@ -205,7 +226,9 @@ const Browse = () => {
 								)
 							}
 						>
-							<Text flex={[5, 6, 7]}>{getLabel(row.label, category)}</Text>
+							<Text flex={[5, 6, 7]}>
+								{getLabel(row.label, category, collections)}
+							</Text>
 
 							<Text textAlign="right" flex={1} mx={2}>
 								{row.count} x
