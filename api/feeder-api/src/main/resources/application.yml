@@ -41,9 +41,7 @@ springdoc:
 
 system:
   kramerius:
-    api: https://www.ndk.cz/search/api/v5.0
-  kramerius-zoomify:
-    api: https://www.ndk.cz/search/zoomify
+    api: https://www.ndk.cz/search
   kramerius-plus:
     api: https://plus.nkp.cz/api
     secret: kramerius-plus

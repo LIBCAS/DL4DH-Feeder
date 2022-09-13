@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class SearchApi {
 
     private WebClient kramerius;
+    private WebClient krameriusPrint;
     private WebClient solrWebClient;
 
     private final HttpSolrClient solr;
@@ -194,9 +196,22 @@ public class SearchApi {
         return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {}).block();
     }
 
+    @GetMapping(value = "/localPrintPDF", produces = "application/pdf")
+    public @ResponseBody ByteArrayResource print(@RequestParam String pids, @RequestParam Optional<String> pagesize, @RequestParam Optional<String> imgop) {
+        return krameriusPrint.get().uri(uriBuilder -> uriBuilder.queryParam("pids",pids)
+                        .queryParam("pagesize", pagesize.orElse("A4"))
+                        .queryParam("imgop", imgop.orElse("FULL"))
+                        .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
+    }
+
     @Resource(name = "krameriusWebClient")
     public void setWebClient(WebClient webClient) {
         this.kramerius = webClient;
+    }
+
+    @Resource(name = "krameriusPrintWebClient")
+    public void setPrintWebClient(WebClient webClient) {
+        this.krameriusPrint = webClient;
     }
 
     @Resource(name = "solrWebClient")
