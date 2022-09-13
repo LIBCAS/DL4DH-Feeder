@@ -1,5 +1,6 @@
 package cz.inqool.dl4dh.feeder.kramerius.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,9 +23,10 @@ public class CollectionDto {
     private Integer numberOfDocs;
 
     @NotNull
+//    @JsonIgnore
     private String pid;
 
-    @NotNull
-    private String label;
+//    @NotNull
+//    private String label;
 
 }

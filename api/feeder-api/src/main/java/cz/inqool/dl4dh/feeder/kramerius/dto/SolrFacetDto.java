@@ -3,9 +3,7 @@ package cz.inqool.dl4dh.feeder.kramerius.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -29,20 +27,29 @@ public class SolrFacetDto {
         }
     }
 
-    public Map<String, Map<String, Integer>> transformed() {
+    public Map<String, Map<String, Object>> transformed() {
+        return transformed(new HashMap<>());
+    }
+
+    public Map<String, Map<String, Object>> transformed(Map<String, CollectionDto> collections) {
         return facet_fields.entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> keyTransform(e.getKey()), e -> {
-                    Map<String, Integer> map = new TreeMap<>();
+                    Map<String, Object> map = new TreeMap<>();
                     for (int i = 0; i < e.getValue().size(); i+=2) {
                         String key = (String)e.getValue().get(i);
                         //For models return only base types
-                        if (keyTransform(e.getKey()).equals("models")) {
+                        if (e.getKey().equals("model_path")) {
                             if (key.contains("/") || key.contains("volume") || key.contains("unit")) {
                                 continue;
                             }
                         }
-                        map.put(key, (Integer)e.getValue().get(i+1));
+                        //For collection return translations
+                        if (e.getKey().equals("collection")) {
+                            map.put(key, collections.containsKey(key) ? collections.get(key) : e.getValue().get(i+1));
+                            continue;
+                        }
+                        map.put(key, e.getValue().get(i+1));
                     }
                     return map;
                 }));

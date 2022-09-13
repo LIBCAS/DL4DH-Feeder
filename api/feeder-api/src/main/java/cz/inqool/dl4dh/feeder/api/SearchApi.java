@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -142,6 +143,7 @@ public class SearchApi {
                         .queryParam("facet.field","collection")
                         .queryParam("facet.field","datum_begin")
                         .queryParam("f.datum_begin.facet.limit","-1")
+                        .queryParam("f.collection.facet.limit","-1")
                         .queryParam("sort",filters.getSort().toSolrSort())
                         .queryParam("rows",filters.getPageSize())
                         .queryParam("start",filters.getStart())
@@ -152,9 +154,15 @@ public class SearchApi {
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .block();
 
+        // Prepare collections for facets
+        List<CollectionDto> collectionsList = kramerius.get().uri("/vc").retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {}).block();
+        Map<String, CollectionDto> collections = collectionsList == null ? new HashMap<>() : collectionsList.stream()
+                .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()));
+
         // Add new facet enrichment as a combination of results from Kramerius and Kramerius+
         Integer notEnriched = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
-        Map<String, Map<String, Integer>> facets = result.getFacet_counts().transformed();
+        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
         facets.put("enrichment", new HashMap<>(){{
             put(EnrichmentEnum.ENRICHED.toString(), enriched);
             put(EnrichmentEnum.NOT_ENRICHED.toString(), notEnriched - enriched);
