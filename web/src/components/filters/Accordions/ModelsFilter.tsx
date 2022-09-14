@@ -36,7 +36,7 @@ const ModelsFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
 			isLoading={isLoading}
 			storeKey="models"
 			items={items}
-			updateFilter={updateFilter('keywords')}
+			updateFilter={updateFilter('models')}
 		/>
 	);
 };
