@@ -59,7 +59,7 @@ public class SearchApi {
                     .setQuery(filters.toQuery())
                     .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article")));
             QueryResponse response = solr.query(query);
-            List<String> responseList = Arrays.stream(nameTagType.getSolrField().split(","))
+            return Arrays.stream(nameTagType.getSolrField().split(","))
                     .map(f -> response.getFacetField(f)
                             .getValues()
                             .stream()
@@ -68,8 +68,8 @@ public class SearchApi {
                     .flatMap(Collection::stream)
                     .distinct()
                     .sorted()
+                    .limit(filters.getPageSize())
                     .collect(Collectors.toList());
-            return responseList.subList(0, Integer.min(filters.getPageSize(), responseList.size()));
         }
 
         SolrQueryResponseDto result = kramerius.get()
