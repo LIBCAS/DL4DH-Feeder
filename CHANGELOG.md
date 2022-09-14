@@ -1,5 +1,7 @@
 # Changelog
 
+## v0.5.0 (upcoming)
+
 ## v0.4.1
 
 - tooltips login improved and positioning
