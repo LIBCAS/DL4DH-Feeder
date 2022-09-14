@@ -55,4 +55,18 @@ public enum NameTagEntityType {
 
         throw new IllegalArgumentException("Cannot construct NamedEntityType enum from value: " + stringValue);
     }
+
+    public static NameTagEntityType fromSolrField(String solrField) {
+        if (solrField == null || solrField.isEmpty()) {
+            throw new IllegalArgumentException("Missing argument value");
+        }
+
+        for (NameTagEntityType namedEntityType : NameTagEntityType.values()) {
+            if (namedEntityType.getSolrField().equals(solrField)) {
+                return namedEntityType;
+            }
+        }
+
+        throw new IllegalArgumentException("Cannot construct NamedEntityType enum from value: " + solrField);
+    }
 }

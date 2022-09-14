@@ -8,13 +8,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class SolrQueryWithFacetResponseDto {
-    @NotNull
-    private SolrResponseDto response;
-
-    @NotNull
-    private SolrResponseHeaderDto responseHeader;
-
+public class SolrQueryWithFacetResponseDto extends SolrQueryResponseDto {
     @NotNull
     private SolrFacetDto facet_counts;
 

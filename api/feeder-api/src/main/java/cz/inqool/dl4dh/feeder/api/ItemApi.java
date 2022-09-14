@@ -2,7 +2,7 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.ChildSearchDto;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.kramerius.dto.SolrHighlightDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithHighlightResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -110,19 +110,19 @@ public class ItemApi {
                     .collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
         }
 
-        SolrHighlightDto highlighting = kramerius.get()
+        SolrQueryWithHighlightResponseDto highlighting = kramerius.get()
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("q", "parent_pid:\""+uuid+"\" AND text_ocr:"+q.replaceAll("\"","\\\\\"")+"*")
                         .queryParam("hl", "true")
                         .queryParam("fl","PID")
-                        .queryParam("wt","json")
                         .queryParam("hl.fl","text_ocr")
                         .queryParam("hl.fragsize","1")
                         .queryParam("hl.snippets","10")
                         .queryParam("hl.simple.pre",">>")
                         .queryParam("hl.simple.post","<<")
                         .queryParam("rows","20")
-                        .build()).retrieve().bodyToMono(SolrHighlightDto.class).block();
+                        .queryParam("wt","json")
+                        .build()).retrieve().bodyToMono(SolrQueryWithHighlightResponseDto.class).block();
 
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         highlighting.getHighlighting().values()
@@ -138,28 +138,45 @@ public class ItemApi {
     }
 
     @GetMapping("/{uuid}/children/search")
-    public @ResponseBody Map<String, ChildSearchDto> childrenSearch(@PathVariable(value="uuid") String uuid, @RequestParam String q) {
-        SolrHighlightDto highlighting = kramerius.get()
+    public @ResponseBody Map<String, ChildSearchDto> childrenSearch(@PathVariable(value="uuid") String uuid, @RequestParam String q) throws SolrServerException, IOException {
+        Map<String, ChildSearchDto> result = new HashMap<>();
+        if (q.isEmpty()) {
+            return result;
+        }
+
+        SolrQueryWithHighlightResponseDto highlighting = kramerius.get()
             .uri("/search", uriBuilder -> uriBuilder
                     .queryParam("q", "parent_pid:\""+uuid+"\" AND text_ocr:"+q.replaceAll("\"","\\\\\"")+"*")
                     .queryParam("hl", "true")
                     .queryParam("fl","PID")
-                    .queryParam("wt","json")
                     .queryParam("hl.fl","text_ocr")
                     .queryParam("hl.fragsize","120")
                     .queryParam("hl.snippets","10")
                     .queryParam("hl.simple.pre","<strong>")
                     .queryParam("hl.simple.post","</strong>")
-                    .queryParam("rows","20")
-                    .build()).retrieve().bodyToMono(SolrHighlightDto.class).block();
+                    .queryParam("rows","300")
+                    .queryParam("wt","json")
+                    .build()).retrieve().bodyToMono(SolrQueryWithHighlightResponseDto.class).block();
+        highlighting.getHighlighting().forEach((k,v) -> result.put(k, new ChildSearchDto(v.getText_ocr(), null)));
 
-        Map<String, ChildSearchDto> result = new HashMap<>();
-        highlighting.getHighlighting().forEach((k,v) -> result.put(k, new ChildSearchDto(v.getText_ocr().stream()
-                .map(s -> {
-                    s = s.substring(s.indexOf(">>") + 2);
-                    s = s.substring(0, s.indexOf("<<"));
-                    return s;
-                }).collect(Collectors.toList()), new HashMap<>())));
+        SolrQuery query = new SolrQuery();
+        query.setQuery(Arrays.stream(NameTagEntityType.ALL.getSolrField().split(","))
+                        .map(v -> v+":\""+q.replaceAll("\"","\\\\\"")+"\"")
+                        .collect(Collectors.joining(" OR ")))
+                .setFields("PID")
+                .setParam("hl.fl", "nameTag.*")
+                .setHighlight(true)
+                .setHighlightSimplePre("")
+                .setHighlightSimplePost("")
+                .setRows(300);
+        QueryResponse response = solr.query(query);
+        response.getHighlighting().forEach((dUuid, v) -> {
+            ChildSearchDto childSearchDto = result.getOrDefault(dUuid, new ChildSearchDto());
+            Map<String, List<String>> values = new TreeMap<>();
+            v.forEach((field, l) -> values.put(NameTagEntityType.fromSolrField(field).name(), l));
+            childSearchDto.setNameTag(values);
+            result.put(dUuid, childSearchDto);
+        });
         return result;
     }
 
