@@ -14,6 +14,7 @@ import Button from 'components/styled/Button';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { useTheme } from 'theme';
+import { downloadFile } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
 
@@ -32,23 +33,21 @@ const PRINT_LIMIT = 90;
 
 const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 	const pctx = usePublicationContext();
-	const pages = pctx.publicationChildren ?? [];
+	const pages = isSecond
+		? pctx.publicationChildrenOfSecond ?? []
+		: pctx.publicationChildren ?? [];
+
 	const [selected, setSelected] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	const theme = useTheme();
 
-	if (isSecond) {
-		//TODO:
-		alert('TODO');
-		return null;
-	}
-
 	return (
-		<Flex alignItems="center" justifyContent="center" overflow="visible" m={5}>
+		<Flex alignItems="center" justifyContent="center" overflow="visible" m={0}>
 			<Paper
 				bg="paper"
-				//maxWidth={600}
+				margin="5vh auto"
+				m={0}
 				minWidth={['initial', '80vw']}
 				overflow="visible"
 				width={'100%'}
@@ -96,8 +95,8 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 										opacity: 0.8;
 										top: 5px;
 										left: 5px;
-										width: 50px;
-										height: 40px;
+										width: 40px;
+										height: 30px;
 									}
 								`}
 							`;
@@ -177,7 +176,8 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 									const response = await callPrintApi(selected);
 									const blob = await response.blob();
 									const url = URL.createObjectURL(blob);
-									window.open(url, '_blank');
+									downloadFile(url, 'publicaton_print.pdf');
+									//window.open(url, '_blank');
 								} catch (error) {
 									toast.error('Při exportu nastala chyba.');
 									console.log(error);

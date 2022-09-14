@@ -92,7 +92,7 @@ const ViewJSON: FC<{
 		return <LoaderSpin />;
 	}
 
-	const ITEM_HEIGHT = 30;
+	const ITEM_HEIGHT = 20;
 	const maxWidth = Math.max(...dataArr.map(c => c.length)) * 7;
 
 	return (
