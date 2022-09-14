@@ -9,6 +9,7 @@ import AvailabilityFilter from 'components/filters/Accordions/AvailabilityFilter
 import EnrichmentFilter from 'components/filters/Accordions/EnrichmentFilter';
 import KeywordsFilter from 'components/filters/Accordions/KeywordsFilter';
 import StatList, { StatItem } from 'components/filters/Accordions/StatList';
+import ModelsFilter from 'components/filters/Accordions/ModelsFilter';
 
 import { AvailableFilters } from 'api/models';
 
@@ -98,9 +99,15 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 				updateFilter={handleChangeFilter}
 				isLoading={isLoading}
 			/>
+
 			<EnrichmentFilter
 				data={data}
 				updateFilter={handleChangeFilter}
+				isLoading={isLoading}
+			/>
+			<ModelsFilter
+				data={data}
+				updateFilter={handleUpdateFilter}
 				isLoading={isLoading}
 			/>
 

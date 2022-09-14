@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { isEqual, omit } from 'lodash';
 
 import { Loader } from 'modules/loader';
+import RouteUuid from 'modules/uuidRouting/RouteUuid';
 
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 import { useSearchContext } from 'hooks/useSearchContext';
@@ -132,6 +133,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<MultiView />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/uuid/:id"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<RouteUuid />
 					</React.Suspense>
 				}
 			/>

@@ -89,24 +89,26 @@ const PeriodicalDetail = () => {
 			<MainContainer
 				subHeader={{
 					leftJsx: (
-						<Flex pl={3}>
+						<Flex pl={3} alignItems="center">
 							<Text>
 								Výsledky: <strong>{pubChildren.data?.length ?? 0}</strong>
 							</Text>
 						</Flex>
 					),
 					mainJsx: (
-						<Text
-							fontSize="18px"
-							color="textCommon"
-							css={css`
-								text-overflow: ellipsis;
-								overflow: hidden;
-								white-space: nowrap;
-							`}
-						>
-							{detail.data?.title ?? 'Periodikum'}
-						</Text>
+						<Flex alignItems="center" px={3}>
+							<Text
+								fontSize="md"
+								color="textCommon"
+								css={css`
+									text-overflow: ellipsis;
+									overflow: hidden;
+									white-space: nowrap;
+								`}
+							>
+								{detail.data?.title ?? 'Periodikum'}
+							</Text>
+						</Flex>
 					),
 				}}
 				body={{

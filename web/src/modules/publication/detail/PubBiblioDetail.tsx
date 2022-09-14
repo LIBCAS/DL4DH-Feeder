@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 
 import _ from 'lodash';
-import { FC, useEffect, useState } from 'react';
-import { MdShare, MdTextFields } from 'react-icons/md';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { MdTextFields } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
 
@@ -14,6 +14,7 @@ import IconButton from 'components/styled/IconButton';
 import Text, { H2, H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
+import ShareDialog from 'modules/share/ShareDialog';
 
 import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 
@@ -100,11 +101,15 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 		XML.parseString(xmlString, (err, result) => setParsedXML(result));
 	}, [xmlString]);
 
+	const biblio = useMemo(() => parseDCXML(parsedXML), [parsedXML]);
+
 	if (isLoading || pubDetail.isLoading || pageDetail.isLoading) {
 		return <LoaderSpin />;
 	}
 
-	const biblio = parseDCXML(parsedXML);
+	const isPrintableOrExportable =
+		window.location.pathname.includes('/view/') ||
+		window.location.pathname.includes('/multiview/');
 
 	const rootTitle = pubDetail.data?.root_title ?? 'r';
 	const details = pubDetail.data?.details;
@@ -122,13 +127,15 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 				px={3}
 			>
 				<MetaStreamsDialog rootId={id} pageId={pageId} />
-				<PublicationExportDialog isSecond={isSecond} />
-				<PrintDialog isSecond={isSecond} />
+				{isPrintableOrExportable && (
+					<>
+						<PublicationExportDialog isSecond={isSecond} />
+						<PrintDialog isSecond={isSecond} />
+					</>
+				)}
+				<ShareDialog isSecond={isSecond} />
 				<IconButton color="primary">
 					<MdTextFields size={24} />
-				</IconButton>
-				<IconButton color="primary">
-					<MdShare size={24} />
 				</IconButton>
 			</Flex>
 			<Divider />
