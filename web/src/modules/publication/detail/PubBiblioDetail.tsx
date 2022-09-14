@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { MdShare, MdTextFields } from 'react-icons/md';
+import { MdTextFields } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
 
@@ -14,6 +14,7 @@ import IconButton from 'components/styled/IconButton';
 import Text, { H2, H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
+import ShareDialog from 'modules/share/ShareDialog';
 
 import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 
@@ -132,11 +133,9 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 						<PrintDialog isSecond={isSecond} />
 					</>
 				)}
+				<ShareDialog isSecond={isSecond} />
 				<IconButton color="primary">
 					<MdTextFields size={24} />
-				</IconButton>
-				<IconButton color="primary">
-					<MdShare size={24} />
 				</IconButton>
 			</Flex>
 			<Divider />

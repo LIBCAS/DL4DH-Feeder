@@ -29,7 +29,7 @@ export default Text;
 
 export const H1 = styled(Text)`
 	color: ${theme.colors.primary};
-	font-size: ${theme.fontSizes.xxl}px;
+	font-size: ${theme.fontSizes.xl}px;
 	font-family: 'Roboto';
 	font-weight: bold;
 `;

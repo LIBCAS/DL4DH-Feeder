@@ -72,7 +72,7 @@ const GlobalStyles = () => (
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 				color: ${theme.colors.text};
-				font-size: 14px;
+				font-size: 15px;
 			}
 
 			* {

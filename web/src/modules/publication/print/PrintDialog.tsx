@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC, useState } from 'react';
-import { MdPrint } from 'react-icons/md';
+import { MdClose, MdPrint } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
-import Text, { H1 } from 'components/styled/Text';
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
+import Button from 'components/styled/Button';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import Button from 'components/styled/Button';
+import Text, { H1 } from 'components/styled/Text';
 
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
@@ -53,7 +53,12 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 				width={'100%'}
 				//height={'80vh'}
 			>
-				<H1>Připravit k tisku</H1>
+				<Flex alignItems="center" justifyContent="space-between">
+					<H1>Připravit k tisku</H1>
+					<IconButton color="primary" onClick={closeModal}>
+						<MdClose size={32} />
+					</IconButton>
+				</Flex>
 				<Box
 					overflowX="hidden"
 					overflowY="auto"
