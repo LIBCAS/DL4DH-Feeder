@@ -15,6 +15,7 @@ import { PublicationChild } from 'api/models';
 import PubThumbnails from './PubThumbnails';
 import PubBiblioDetail from './PubBiblioDetail';
 import PubChooseSecond from './PubChooseSecond';
+import PubPagesDetail from './PubPagesDetail';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -129,8 +130,9 @@ const PublicationSidePanel: FC<Props> = ({
 				<Divider />
 				{!chooseSecondDialogOpen && (
 					<>
+						{/* <PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} /> */}
 						{viewMode === 'search' ? (
-							<PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} />
+							<PubPagesDetail isSecond={isSecond} />
 						) : (
 							<PubBiblioDetail isSecond={isSecond} />
 						)}

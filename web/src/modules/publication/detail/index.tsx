@@ -86,7 +86,7 @@ const PublicationDetail = () => {
 	return (
 		<ResponsiveWrapper
 			bg="primaryLight"
-			px={1}
+			px={0}
 			mx={0}
 			alignItems="flex-start"
 			width={1}

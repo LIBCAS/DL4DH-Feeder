@@ -1,7 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { createRef, FC, useEffect, useMemo, useState } from 'react';
-import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
+import { createRef, FC, useEffect, useState } from 'react';
+import {
+	MdArrowDownward,
+	MdArrowUpward,
+	MdClear,
+	MdSearch,
+} from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 import { FixedSizeGrid } from 'react-window';
@@ -14,51 +19,28 @@ import Text from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
+import { PublicationChild } from 'api/models';
+
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 
-import { PagesSearchResult } from './PubPagesDetail';
+/** TODO: PUBLICATION THUMBNAILS AND SEARCHING WITHIN */
 
 type Props = {
-	marginTop?: number;
+	marginTop: number;
+	pages: PublicationChild[];
 	isSecond?: boolean;
-	pagesSearchResult?: PagesSearchResult[];
-	searchMode?: boolean;
 };
-//TODO: refactor!!
 
-const PubThumbnails: FC<Props> = ({
-	marginTop = 0,
-	isSecond,
-	pagesSearchResult,
-	searchMode,
-}) => {
-	const COLUMNS_COUNT = pagesSearchResult?.length ?? 0 > 0 ? 1 : 3;
+const PubThumbnails: FC<Props> = ({ marginTop, pages, isSecond }) => {
 	const pubCtx = usePublicationContext();
 	const pageId = isSecond
 		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
 		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
 
-	const pagesRaw = useMemo(
-		() =>
-			isSecond
-				? pubCtx.publicationChildrenOfSecond ?? []
-				: pubCtx.publicationChildren ?? [],
-		[pubCtx.publicationChildren, pubCtx.publicationChildrenOfSecond, isSecond],
-	);
-
-	const pages = useMemo(
-		() =>
-			(pagesSearchResult?.length ?? 0) > 0
-				? pagesRaw.filter(pr =>
-						(pagesSearchResult ?? []).some(x => x.pid === pr.pid),
-				  )
-				: pagesRaw,
-		[pagesSearchResult, pagesRaw],
-	);
-
 	const theme = useTheme();
+	const [toSearch, setToSearch] = useState('');
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({
 		debounce: 10,
 	});
@@ -75,12 +57,8 @@ const PubThumbnails: FC<Props> = ({
 
 	useEffect(() => {
 		const x = pages.findIndex(p => p.pid === pageId);
-		setSelectedPage({
-			pid: pageId,
-			rowIndex: Math.floor(x / COLUMNS_COUNT),
-			index: x,
-		});
-	}, [pageId, pages, COLUMNS_COUNT]);
+		setSelectedPage({ pid: pageId, rowIndex: Math.floor(x / 3), index: x });
+	}, [pageId, pages]);
 
 	useEffect(() => {
 		gridRef.current?.scrollToItem({
@@ -93,13 +71,46 @@ const PubThumbnails: FC<Props> = ({
 		setGoToPage((selectedPage?.index ?? 0) + 1);
 	}, [selectedPage?.index]);
 
-	if (searchMode && (pagesSearchResult?.length ?? 0) === 0) {
-		return <></>;
-	}
-
 	return (
 		<Box width={1}>
 			<div ref={ref}>
+				<Flex px={1} py={0}>
+					<TextInput
+						placeholder="Vyhledávat v publikaci"
+						label=""
+						labelType="inline"
+						color="primary"
+						value={toSearch}
+						wrapperCss={css`
+							border-top: none;
+							border-left: none;
+							border-right: none;
+						`}
+						iconLeft={
+							<Flex color="primary" ml={2}>
+								<MdSearch size={26} />
+							</Flex>
+						}
+						iconRight={
+							toSearch !== '' ? (
+								<Flex mr={3} color="primary">
+									<MdClear
+										onClick={() => setToSearch('')}
+										css={css`
+											cursor: pointer;
+										`}
+									/>
+								</Flex>
+							) : (
+								<></>
+							)
+						}
+						onChange={e => {
+							setToSearch(e.currentTarget.value);
+						}}
+					/>
+				</Flex>
+
 				<Flex py={2} px={2} justifyContent="space-between" alignItems="center">
 					<IconButton
 						onClick={() => {
@@ -179,7 +190,7 @@ const PubThumbnails: FC<Props> = ({
 				ref={wrapperRef}
 				width={300}
 				maxWidth={300}
-				//bg="border"
+				bg="border"
 				height={`calc(100vh - ${
 					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 1
 				}px)`}
@@ -187,126 +198,62 @@ const PubThumbnails: FC<Props> = ({
 					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 1
 				}px)`}
 				overflow="hidden"
-				id="ejciboha"
 			>
 				<FixedSizeGrid
-					rowCount={Math.ceil(pages.length / COLUMNS_COUNT)}
+					rowCount={Math.ceil(pages.length / 3)}
 					rowHeight={126}
 					height={wrapperHeight}
-					columnCount={COLUMNS_COUNT}
-					columnWidth={COLUMNS_COUNT === 3 ? 90 : 300}
+					columnCount={3}
+					columnWidth={90}
 					width={300}
 					ref={gridRef}
-					css={css`
-						overflow-x: hidden !important;
-					`}
 				>
 					{({ style, rowIndex, columnIndex }) => {
-						const index = COLUMNS_COUNT * rowIndex + columnIndex;
-						const url = `/api/item/${pages[index]?.pid ?? ''}/thumb`;
+						const index = 3 * rowIndex + columnIndex;
 						if (index >= pages.length) {
 							return <></>;
 						}
 						return (
 							<Flex
+								alignItems="center"
 								style={style}
-								width={searchMode ? 'auto!important' : 300}
+								width={80}
+								maxWidth={80}
+								height={120}
+								maxHeight={120}
+								m={1}
+								ml={2}
 								css={css`
-									${searchMode &&
-									css`
-										cursor: pointer;
-										box-sizing: border-box;
-										background-color: ${selectedPage?.pid === pages[index].pid
-											? 'white'
-											: 'unset'};
-										border-right: ${selectedPage?.pid === pages[index].pid
-												? 3
-												: 0}px
-											solid ${theme.colors.primary};
-										&:hover {
-											background-color: white;
-										}
-									`}
+									border: ${selectedPage?.pid === pages[index].pid ? 5 : 1}px
+										solid ${theme.colors.primary};
+									box-sizing: border-box;
+									cursor: pointer;
+									background-image: url('/api/item/${pages[index].pid}/thumb');
+									background-size: cover;
+									background-repeat: no-repeat;
+									&:hover {
+										box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
+									}
 								`}
 								onClick={() => {
-									if (searchMode) {
-										sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
-										setSp(sp);
-										setSelectedPage({ pid: pages[index].pid, rowIndex, index });
-									}
+									sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+									setSp(sp);
+									setSelectedPage({ pid: pages[index].pid, rowIndex, index });
 								}}
 							>
-								<Flex
-									alignItems="center"
-									width={80}
-									maxWidth={80}
-									flexShrink={0}
-									height={120}
-									maxHeight={120}
-									m={1}
-									ml={2}
-									css={css`
-										border: ${selectedPage?.pid === pages[index].pid ? 5 : 1}px
-											solid ${theme.colors.primary};
-										box-sizing: border-box;
-										cursor: pointer;
-										background-image: url(${url});
-										background-size: cover;
-										background-repeat: no-repeat;
-										&:hover {
-											box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
-										}
-									`}
-									onClick={() => {
-										sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
-										setSp(sp);
-										setSelectedPage({ pid: pages[index].pid, rowIndex, index });
-									}}
+								<Box
+									position="absolute"
+									right={0}
+									top={0}
+									bg="white"
+									color="text"
+									opacity={0.7}
+									p={1}
 								>
-									<Box
-										position="absolute"
-										right={0}
-										top={0}
-										bg="white"
-										color="text"
-										opacity={0.7}
-										p={1}
-									>
-										<Text my={0} fontSize="sm">
-											{pages[index].title}
-										</Text>
-									</Box>
-								</Flex>
-								<Flex fontSize="sm" width="auto">
-									{pagesSearchResult
-										?.filter(p => p.pid === pages[index].pid)
-										.map((k, i) => (
-											<Flex
-												flexDirection="column"
-												key={k.title + i}
-												my={2}
-												justifyContent="flex-start"
-												alignItems="flex-start"
-											>
-												<Flex
-													flexDirection="column"
-													key={k?.pid}
-													my={0}
-													justifyContent="flex-start"
-													alignItems="flex-start"
-													css={css`
-														> p > strong {
-															color: ${theme.colors.primary};
-														}
-													`}
-												>
-													<Text
-														dangerouslySetInnerHTML={{ __html: k.ocr[0] }}
-													/>
-												</Flex>
-											</Flex>
-										))}
-								</Flex>
+									<Text my={0} fontSize="sm">
+										{pages[index].title}
+									</Text>
+								</Box>
 							</Flex>
 						);
 					}}

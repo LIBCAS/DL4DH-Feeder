@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
+import { ky } from 'ky/distribution/types/ky';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -30,16 +31,19 @@ export const OperationToTextLabel: Record<TOperation, string> = {
 };
 
 type Props = {
-	hintApi?: string;
+	hintApi?: (q: string) => Promise<string[]>;
 	onQueryUpdate: (query: string) => void;
 	publicOnly?: boolean;
-	setPublicOnly: Dispatch<SetStateAction<boolean>>;
+	setPublicOnly?: Dispatch<SetStateAction<boolean>>;
+	placeholder?: string;
 };
 
 const QuerySearchInput: FC<Props> = ({
 	publicOnly,
 	setPublicOnly,
 	onQueryUpdate,
+	hintApi,
+	placeholder,
 }) => {
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
@@ -57,21 +61,27 @@ const QuerySearchInput: FC<Props> = ({
 
 	const getHint = useCallback(
 		async (q: string) => {
-			const hints = await api()
-				.post(`search/hint?q=${q}`, {
-					body: JSON.stringify({ availability: publicOnly ? 'PUBLIC' : 'ALL' }),
-				})
-				.json<string[]>()
-				.catch(r => console.log(r));
+			const hints = hintApi
+				? await hintApi(q)
+				: await api()
+						.post(`search/hint?q=${q}`, {
+							body: JSON.stringify({
+								availability: publicOnly ? 'PUBLIC' : 'ALL',
+							}),
+						})
+						.json<string[]>()
+						.catch(r => console.log(r));
 
 			if (hints) {
 				setHints(hints);
 			}
 		},
-		[publicOnly],
+		[publicOnly, hintApi],
 	);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 100), [getHint]);
+
+	console.log({ hints });
 
 	return (
 		<>
@@ -83,7 +93,11 @@ const QuerySearchInput: FC<Props> = ({
 				ref={wrapperRef}
 			>
 				<TextInput
-					placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
+					placeholder={
+						placeholder
+							? placeholder
+							: 'Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)...'
+					}
 					label=""
 					labelType="inline"
 					color="primary"
@@ -128,6 +142,11 @@ const QuerySearchInput: FC<Props> = ({
 							<></>
 						)
 					}
+					wrapperCss={css`
+						border-top: none;
+						border-left: none;
+						border-right: none;
+					`}
 				/>
 				<div style={{ position: 'absolute', left: '-1000px', opacity: 0 }}>
 					<input
@@ -189,7 +208,7 @@ const QuerySearchInput: FC<Props> = ({
 								flexDirection="column"
 								overflowY="auto"
 								maxHeight="80vh"
-								width={wrapperWidth - 16}
+								width={wrapperWidth - 10}
 							>
 								{hints.map((h, index) => (
 									<Flex
@@ -219,14 +238,16 @@ const QuerySearchInput: FC<Props> = ({
 						</Flex>
 					</ClickAway>
 				)}
-				<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
-					<Checkbox
-						checked={publicOnly}
-						onChange={() => setPublicOnly(p => !p)}
-						aria-label="Pouze veřejné"
-						label="Pouze veřejné"
-					/>
-				</Flex>
+				{setPublicOnly && (
+					<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
+						<Checkbox
+							checked={publicOnly}
+							onChange={() => setPublicOnly(p => !p)}
+							aria-label="Pouze veřejné"
+							label="Pouze veřejné"
+						/>
+					</Flex>
+				)}
 			</Flex>
 		</>
 	);
