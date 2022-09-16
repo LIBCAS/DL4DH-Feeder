@@ -2,6 +2,12 @@
 
 ## v0.5.0 (upcoming)
 
+- collections and browse pages added with sorting and filtering
+- share functionality and dialog added
+- print functionality and dialog added
+- searching within publication with / without nameTag hinting
+- responsiveness for very small screen resolutions improved (in search/browse part of the web)
+
 ## v0.4.1
 
 - tooltips login improved and positioning
@@ -60,7 +66,7 @@
 - zoomify animation during rotation
 - improved streams dialog design
 - JSON stream for item and children
-- implementation of publication's structure page for periodicals 
+- implementation of publication's structure page for periodicals
 - openapi documentation version, title and url fix behind a reverse proxy
 - test for text extraction from ALTO
 - UX: static image before loading tiles
@@ -74,14 +80,14 @@
 - UI: nametag icons in top search box
 - UI: different style for enriched publication
 - UI: information page
-- FIX: nametag dropdown searchbox texts 
+- FIX: nametag dropdown searchbox texts
 - FIX: automatic import publications from Kramerius+
 
 ## v0.2.0
 
 - integration to Kramerius+ API for publications
 - search on enriched publications
-- sorting of search results 
+- sorting of search results
 - thumbnails load and cache improvements
 - UI: tiles, pagination, tables redesign
 - UI: exports options mockup

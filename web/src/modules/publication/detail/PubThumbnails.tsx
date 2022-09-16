@@ -223,10 +223,20 @@ const PubThumbnails: FC<Props> = ({
 										background-color: ${selectedPage?.pid === pages[index].pid
 											? 'white'
 											: 'unset'};
-										border-right: ${selectedPage?.pid === pages[index].pid
-												? 3
-												: 0}px
-											solid ${theme.colors.primary};
+										${isSecond
+											? css`
+													border-left: ${selectedPage?.pid === pages[index].pid
+															? 3
+															: 0}px
+														solid ${theme.colors.primary};
+											  `
+											: css`
+													border-right: ${selectedPage?.pid === pages[index].pid
+															? 3
+															: 0}px
+														solid ${theme.colors.primary};
+											  `}
+
 										&:hover {
 											background-color: white;
 										}
