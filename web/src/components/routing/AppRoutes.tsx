@@ -11,7 +11,6 @@ import { useSearchContext } from 'hooks/useSearchContext';
 import Store from 'utils/Store';
 
 const NotFound = React.lazy(() => import('modules/notFound'));
-//const Authorize = React.lazy(() => import('modules/public/auth'));
 
 // Public
 const Homepage = React.lazy(() => import('modules/public/homepage'));
@@ -23,7 +22,6 @@ const MultiView = React.lazy(
 const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
 const About = React.lazy(() => import('modules/about'));
-const Collections = React.lazy(() => import('modules/browse/collections'));
 const ExportsDashboard = React.lazy(
 	() => import('modules/export/ExportsDashboard'),
 );
@@ -72,14 +70,7 @@ const AppRoutes: React.FC = () => {
 					</React.Suspense>
 				}
 			/>
-			<Route
-				path="/collections"
-				element={
-					<React.Suspense fallback={<Loader />}>
-						<Collections />
-					</React.Suspense>
-				}
-			/>
+
 			<Route
 				path="/browse"
 				element={

@@ -12,7 +12,6 @@ import {
 } from 'react';
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
-import { ky } from 'ky/distribution/types/ky';
 import { useSearchParams } from 'react-router-dom';
 
 import Text from 'components/styled/Text';
@@ -91,8 +90,6 @@ const QuerySearchInput: FC<Props> = ({
 	);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 100), [getHint]);
-
-	console.log({ hints });
 
 	return (
 		<>

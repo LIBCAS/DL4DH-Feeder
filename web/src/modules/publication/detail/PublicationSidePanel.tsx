@@ -12,7 +12,6 @@ import { useTheme } from 'theme';
 
 import { PublicationChild } from 'api/models';
 
-import PubThumbnails from './PubThumbnails';
 import PubBiblioDetail from './PubBiblioDetail';
 import PubChooseSecond from './PubChooseSecond';
 import PubPagesDetail from './PubPagesDetail';
@@ -29,7 +28,7 @@ type Props = {
 const PublicationSidePanel: FC<Props> = ({
 	variant,
 	defaultView,
-	pages,
+
 	onCollapse,
 	isCollapsed,
 	isSecond,

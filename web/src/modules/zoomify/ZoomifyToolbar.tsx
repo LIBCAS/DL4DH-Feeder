@@ -26,22 +26,31 @@ const ToolButton: FC<{
 	onClick: () => void;
 	Icon: ReactNode;
 	tooltip?: string;
-}> = ({ onClick, Icon, tooltip }) => {
+	disabled?: boolean;
+}> = ({ onClick, Icon, tooltip, disabled }) => {
 	const theme = useTheme();
 	return (
 		<Button
 			tooltip={tooltip}
 			variant="text"
 			onClick={onClick}
+			disabled={disabled}
 			px={[2, 2, 3]}
 			css={css`
 				box-sizing: border-box;
 				border: 1px solid ${theme.colors.lightGrey};
 				color: ${theme.colors.textCommon};
 				&:hover {
-					background-color: ${theme.colors.white};
-					color: ${theme.colors.primary};
-					box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.01);
+					${!disabled &&
+					css`
+						background-color: ${theme.colors.white};
+						color: ${theme.colors.primary};
+						box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.01);
+					`}
+					${disabled &&
+					css`
+						cursor: not-allowed;
+					`}
 				}
 			`}
 		>
@@ -98,6 +107,7 @@ const ZoomifyToolbar: FC<Props> = ({
 				`}
 			>
 				<ToolButton
+					disabled={!currentPage?.prevPid}
 					tooltip="Předchozí strana"
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.prevPid ?? page);
@@ -165,6 +175,7 @@ const ZoomifyToolbar: FC<Props> = ({
 				/>
 
 				<ToolButton
+					disabled={!currentPage?.nextPid}
 					tooltip="Další strana"
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.nextPid ?? page);

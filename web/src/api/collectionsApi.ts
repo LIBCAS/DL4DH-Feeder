@@ -9,7 +9,7 @@ export const useCollections = () =>
 		api().get('search/collections').json<Collection[]>(),
 	);
 
-const useCollectionsKramerius = () =>
+export const useCollectionsKramerius = () =>
 	useQuery(['collections'], async () => {
 		const r = await fetch('https://kramerius5.nkp.cz/search/api/v5.0/vc');
 		const data = (await r.json()) as Collection[];

@@ -57,6 +57,9 @@ const PubThumbnails: FC<Props> = ({
 				: pagesRaw,
 		[pagesSearchResult, pagesRaw],
 	);
+	// useEffect(() => {
+	// 	pubCtx.setPublicationChildren(pages);
+	// }, [pages, pubCtx.setPublicationChildren]);
 
 	const theme = useTheme();
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({

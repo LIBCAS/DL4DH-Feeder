@@ -9,6 +9,8 @@ type CurrentPage = {
 	nextPid: string;
 };
 
+//TODO: REFACTOR, UNIFY, MAKE READABLE
+
 type PubCtxType = {
 	setPublication: React.Dispatch<
 		React.SetStateAction<PublicationDetail | null>
@@ -35,7 +37,15 @@ type PubCtxType = {
 	setCurrentPageOfSecond: React.Dispatch<
 		React.SetStateAction<CurrentPage | null>
 	>;
-	//	getCurrentPage: () => CurrentPage | null;
+	publicationChildrenFiltered: PublicationChild[] | null;
+	setPublicationChildrenFiltered: React.Dispatch<
+		React.SetStateAction<PublicationChild[] | null>
+	>;
+
+	publicationChildrenFilteredOfSecond: PublicationChild[] | null;
+	setPublicationChildrenFilteredOfSecond: React.Dispatch<
+		React.SetStateAction<PublicationChild[] | null>
+	>;
 };
 
 const PublicationContext = createContext<PubCtxType>(undefined as never);
@@ -47,9 +57,17 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 
 	const [secondPublication, setSecondPublication] =
 		useState<PublicationDetail | null>(null);
+
 	const [publicationChildren, setPublicationChildren] = useState<
 		PublicationChild[] | null
 	>(null);
+
+	const [publicationChildrenFiltered, setPublicationChildrenFiltered] =
+		useState<PublicationChild[] | null>(null);
+	const [
+		publicationChildrenFilteredOfSecond,
+		setPublicationChildrenFilteredOfSecond,
+	] = useState<PublicationChild[] | null>(null);
 
 	const [publicationChildrenOfSecond, setPublicationChildrenOfSecond] =
 		useState<PublicationChild[] | null>(null);
@@ -62,7 +80,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 	const ctx: PubCtxType = useMemo(
 		() => ({
 			publication,
-
+			publicationChildrenFiltered,
+			setPublicationChildrenFiltered,
+			publicationChildrenFilteredOfSecond,
+			setPublicationChildrenFilteredOfSecond,
 			publicationChildren,
 			setPublication,
 			setPublicationChildren,
@@ -77,6 +98,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 		}),
 		[
 			publication,
+			publicationChildrenFiltered,
+			setPublicationChildrenFiltered,
+			publicationChildrenFilteredOfSecond,
+			setPublicationChildrenFilteredOfSecond,
 			setPublication,
 			publicationChildren,
 			setPublicationChildren,
