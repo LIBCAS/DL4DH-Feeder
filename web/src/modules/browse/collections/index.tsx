@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
-import LeftMenuContainer from 'components/sidepanels/SideMenuContainer';
 import { Flex } from 'components/styled';
 import SubHeader from 'components/styled/SubHeader';
 import Text, { H1 } from 'components/styled/Text';
@@ -16,7 +15,6 @@ import { Loader } from 'modules/loader';
 import { useTheme } from 'theme';
 
 import { useCollections } from 'api/collectionsApi';
-import { useAvailableFilters } from 'api/publicationsApi';
 
 import { INIT_HEADER_HEIGHT, SUB_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 

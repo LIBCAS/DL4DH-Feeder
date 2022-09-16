@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, SerializedStyles } from '@emotion/core';
-import { FC, ReactComponentElement } from 'react';
+import { FC } from 'react';
 import { MdLock } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 

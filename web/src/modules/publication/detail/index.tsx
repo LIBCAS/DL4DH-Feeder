@@ -45,12 +45,21 @@ const PublicationDetail = () => {
 	);
 
 	useEffect(() => {
-		const childIndex = pages.findIndex(p => p.pid === pageId);
+		const childIndex = (
+			pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered
+				: pages
+		).findIndex(p => p.pid === pageId);
+
 		pubCtx.setCurrentPage({
 			uuid: pageId ?? '',
 			childIndex,
-			prevPid: pages[childIndex - 1]?.pid,
-			nextPid: pages[childIndex + 1]?.pid,
+			prevPid: pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered[childIndex - 1]?.pid
+				: pages[childIndex - 1]?.pid,
+			nextPid: pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered[childIndex + 1]?.pid
+				: pages[childIndex + 1]?.pid,
 		});
 		pubCtx.setPublicationChildren(pages);
 
@@ -75,7 +84,7 @@ const PublicationDetail = () => {
 		return <Loader />;
 	}
 	if (!page.get('page')) {
-		page.append('page', pages[0]?.pid ?? 'undefined');
+		page.append('page', pages[0]?.pid ?? 'index-detail-undefined');
 		setPageUrlParam(page, { replace: true });
 	}
 

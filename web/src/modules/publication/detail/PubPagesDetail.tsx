@@ -1,15 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/core';
-import { debounce } from 'lodash-es';
-import { useMemo, useState } from 'react';
-import { MdClear, MdSearch } from 'react-icons/md';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import TextInput from 'components/form/input/TextInput';
-import { Flex } from 'components/styled';
-import MainSearchInput from 'components/search/MainSearchInput';
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import TagNameDropDown from 'components/search/TagNameDropDown';
+import { Flex } from 'components/styled';
+
+import { Loader } from 'modules/loader';
 
 import { api } from 'api';
 
@@ -34,6 +31,7 @@ export type PagesSearchResult = {
 const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	const SP_KEY = isSecond ? 'fulltext2' : 'fulltext';
 	const NT_KEY = isSecond ? 'nameTag2' : 'nameTag';
+	const PAGE_KEY = isSecond ? 'page2' : 'page';
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
 
@@ -48,7 +46,26 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 
 	const results = useMemo(() => response?.data ?? {}, [response.data]);
 
-	const children = pctx.publicationChildren;
+	const children = isSecond
+		? pctx.publicationChildrenOfSecond
+		: pctx.publicationChildren;
+
+	const filteredChildren = useMemo(
+		() => (children ?? []).filter(child => results[child.pid]),
+		[children, results],
+	);
+
+	useEffect(() => {
+		if (isSecond) {
+			pctx.setPublicationChildrenFilteredOfSecond(
+				filteredChildren.length > 0 ? filteredChildren : null,
+			);
+		} else {
+			pctx.setPublicationChildrenFiltered(
+				filteredChildren.length > 0 ? filteredChildren : null,
+			);
+		}
+	}, [results, filteredChildren, pctx, isSecond]);
 
 	const filtered: PagesSearchResult[] = useMemo(
 		() =>
@@ -62,18 +79,28 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 				})),
 		[children, results],
 	);
+	useEffect(() => {
+		const cp = sp.get(PAGE_KEY);
+		const fltx = sp.get(SP_KEY);
+		if (!filteredChildren.some(fc => fc?.pid === cp) && fltx) {
+			if (!filteredChildren[0]?.pid) {
+				sp.delete(PAGE_KEY);
+				setSp(sp);
+				return;
+			} else {
+				sp.set(PAGE_KEY, filteredChildren[0]?.pid);
+				setSp(sp);
+			}
+		}
+	}, [filteredChildren, sp, setSp, SP_KEY, PAGE_KEY]);
+
+	if (response.isLoading) {
+		return <Loader />;
+	}
+	console.log({ pctx });
 
 	return (
 		<Flex flexDirection="column" width={1}>
-			{/* <TagNameDropDown
-				onTagNameSelected={tag => {
-					setNameTag(tag);
-					sp.set(NT_KEY, tag);
-					setSp(sp);
-				}}
-				selectedItemView="TEXT"
-				selectedNameTag={nameTag}
-			/> */}
 			<QuerySearchInput
 				AdditionalLeftJSX={
 					<TagNameDropDown
@@ -115,52 +142,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					setSp(sp);
 				}}
 			/>
-			{/* <MainSearchInput updateSearchQuery={q => setQuery(q)} /> */}
-			{/* <TextInput
-				placeholder="Vyhledávat v publikaci"
-				label=""
-				labelType="inline"
-				color="primary"
-				value={toSearch}
-				wrapperCss={css`
-					border-top: none;
-					border-left: none;
-					border-right: none;
-				`}
-				iconLeft={
-					<Flex color="primary" ml={2}>
-						<MdSearch size={26} />
-					</Flex>
-				}
-				iconRight={
-					toSearch !== '' ? (
-						<Flex mr={3} color="primary">
-							<MdClear
-								onClick={() => {
-									setToSearch('');
-									setQuery('');
-								}}
-								css={css`
-									cursor: pointer;
-								`}
-							/>
-						</Flex>
-					) : (
-						<></>
-					)
-				}
-				onChange={e => {
-					debouncedSubmit(toSearch);
 
-					setToSearch(e.target.value);
-				}}
-				onKeyDown={e => {
-					if (e.key === 'Enter') {
-						setQuery(toSearch);
-					}
-				}}
-			/>
- */}
 			<PubThumbnails
 				isSecond={isSecond}
 				marginTop={120}

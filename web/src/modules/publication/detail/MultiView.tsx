@@ -55,12 +55,22 @@ const MultiView = () => {
 				context,
 			});
 		}
-		const childIndex = pages1.findIndex(p => p.pid === pageId1);
+		const childIndex = (
+			pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered
+				: pages1
+		).findIndex(p => p.pid === pageId1);
+
+		console.log({ pf: pubCtx.publicationChildrenFiltered });
 		pubCtx.setCurrentPage({
 			uuid: pageId1 ?? '',
 			childIndex,
-			prevPid: pages1[childIndex - 1]?.pid,
-			nextPid: pages1[childIndex + 1]?.pid,
+			prevPid: pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered[childIndex - 1]?.pid
+				: pages1[childIndex - 1]?.pid,
+			nextPid: pubCtx.publicationChildrenFiltered
+				? pubCtx.publicationChildrenFiltered[childIndex + 1]?.pid
+				: pages1[childIndex + 1]?.pid,
 		});
 		pubCtx.setPublicationChildren(pages1);
 
@@ -75,12 +85,25 @@ const MultiView = () => {
 				context,
 			});
 		}
-		const childIndex2 = pages2.findIndex(p => p.pid === pageId2);
+		//
+
+		const childIndex2 = (
+			pubCtx.publicationChildrenFilteredOfSecond
+				? pubCtx.publicationChildrenFilteredOfSecond
+				: pages2
+		).findIndex(p => p.pid === pageId2);
+
+		console.log({ pf2: pubCtx.publicationChildrenFilteredOfSecond });
+
 		pubCtx.setCurrentPageOfSecond({
 			uuid: pageId2 ?? '',
 			childIndex: childIndex2,
-			prevPid: pages2[childIndex2 - 1]?.pid,
-			nextPid: pages2[childIndex2 + 1]?.pid,
+			prevPid: pubCtx.publicationChildrenFilteredOfSecond
+				? pubCtx.publicationChildrenFilteredOfSecond[childIndex2 - 1]?.pid
+				: pages2[childIndex2 - 1]?.pid,
+			nextPid: pubCtx.publicationChildrenFilteredOfSecond
+				? pubCtx.publicationChildrenFilteredOfSecond[childIndex2 + 1]?.pid
+				: pages2[childIndex2 + 1]?.pid,
 		});
 		pubCtx.setPublicationChildrenOfSecond(pages2);
 
