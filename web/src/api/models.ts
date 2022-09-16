@@ -147,6 +147,14 @@ export type Collection = {
 	pid: string;
 };
 
+export type ChildSearchDto = {
+	textOcr: string[];
+
+	nameTag: Record<string, string[]>; //TODO:
+};
+
+export type ChildSearchResult = Record<string, ChildSearchDto>;
+
 export type FiltersSortEnum =
 	| 'TITLE_ASC'
 	| 'CREATED_DESC'
