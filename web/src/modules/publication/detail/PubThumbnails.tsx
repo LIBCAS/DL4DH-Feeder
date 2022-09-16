@@ -210,10 +210,11 @@ const PubThumbnails: FC<Props> = ({
 						return (
 							<Flex
 								style={style}
-								width={searchMode ? 'auto!important' : 300}
+								width={300}
 								css={css`
 									${searchMode &&
 									css`
+										width: fill-available !important;
 										cursor: pointer;
 										box-sizing: border-box;
 										background-color: ${selectedPage?.pid === pages[index].pid
@@ -277,7 +278,7 @@ const PubThumbnails: FC<Props> = ({
 										</Text>
 									</Box>
 								</Flex>
-								<Flex fontSize="sm" width="auto">
+								<Flex fontSize="sm" width="auto" flexGrow={1}>
 									{pagesSearchResult
 										?.filter(p => p.pid === pages[index].pid)
 										.map((k, i) => (
@@ -287,11 +288,13 @@ const PubThumbnails: FC<Props> = ({
 												my={2}
 												justifyContent="flex-start"
 												alignItems="flex-start"
+												width="100%"
 											>
 												<Flex
 													flexDirection="column"
 													key={k?.pid}
 													my={0}
+													width="100%"
 													justifyContent="flex-start"
 													alignItems="flex-start"
 													css={css`
@@ -301,8 +304,15 @@ const PubThumbnails: FC<Props> = ({
 													`}
 												>
 													<Text
-														dangerouslySetInnerHTML={{ __html: k.ocr[0] }}
+														dangerouslySetInnerHTML={{
+															__html: k?.ocr?.[0] ?? '',
+														}}
 													/>
+													<Text>
+														{Object.keys(k?.nameTag ?? {}).map(
+															key => k?.nameTag?.[key]?.[0],
+														)}
+													</Text>
 												</Flex>
 											</Flex>
 										))}

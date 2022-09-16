@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useState } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { MdClose } from 'react-icons/md';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
@@ -17,42 +17,66 @@ import { NameTagToText, NameTagIcon } from 'utils/enumsMap';
 
 import { OperationToTextLabel, OperationToWord } from './MainSearchInput';
 type Props = {
-	x?: void;
+	withOperation?: boolean;
+	selectedItemView?: 'ICON' | 'TEXT';
+	onTagNameSelected: (tagName: TagNameEnum | null) => void;
+	selectedNameTag: TagNameEnum | null;
 };
 
-const TagNameDropDown: React.FC<Props> = () => {
-	const [localState, setLocalState] = useState('');
+const TagNameDropDown: React.FC<Props> = ({
+	onTagNameSelected,
+	withOperation,
+	selectedItemView = 'ICON',
+	selectedNameTag,
+}) => {
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
-	const [selectedTagName, setSelectedTagName] = useState<TagNameEnum | null>(
-		null,
-	);
+
 	const [selectedTagOp, setSelectedTagOp] = useState<
 		'EQUAL' | 'NOT_EQUAL' | null
 	>(null);
-
-	const [searchParams, setSearchParams] = useSearchParams();
-	const nav = useNavigate();
-	const location = useLocation();
 
 	return (
 		<Flex width={1}>
 			<ClickAway onClickAway={() => setShowTagNameMenu(false)}>
 				<SimpleSelect
-					value={selectedTagName}
-					options={[...fieldsTuple, null]}
+					value={selectedNameTag}
+					options={[null, ...fieldsTuple]}
 					onChange={field => {
 						setShowTagNameMenu(false);
 						setShowTagOpMenu(true);
-						if (field) {
-							setSelectedTagName(field);
-						}
+
+						onTagNameSelected(field);
 					}}
 					keyFromOption={item => (item ? item : '')}
 					nameFromOption={item => (item ? NameTagToText[item] : '')}
+					renderSelectedItem={
+						selectedItemView === 'ICON'
+							? (item, nameFromOption) => {
+									if (item) {
+										const Icon = NameTagIcon[item];
+										return <Icon title={nameFromOption(item)} size={24} />;
+									} else {
+										return <></>;
+									}
+							  }
+							: undefined
+					}
 					renderMenuItem={(item, currentValue) => {
 						if (!item) {
-							return <></>;
+							return currentValue ? (
+								<Flex px={1} py={1} alignItems="center">
+									<MdClose size={22} />
+									<Text
+										fontWeight={item === currentValue ? 'bold' : 'normal'}
+										ml={2}
+									>
+										SMAZAT
+									</Text>
+								</Flex>
+							) : (
+								<></>
+							);
 						}
 						const Icon = NameTagIcon[item];
 						return (
@@ -73,11 +97,11 @@ const TagNameDropDown: React.FC<Props> = () => {
 							</Flex>
 						);
 					}}
-					placeholder="Zvolte nametag"
+					placeholder="--"
 					zIndex={5}
 					menuFixedSize
 					wrapperCss={css`
-						width: 230px;
+						width: 50px;
 						color: ${theme.colors.primary};
 						border: none;
 						flex-shrink: 0;
@@ -89,7 +113,7 @@ const TagNameDropDown: React.FC<Props> = () => {
 					`}
 				/>
 			</ClickAway>
-			{selectedTagName && (
+			{withOperation && selectedNameTag && (
 				<ClickAway onClickAway={() => setShowTagOpMenu(false)}>
 					<SimpleSelect
 						isExpanded={showTagOpMenu}
@@ -98,6 +122,7 @@ const TagNameDropDown: React.FC<Props> = () => {
 						onChange={operation => {
 							setShowTagOpMenu(false);
 							setSelectedTagOp(operation);
+
 							//mainInputRef.current?.focus();
 						}}
 						keyFromOption={item => (item ? OperationToTextLabel[item] : '')}

@@ -42,6 +42,10 @@ type Props<T extends unknown> = {
 	nameFromOption?: (value: T | null) => string;
 	keyFromOption?: (value: T | null) => string;
 	renderMenuItem?: (item: T, currentValue: T | null) => JSX.Element;
+	renderSelectedItem?: (
+		item: T | null,
+		nameFromOption: (value: T | null) => string,
+	) => JSX.Element;
 	label?: string;
 	labelMinWidth?: number;
 	variant?: 'outlined' | 'underlined' | 'borderless';
@@ -57,6 +61,7 @@ type ComponentProps<T extends unknown> = React.PropsWithChildren<Props<T>>;
 const SimpleSelect = <T extends unknown>({
 	nameFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
 	keyFromOption = (i: T | null) => (i as unknown as number)?.toString() ?? '',
+	renderSelectedItem,
 	setFieldValue,
 	formikId,
 	onChange,
@@ -188,7 +193,13 @@ const SimpleSelect = <T extends unknown>({
 				onClick={() => setShowMenu(p => !p)}
 			>
 				{value ? (
-					<Text>{nameFromOption(value)}</Text>
+					<>
+						{renderSelectedItem ? (
+							renderSelectedItem(value, nameFromOption)
+						) : (
+							<Text>{nameFromOption(value)}</Text>
+						)}
+					</>
 				) : (
 					<Text>{placeholder}</Text>
 				)}

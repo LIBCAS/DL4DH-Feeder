@@ -13,6 +13,7 @@ import {
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 import { ky } from 'ky/distribution/types/ky';
+import { useSearchParams } from 'react-router-dom';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -33,9 +34,12 @@ export const OperationToTextLabel: Record<TOperation, string> = {
 type Props = {
 	hintApi?: (q: string) => Promise<string[]>;
 	onQueryUpdate: (query: string) => void;
+	onQueryClear?: () => void;
 	publicOnly?: boolean;
 	setPublicOnly?: Dispatch<SetStateAction<boolean>>;
 	placeholder?: string;
+	urlKeyOfValue?: string;
+	AdditionalLeftJSX?: JSX.Element;
 };
 
 const QuerySearchInput: FC<Props> = ({
@@ -44,6 +48,9 @@ const QuerySearchInput: FC<Props> = ({
 	onQueryUpdate,
 	hintApi,
 	placeholder,
+	urlKeyOfValue,
+	onQueryClear,
+	AdditionalLeftJSX,
 }) => {
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
@@ -53,7 +60,11 @@ const QuerySearchInput: FC<Props> = ({
 	const testRef = useRef<HTMLInputElement | null>(null);
 	const [hh, setHh] = useState(0);
 
-	const [localState, setLocalState] = useState('');
+	const [sp] = useSearchParams();
+
+	const [localState, setLocalState] = useState(
+		urlKeyOfValue ? sp.get(urlKeyOfValue) ?? '' : '',
+	);
 
 	const [hints, setHints] = useState<string[]>([]);
 
@@ -124,6 +135,7 @@ const QuerySearchInput: FC<Props> = ({
 					iconLeft={
 						<Flex color="textCommon" ml={2} alignItems="center">
 							<MdSearch size={26} />
+							{AdditionalLeftJSX && AdditionalLeftJSX}
 						</Flex>
 					}
 					iconRight={
@@ -132,6 +144,7 @@ const QuerySearchInput: FC<Props> = ({
 								<MdClear
 									onClick={() => {
 										setLocalState('');
+										onQueryClear?.();
 									}}
 									css={css`
 										cursor: pointer;
