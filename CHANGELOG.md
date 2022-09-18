@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (upcoming)
+## v0.5.0
 
 - collections and browse pages added with sorting and filtering
 - share functionality and dialog added
