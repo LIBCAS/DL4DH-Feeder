@@ -1,18 +1,20 @@
 /** @jsxImportSource @emotion/react */
+
 import { css } from '@emotion/react';
-import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
-import View from 'ol/View';
-import Zoomify from 'ol/source/Zoomify';
 import { Extent } from 'ol/extent';
-import React, { FC, useEffect, useRef, useState } from 'react';
-import XML from 'xml2js';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import { DragBox } from 'ol/interaction';
 import { Geometry } from 'ol/geom';
-import Static from 'ol/source/ImageStatic';
+import { DragBox } from 'ol/interaction';
 import ImageLayer from 'ol/layer/Image';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import Map from 'ol/Map';
+import Static from 'ol/source/ImageStatic';
+import VectorSource from 'ol/source/Vector';
+import Zoomify from 'ol/source/Zoomify';
+import View from 'ol/View';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import XML from 'xml2js';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -24,6 +26,11 @@ import { useTheme } from 'theme';
 import { useImageProperties } from 'api/publicationsApi';
 
 import AltoDialog from './AltoDialog';
+import {
+	highlightWord,
+	useHighlightWord,
+	wordHighlightStyle,
+} from './useHighlightWord';
 import ZoomifyToolbar from './ZoomifyToolbar';
 
 import 'ol/ol.css';
@@ -65,6 +72,9 @@ const MapWrapper: FC<{
 	}>({ open: false, box: [] });
 
 	const [rotation, setRotation] = useState(0);
+	const highlightPolygons = useHighlightWord(imgId ?? '');
+	const [sp] = useSearchParams();
+	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
 
 	// vector layer bude treba asi na vyznacenie slova pri vyhladavani
 
@@ -95,39 +105,19 @@ const MapWrapper: FC<{
 
 		const vectorLayer = new VectorLayer({
 			source: new VectorSource(),
+			style: wordHighlightStyle,
 		});
 
 		vectorLayerRef.current = vectorLayer;
+
+		map.current?.addLayer(vectorLayer);
 
 		const dragBox = new DragBox();
 
 		dragBox.on('boxend', () => {
 			const extent = dragBox.getGeometry().getExtent();
 			map.current?.removeInteraction(dragBox);
-
-			//console.log({ imgId });
-			//alert('Suradnice pre ALTO: \n' + extent.join('\n'));
-			//http://localhost:3000/view/uuid:78000b70-7b49-11eb-9d4f-005056827e52?page=uuid%3A12439ed9-ab3c-458f-b8af-50196a4f87b9&fulltext=drah%C3%A9
-			// <String STYLE="bold" CONTENT="BESEDY" HEIGHT="108" WIDTH="452" VPOS="433" HPOS="429"/>
-			// const vpos = 429;
-			// const hpos = 433;
-			// const swidth = 452;
-			// const sheight = 108;
-			// const polygon = new Polygon([
-			// 	[
-			// 		[hpos, -vpos],
-			// 		[hpos + swidth, -vpos],
-			// 		[hpos + swidth, -vpos - sheight],
-			// 		[hpos, -vpos - sheight],
-			// 		[hpos, -vpos],
-			// 	],
-			// ]);
-			// const feature = new Feature(polygon);
-			// vectorLayerRef?.current?.getSource()?.addFeature(feature);
-
 			setAltoDialogOpen({ open: true, box: extent });
-			//map.current?.addLayer(vectorLayer);
-			//console.log({ selection: extent });
 		});
 		dragBoxRef.current = dragBox;
 		map.current = new Map({
@@ -145,7 +135,12 @@ const MapWrapper: FC<{
 			}),
 		});
 		map.current?.getView().fit(extent as Extent);
-	}, [imgId, imgWidth, imgHeight]);
+	}, [imgId, imgWidth, imgHeight, fulltext]);
+	useEffect(() => {
+		if (highlightPolygons?.length ?? 0 > 0) {
+			highlightPolygons?.forEach(p => highlightWord(vectorLayerRef, p));
+		}
+	}, [highlightPolygons]);
 
 	//map.current?.getView().setRotation((rotation * Math.PI) / 180);
 	map.current
