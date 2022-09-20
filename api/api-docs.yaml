@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.4.1
+  version: 0.5.0
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url
@@ -161,6 +161,49 @@ paths:
       responses:
         "200":
           description: OK
+  /api/search/localPrintPDF:
+    get:
+      tags:
+      - search-api
+      operationId: print
+      parameters:
+      - name: pids
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: pagesize
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: imgop
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /api/search/collections:
+    get:
+      tags:
+      - search-api
+      operationId: collections
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CollectionDto'
   /api/item/{uuid}:
     get:
       tags:
@@ -260,6 +303,76 @@ paths:
             '*/*':
               schema:
                 type: object
+  /api/item/{uuid}/children/search:
+    get:
+      tags:
+      - item-api
+      operationId: childrenSearch
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ChildSearchDto'
+  /api/item/{uuid}/children/search/hint:
+    get:
+      tags:
+      - item-api
+      operationId: childrenSearchHint
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: nameTagType
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - NUMBERS_IN_ADDRESSES
+          - GEOGRAPHICAL_NAMES
+          - INSTITUTIONS
+          - MEDIA_NAMES
+          - NUMBER_EXPRESSIONS
+          - ARTIFACT_NAMES
+          - PERSONAL_NAMES
+          - TIME_EXPRESSIONS
+          - COMPLEX_PERSON_NAMES
+          - COMPLEX_TIME_EXPRESSION
+          - COMPLEX_ADDRESS_EXPRESSION
+          - COMPLEX_BIBLIO_EXPRESSION
+          - ALL
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                uniqueItems: true
+                type: array
+                items:
+                  type: string
   /api/info:
     get:
       tags:
@@ -499,15 +612,13 @@ components:
           additionalProperties:
             type: object
             additionalProperties:
-              type: integer
-              format: int32
+              type: object
         availableNameTagFilters:
           type: object
           additionalProperties:
             type: object
             additionalProperties:
-              type: integer
-              format: int32
+              type: object
     Export:
       type: object
       properties:
@@ -557,6 +668,46 @@ components:
           type: array
           items:
             type: string
+    CollectionDto:
+      required:
+      - canLeave
+      - descs
+      - numberOfDocs
+      - pid
+      type: object
+      properties:
+        descs:
+          $ref: '#/components/schemas/TranslationsDto'
+        canLeave:
+          type: boolean
+        numberOfDocs:
+          type: integer
+          format: int32
+        pid:
+          type: string
+    TranslationsDto:
+      required:
+      - cs
+      - en
+      type: object
+      properties:
+        cs:
+          type: string
+        en:
+          type: string
+    ChildSearchDto:
+      type: object
+      properties:
+        textOcr:
+          type: array
+          items:
+            type: string
+        nameTag:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
     FeederVersionDto:
       type: object
       properties:
@@ -594,19 +745,19 @@ components:
     PageExport:
       type: object
       properties:
+        totalPages:
+          type: integer
+          format: int32
         totalElements:
           type: integer
           format: int64
-        totalPages:
+        numberOfElements:
           type: integer
           format: int32
         first:
           type: boolean
         last:
           type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         pageable:
           $ref: '#/components/schemas/PageableObject'
         sort:
