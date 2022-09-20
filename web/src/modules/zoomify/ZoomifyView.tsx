@@ -49,8 +49,6 @@ type ImageProps = {
 	};
 };
 
-// https://openlayers.org/en/latest/examples/box-selection.html
-
 const MapWrapper: FC<{
 	imgId?: string;
 	isLoading?: boolean;
@@ -75,11 +73,9 @@ const MapWrapper: FC<{
 	const highlightPolygons = useHighlightWord(imgId ?? '');
 	const [sp] = useSearchParams();
 	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
-
-	// vector layer bude treba asi na vyznacenie slova pri vyhladavani
+	const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 
 	useEffect(() => {
-		const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 		const source = new Zoomify({
 			url: zoomifyUrl,
 			size: [imgWidth, imgHeight],
@@ -136,6 +132,7 @@ const MapWrapper: FC<{
 		});
 		map.current?.getView().fit(extent as Extent);
 	}, [imgId, imgWidth, imgHeight, fulltext]);
+
 	useEffect(() => {
 		if (highlightPolygons?.length ?? 0 > 0) {
 			highlightPolygons?.forEach(p => highlightWord(vectorLayerRef, p));
