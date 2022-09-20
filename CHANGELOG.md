@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.1 (upcoming)
+
+- zoomify:
+  - added words highlighting
+  - improved preload static image
+  - not found message fix - it's hidden when vector layer is loading
+
 ## v0.5.0
 
 - collections and browse pages added with sorting and filtering

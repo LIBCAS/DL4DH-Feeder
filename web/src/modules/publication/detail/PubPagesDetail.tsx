@@ -54,6 +54,11 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 		() => (children ?? []).filter(child => results[child.pid]),
 		[children, results],
 	);
+	useEffect(() => {
+		isSecond
+			? pctx.setIsLoadingRight(response.isLoading)
+			: pctx.setIsLoadingLeft(response.isLoading);
+	}, [response, pctx, isSecond]);
 
 	useEffect(() => {
 		if (isSecond) {
@@ -97,7 +102,6 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	if (response.isLoading) {
 		return <Loader />;
 	}
-	console.log({ pctx });
 
 	return (
 		<Flex flexDirection="column" width={1}>

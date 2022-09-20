@@ -72,7 +72,7 @@ const QuerySearchInput: FC<Props> = ({
 	const getHint = useCallback(
 		async (q: string) => {
 			const hints = hintApi
-				? await hintApi(q)
+				? await hintApi(q).catch(r => console.log(r))
 				: await api()
 						.post(`search/hint?q=${q}`, {
 							body: JSON.stringify({

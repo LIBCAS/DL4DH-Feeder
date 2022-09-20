@@ -46,6 +46,11 @@ type PubCtxType = {
 	setPublicationChildrenFilteredOfSecond: React.Dispatch<
 		React.SetStateAction<PublicationChild[] | null>
 	>;
+
+	isLoadingLeft: boolean | null;
+	setIsLoadingLeft: React.Dispatch<React.SetStateAction<boolean | null>>;
+	isLoadingRight: boolean | null;
+	setIsLoadingRight: React.Dispatch<React.SetStateAction<boolean | null>>;
 };
 
 const PublicationContext = createContext<PubCtxType>(undefined as never);
@@ -77,6 +82,9 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 	const [currentPageOfSecond, setCurrentPageOfSecond] =
 		useState<CurrentPage | null>(null);
 
+	const [isLoadingLeft, setIsLoadingLeft] = useState<boolean | null>(null);
+	const [isLoadingRight, setIsLoadingRight] = useState<boolean | null>(null);
+
 	const ctx: PubCtxType = useMemo(
 		() => ({
 			publication,
@@ -95,6 +103,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			setCurrentPageOfSecond,
 			publicationChildrenOfSecond,
 			setPublicationChildrenOfSecond,
+			isLoadingLeft,
+			setIsLoadingLeft,
+			isLoadingRight,
+			setIsLoadingRight,
 		}),
 		[
 			publication,
@@ -113,6 +125,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			setCurrentPageOfSecond,
 			publicationChildrenOfSecond,
 			setPublicationChildrenOfSecond,
+			isLoadingLeft,
+			setIsLoadingLeft,
+			isLoadingRight,
+			setIsLoadingRight,
 		],
 	);
 
