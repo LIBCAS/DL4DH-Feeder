@@ -88,7 +88,7 @@ const MapWrapper: FC<{
 		});
 
 		const staticSource = new Static({
-			url: `${zoomifyUrl}TileGroup0/0-0-0.jpg`,
+			url: `api/item/${imgId}/thumb`,
 			crossOrigin: 'anonymous',
 			imageExtent: [0, -imgHeight, imgWidth, 0],
 		});
@@ -131,7 +131,7 @@ const MapWrapper: FC<{
 			}),
 		});
 		map.current?.getView().fit(extent as Extent);
-	}, [imgId, imgWidth, imgHeight, fulltext]);
+	}, [imgId, imgWidth, imgHeight, fulltext, zoomifyUrl]);
 
 	useEffect(() => {
 		if (highlightPolygons?.length ?? 0 > 0) {
