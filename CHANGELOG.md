@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.1 (upcomming)
+## v0.5.1 (upcoming)
 
 - zoomify:
   - added words highlighting
