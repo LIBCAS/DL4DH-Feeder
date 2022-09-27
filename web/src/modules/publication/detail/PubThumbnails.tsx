@@ -57,9 +57,6 @@ const PubThumbnails: FC<Props> = ({
 				: pagesRaw,
 		[pagesSearchResult, pagesRaw],
 	);
-	// useEffect(() => {
-	// 	pubCtx.setPublicationChildren(pages);
-	// }, [pages, pubCtx.setPublicationChildren]);
 
 	const theme = useTheme();
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({
@@ -68,6 +65,8 @@ const PubThumbnails: FC<Props> = ({
 
 	const [selectedPage, setSelectedPage] =
 		useState<{ pid: string; rowIndex: number; index: number }>();
+
+	// jump to specific page (text input)
 	const [goToPage, setGoToPage] = useState<number | string | null>('');
 
 	const [ref, { height: resultsMargin }] = useMeasure();
@@ -77,11 +76,11 @@ const PubThumbnails: FC<Props> = ({
 	const gridRef = createRef<FixedSizeGrid>();
 
 	useEffect(() => {
-		const x = pages.findIndex(p => p.pid === pageId);
+		const index = pages.findIndex(p => p.pid === pageId);
 		setSelectedPage({
 			pid: pageId,
-			rowIndex: Math.floor(x / COLUMNS_COUNT),
-			index: x,
+			rowIndex: Math.floor(index / COLUMNS_COUNT),
+			index,
 		});
 	}, [pageId, pages, COLUMNS_COUNT]);
 

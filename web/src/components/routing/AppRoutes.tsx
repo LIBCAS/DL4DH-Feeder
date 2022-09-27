@@ -42,7 +42,7 @@ const AppRoutes: React.FC = () => {
 				omit(state.searchQuery, 'nameTagFacet'),
 			)
 		) {
-			console.log('not equal .. dispatching');
+			//console.log('not equal .. dispatching');
 			dispatch?.({
 				type: 'setSearchQuery',
 				searchQuery: {

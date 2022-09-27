@@ -72,8 +72,7 @@ const PublicationDetail = () => {
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId, detail.data]);
-
+	}, [pages, pageId, detail.data, pubCtx.publicationChildrenFiltered]);
 	useEffect(() => {
 		if (pubChildren.isSuccess && !pubChildren.data?.[0]?.datanode) {
 			nav(`/periodical/${id}`, { replace: true });
