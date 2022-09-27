@@ -6,6 +6,9 @@
   - added words highlighting
   - improved preload static image
   - not found message fix - it's hidden when vector layer is loading
+- periodicals
+  - suplements routing  fix
+  - monograph unit / bundle tile styling fix
 
 ## v0.5.0
 
