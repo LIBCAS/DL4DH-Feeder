@@ -112,6 +112,10 @@ export type PublicationChild = {
 		partNumber: string;
 		title: string;
 		pagenumber: string;
+		date: string;
+		subTitle: string;
+		nonSort: string;
+		partName: string;
 	};
 	root_pid: string;
 	root_title: string;
@@ -169,7 +173,8 @@ export type ModelsEnum =
 	| 'ARCHIVAL'
 	| 'MANUSCRIPT'
 	| 'SHEETMUSIC'
-	| 'MONOGRAPHUNIT';
+	| 'MONOGRAPHUNIT'
+	| 'MONOGRAPHBUNDLE';
 
 export type TagNameEnum =
 	| 'NUMBERS_IN_ADDRESSES'

@@ -144,6 +144,12 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					sp.delete(SP_KEY);
 					sp.delete(NT_KEY);
 					setSp(sp);
+					if (isSecond) {
+						pctx.setPublicationChildrenFilteredOfSecond?.(null);
+					} else {
+						pctx.setPublicationChildrenFiltered?.(null);
+						//pctx.setIsLoadingLeft(true);
+					}
 				}}
 			/>
 

@@ -17,7 +17,7 @@ import { ModelsEnum, TPublication } from 'api/models';
 
 import { modelToText, modelToColor } from 'utils/enumsMap';
 
-const PubModelTagBadge: FC<{ model: ModelsEnum }> = ({ model }) => {
+export const PubModelTagBadge: FC<{ model: ModelsEnum }> = ({ model }) => {
 	const color = modelToColor(model);
 	return (
 		<Flex bg={color} color="white">

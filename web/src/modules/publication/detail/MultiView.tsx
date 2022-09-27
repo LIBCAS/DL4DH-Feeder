@@ -61,7 +61,6 @@ const MultiView = () => {
 				: pages1
 		).findIndex(p => p.pid === pageId1);
 
-		console.log({ pf: pubCtx.publicationChildrenFiltered });
 		pubCtx.setCurrentPage({
 			uuid: pageId1 ?? '',
 			childIndex,
@@ -75,7 +74,7 @@ const MultiView = () => {
 		pubCtx.setPublicationChildren(pages1);
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages1, pageId1, detail1.data]);
+	}, [pages1, pageId1, detail1.data, pubCtx.publicationChildrenFiltered]);
 
 	useEffect(() => {
 		if (detail2?.data) {
@@ -93,8 +92,6 @@ const MultiView = () => {
 				: pages2
 		).findIndex(p => p.pid === pageId2);
 
-		console.log({ pf2: pubCtx.publicationChildrenFilteredOfSecond });
-
 		pubCtx.setCurrentPageOfSecond({
 			uuid: pageId2 ?? '',
 			childIndex: childIndex2,
@@ -108,7 +105,12 @@ const MultiView = () => {
 		pubCtx.setPublicationChildrenOfSecond(pages2);
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages2, pageId2, detail2.data]);
+	}, [
+		pages2,
+		pageId2,
+		detail2.data,
+		pubCtx.publicationChildrenFilteredOfSecond,
+	]);
 
 	if (
 		pubChildren1.isLoading ||

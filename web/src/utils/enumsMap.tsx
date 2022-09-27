@@ -41,7 +41,8 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 	MONOGRAPH: 'Kniha',
 	PERIODICAL: 'Noviny a časopisy',
 	SHEETMUSIC: 'Hudebniny',
-	MONOGRAPHUNIT: 'Svazek knih',
+	MONOGRAPHUNIT: 'Kniha',
+	MONOGRAPHBUNDLE: 'Svazek knih',
 };
 const ModelsColors: Record<ModelsEnum, string> = {
 	ARCHIVAL: 'primary',
@@ -52,6 +53,7 @@ const ModelsColors: Record<ModelsEnum, string> = {
 	PERIODICAL: 'modelPeriodical',
 	SHEETMUSIC: 'modelMusic',
 	MONOGRAPHUNIT: 'modelMonograph',
+	MONOGRAPHBUNDLE: 'modelMonograph',
 };
 
 export const modelToText = (model: ModelsEnum) => {

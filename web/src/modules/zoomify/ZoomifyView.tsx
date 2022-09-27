@@ -70,9 +70,10 @@ const MapWrapper: FC<{
 	}>({ open: false, box: [] });
 
 	const [rotation, setRotation] = useState(0);
-	const highlightPolygons = useHighlightWord(imgId ?? '');
 	const [sp] = useSearchParams();
 	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
+	const highlightPolygons = useHighlightWord(imgId ?? '', isSecond);
+
 	const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 
 	useEffect(() => {
@@ -104,6 +105,9 @@ const MapWrapper: FC<{
 			style: wordHighlightStyle,
 		});
 
+		//clear previous polygons
+		vectorLayerRef.current?.getSource?.()?.clear();
+		//assign new vector layer
 		vectorLayerRef.current = vectorLayer;
 
 		map.current?.addLayer(vectorLayer);
@@ -139,7 +143,6 @@ const MapWrapper: FC<{
 		}
 	}, [highlightPolygons]);
 
-	//map.current?.getView().setRotation((rotation * Math.PI) / 180);
 	map.current
 		?.getView()
 		.animate({ rotation: (rotation * Math.PI) / 180, duration: 150 });
