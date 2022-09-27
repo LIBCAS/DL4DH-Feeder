@@ -51,6 +51,12 @@ type PubCtxType = {
 	setIsLoadingLeft: React.Dispatch<React.SetStateAction<boolean | null>>;
 	isLoadingRight: boolean | null;
 	setIsLoadingRight: React.Dispatch<React.SetStateAction<boolean | null>>;
+
+	fulltextLeft: string | null;
+	setFulltextLeft: React.Dispatch<React.SetStateAction<string | null>>;
+
+	fulltextRight: string | null;
+	setFulltextRight: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const PublicationContext = createContext<PubCtxType>(undefined as never);
@@ -85,6 +91,9 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 	const [isLoadingLeft, setIsLoadingLeft] = useState<boolean | null>(null);
 	const [isLoadingRight, setIsLoadingRight] = useState<boolean | null>(null);
 
+	const [fulltextLeft, setFulltextLeft] = useState<string | null>(null);
+	const [fulltextRight, setFulltextRight] = useState<string | null>(null);
+
 	const ctx: PubCtxType = useMemo(
 		() => ({
 			publication,
@@ -107,6 +116,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			setIsLoadingLeft,
 			isLoadingRight,
 			setIsLoadingRight,
+			fulltextLeft,
+			fulltextRight,
+			setFulltextLeft,
+			setFulltextRight,
 		}),
 		[
 			publication,
@@ -129,6 +142,10 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			setIsLoadingLeft,
 			isLoadingRight,
 			setIsLoadingRight,
+			fulltextLeft,
+			fulltextRight,
+			setFulltextLeft,
+			setFulltextRight,
 		],
 	);
 
