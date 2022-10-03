@@ -43,7 +43,7 @@ system:
   kramerius:
     api: https://www.ndk.cz/search
   kramerius-plus:
-    api: https://plus.nkp.cz/api
+    api: https://dl4dh.inqool.cz/api
     secret: kramerius-plus
 
 info:
