@@ -3,12 +3,17 @@
 ## v0.5.1 (upcoming)
 
 - zoomify:
-  - added words highlighting
-  - improved preload static image
+
+  - words highlighting added
+  - preloading static image improved
   - not found message fix - it's hidden when vector layer is loading
 - periodicals
+
   - suplements routing  fix
   - monograph unit / bundle tile styling fix
+- enriched publication tile styling changed
+- model and enrichment tags added to publication detail view
+- FIX: searching in a set of records initial value fix
 
 ## v0.5.0
 
