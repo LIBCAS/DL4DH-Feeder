@@ -77,7 +77,7 @@ public class ExportApi {
         }
 
         return krameriusPlus.get()
-                .uri("/exports/download/"+export.getExportId()).retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
+                .uri("/files/"+export.getExportId()).retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
     }
 
     @PreAuthorize("isAuthenticated()")
