@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.0 (upcoming)
+
+- [TODO] export selected pages
+- [TODO] export selected publications
+- [TODO] searching in set of records on the right sidebar
+- [TODO] text only zoomify view
+- [TODO] advance search filter 
+
 ## v0.5.1
 
 - zoomify:
