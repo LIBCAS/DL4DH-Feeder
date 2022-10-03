@@ -68,6 +68,7 @@ const TileView: FC<Props> = ({ data }) => {
 								`}
 							>
 								<Flex
+									bg="white"
 									position="relative"
 									height="100%"
 									p={2}
