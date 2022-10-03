@@ -3,9 +3,11 @@ package cz.inqool.dl4dh.feeder.api;
 import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
+import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
 import cz.inqool.dl4dh.feeder.dto.KrameriusPlusExportDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.ScheduledJobEventDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -27,7 +29,9 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Peter Sekan
@@ -61,14 +65,14 @@ public class ExportApi {
             if (!export.getStatus().equals(Export.Status.COMPLETED)) {
                 throw new ResourceNotFoundException();
             }
-            KrameriusPlusExportDto exportDto = krameriusPlus.get()
-                    .uri("/exports?jobEventId="+export.getJobId()).retrieve().onStatus(HttpStatus::isError, res -> {
+            ExportRequestDto exportDto = krameriusPlus.get()
+                    .uri("/exports/"+export.getJobId()).retrieve().onStatus(HttpStatus::isError, res -> {
                         res.toEntity(String.class).subscribe(
                                 entity -> log.warn("Client error {}", entity)
                         );
                         return Mono.error(new HttpClientErrorException(res.statusCode()));
-                    }).bodyToMono(KrameriusPlusExportDto.class).block();
-            export.setExportId(exportDto.getFileRef().getId());
+                    }).bodyToMono(ExportRequestDto.class).block();
+            export.setExportId(exportDto.getBulkExport().getFileRef().getId());
             exportRepository.save(export);
         }
 
@@ -82,9 +86,10 @@ public class ExportApi {
         Page<Export> exports = exportRepository.findByUsername(user.getName(), p);
         exports.forEach(export -> {
             if (!export.getStatus().equals(Export.Status.COMPLETED)) {
-                JobDto jobDto = krameriusPlus.get()
-                        .uri("/jobs/"+export.getJobId()).retrieve().bodyToMono(JobDto.class).block();
-                export.setStatus(jobDto.getLastExecutionStatus());
+                ExportRequestDto exportRequest = krameriusPlus.get()
+                        .uri("/exports/"+export.getJobId()).retrieve().bodyToMono(ExportRequestDto.class).block();
+                JobDto job = exportRequest.getJobPlan().getScheduledJobEvents().stream().filter(f -> f.getJobEvent().getPublicationId() != null).findFirst().orElseThrow().getJobEvent();
+                export.setStatus(job.getLastExecutionStatus());
             }
         });
         exportRepository.saveAll(exports);
@@ -92,22 +97,24 @@ public class ExportApi {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/generate/{id}/{format}")
-    public Export create(@PathVariable(value="id") String id, @PathVariable(value="format") String format, @RequestBody String body, Principal user) {
-        JobDto job = krameriusPlus.post()
-                .uri("/exports/"+id+"/"+format).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
+    @PostMapping("/generate/{format}")
+    public Export create(@PathVariable(value="format") String format, @RequestBody String body, Principal user) {
+        ExportRequestDto exportRequest = krameriusPlus.post()
+                .uri("/exports/"+format).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
                             entity -> log.warn("Client error {}", entity)
                     );
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
-                }).bodyToMono(JobDto.class).block();
+                }).bodyToMono(ExportRequestDto.class).block();
 
+        JobDto job = exportRequest.getJobPlan().getScheduledJobEvents().stream().filter(f -> f.getJobEvent().getPublicationId() != null).findFirst().orElseThrow().getJobEvent();
+        String publicationId = job.getPublicationId();
         KrameriusItemDto publication = kramerius.get()
-                .uri("/item/"+job.getPublicationId()).retrieve().bodyToMono(KrameriusItemDto.class).block();
+                .uri("/item/"+publicationId).retrieve().bodyToMono(KrameriusItemDto.class).block();
 
         Export export = new Export();
-        export.setJobId(job.getId());
-        export.setPublicationId(job.getPublicationId());
+        export.setJobId(exportRequest.getId());
+        export.setPublicationId(publicationId);
         export.setPublicationTitle(publication.getTitle());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
