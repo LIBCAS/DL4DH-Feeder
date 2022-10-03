@@ -47,7 +47,7 @@ const SplitScreenView: FC<{
 		debounce: 200,
 	});
 
-	const [selectedRow, setSelectedRow] = useState<number | undefined>(0);
+	const [selectedRow, setSelectedRow] = useState<number | undefined>(undefined);
 
 	const renderHeader = useCallback(
 		() => (
@@ -117,10 +117,10 @@ const SplitScreenView: FC<{
 	const items = data ?? [];
 
 	useEffect(() => {
-		setSelectedRow(0);
 		if (selectedRow === undefined) {
-			onSelect(data?.[0].pid ?? '');
+			onSelect(data?.[0].pid ?? 'error:multiview search id undefined');
 		}
+		setSelectedRow(0);
 		if (data?.length === 1) {
 			onSelect(data?.[0].pid ?? '');
 		}

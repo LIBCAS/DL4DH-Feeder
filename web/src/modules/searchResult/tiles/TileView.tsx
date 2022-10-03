@@ -68,18 +68,31 @@ const TileView: FC<Props> = ({ data }) => {
 								`}
 							>
 								<Flex
+									position="relative"
 									height="100%"
-									bg={d.enriched ? '#E4F0F3' : 'white'}
 									p={2}
 									css={css`
-										border: 1px solid
-											${d.enriched ? theme.colors.primary : theme.colors.border};
+										border: 1px solid ${theme.colors.border};
 										&:hover {
 											box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
 											cursor: pointer;
 										}
 									`}
 								>
+									{d.enriched && (
+										<Flex
+											bg="#E4F0F3"
+											css={css`
+												border: 1px solid #0389a74f;
+												position: absolute;
+												width: 100%;
+												height: 39px;
+												margin-left: -9px;
+												margin-top: 1px;
+												bottom: 0;
+											`}
+										/>
+									)}
 									<Flex
 										minWidth="80px"
 										//bg="white"
@@ -89,10 +102,7 @@ const TileView: FC<Props> = ({ data }) => {
 										position="relative"
 										p={1}
 										css={css`
-											border: 1px solid
-												${d.enriched
-													? theme.colors.primary
-													: theme.colors.border};
+											border: 1px solid ${theme.colors.border};
 											background-image: url(${`api/item/${d.pid}/thumb`});
 											background-repeat: no-repeat;
 											background-size: cover;
@@ -166,10 +176,13 @@ const TileView: FC<Props> = ({ data }) => {
 										</Flex>
 
 										<Flex flexGrow={1} />
+
 										<Flex
 											justifyContent="flex-end"
 											alignItems="flex-end"
 											width={1}
+											//bg="red"
+											position="relative"
 										>
 											{d.enriched && (
 												<Flex bg="primary" color="white" opacity="0.8" mr={2}>

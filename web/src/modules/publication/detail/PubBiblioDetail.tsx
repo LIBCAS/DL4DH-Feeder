@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-
+import { css } from '@emotion/core';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { MdTextFields } from 'react-icons/md';
@@ -15,8 +15,12 @@ import Text, { H2, H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import ShareDialog from 'modules/share/ShareDialog';
+import { PubModelTagBadge } from 'modules/searchResult/tiles/TileView';
+
+import { useTheme } from 'theme';
 
 import { usePublicationDetail, useStreams } from 'api/publicationsApi';
+import { ModelsEnum } from 'api/models';
 
 import { ModelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
@@ -76,6 +80,7 @@ type Props = {
 const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 	const { id: urlId } = useParams<{ id: string }>();
 	const pubCtx = usePublicationContext();
+	const theme = useTheme();
 
 	//TODO: temp nullish values for debugging, remove after tested
 	const id = isSecond
@@ -118,7 +123,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
 
 	return (
-		<Box width={1}>
+		<Flex width={1} flexDirection="column" position="relative" height="100%">
 			<Flex
 				my={2}
 				color="primary"
@@ -216,7 +221,40 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 					<H5></H5>
 				</Box>
 			</Box>
-		</Box>
+			{isPrintableOrExportable && (
+				<Flex
+					position="absolute"
+					bg="#E4F0F3"
+					width={1}
+					py={2}
+					css={css`
+						border-top: 1px solid ${theme.colors.primary};
+						bottom: 50px;
+						min-height: 20px;
+						flex-grow: 1;
+					`}
+				>
+					<Flex
+						justifyContent="flex-end"
+						alignItems="flex-end"
+						width={1}
+						position="relative"
+						px={2}
+					>
+						{pubDetail.data?.enriched && (
+							<Flex bg="primary" color="white" opacity="0.8" mr={2}>
+								<Text py={1} my={0} px={3} fontSize="sm">
+									Obohacená
+								</Text>
+							</Flex>
+						)}
+						{pubDetail.data?.model && (
+							<PubModelTagBadge model={pubDetail.data.model as ModelsEnum} />
+						)}
+					</Flex>
+				</Flex>
+			)}
+		</Flex>
 	);
 };
 
