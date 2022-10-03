@@ -50,8 +50,6 @@ services:
       resources:
         limits:
           memory: 500m
-    volumes:
-      - solr_data:/var/solr
     environment:
       KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
       KEYCLOAK_SSL-REQUIRED: none
