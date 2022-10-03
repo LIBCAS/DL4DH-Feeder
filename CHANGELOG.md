@@ -1,18 +1,17 @@
 # Changelog
 
-## v0.5.1 (upcoming)
+## v0.5.1
 
 - zoomify:
-
   - words highlighting added
   - preloading static image improved
   - not found message fix - it's hidden when vector layer is loading
 - periodicals
-
-  - suplements routing  fix
+  - supplements routing  fix
   - monograph unit / bundle tile styling fix
 - enriched publication tile styling changed
 - model and enrichment tags added to publication detail view
+- new Kramerius+ export API integration
 - FIX: searching in a set of records initial value fix
 
 ## v0.5.0
