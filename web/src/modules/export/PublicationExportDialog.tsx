@@ -47,7 +47,7 @@ type ExportFormType = {
 	udPipeParams?: PipeParam[];
 };
 
-type ExportParamsDto = {
+type ExportParasConfig = {
 	params: {
 		disablePagination?: boolean;
 		paging?: {
@@ -66,6 +66,11 @@ type ExportParamsDto = {
 		altoParams?: AltoParam[];
 		nameTagParams?: TagParam[];
 	};
+};
+
+type ExportParamsDto = {
+	config: ExportParasConfig;
+	publicationIds: string[];
 };
 
 enum delimiterEnum {
@@ -91,7 +96,7 @@ type Props = {
 	isSecond?: boolean;
 };
 
-const formatValues = (values: ExportFormType): ExportParamsDto => {
+const formatValues = (values: ExportFormType): ExportParasConfig => {
 	const common = { sorting: [], filters: [] };
 	const format = values.format.id;
 	if (format === 'alto' || format === 'text') {
@@ -165,12 +170,13 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		},
 
 		onSubmit: async values => {
-			const params = formatValues(values);
+			const config = formatValues(values);
+			const json: ExportParamsDto = { config, publicationIds: [pubId] };
 
 			try {
 				const response = await api().post(
-					`exports/generate/${pubId}/${values.format.id}`,
-					{ json: params },
+					`exports/generate/${values.format.id}`,
+					{ json },
 				);
 
 				if (response.status === 200) {
