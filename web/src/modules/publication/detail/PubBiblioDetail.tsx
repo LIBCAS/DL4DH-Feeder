@@ -224,11 +224,14 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 			{isPrintableOrExportable && (
 				<Flex
 					position="absolute"
-					bg="#E4F0F3"
+					bg={pubDetail.data?.enriched ? '#E4F0F3' : '#ebebeb5e'}
 					width={1}
 					py={2}
 					css={css`
-						border-top: 1px solid ${theme.colors.primary};
+						border-top: 1px solid
+							${pubDetail.data?.enriched
+								? theme.colors.primary
+								: theme.colors.border};
 						bottom: 50px;
 						min-height: 20px;
 						flex-grow: 1;

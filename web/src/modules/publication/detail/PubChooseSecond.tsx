@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import { Flex } from 'components/styled';
@@ -55,6 +55,11 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 		});
 
 		const changePage = useCallback((page: number) => setPage(page), [setPage]);
+		useEffect(() => {
+			if (data) {
+				setUUID(data[0]?.pid ?? '');
+			}
+		}, [data]);
 
 		const theme = useTheme();
 
@@ -118,7 +123,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						</>
 					) : (
 						<Flex px={2}>
-							<ChoosePeriodical id={uuid} />
+							<ChoosePeriodical id={uuid} onClose={onClose} />
 						</Flex>
 					)}
 					<Flex
@@ -130,11 +135,15 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						p={3}
 						mt={2}
 						css={css`
-							/* border-top: 1px solid black; */
 							box-shadow: 0px -13px 16px -8px rgb(0 0 0 / 6%);
 						`}
 					>
-						<Button variant="primary" onClick={handleSecond}>
+						<Button
+							variant="primary"
+							onClick={handleSecond}
+							loading={isLoading}
+							disabled={isLoading || uuid === ''}
+						>
 							Potvrdit výběr
 						</Button>
 						{step > 0 && (
@@ -153,8 +162,12 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 
 export default PubChooseSecond;
 
-const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
+const ChoosePeriodical: FC<{ id: string; onClose: () => void }> = ({
+	id: rootId,
+	onClose,
+}) => {
 	const pubCtx = usePublicationContext();
+	const { id2: currentId } = useParams<{ id2: string }>();
 	const leftId = pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
 	const [id, setId] = useState(rootId);
 	const childrenResponse = usePublicationChildren(id ?? '');
@@ -166,12 +179,16 @@ const ChoosePeriodical: FC<{ id: string }> = ({ id: rootId }) => {
 
 	useEffect(() => {
 		if (children?.[0]?.datanode) {
-			nav(`/multiview/${leftId}/${id}`);
+			if (currentId === id) {
+				onClose();
+			} else {
+				nav(`/multiview/${leftId}/${id}`);
+			}
 		}
 		if (children.length === 1 && !children?.[0]?.datanode) {
 			setId(children[0].pid);
 		}
-	}, [children, id, leftId, nav]);
+	}, [children, id, leftId, nav, currentId, onClose]);
 
 	if (childrenResponse.isLoading) {
 		return <Loader />;
