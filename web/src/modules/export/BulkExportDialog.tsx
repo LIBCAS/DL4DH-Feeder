@@ -16,145 +16,45 @@ import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import TileView from 'modules/searchResult/tiles/TileView';
+import ListView from 'modules/searchResult/list';
 
 import { api } from 'api';
 
+import { useBulkExportContext } from 'hooks/useBulkExport';
+import { useSearchResultContext } from 'hooks/useSearchResultContext';
+
 import {
-	AltoParam,
 	altoParamsOptions,
-	Delimiter,
-	ExportFieldOption,
 	exportFieldOptions,
-	ExportFilter,
 	ExportFormatOption,
-	ExportSort,
 	nameTagParamsOptions,
-	PipeParam,
-	TagParam,
 	udPipeParamsOptions,
 } from './exportModels';
-
-export type ExportFormType = {
-	format: ExportFormatOption;
-	includeFields: ExportFieldOption[];
-	excludeFields: ExportFieldOption[];
-	delimiter: Delimiter;
-	exportAll: boolean;
-	isSecond?: boolean;
-	altoParams?: AltoParam[];
-	nameTagParams?: TagParam[];
-	udPipeParams?: PipeParam[];
-};
-
-export type ExportParasConfig = {
-	params: {
-		disablePagination?: boolean;
-		paging?: {
-			pageOffset?: number;
-			pageSize?: number;
-		};
-
-		sorting?: ExportSort[];
-		filters?: ExportFilter[];
-		includeFields?: string[];
-		excludeFields?: string[];
-		delimiter?: Delimiter;
-	};
-	teiExportParams?: {
-		udPipeParams?: PipeParam[];
-		altoParams?: AltoParam[];
-		nameTagParams?: TagParam[];
-	};
-};
-
-export type ExportParamsDto = {
-	config: ExportParasConfig;
-	publicationIds: string[];
-};
-
-export enum delimiterEnum {
-	comma = ',',
-	tab = '\t',
-}
-
-export const commonFormatOptions: ExportFormatOption[] = [
-	{ label: 'TEXT', id: 'text' },
-	{ label: 'ALTO', id: 'alto' },
-];
-
-export const enrichedFormatOptions: ExportFormatOption[] = [
-	{ label: 'JSON', id: 'json' },
-	{ label: 'TEXT', id: 'text' },
-	{ label: 'TEI', id: 'tei' },
-	{ label: 'CSV', id: 'csv' },
-	{ label: 'ALTO', id: 'alto' },
-];
+import {
+	commonFormatOptions,
+	delimiterEnum,
+	enrichedFormatOptions,
+	ExportFormType,
+	ExportParamsDto,
+	formatValues,
+} from './PublicationExportDialog';
 
 type Props = {
 	closeModal: () => void;
-	isSecond?: boolean;
 };
 
-export const formatValues = (values: ExportFormType): ExportParasConfig => {
-	const common = { sorting: [], filters: [] };
-	const format = values.format.id;
-	if (format === 'alto' || format === 'text') {
-		return { params: { ...common } };
-	}
-	if (format === 'json') {
-		return {
-			params: {
-				...common,
-				includeFields: values.includeFields.map(f => f.id),
-				excludeFields: values.excludeFields.map(f => f.id),
-			},
-		};
-	}
-
-	if (format === 'csv') {
-		return {
-			params: {
-				...common,
-				includeFields: values.includeFields.map(f => f.id),
-				excludeFields: values.excludeFields.map(f => f.id),
-				delimiter: values.delimiter,
-			},
-		};
-	}
-
-	if (format === 'tei') {
-		return {
-			params: {
-				...common,
-			},
-			teiExportParams: {
-				altoParams: values.altoParams,
-				nameTagParams: values.nameTagParams,
-				udPipeParams: values.udPipeParams,
-			},
-		};
-	}
-
-	return { params: { ...common } };
-};
-
-export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
+export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
-	const { id: paramId } = useParams<{ id: string }>();
+	//TODO:
 
-	const pubCtx = usePublicationContext();
-	const pubId = isSecond
-		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
-	const pubTitle = isSecond
-		? pubCtx.secondPublication?.title ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.title ?? paramId ?? 'ctx-left-pid-export-error';
+	const exportCtx = useBulkExportContext();
+	const { result } = useSearchResultContext();
 
-	const enriched = isSecond
-		? pubCtx.secondPublication?.enriched
-		: pubCtx.publication?.enriched;
+	const enriched = !Object.keys(exportCtx.uuidHeap).some(
+		uuid => !exportCtx.uuidHeap[uuid].enriched,
+	);
 
 	const formatOptions: ExportFormatOption[] = enriched
 		? enrichedFormatOptions
@@ -171,7 +71,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 
 		onSubmit: async values => {
 			const config = formatValues(values);
-			const json: ExportParamsDto = { config, publicationIds: [pubId] };
+			const json: ExportParamsDto = {
+				config,
+				publicationIds: ['' /* TODO: ids */],
+			};
 
 			try {
 				const response = await api().post(
@@ -235,12 +138,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		);
 	}
 
-	const {
-		handleSubmit,
-		/* handleChange ,*/ setFieldValue,
-		values,
-		isSubmitting,
-	} = formik;
+	const { handleSubmit, setFieldValue, values, isSubmitting } = formik;
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -263,12 +161,13 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text fontSize="sm">
+						{/**TODO: */}
+						{/* <Text fontSize="sm">
 							Název publikace: <b>{pubTitle}</b>
 						</Text>
 						<Text fontSize="sm">
 							ID publikace: <b>{pubId}</b>
-						</Text>
+						</Text> */}
 						<Text fontSize="sm">
 							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
 						</Text>
@@ -425,13 +324,18 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							<Flex alignItems="center">
 								<MdInfo size={20} />
 								<Text ml={2}>
-									{isSecond
-										? pubCtx.publicationChildrenOfSecond?.length ?? '?'
-										: pubCtx.publicationChildren?.length ?? '?'}{' '}
-									Stránek
+									{
+										Object.keys(exportCtx.uuidHeap).filter(
+											uuid => exportCtx.uuidHeap[uuid]?.selected,
+										).length
+									}{' '}
+									publikací
 								</Text>
 							</Flex>
 						</Flex>
+						<Box maxHeight={500} overflowY="auto">
+							<TileView data={result} /*  isLoading={false} */ />
+						</Box>
 					</Box>
 				</Paper>
 			</Flex>
@@ -439,7 +343,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	);
 };
 
-const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
+const BulkExportDialog: FC = () => {
 	return (
 		<ModalDialog
 			label="Info"
@@ -447,15 +351,15 @@ const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
 				<IconButton
 					color="primary"
 					onClick={openModal}
-					tooltip="Exportovat publikaci"
+					tooltip="Exportovat publikace"
 				>
-					<MdDownload size={24} />
+					Export
 				</IconButton>
 			)}
 		>
-			{closeModal => <ExportForm closeModal={closeModal} isSecond={isSecond} />}
+			{closeModal => <ExportForm closeModal={closeModal} />}
 		</ModalDialog>
 	);
 };
 
-export default PublicationExportDialog;
+export default BulkExportDialog;
