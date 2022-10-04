@@ -39,6 +39,7 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
+	background-color: ${p => (p.checked ? p.theme.colors.primary : 'white')};
 	width: 16px;
 	min-width: 16px;
 	height: 16px;
@@ -133,7 +134,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
 							inputProps.onChange?.(e);
 						}}
 					/>
-					<CheckmarkIcon size={14} color="text" />
+					<CheckmarkIcon size={14} color={checked ? 'white' : 'text'} />
 				</StyledCheckbox>
 				{label && (
 					<Text
