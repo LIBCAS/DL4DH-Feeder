@@ -18,7 +18,7 @@ type Props = {
 const PeriodicalSidePanel: FC<Props> = ({ variant }) => {
 	return (
 		<Flex position="relative" flexShrink={0}>
-			{variant === 'right' && <PubBiblioDetail />}
+			{variant === 'right' && <PubBiblioDetail variant="right" />}
 			{variant === 'left' && (
 				<Accordion label="Rok vydání" isExpanded isLoading={false}>
 					<PublishDateFilter />

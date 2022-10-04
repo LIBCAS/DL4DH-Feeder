@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import _ from 'lodash';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
@@ -11,6 +11,7 @@ import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
 import Results from 'modules/searchResult/index';
 import Sorting from 'modules/sorting/Sorting';
+import BulkExportDialog from 'modules/export/BulkExportDialog';
 
 import {
 	useAvailableFilters,
@@ -18,11 +19,13 @@ import {
 } from 'api/publicationsApi';
 
 import { useSearchContext } from 'hooks/useSearchContext';
+import { useSearchResultContext } from 'hooks/useSearchResultContext';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 
 const Dashboard: FC = () => {
 	const { state } = useSearchContext();
+	const { setResult } = useSearchResultContext();
 
 	const {
 		data,
@@ -44,6 +47,12 @@ const Dashboard: FC = () => {
 		dataUpdatedAt: filtersKey,
 		isLoading: isFiltersLoading,
 	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
+
+	useEffect(() => {
+		if (data) {
+			setResult?.(data);
+		}
+	}, [data, setResult]);
 
 	const isLoading = loading || isFetching || isRefetching;
 
@@ -75,7 +84,7 @@ const Dashboard: FC = () => {
 							<DashboardViewModeSwitcher />
 							<Flex mr={3} alignItems="center">
 								<Sorting />
-								{/* state.viewMode === 'list' && <ListExportDialog /> */}
+								{state.viewMode === 'list' && <BulkExportDialog />}
 								{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
 							</Flex>
 						</Flex>

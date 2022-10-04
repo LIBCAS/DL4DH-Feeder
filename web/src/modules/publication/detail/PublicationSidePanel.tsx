@@ -133,7 +133,7 @@ const PublicationSidePanel: FC<Props> = ({
 						{viewMode === 'search' ? (
 							<PubPagesDetail isSecond={isSecond} />
 						) : (
-							<PubBiblioDetail isSecond={isSecond} />
+							<PubBiblioDetail variant={variant} isSecond={isSecond} />
 						)}
 					</>
 				)}
