@@ -17,6 +17,8 @@ import { GlobalStyles, ThemeProvider } from 'theme';
 import keycloak from 'auth/KeycloakService';
 
 import { SearchContextProvider } from 'hooks/useSearchContext';
+import { BulkExportContextProvider } from 'hooks/useBulkExport';
+import { SearchResultContextProvider } from 'hooks/useSearchResultContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 import Store from 'utils/Store';
@@ -44,24 +46,28 @@ const App = () => {
 						}}
 					>
 						<Router basename={APP_CONTEXT}>
-							<PubDetailCtxProvider>
-								<SearchContextProvider>
-									<GlobalStyles />
-									<ToastifyStyles />
-									<Header />
-									<AppRoutes />
-									<ToastContainer
-										position="bottom-center"
-										newestOnTop={false}
-										closeOnClick
-										draggable
-										pauseOnHover
-										transition={Slide}
-										autoClose={5000}
-									/>
-									<TooltipRender />
-								</SearchContextProvider>
-							</PubDetailCtxProvider>
+							<SearchResultContextProvider>
+								<BulkExportContextProvider>
+									<PubDetailCtxProvider>
+										<SearchContextProvider>
+											<GlobalStyles />
+											<ToastifyStyles />
+											<Header />
+											<AppRoutes />
+											<ToastContainer
+												position="bottom-center"
+												newestOnTop={false}
+												closeOnClick
+												draggable
+												pauseOnHover
+												transition={Slide}
+												autoClose={5000}
+											/>
+											<TooltipRender />
+										</SearchContextProvider>
+									</PubDetailCtxProvider>
+								</BulkExportContextProvider>
+							</SearchResultContextProvider>
 						</Router>
 					</ReactKeycloakProvider>
 				</Flex>
