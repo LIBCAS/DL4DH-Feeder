@@ -13,12 +13,9 @@ import { useTheme } from 'theme';
 
 import { TPublication } from 'api/models';
 
-import {
-	availabilityToTextTag,
-	modelToText,
-	PUBLICATION_EXPORT_STORE_KEY,
-} from 'utils/enumsMap';
-import Store from 'utils/Store';
+import { useBulkExportContext } from 'hooks/useBulkExport';
+
+import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 
@@ -49,10 +46,10 @@ const ListView: FC<{
 }> = ({ data, isLoading }) => {
 	const theme = useTheme();
 
-	const [toExport, setToExport] = useState<string | null>(null);
+	const exportCtx = useBulkExportContext();
 	useEffect(() => {
-		Store.set(PUBLICATION_EXPORT_STORE_KEY, toExport);
-	}, [toExport]);
+		exportCtx.setUuidHeap?.({});
+	}, []);
 
 	const renderRow = useCallback(
 		(row: TColumnsLayout) => (
@@ -60,17 +57,26 @@ const ListView: FC<{
 				<Flex
 					pl={[2, 3]}
 					alignItems="center"
-					bg={row.pid === toExport ? 'enriched' : 'initial'}
+					bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
 				>
 					<Checkbox
 						label=""
-						checked={row.pid === toExport}
-						onChange={() => setToExport(row.pid)}
+						checked={exportCtx.uuidHeap[row.pid]?.selected}
+						onChange={e => {
+							exportCtx.setUuidHeap?.(p => ({
+								...p,
+								[row.pid]: {
+									selected: e.target.checked,
+									title: row.title,
+									enriched: row.enriched,
+								},
+							}));
+						}}
 					/>
 				</Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
-						bg={row.pid === toExport ? 'enriched' : 'initial'}
+						bg={exportCtx.uuidHeap[row.pid] ? 'enriched' : 'initial'}
 						key={cellKey}
 						alignItems="center"
 						justifyContent="flex-start"
@@ -84,7 +90,7 @@ const ListView: FC<{
 				))}
 			</>
 		),
-		[toExport],
+		[exportCtx],
 	);
 
 	const renderHeader = useCallback(

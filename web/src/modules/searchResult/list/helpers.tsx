@@ -2,7 +2,7 @@ import { TPublication } from 'api/models';
 
 export type TColumnsLayout = Pick<
 	TPublication,
-	'title' | 'pid' | 'model' | 'availability' | 'date'
+	'title' | 'pid' | 'model' | 'availability' | 'date' | 'enriched'
 >;
 
 export const rowLayout: Record<keyof TColumnsLayout, number> = {
@@ -10,6 +10,7 @@ export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	model: 1,
 	availability: 0.5,
 	date: 0.5,
+	enriched: 0,
 	pid: 0,
 };
 
@@ -23,9 +24,10 @@ export const headerLabels: Record<
 	date: { text: 'Datum' },
 
 	pid: { hidden: true },
+	enriched: { hidden: true },
 };
 
-export const colsOrder: (keyof TColumnsLayout)[] = [
+export const colsOrder: (keyof Omit<TColumnsLayout, 'enriched' | 'pid'>)[] = [
 	'title',
 	'model',
 	'date',

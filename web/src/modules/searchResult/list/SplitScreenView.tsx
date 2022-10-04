@@ -24,7 +24,10 @@ const Cell = styled(Text)`
 	color: black;
 `;
 
-const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
+const renderCell = (
+	row: Omit<TColumnsLayout, 'enriched' | 'pid'>,
+	cellKey: keyof Omit<TColumnsLayout, 'enriched' | 'pid'>,
+) => {
 	if (cellKey === 'model') {
 		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
 	}
