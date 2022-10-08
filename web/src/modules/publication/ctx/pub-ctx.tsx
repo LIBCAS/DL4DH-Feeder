@@ -7,6 +7,7 @@ type CurrentPage = {
 	childIndex: number;
 	prevPid: string;
 	nextPid: string;
+	textMode?: boolean;
 };
 
 //TODO: REFACTOR, UNIFY, MAKE READABLE

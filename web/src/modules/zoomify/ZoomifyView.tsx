@@ -20,18 +20,20 @@ import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { useTheme } from 'theme';
 
 import { useImageProperties } from 'api/publicationsApi';
 
+import ZoomifyToolbar from './ZoomifyToolbar';
 import AltoDialog from './AltoDialog';
+import OcrView from './OcrView';
 import {
 	highlightWord,
 	useHighlightWord,
 	wordHighlightStyle,
 } from './useHighlightWord';
-import ZoomifyToolbar from './ZoomifyToolbar';
 
 import 'ol/ol.css';
 
@@ -227,6 +229,11 @@ const ZoomifyView = React.forwardRef<
 	const counter = useRef(0);
 
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
+	const pbctx = usePublicationContext();
+
+	const textMode = isSecond
+		? pbctx.currentPageOfSecond?.textMode ?? false
+		: pbctx.currentPage?.textMode ?? false;
 
 	useEffect(() => {
 		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
@@ -251,14 +258,18 @@ const ZoomifyView = React.forwardRef<
 				border-left: ${isSecond ? 2 : 0}px solid ${theme.colors.primary};
 			`}
 		>
-			<MapWrapper
-				key={id + counter.current}
-				imgId={id}
-				imgWidth={imgWidth}
-				imgHeight={imgHeight}
-				isSecond={isSecond}
-				isMultiView={isMultiView}
-			/>
+			{textMode ? (
+				<OcrView uuid={id} isSecond={isSecond} />
+			) : (
+				<MapWrapper
+					key={id + counter.current}
+					imgId={id}
+					imgWidth={imgWidth}
+					imgHeight={imgHeight}
+					isSecond={isSecond}
+					isMultiView={isMultiView}
+				/>
+			)}
 		</Wrapper>
 	);
 });

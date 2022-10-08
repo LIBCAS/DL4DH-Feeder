@@ -141,9 +141,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					</>
 				)}
 				<ShareDialog isSecond={isSecond} />
-				<IconButton color="primary">
-					<MdTextFields size={24} />
-				</IconButton>
 			</Flex>
 			<Divider />
 			<Box
