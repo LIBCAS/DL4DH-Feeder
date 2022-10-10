@@ -9,9 +9,12 @@ export type ExportSort = {
 	field: string;
 	direction: 'ASC' | 'DESC';
 };
-
 export type ExportFilter = {
-	id: string;
+	operation: 'OR';
+	filters: ExportFilterEQ[];
+};
+
+export type ExportFilterEQ = {
 	field: string;
 	operation: 'EQ';
 	value: string;

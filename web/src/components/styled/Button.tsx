@@ -192,8 +192,10 @@ const Button = forwardRef<
 			{loading && (
 				<Box display="inline-block" mr={2}>
 					<LoaderSpin
+						p={0}
+						m={0}
 						color={buttonProps.variant === 'outlined' ? 'primary' : 'white'}
-						size={20}
+						size={16}
 					/>
 				</Box>
 			)}

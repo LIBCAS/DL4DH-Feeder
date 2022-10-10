@@ -9,7 +9,7 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import RadioButton from 'components/styled/RadioButton';
 
-import { TPublication } from 'api/models';
+import { PublicationDto } from 'api/models';
 
 import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
 
@@ -41,7 +41,7 @@ const renderCell = (
 };
 
 const SplitScreenView: FC<{
-	data?: TPublication[];
+	data?: PublicationDto[];
 	isLoading: boolean;
 	variant: 'left' | 'right';
 	onSelect: (uuid: string) => void;

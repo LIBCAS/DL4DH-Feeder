@@ -1,7 +1,7 @@
-import { TPublication } from 'api/models';
+import { PublicationDto } from 'api/models';
 
 export type TColumnsLayout = Pick<
-	TPublication,
+	PublicationDto,
 	'title' | 'pid' | 'model' | 'availability' | 'date' | 'enriched'
 >;
 
