@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback } from 'react';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
@@ -11,7 +11,7 @@ import ClassicTable from 'components/table/ClassicTable';
 
 import { useTheme } from 'theme';
 
-import { TPublication } from 'api/models';
+import { PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
@@ -41,15 +41,12 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 };
 
 const ListView: FC<{
-	data?: TPublication[];
+	data?: PublicationDto[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
 	const theme = useTheme();
 
 	const exportCtx = useBulkExportContext();
-	useEffect(() => {
-		exportCtx.setUuidHeap?.({});
-	}, []);
 
 	const renderRow = useCallback(
 		(row: TColumnsLayout) => (
@@ -63,12 +60,14 @@ const ListView: FC<{
 						label=""
 						checked={exportCtx.uuidHeap[row.pid]?.selected}
 						onChange={e => {
+							console.log({ row });
 							exportCtx.setUuidHeap?.(p => ({
 								...p,
 								[row.pid]: {
 									selected: e.target.checked,
 									title: row.title,
 									enriched: row.enriched,
+									publication: row as PublicationDto,
 								},
 							}));
 						}}
@@ -76,7 +75,7 @@ const ListView: FC<{
 				</Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
-						bg={exportCtx.uuidHeap[row.pid] ? 'enriched' : 'initial'}
+						bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
 						key={cellKey}
 						alignItems="center"
 						justifyContent="flex-start"

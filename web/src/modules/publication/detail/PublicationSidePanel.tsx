@@ -28,7 +28,6 @@ type Props = {
 const PublicationSidePanel: FC<Props> = ({
 	variant,
 	defaultView,
-
 	onCollapse,
 	isCollapsed,
 	isSecond,
@@ -39,6 +38,9 @@ const PublicationSidePanel: FC<Props> = ({
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'search' : defaultView ?? 'detail',
 	);
+
+	//TODO: avoid url check
+	const isMultiviewActive = window.location.pathname.includes('multiview');
 
 	return (
 		<Flex
@@ -67,23 +69,25 @@ const PublicationSidePanel: FC<Props> = ({
 				width={1}
 				flexDirection="column"
 			>
-				<>
-					<Flex alignItems="center" justifyContent="center" p={2} width={1}>
-						<Button
-							variant="primary"
-							onClick={() => setChooseSecondDialogOpen(p => !p)}
-						>
-							Vyhledávaní v množině záznamů
-						</Button>
-						{chooseSecondDialogOpen && (
-							<PubChooseSecond
-								onClose={() => setChooseSecondDialogOpen(false)}
-								variant={variant}
-							/>
-						)}
-					</Flex>
-					<Divider />
-				</>
+				{(isMultiviewActive || variant === 'right') && (
+					<>
+						<Flex alignItems="center" justifyContent="center" p={2} width={1}>
+							<Button
+								variant="primary"
+								onClick={() => setChooseSecondDialogOpen(p => !p)}
+							>
+								Vyhledávaní v množině záznamů
+							</Button>
+							{chooseSecondDialogOpen && (
+								<PubChooseSecond
+									onClose={() => setChooseSecondDialogOpen(false)}
+									variant={variant}
+								/>
+							)}
+						</Flex>
+						<Divider />
+					</>
+				)}
 
 				<Flex
 					height={50}
