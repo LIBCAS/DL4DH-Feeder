@@ -84,7 +84,6 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 					width="90px"
 					flexShrink={0}
 					position="relative"
-					bg="red"
 					css={css`
 						border: 1px solid ${theme.colors.border};
 						background-image: url(${`api/item/${child.pid}/thumb`});

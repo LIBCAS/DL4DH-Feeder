@@ -28,7 +28,6 @@ type Props = {
 const PublicationSidePanel: FC<Props> = ({
 	variant,
 	defaultView,
-
 	onCollapse,
 	isCollapsed,
 	isSecond,
@@ -39,6 +38,9 @@ const PublicationSidePanel: FC<Props> = ({
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'search' : defaultView ?? 'detail',
 	);
+
+	//TODO: avoid url check
+	const isMultiviewActive = window.location.pathname.includes('multiview');
 
 	return (
 		<Flex
@@ -67,7 +69,7 @@ const PublicationSidePanel: FC<Props> = ({
 				width={1}
 				flexDirection="column"
 			>
-				{variant === 'right' && (
+				{(isMultiviewActive || variant === 'right') && (
 					<>
 						<Flex alignItems="center" justifyContent="center" p={2} width={1}>
 							<Button
@@ -86,6 +88,7 @@ const PublicationSidePanel: FC<Props> = ({
 						<Divider />
 					</>
 				)}
+
 				<Flex
 					height={50}
 					bg="primaryLight"
@@ -133,7 +136,7 @@ const PublicationSidePanel: FC<Props> = ({
 						{viewMode === 'search' ? (
 							<PubPagesDetail isSecond={isSecond} />
 						) : (
-							<PubBiblioDetail isSecond={isSecond} />
+							<PubBiblioDetail variant={variant} isSecond={isSecond} />
 						)}
 					</>
 				)}

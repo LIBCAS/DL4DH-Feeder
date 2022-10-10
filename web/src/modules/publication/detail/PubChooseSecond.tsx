@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import { Flex } from 'components/styled';
@@ -123,7 +123,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						</>
 					) : (
 						<Flex px={2}>
-							<ChoosePeriodical id={uuid} onClose={onClose} />
+							<ChoosePeriodical id={uuid} onClose={onClose} variant={variant} />
 						</Flex>
 					)}
 					<Flex
@@ -162,13 +162,24 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 
 export default PubChooseSecond;
 
-const ChoosePeriodical: FC<{ id: string; onClose: () => void }> = ({
-	id: rootId,
-	onClose,
-}) => {
+const ChoosePeriodical: FC<{
+	id: string;
+	onClose: () => void;
+	variant?: 'left' | 'right';
+}> = ({ id: rootId, onClose, variant }) => {
+	//TODO: cleanup
 	const pubCtx = usePublicationContext();
-	const { id2: currentId } = useParams<{ id2: string }>();
-	const leftId = pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
+	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
+	const [sp] = useSearchParams();
+	const currentId = variant === 'left' ? id1 : id2;
+
+	const notChangingId =
+		variant === 'left'
+			? pubCtx.secondPublication?.pid ?? 'ctx-right-pubid-error'
+			: pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
+	const notChangingPage =
+		variant === 'left' ? sp.get('page2') ?? '' : sp.get('page') ?? '';
+
 	const [id, setId] = useState(rootId);
 	const childrenResponse = usePublicationChildren(id ?? '');
 	const nav = useNavigate();
@@ -182,13 +193,24 @@ const ChoosePeriodical: FC<{ id: string; onClose: () => void }> = ({
 			if (currentId === id) {
 				onClose();
 			} else {
-				nav(`/multiview/${leftId}/${id}`);
+				variant === 'left'
+					? nav(`/multiview/${id}/${notChangingId}?page2=${notChangingPage}`)
+					: nav(`/multiview/${notChangingId}/${id}?page=${notChangingPage}`);
 			}
 		}
 		if (children.length === 1 && !children?.[0]?.datanode) {
 			setId(children[0].pid);
 		}
-	}, [children, id, leftId, nav, currentId, onClose]);
+	}, [
+		children,
+		id,
+		notChangingId,
+		nav,
+		currentId,
+		onClose,
+		variant,
+		notChangingPage,
+	]);
 
 	if (childrenResponse.isLoading) {
 		return <Loader />;

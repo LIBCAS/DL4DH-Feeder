@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback } from 'react';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
@@ -11,14 +11,11 @@ import ClassicTable from 'components/table/ClassicTable';
 
 import { useTheme } from 'theme';
 
-import { TPublication } from 'api/models';
+import { PublicationDto } from 'api/models';
 
-import {
-	availabilityToTextTag,
-	modelToText,
-	PUBLICATION_EXPORT_STORE_KEY,
-} from 'utils/enumsMap';
-import Store from 'utils/Store';
+import { useBulkExportContext } from 'hooks/useBulkExport';
+
+import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 
@@ -44,15 +41,12 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 };
 
 const ListView: FC<{
-	data?: TPublication[];
+	data?: PublicationDto[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
 	const theme = useTheme();
 
-	const [toExport, setToExport] = useState<string | null>(null);
-	useEffect(() => {
-		Store.set(PUBLICATION_EXPORT_STORE_KEY, toExport);
-	}, [toExport]);
+	const exportCtx = useBulkExportContext();
 
 	const renderRow = useCallback(
 		(row: TColumnsLayout) => (
@@ -60,17 +54,28 @@ const ListView: FC<{
 				<Flex
 					pl={[2, 3]}
 					alignItems="center"
-					bg={row.pid === toExport ? 'enriched' : 'initial'}
+					bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
 				>
 					<Checkbox
 						label=""
-						checked={row.pid === toExport}
-						onChange={() => setToExport(row.pid)}
+						checked={exportCtx.uuidHeap[row.pid]?.selected}
+						onChange={e => {
+							console.log({ row });
+							exportCtx.setUuidHeap?.(p => ({
+								...p,
+								[row.pid]: {
+									selected: e.target.checked,
+									title: row.title,
+									enriched: row.enriched,
+									publication: row as PublicationDto,
+								},
+							}));
+						}}
 					/>
 				</Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
-						bg={row.pid === toExport ? 'enriched' : 'initial'}
+						bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
 						key={cellKey}
 						alignItems="center"
 						justifyContent="flex-start"
@@ -84,7 +89,7 @@ const ListView: FC<{
 				))}
 			</>
 		),
-		[toExport],
+		[exportCtx],
 	);
 
 	const renderHeader = useCallback(

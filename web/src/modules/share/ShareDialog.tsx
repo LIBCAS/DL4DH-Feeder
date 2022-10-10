@@ -56,7 +56,7 @@ const ShareDialog: FC<Props> = ({ isSecond }) => {
 
 	const sources = rootContext?.flat() ?? [];
 
-	const link = `${window.location.host}/uuid/${source?.pid ?? 'undefined'}`;
+	const link = `${window.location.origin}/uuid/${source?.pid ?? 'undefined'}`;
 
 	return (
 		<ModalDialog

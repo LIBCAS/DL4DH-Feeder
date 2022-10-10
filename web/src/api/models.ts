@@ -99,7 +99,6 @@ export type FiltersDto = {
 	nameTagFacet: string;
 	collections: string[];
 };
-export type TPublication = PublicationDto;
 
 export type PublicationChild = {
 	datanode: boolean;

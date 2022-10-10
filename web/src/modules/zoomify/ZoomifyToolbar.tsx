@@ -8,6 +8,7 @@ import {
 	MdFullscreenExit,
 	MdRotateLeft,
 	MdRotateRight,
+	MdTextFields,
 	MdZoomIn,
 	MdZoomOut,
 } from 'react-icons/md';
@@ -81,8 +82,10 @@ const ZoomifyToolbar: FC<Props> = ({
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 	const pbctx = usePublicationContext();
 	const [pageUrl, setPageUrl] = useSearchParams();
-
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
+	const setCurrentPage = isSecond
+		? pbctx.setCurrentPageOfSecond
+		: pbctx.setCurrentPage;
 	const pageParamName = isSecond ? 'page2' : 'page';
 	const { isMobile } = useMobileView();
 	const ICON_SIZE = isMobile ? 19 : 24;
@@ -121,6 +124,18 @@ const ZoomifyToolbar: FC<Props> = ({
 							`}
 						/>
 					}
+				/>
+				<ToolButton
+					tooltip="OCR"
+					onClick={() => {
+						if (currentPage) {
+							setCurrentPage({
+								...currentPage,
+								textMode: !currentPage.textMode,
+							});
+						}
+					}}
+					Icon={<MdTextFields size={ICON_SIZE} />}
 				/>
 
 				<ToolButton

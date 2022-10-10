@@ -9,7 +9,7 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import RadioButton from 'components/styled/RadioButton';
 
-import { TPublication } from 'api/models';
+import { PublicationDto } from 'api/models';
 
 import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
 
@@ -24,7 +24,10 @@ const Cell = styled(Text)`
 	color: black;
 `;
 
-const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
+const renderCell = (
+	row: Omit<TColumnsLayout, 'enriched' | 'pid'>,
+	cellKey: keyof Omit<TColumnsLayout, 'enriched' | 'pid'>,
+) => {
 	if (cellKey === 'model') {
 		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
 	}
@@ -38,7 +41,7 @@ const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
 };
 
 const SplitScreenView: FC<{
-	data?: TPublication[];
+	data?: PublicationDto[];
 	isLoading: boolean;
 	variant: 'left' | 'right';
 	onSelect: (uuid: string) => void;

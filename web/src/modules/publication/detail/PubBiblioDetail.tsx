@@ -24,6 +24,7 @@ import { ModelsEnum } from 'api/models';
 
 import { ModelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 import PrintDialog from '../print/PrintDialog';
@@ -75,9 +76,10 @@ const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 
 type Props = {
 	isSecond?: boolean;
+	variant: 'left' | 'right';
 };
 
-const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
+const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	const { id: urlId } = useParams<{ id: string }>();
 	const pubCtx = usePublicationContext();
 	const theme = useTheme();
@@ -139,12 +141,15 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 					</>
 				)}
 				<ShareDialog isSecond={isSecond} />
-				<IconButton color="primary">
-					<MdTextFields size={24} />
-				</IconButton>
 			</Flex>
 			<Divider />
-			<Box p={3}>
+			<Box
+				p={3}
+				overflowY="auto"
+				maxHeight={`calc(100vh - ${
+					variant === 'right' ? 120 : 90
+				}px - ${INIT_HEADER_HEIGHT}px)`}
+			>
 				<Box mb={3}>
 					{pageContext?.map(pc => (
 						<Box key={pc.pid}>
@@ -224,10 +229,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond }) => {
 			{isPrintableOrExportable && (
 				<Flex
 					position="absolute"
-					bg={pubDetail.data?.enriched ? '#E4F0F3' : '#ebebeb5e'}
+					bg={pubDetail.data?.enriched ? '#E4F0F3' : '#ebebeb'}
 					width={1}
 					py={2}
 					css={css`
+						box-shadow: 2px 0px 2px 2px rgba(0, 0, 0, 0.05);
 						border-top: 1px solid
 							${pubDetail.data?.enriched
 								? theme.colors.primary

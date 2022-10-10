@@ -1,8 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC, useCallback } from 'react';
-import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
+import { FC, useMemo } from 'react';
+import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import SelectInput from 'components/form/select/SelectInput';
@@ -15,190 +14,55 @@ import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
-import { EditSelectedChildren } from 'components/tiles/TilesWithCheckbox';
-
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
 
 import { api } from 'api';
 
+import { useBulkExportContext } from 'hooks/useBulkExport';
+
 import {
-	AltoParam,
 	altoParamsOptions,
-	Delimiter,
-	ExportFieldOption,
 	exportFieldOptions,
-	ExportFilter,
-	ExportFilterEQ,
 	ExportFormatOption,
-	ExportSort,
 	nameTagParamsOptions,
-	PipeParam,
-	TagParam,
 	udPipeParamsOptions,
 } from './exportModels';
-
-export type ExportFormType = {
-	format: ExportFormatOption;
-	includeFields: ExportFieldOption[];
-	excludeFields: ExportFieldOption[];
-	delimiter: Delimiter;
-	exportAll: boolean;
-	isSecond?: boolean;
-	altoParams?: AltoParam[];
-	nameTagParams?: TagParam[];
-	udPipeParams?: PipeParam[];
-	pagesFilter: string[];
-};
-
-export type ExportParasConfig = {
-	params: {
-		disablePagination?: boolean;
-		paging?: {
-			pageOffset?: number;
-			pageSize?: number;
-		};
-
-		sorting?: ExportSort[];
-		filters?: ExportFilter[];
-		includeFields?: string[];
-		excludeFields?: string[];
-		delimiter?: Delimiter;
-	};
-	teiExportParams?: {
-		udPipeParams?: PipeParam[];
-		altoParams?: AltoParam[];
-		nameTagParams?: TagParam[];
-	};
-};
-
-export type ExportParamsDto = {
-	config: ExportParasConfig;
-	publicationIds: string[];
-};
-
-export enum delimiterEnum {
-	comma = ',',
-	tab = '\t',
-}
-
-export const commonFormatOptions: ExportFormatOption[] = [
-	{ label: 'TEXT', id: 'text' },
-	{ label: 'ALTO', id: 'alto' },
-];
-
-export const enrichedFormatOptions: ExportFormatOption[] = [
-	{ label: 'JSON', id: 'json' },
-	{ label: 'TEXT', id: 'text' },
-	{ label: 'TEI', id: 'tei' },
-	{ label: 'CSV', id: 'csv' },
-	{ label: 'ALTO', id: 'alto' },
-];
+import {
+	commonFormatOptions,
+	delimiterEnum,
+	enrichedFormatOptions,
+	ExportFormType,
+	ExportParamsDto,
+	formatValues,
+} from './PublicationExportDialog';
 
 type Props = {
 	closeModal: () => void;
-	isSecond?: boolean;
 };
 
-export const formatValues = (values: ExportFormType): ExportParasConfig => {
-	const common: { sorting: never[]; filters: ExportFilter[] } = {
-		sorting: [],
-		filters:
-			values.pagesFilter.length > 0
-				? [{ operation: 'OR', filters: [] as ExportFilterEQ[] }]
-				: [],
-	};
-	if (values.pagesFilter.length > 0) {
-		values.pagesFilter.forEach(pf =>
-			common.filters[0].filters.push({
-				operation: 'EQ',
-				value: pf,
-				field: '_id',
-			}),
-		);
-	}
-
-	const format = values.format.id;
-	if (format === 'alto' || format === 'text') {
-		return { params: { ...common } };
-	}
-	if (format === 'json') {
-		return {
-			params: {
-				...common,
-				includeFields: values.includeFields.map(f => f.id),
-				excludeFields: values.excludeFields.map(f => f.id),
-			},
-		};
-	}
-
-	if (format === 'csv') {
-		return {
-			params: {
-				...common,
-				includeFields: values.includeFields.map(f => f.id),
-				excludeFields: values.excludeFields.map(f => f.id),
-				delimiter: values.delimiter,
-			},
-		};
-	}
-
-	if (format === 'tei') {
-		return {
-			params: {
-				...common,
-			},
-			teiExportParams: {
-				altoParams: values.altoParams,
-				nameTagParams: values.nameTagParams,
-				udPipeParams: values.udPipeParams,
-			},
-		};
-	}
-
-	return { params: { ...common } };
-};
-
-export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
+export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
-	const { id: paramId } = useParams<{ id: string }>();
+	//TODO:
 
-	const pubCtx = usePublicationContext();
-	const pubId = isSecond
-		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
-	const pubTitle = isSecond
-		? pubCtx.secondPublication?.title ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.title ?? paramId ?? 'ctx-left-pid-export-error';
+	const exportCtx = useBulkExportContext();
+	const publicationIds = useMemo(
+		() =>
+			Object.keys(exportCtx.uuidHeap).filter(
+				k => exportCtx.uuidHeap[k].selected,
+			) ?? [],
+		[exportCtx],
+	);
 
-	const enriched = isSecond
-		? pubCtx.secondPublication?.enriched
-		: pubCtx.publication?.enriched;
+	const enriched =
+		Object.keys(exportCtx.uuidHeap).length > 0 &&
+		!Object.keys(exportCtx.uuidHeap).some(
+			uuid => !exportCtx.uuidHeap[uuid].enriched,
+		);
 
 	const formatOptions: ExportFormatOption[] = enriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
-
-	const getPreselectedChildren = useCallback(
-		(pagesFilter: string[]) => {
-			if (pagesFilter.length > 0) {
-				return pagesFilter;
-			}
-			if (isSecond) {
-				return (
-					pubCtx.publicationChildrenFilteredOfSecond ??
-					pubCtx.publicationChildrenOfSecond ??
-					[]
-				).map(p => p.pid);
-			}
-			return (
-				pubCtx.publicationChildrenFiltered ??
-				pubCtx.publicationChildren ??
-				[]
-			).map(p => p.pid);
-		},
-		[pubCtx, isSecond],
-	);
 
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
@@ -212,7 +76,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 
 		onSubmit: async values => {
 			const config = formatValues(values);
-			const json: ExportParamsDto = { config, publicationIds: [pubId] };
+			const json: ExportParamsDto = {
+				config,
+				publicationIds,
+			};
 
 			try {
 				const response = await api().post(
@@ -256,7 +123,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>Exportovat publikace</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
@@ -276,12 +143,35 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		);
 	}
 
-	const {
-		handleSubmit,
-		/* handleChange ,*/ setFieldValue,
-		values,
-		isSubmitting,
-	} = formik;
+	if (Object.keys(exportCtx.uuidHeap).length < 1) {
+		return (
+			<Flex
+				alignItems="center"
+				justifyContent="center"
+				overflow="visible"
+				m={5}
+			>
+				<Paper
+					bg="paper"
+					maxWidth={600}
+					minWidth={['initial', 500]}
+					overflow="visible"
+				>
+					<Box>
+						<Flex width={1} justifyContent="space-between" alignItems="center">
+							<H1 my={3}>Exportovat publikace</H1>
+							<IconButton color="primary" onClick={closeModal}>
+								<MdClose size={32} />
+							</IconButton>
+						</Flex>
+						<Text>Pro export je nutné vybrat aspoň jednu publikaci</Text>
+					</Box>
+				</Paper>
+			</Flex>
+		);
+	}
+
+	const { handleSubmit, setFieldValue, values, isSubmitting } = formik;
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -299,19 +189,20 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>Exportovat publikace</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text fontSize="sm">
+						{/**TODO: */}
+						{/* <Text fontSize="sm">
 							Název publikace: <b>{pubTitle}</b>
 						</Text>
 						<Text fontSize="sm">
 							ID publikace: <b>{pubId}</b>
-						</Text>
+						</Text> */}
 						<Text fontSize="sm">
-							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
+							Všechny obohacené: <b>{enriched ? 'Áno' : 'Ne'}</b>
 						</Text>
 
 						<Text my={2} mt={4}>
@@ -459,8 +350,8 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								<Button
 									variant="primary"
 									type="submit"
+									disabled={isSubmitting || publicationIds.length < 1}
 									loading={isSubmitting}
-									disabled={isSubmitting}
 								>
 									Exportovat
 								</Button>
@@ -470,19 +361,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
-								<Text ml={2}>
-									{getPreselectedChildren(values.pagesFilter).length} Stránek |
-								</Text>
-
-								<EditSelectedChildren
-									preSelected={getPreselectedChildren(values.pagesFilter)}
-									isSecond={isSecond}
-									disabled={
-										values.format.id !== 'json' && values.format.id !== 'csv'
-									}
-									onEdit={selected => {
-										setFieldValue('pagesFilter', selected);
-									}}
+								<Text ml={2}>{publicationIds.length} publikací | </Text>
+								<EditSelectedPublications
+									onEdit={() => null}
+									preSelected={[]}
 								/>
 							</Flex>
 						</Flex>
@@ -493,23 +375,25 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	);
 };
 
-const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
+const BulkExportDialog: FC = () => {
 	return (
 		<ModalDialog
 			label="Info"
 			control={openModal => (
-				<IconButton
-					color="primary"
+				<Button
+					px={2}
+					minWidth={60}
+					variant="primary"
 					onClick={openModal}
-					tooltip="Exportovat publikaci"
+					tooltip="Exportovat publikace"
 				>
-					<MdDownload size={24} />
-				</IconButton>
+					Export
+				</Button>
 			)}
 		>
-			{closeModal => <ExportForm closeModal={closeModal} isSecond={isSecond} />}
+			{closeModal => <ExportForm closeModal={closeModal} />}
 		</ModalDialog>
 	);
 };
 
-export default PublicationExportDialog;
+export default BulkExportDialog;
