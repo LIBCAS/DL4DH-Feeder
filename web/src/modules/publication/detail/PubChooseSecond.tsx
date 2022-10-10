@@ -167,6 +167,7 @@ const ChoosePeriodical: FC<{
 	onClose: () => void;
 	variant?: 'left' | 'right';
 }> = ({ id: rootId, onClose, variant }) => {
+	//TODO: cleanup
 	const pubCtx = usePublicationContext();
 	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
 	const [sp] = useSearchParams();

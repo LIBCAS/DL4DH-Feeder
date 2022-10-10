@@ -1,6 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -15,6 +15,7 @@ import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
+import { EditSelectedChildren } from 'components/tiles/TilesWithCheckbox';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
@@ -27,6 +28,7 @@ import {
 	ExportFieldOption,
 	exportFieldOptions,
 	ExportFilter,
+	ExportFilterEQ,
 	ExportFormatOption,
 	ExportSort,
 	nameTagParamsOptions,
@@ -45,6 +47,7 @@ export type ExportFormType = {
 	altoParams?: AltoParam[];
 	nameTagParams?: TagParam[];
 	udPipeParams?: PipeParam[];
+	pagesFilter: string[];
 };
 
 export type ExportParasConfig = {
@@ -97,7 +100,23 @@ type Props = {
 };
 
 export const formatValues = (values: ExportFormType): ExportParasConfig => {
-	const common = { sorting: [], filters: [] };
+	const common: { sorting: never[]; filters: ExportFilter[] } = {
+		sorting: [],
+		filters:
+			values.pagesFilter.length > 0
+				? [{ operation: 'OR', filters: [] as ExportFilterEQ[] }]
+				: [],
+	};
+	if (values.pagesFilter.length > 0) {
+		values.pagesFilter.forEach(pf =>
+			common.filters[0].filters.push({
+				operation: 'EQ',
+				value: pf,
+				field: '_id',
+			}),
+		);
+	}
+
 	const format = values.format.id;
 	if (format === 'alto' || format === 'text') {
 		return { params: { ...common } };
@@ -160,6 +179,27 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		? enrichedFormatOptions
 		: commonFormatOptions;
 
+	const getPreselectedChildren = useCallback(
+		(pagesFilter: string[]) => {
+			if (pagesFilter.length > 0) {
+				return pagesFilter;
+			}
+			if (isSecond) {
+				return (
+					pubCtx.publicationChildrenFilteredOfSecond ??
+					pubCtx.publicationChildrenOfSecond ??
+					[]
+				).map(p => p.pid);
+			}
+			return (
+				pubCtx.publicationChildrenFiltered ??
+				pubCtx.publicationChildren ??
+				[]
+			).map(p => p.pid);
+		},
+		[pubCtx, isSecond],
+	);
+
 	const formik = useFormik<ExportFormType>({
 		initialValues: {
 			format: formatOptions[0],
@@ -167,6 +207,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 			excludeFields: [],
 			exportAll: false,
 			delimiter: delimiterEnum.comma,
+			pagesFilter: [],
 		},
 
 		onSubmit: async values => {
@@ -415,7 +456,12 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>
-								<Button variant="primary" type="submit">
+								<Button
+									variant="primary"
+									type="submit"
+									loading={isSubmitting}
+									disabled={isSubmitting}
+								>
 									Exportovat
 								</Button>
 								<Button variant="outlined" ml={3} onClick={closeModal}>
@@ -425,11 +471,19 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							<Flex alignItems="center">
 								<MdInfo size={20} />
 								<Text ml={2}>
-									{isSecond
-										? pubCtx.publicationChildrenOfSecond?.length ?? '?'
-										: pubCtx.publicationChildren?.length ?? '?'}{' '}
-									Stránek
+									{getPreselectedChildren(values.pagesFilter).length} Stránek |
 								</Text>
+
+								<EditSelectedChildren
+									preSelected={getPreselectedChildren(values.pagesFilter)}
+									isSecond={isSecond}
+									disabled={
+										values.format.id !== 'json' && values.format.id !== 'csv'
+									}
+									onEdit={selected => {
+										setFieldValue('pagesFilter', selected);
+									}}
+								/>
 							</Flex>
 						</Flex>
 					</Box>

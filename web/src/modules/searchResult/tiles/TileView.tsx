@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/core';
+import { css, SerializedStyles } from '@emotion/core';
 import { FC } from 'react';
 import { MdCalendarToday, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import Text, { H3 } from 'components/styled/Text';
 
 import { theme } from 'theme';
 
-import { ModelsEnum, TPublication } from 'api/models';
+import { ModelsEnum, PublicationDto } from 'api/models';
 
 import { modelToText, modelToColor } from 'utils/enumsMap';
 
@@ -37,10 +37,12 @@ const Cell = styled(Text)`
 `;
 
 type Props = {
-	data?: TPublication[];
+	data?: PublicationDto[];
+	tileWrapperCss?: (uuid: string) => SerializedStyles;
+	onSelect?: (uuid: string) => void;
 };
 
-const TileView: FC<Props> = ({ data }) => {
+const TileView: FC<Props> = ({ data, tileWrapperCss, onSelect }) => {
 	const push = useNavigate();
 
 	return (
@@ -58,7 +60,14 @@ const TileView: FC<Props> = ({ data }) => {
 							as="a"
 							ratio={[2.5, 1]}
 							width="100%"
-							onClick={() => push(url)}
+							onClick={e => {
+								e.preventDefault();
+								if (onSelect) {
+									onSelect(d.pid);
+								} else {
+									push(url);
+								}
+							}}
 						>
 							<a
 								href={url}
@@ -78,6 +87,7 @@ const TileView: FC<Props> = ({ data }) => {
 											box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
 											cursor: pointer;
 										}
+										${tileWrapperCss?.(d.pid) ?? ``}
 									`}
 								>
 									{d.enriched && (
