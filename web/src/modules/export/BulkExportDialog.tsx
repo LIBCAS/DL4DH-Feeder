@@ -1,8 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC } from 'react';
-import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
+import { FC, useMemo } from 'react';
+import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import SelectInput from 'components/form/select/SelectInput';
@@ -15,14 +14,11 @@ import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
-
-import TileView from 'modules/searchResult/tiles/TileView';
-import ListView from 'modules/searchResult/list';
+import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
 
 import { api } from 'api';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
-import { useSearchResultContext } from 'hooks/useSearchResultContext';
 
 import {
 	altoParamsOptions,
@@ -50,11 +46,19 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	//TODO:
 
 	const exportCtx = useBulkExportContext();
-	const { result } = useSearchResultContext();
-
-	const enriched = !Object.keys(exportCtx.uuidHeap).some(
-		uuid => !exportCtx.uuidHeap[uuid].enriched,
+	const publicationIds = useMemo(
+		() =>
+			Object.keys(exportCtx.uuidHeap).filter(
+				k => exportCtx.uuidHeap[k].selected,
+			) ?? [],
+		[exportCtx],
 	);
+
+	const enriched =
+		Object.keys(exportCtx.uuidHeap).length > 0 &&
+		!Object.keys(exportCtx.uuidHeap).some(
+			uuid => !exportCtx.uuidHeap[uuid].enriched,
+		);
 
 	const formatOptions: ExportFormatOption[] = enriched
 		? enrichedFormatOptions
@@ -67,13 +71,14 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			excludeFields: [],
 			exportAll: false,
 			delimiter: delimiterEnum.comma,
+			pagesFilter: [],
 		},
 
 		onSubmit: async values => {
 			const config = formatValues(values);
 			const json: ExportParamsDto = {
 				config,
-				publicationIds: ['' /* TODO: ids */],
+				publicationIds,
 			};
 
 			try {
@@ -118,7 +123,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>Exportovat publikace</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
@@ -132,6 +137,34 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						>
 							Přihlásit se
 						</Button>
+					</Box>
+				</Paper>
+			</Flex>
+		);
+	}
+
+	if (Object.keys(exportCtx.uuidHeap).length < 1) {
+		return (
+			<Flex
+				alignItems="center"
+				justifyContent="center"
+				overflow="visible"
+				m={5}
+			>
+				<Paper
+					bg="paper"
+					maxWidth={600}
+					minWidth={['initial', 500]}
+					overflow="visible"
+				>
+					<Box>
+						<Flex width={1} justifyContent="space-between" alignItems="center">
+							<H1 my={3}>Exportovat publikace</H1>
+							<IconButton color="primary" onClick={closeModal}>
+								<MdClose size={32} />
+							</IconButton>
+						</Flex>
+						<Text>Pro export je nutné vybrat aspoň jednu publikaci</Text>
 					</Box>
 				</Paper>
 			</Flex>
@@ -156,7 +189,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>Exportovat publikace</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
@@ -169,7 +202,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							ID publikace: <b>{pubId}</b>
 						</Text> */}
 						<Text fontSize="sm">
-							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
+							Všechny obohacené: <b>{enriched ? 'Áno' : 'Ne'}</b>
 						</Text>
 
 						<Text my={2} mt={4}>
@@ -314,7 +347,12 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>
-								<Button variant="primary" type="submit">
+								<Button
+									variant="primary"
+									type="submit"
+									disabled={isSubmitting || publicationIds.length < 1}
+									loading={isSubmitting}
+								>
 									Exportovat
 								</Button>
 								<Button variant="outlined" ml={3} onClick={closeModal}>
@@ -323,19 +361,13 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
-								<Text ml={2}>
-									{
-										Object.keys(exportCtx.uuidHeap).filter(
-											uuid => exportCtx.uuidHeap[uuid]?.selected,
-										).length
-									}{' '}
-									publikací
-								</Text>
+								<Text ml={2}>{publicationIds.length} publikací | </Text>
+								<EditSelectedPublications
+									onEdit={() => null}
+									preSelected={[]}
+								/>
 							</Flex>
 						</Flex>
-						<Box maxHeight={500} overflowY="auto">
-							<TileView data={result} /*  isLoading={false} */ />
-						</Box>
 					</Box>
 				</Paper>
 			</Flex>
@@ -348,13 +380,15 @@ const BulkExportDialog: FC = () => {
 		<ModalDialog
 			label="Info"
 			control={openModal => (
-				<IconButton
-					color="primary"
+				<Button
+					px={2}
+					minWidth={60}
+					variant="primary"
 					onClick={openModal}
 					tooltip="Exportovat publikace"
 				>
 					Export
-				</IconButton>
+				</Button>
 			)}
 		>
 			{closeModal => <ExportForm closeModal={closeModal} />}
