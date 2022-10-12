@@ -101,30 +101,36 @@ public class SearchApi {
                     uriBuilder
                         .queryParam("fl", "root_pid")
                         .queryParam("q", filters.toQuery())
-                        .queryParam("group", "true")
-                        .queryParam("group.ngroups", "true")
-                        .queryParam("group.field", "root_pid")
+//                        .queryParam("group", "true")
+//                        .queryParam("group.ngroups", "true")
+//                        .queryParam("group.field", "root_pid")
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
-                        .queryParam("facet.contains.ignoreCase", "true");
+                        .queryParam("facet.contains.ignoreCase", "true")
+                        .queryParam("facet.field", "root_pid");
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
                     }
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
-                    return uriBuilder.queryParam("sort",filters.getSort().toSolrSort())
-                        .queryParam("rows",filters.getPageSize())
-                        .queryParam("start",filters.getStart())
-                        .build();
+                    return uriBuilder.queryParam("rows",0)
+//                            .queryParam("sort",filters.getSort().toSolrSort())
+//                            .queryParam("rows",filters.getPageSize())
+//                            .queryParam("start",filters.getStart())
+                            .build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .block();
-        Integer enriched = resultKPlus.getGrouped().get("root_pid").getNgroups();
+        Map<String, Map<String, Object>> kPlusFacets = resultKPlus.getFacet_counts().transformed();
+        Map<String, Object> kPlusRootPids = kPlusFacets.get("root_pid");
+        Integer enriched = kPlusRootPids.size();
         if (filters.useOnlyEnriched()) {
-            ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
+//            ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
+            ids = new ArrayList<>(kPlusRootPids.keySet());
         }
+        kPlusFacets.remove("root_pid");
 
         // Search in Kramerius
         List<String> finalIds = ids;
@@ -196,7 +202,7 @@ public class SearchApi {
                                 )
                         ).collect(Collectors.toList())),
                 facets,
-                resultKPlus.getFacet_counts().transformed());
+                kPlusFacets);
     }
 
     @GetMapping(value = "/collections")
