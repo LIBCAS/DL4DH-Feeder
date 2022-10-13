@@ -2,11 +2,11 @@
 
 ## v0.6.0 (upcoming)
 
-- [TODO] export selected pages
-- [TODO] export selected publications
-- [TODO] searching in set of records on the right sidebar
-- [TODO] text only zoomify view
-- [TODO] advance search filter 
+- export selected pages (JSON and CSV)
+- export selected publications
+- added searching in set of records on the left sidebar
+- basic OCR mode in zoomify view added
+- [TODO] advance search filter
 
 ## v0.5.1
 

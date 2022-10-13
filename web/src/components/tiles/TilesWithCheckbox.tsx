@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { FC, useMemo, useState } from 'react';
-import { MdClose, MdPrint } from 'react-icons/md';
-import { toast } from 'react-toastify';
+import { MdClose } from 'react-icons/md';
 
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
@@ -11,20 +10,15 @@ import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 
-import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
-import TileView from 'modules/searchResult/tiles/TileView';
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import ListView from 'modules/searchResult/list';
+import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
+import TileView from 'modules/searchResult/tiles/TileView';
 
 import { useTheme } from 'theme';
-import { downloadFile } from 'utils';
 
-import { callPrintApi } from 'api/printApi';
 import { PublicationChild, PublicationDto } from 'api/models';
-import { useExportList } from 'api/exportsApi';
 
-import { useSearchResultContext } from 'hooks/useSearchResultContext';
-import { useSearchContext } from 'hooks/useSearchContext';
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
 type FormProps = {
