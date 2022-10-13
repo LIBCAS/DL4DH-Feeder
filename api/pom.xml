@@ -23,7 +23,7 @@
 	<description/>
 
 	<properties>
-		<revision>0.5.0</revision>
+		<revision>0.5.1</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j2.version>2.16.0</log4j2.version>

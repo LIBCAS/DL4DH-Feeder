@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.5.0
+  version: 0.5.1
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url
@@ -64,17 +64,12 @@ paths:
                 type: array
                 items:
                   type: string
-  /api/exports/generate/{id}/{format}:
+  /api/exports/generate/{format}:
     post:
       tags:
       - export-api
       operationId: create
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
       - name: format
         in: path
         required: true
@@ -751,15 +746,15 @@ components:
         totalElements:
           type: integer
           format: int64
-        numberOfElements:
-          type: integer
-          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
         first:
           type: boolean
         last:
           type: boolean
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
         sort:
           $ref: '#/components/schemas/Sort'
         size:

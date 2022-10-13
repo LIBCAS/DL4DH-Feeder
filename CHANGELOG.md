@@ -1,14 +1,26 @@
 # Changelog
 
-## v0.5.1 (upcoming)
+## v0.6.0 (upcoming)
+
+- [TODO] export selected pages
+- [TODO] export selected publications
+- [TODO] searching in set of records on the right sidebar
+- [TODO] text only zoomify view
+- [TODO] advance search filter 
+
+## v0.5.1
 
 - zoomify:
-  - added words highlighting
-  - improved preload static image
+  - words highlighting added
+  - preloading static image improved
   - not found message fix - it's hidden when vector layer is loading
 - periodicals
-  - suplements routing  fix
+  - supplements routing  fix
   - monograph unit / bundle tile styling fix
+- enriched publication tile styling changed
+- model and enrichment tags added to publication detail view
+- new Kramerius+ export API integration
+- FIX: searching in a set of records initial value fix
 
 ## v0.5.0
 

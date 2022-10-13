@@ -54,8 +54,10 @@ public class Export extends AuditModel {
 
     private String delimiter;
 
+    @Column(columnDefinition = "text")
     private String parameters;
 
+    @Column(columnDefinition = "text")
     private String teiParameters;
 
     @Enumerated(EnumType.STRING)
