@@ -1,12 +1,17 @@
 # Changelog
 
-## v0.6.0 (upcoming)
+## v0.6.1 (upcoming)
+
+- [TODO] advanced search filter
+- [TODO] analysis of "text mode" in zoomify view (to replace current basic OCR view)
+- [TODO] add multilanguage support
+
+## v0.6.0
 
 - export selected pages (JSON and CSV)
 - export selected publications
 - added searching in set of records on the left sidebar
 - basic OCR mode in zoomify view added
-- [TODO] advance search filter
 
 ## v0.5.1
 
