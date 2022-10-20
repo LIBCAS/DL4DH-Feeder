@@ -13,6 +13,8 @@
 - added searching in set of records on the left sidebar
 - basic OCR mode in zoomify view added
 - Feed API (custom, newest, mostdesirable)
+- export parameters as text column in database
+- FIX: search api - do not group root pid, list as a facet to show all results
 
 ## v0.5.1
 
