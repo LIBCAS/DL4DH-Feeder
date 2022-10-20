@@ -12,6 +12,7 @@
 - export selected publications
 - added searching in set of records on the left sidebar
 - basic OCR mode in zoomify view added
+- Feed API (custom, newest, mostdesirable)
 
 ## v0.5.1
 
