@@ -380,6 +380,42 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/InfoDto'
+  /api/feed/newest:
+    get:
+      tags:
+      - feed-api
+      operationId: newest
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PublicationsListDto'
+  /api/feed/mostdesirable:
+    get:
+      tags:
+      - feed-api
+      operationId: mostDesirable
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PublicationsListDto'
+  /api/feed/custom:
+    get:
+      tags:
+      - feed-api
+      operationId: custom
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PublicationsListDto'
   /api/exports:
     get:
       tags:
