@@ -47,6 +47,7 @@ const keys = {
 	Redirect: 'redirect',
 	PreviousSearchQuery: 'feeder-previous-searchquery',
 	ViewMode: 'feeder-viewmode',
+	VisitedPublications: 'feeder-visited-publications',
 };
 
 export default {

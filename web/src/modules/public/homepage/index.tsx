@@ -24,6 +24,8 @@ import { theme } from 'theme';
 
 import { useInfoApi } from 'api/infoApi';
 
+import HomepageFeeds from './homepageFeeds';
+
 const Homepage: FC = () => {
 	const [toSearch, setToSearch] = useState('');
 	const [publicOnly, setPublicOnly] = useState<boolean>(true);
@@ -54,12 +56,13 @@ const Homepage: FC = () => {
 		<ResponsiveWrapper bg="white" px={1} mx={0}>
 			<Flex
 				alignItems="center"
-				justifyContent="center"
+				justifyContent="flex-start"
 				height="100vh"
 				flexDirection="column"
+				overflowY="auto"
 			>
-				<Flex flexGrow={1} />
 				<Flex
+					mt={[4, 5]}
 					flexDirection="column"
 					width={[1, 2 / 3, 1 / 2]}
 					alignItems="center"
@@ -128,6 +131,7 @@ const Homepage: FC = () => {
 									css={css`
 										border: 1px solid ${theme.colors.border};
 										box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
+										z-index: 1;
 									`}
 								>
 									<Flex
@@ -183,13 +187,14 @@ const Homepage: FC = () => {
 						</Flex>
 					</NavLinkButton>
 				</Flex>
+				<HomepageFeeds />
 				<Flex flexGrow={1} />
 				<Flex
 					py={[3, 4]}
 					mb={5}
 					bg="primaryLight"
 					flexDirection="column"
-					width={[1, 1 / 2]}
+					width={[1, 1, 1 / 2]}
 					justifyContent="center"
 					alignItems="center"
 				>

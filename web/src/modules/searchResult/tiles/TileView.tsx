@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, SerializedStyles } from '@emotion/core';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { MdCalendarToday, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
@@ -10,6 +10,8 @@ import { Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
 import { Wrapper } from 'components/styled/Wrapper';
 import Text, { H3 } from 'components/styled/Text';
+
+import { updateVisited } from 'modules/public/homepage/homepageFeeds/VisitedHomepageFeed';
 
 import { theme } from 'theme';
 
@@ -40,9 +42,15 @@ type Props = {
 	data?: PublicationDto[];
 	tileWrapperCss?: (uuid: string) => SerializedStyles;
 	onSelect?: (uuid: string) => void;
+	noResultsMsg?: string | ReactNode;
 };
 
-const TileView: FC<Props> = ({ data, tileWrapperCss, onSelect }) => {
+const TileView: FC<Props> = ({
+	data,
+	tileWrapperCss,
+	onSelect,
+	noResultsMsg,
+}) => {
 	const push = useNavigate();
 
 	return (
@@ -50,6 +58,7 @@ const TileView: FC<Props> = ({ data, tileWrapperCss, onSelect }) => {
 			<TileGrid
 				tileSize="300px"
 				isEmpty={data === undefined || data.length < 1}
+				noResults={noResultsMsg}
 			>
 				{(data ?? []).map(d => {
 					const isPeriodical = d.model.includes('periodical');
@@ -71,7 +80,10 @@ const TileView: FC<Props> = ({ data, tileWrapperCss, onSelect }) => {
 						>
 							<a
 								href={url}
-								onClick={e => e.preventDefault()}
+								onClick={e => {
+									e.preventDefault();
+									updateVisited(d);
+								}}
 								css={css`
 									text-decoration: none;
 								`}
