@@ -232,13 +232,6 @@ const Pagination: FC<Props> = ({
 							/>
 						</>
 					)}
-					{/* <Text style={selectStyle}>
-						{`${offset + 1} - ${
-							hasMore ? offset + pageLimit : totalCount
-						} zo ${totalCount} záznamov`}
-					</Text>
-					
-					{page + 1} */}
 					<Button
 						disabled={!hasMore || loading}
 						style={{}}
