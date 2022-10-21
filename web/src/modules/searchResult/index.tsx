@@ -85,6 +85,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 						hasMore={hasMore}
 						offset={state.start}
 						loading={isLoading}
+						stored
 					/>
 				</Flex>
 			)}

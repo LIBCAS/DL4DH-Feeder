@@ -31,6 +31,8 @@ type Props = {
 	loading?: boolean;
 	limitOptions?: number[];
 	localStorageKey?: string;
+	stored?: boolean;
+	hideLimitOptions?: boolean;
 };
 
 const CircleButton: FC<{
@@ -77,6 +79,8 @@ const Pagination: FC<Props> = ({
 	loading,
 	limitOptions,
 	localStorageKey,
+	stored,
+	hideLimitOptions,
 }) => {
 	const [ref, { width: viewportWidth }] = useMeasure({
 		polyfill: ResizeObserver,
@@ -96,7 +100,7 @@ const Pagination: FC<Props> = ({
 	const middlePages = useMemo(
 		() =>
 			// eslint-disable-next-line no-nested-ternary
-			pagesCount < MAX_PAGES_DISPLAY
+			pagesCount <= MAX_PAGES_DISPLAY
 				? [...Array(pagesCount).keys()].map(a => a + 1)
 				: // eslint-disable-next-line no-nested-ternary
 				page > MAX_PAGES_DISPLAY - 1
@@ -117,13 +121,15 @@ const Pagination: FC<Props> = ({
 	);
 
 	useEffect(() => {
-		const limit = parseInt(
-			Store.get<string>(localStorageKey ?? defaultStorageKey) ?? '',
-		);
-		if (limit && pageLimitOptions.some(l => l === limit)) {
-			changeLimit(limit);
+		if (stored) {
+			const limit = parseInt(
+				Store.get<string>(localStorageKey ?? defaultStorageKey) ?? '',
+			);
+			if (limit && pageLimitOptions.some(l => l === limit)) {
+				changeLimit(limit);
+			}
 		}
-	}, [changeLimit, pageLimitOptions, localStorageKey]);
+	}, [changeLimit, pageLimitOptions, localStorageKey, stored]);
 
 	return (
 		<Flex
@@ -133,28 +139,33 @@ const Pagination: FC<Props> = ({
 			alignItems={['flex-end', 'center']}
 			flexDirection={['column', 'row']}
 		>
-			<Flex pr={2}>
-				<label htmlFor="pagination-select">
-					<Text mr={1}>Záznamů na stránku:</Text>
-				</label>
-				<select
-					id="pagination-select"
-					style={{ ...selectStyle, border: 'none' }}
-					value={pageLimit}
-					onChange={e => {
-						const limit = parseInt(e.target.value);
-						changeLimit(limit);
-						Store.set<number>(localStorageKey ?? defaultStorageKey, limit);
-						changePage(1);
-					}}
-				>
-					{pageLimitOptions.map(o => (
-						<option key={o} value={o} style={selectStyle}>
-							{nameFromOption(o)}
-						</option>
-					))}
-				</select>
-			</Flex>
+			{!hideLimitOptions && (
+				<Flex pr={2}>
+					<label htmlFor="pagination-select">
+						<Text mr={1}>Záznamů na stránku:</Text>
+					</label>
+					<select
+						id="pagination-select"
+						style={{ ...selectStyle, border: 'none' }}
+						value={pageLimit}
+						onChange={e => {
+							const limit = parseInt(e.target.value);
+							changeLimit(limit);
+							if (stored) {
+								Store.set<number>(localStorageKey ?? defaultStorageKey, limit);
+							}
+
+							changePage(1);
+						}}
+					>
+						{pageLimitOptions.map(o => (
+							<option key={o} value={o} style={selectStyle}>
+								{nameFromOption(o)}
+							</option>
+						))}
+					</select>
+				</Flex>
+			)}
 			{pageLimit > 0 && totalCount > pageLimit ? (
 				<Flex alignItems="center" justifyContent="center">
 					<Button

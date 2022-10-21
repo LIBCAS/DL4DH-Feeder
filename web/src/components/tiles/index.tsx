@@ -38,12 +38,6 @@ const TileGrid: FC<Props> = ({
 						<Text fontWeight="bold" textAlign="center" fontSize="xxl">
 							{noResults}
 						</Text>
-						{/* <Box
-							as={p => (
-								<img src={fileSearchingImage} alt="Žádné výsledky" {...p} />
-							)}
-							mb={3}
-						/> */}
 					</Paper>
 				) : (
 					noResults

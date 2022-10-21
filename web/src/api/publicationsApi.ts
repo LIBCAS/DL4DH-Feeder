@@ -19,6 +19,12 @@ export const useSearchPublications = infiniteMainSearchEndpoint<
 	[json: Partial<FiltersDto>]
 >(['search-publication'], (api, json) => api.post('search', { json }));
 
+export const useSearchRecommended = infiniteMainSearchEndpoint<
+	[json: Partial<FiltersDto>]
+>(['search-publication-recommended'], (api, json) =>
+	api.post('feed/custom', { json }),
+);
+
 export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
 	useQuery(
 		['publication-detail', uuid],
