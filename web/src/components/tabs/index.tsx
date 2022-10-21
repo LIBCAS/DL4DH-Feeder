@@ -1,4 +1,6 @@
+/** @jsxImportSource @emotion/react */
 import { ReactNode } from 'react';
+import { css, SerializedStyles } from '@emotion/core';
 
 import { Flex } from 'components/styled';
 
@@ -7,6 +9,7 @@ type Props<T extends string> = {
 	activeTab: T;
 	setActiveTab: (key: string) => void;
 	tabsDivider?: ReactNode;
+	wrapperCss?: SerializedStyles;
 };
 
 export const Tabs = <T extends string>({
@@ -14,6 +17,7 @@ export const Tabs = <T extends string>({
 	activeTab,
 	setActiveTab,
 	tabsDivider,
+	wrapperCss,
 }: Props<T>) => (
 	<>
 		{tabs.map((t, i) => (
@@ -21,6 +25,13 @@ export const Tabs = <T extends string>({
 				key={i}
 				onClick={() => setActiveTab(t.key)}
 				color={activeTab === t.key ? 'primary' : 'inactive'}
+				css={
+					wrapperCss
+						? css`
+								${wrapperCss}
+						  `
+						: css``
+				}
 			>
 				{t.jsx}
 				{i < tabs.length - 1 && tabsDivider ? tabsDivider : <></>}
