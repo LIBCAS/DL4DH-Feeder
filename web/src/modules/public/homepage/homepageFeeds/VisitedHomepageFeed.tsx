@@ -25,7 +25,7 @@ export const getVisited = () => {
 export const updateVisited = (publication: PublicationDto) => {
 	let visited = getVisited();
 	const oldIndex = visited.findIndex(v => v.pid === publication.pid);
-	if (oldIndex > 0) {
+	if (oldIndex >= 0) {
 		visited.splice(oldIndex, 1);
 	}
 	visited = [publication, ...visited];
@@ -53,17 +53,19 @@ const VisitedHomepageFeed = () => {
 			/>
 			<Flex width={1} mt={4} alignItems="center" justifyContent="center">
 				<Flex>
-					<Pagination
-						page={page}
-						changePage={setPage}
-						changeLimit={() => null}
-						pageLimit={pageLimit}
-						loading={false}
-						offset={pageLimit * (page - 1)}
-						hasMore={hasMore}
-						totalCount={count}
-						hideLimitOptions
-					/>
+					{count > pageLimit && (
+						<Pagination
+							page={page}
+							changePage={setPage}
+							changeLimit={() => null}
+							pageLimit={pageLimit}
+							loading={false}
+							offset={pageLimit * (page - 1)}
+							hasMore={hasMore}
+							totalCount={count}
+							hideLimitOptions
+						/>
+					)}
 				</Flex>
 			</Flex>
 		</Flex>

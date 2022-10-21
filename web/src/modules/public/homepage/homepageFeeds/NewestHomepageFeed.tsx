@@ -29,17 +29,19 @@ const NewestHomepageFeed = () => {
 			<TileView data={data} />
 			<Flex width={1} mt={4} alignItems="center" justifyContent="center">
 				<Flex>
-					<Pagination
-						page={page}
-						changePage={setPage}
-						changeLimit={() => null}
-						pageLimit={pageLimit}
-						loading={isLoading}
-						offset={pageLimit * (page - 1)}
-						hasMore={hasMore}
-						totalCount={count}
-						hideLimitOptions
-					/>
+					{count > pageLimit && (
+						<Pagination
+							page={page}
+							changePage={setPage}
+							changeLimit={() => null}
+							pageLimit={pageLimit}
+							loading={isLoading}
+							offset={pageLimit * (page - 1)}
+							hasMore={hasMore}
+							totalCount={count}
+							hideLimitOptions
+						/>
+					)}
 				</Flex>
 			</Flex>
 		</Flex>
