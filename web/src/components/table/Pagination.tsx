@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FC, useEffect, useMemo } from 'react';
 import useMeasure from 'react-use-measure';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -91,7 +92,7 @@ const Pagination: FC<Props> = ({
 		() => viewportWidth < collapseWidth,
 		[viewportWidth],
 	);
-
+	const { t } = useTranslation('common');
 	const pageLimitOptions = limitOptions ?? defaultPageLimitOptions;
 
 	const pagesCount = Math.ceil(totalCount / pageLimit);
@@ -171,7 +172,7 @@ const Pagination: FC<Props> = ({
 					<Button
 						p={2}
 						m={0}
-						tooltip="Předchozí stránka"
+						tooltip={t('pagination.prev_page')}
 						disabled={page === 1 || loading}
 						variant="text"
 						onClick={() => changePage(page - 1)}
@@ -236,7 +237,7 @@ const Pagination: FC<Props> = ({
 						disabled={!hasMore || loading}
 						style={{}}
 						variant="text"
-						tooltip="Další stránka"
+						tooltip={t('pagination.next_page')}
 						onClick={() => changePage(page + 1)}
 						p={2}
 						m={0}

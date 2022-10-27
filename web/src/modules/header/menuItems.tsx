@@ -77,7 +77,7 @@ export const HeaderMenu: FC = () => {
 	const { isTablet } = useMobileView();
 	const [sideMenuExpanded, setSideMenuExpanded] = useState(false);
 	return (
-		<Flex ml={1} flexShrink={0} color="headerColor">
+		<Flex ml={1} flexShrink={0} color="headerColor" minHeight={50}>
 			{isTablet ? (
 				<>
 					<Button
