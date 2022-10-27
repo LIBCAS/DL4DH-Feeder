@@ -2,15 +2,17 @@
 import { useFormik } from 'formik';
 import { FC, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import TextInput from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
-const PublishDateFilter: FC<{
+const PublishDateFilterForm: FC<{
 	interval?: { maxYear: number; minYear: number };
 }> = ({ interval }) => {
+	const { t } = useTranslation('search');
 	const maxYear = interval?.maxYear ?? new Date().getFullYear();
 	const minYear = interval?.minYear ?? 0;
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -83,7 +85,7 @@ const PublishDateFilter: FC<{
 					<TextInput
 						p={'0px!important'}
 						id="yearFrom"
-						label="Od"
+						label={t('year-range.from')}
 						labelType="leftToInput"
 						labelMinWidth="30px"
 						width="unset"
@@ -106,7 +108,7 @@ const PublishDateFilter: FC<{
 					<TextInput
 						ml={2}
 						id="yearTo"
-						label="Do"
+						label={t('year-range.to')}
 						labelType="leftToInput"
 						labelMinWidth="30px"
 						width="unset"
@@ -134,7 +136,7 @@ const PublishDateFilter: FC<{
 				</Box>
 				<Box alignSelf="end" mt={3}>
 					<Button type="submit" variant="primary">
-						Použít
+						{t('year-range.apply')}
 					</Button>
 				</Box>
 			</Flex>
@@ -142,4 +144,4 @@ const PublishDateFilter: FC<{
 	);
 };
 
-export default PublishDateFilter;
+export default PublishDateFilterForm;

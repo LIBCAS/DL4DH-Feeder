@@ -33,7 +33,7 @@ getLocales().then(data => {
 		i18n.addResourceBundle('en', ns, val),
 	);
 	// rerender whole page after all jsons are loaded to prevent missing translations
-	i18n.changeLanguage('en');
+	i18n.changeLanguage('cz');
 });
 
 export default i18n;

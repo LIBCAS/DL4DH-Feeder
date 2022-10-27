@@ -11,34 +11,43 @@ type Props = {
 	data?: AvailableFilters;
 	isLoading?: boolean;
 	updateFilter: (type: string) => (key: string) => void;
+	storeKey?: string;
+	withoutCount?: boolean;
+	activeItem?: string;
 };
 
-const KeywordsFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
+const AuthorsFilter: FC<Props> = ({
+	data,
+	isLoading,
+	updateFilter,
+	storeKey,
+}) => {
 	const { t } = useTranslation('search');
-	const items: StatItem[] = useMemo(
+	const authorsItems: StatItem[] = useMemo(
 		() =>
-			data?.keywords
+			data?.authors
 				? [
-						...Object.keys(data?.keywords).map(key => ({
+						...Object.keys(data?.authors).map(key => ({
 							key,
 							label: key,
-							value: data.keywords[key],
+							value: data.authors[key],
 						})),
 				  ].sort((a, b) => b.value - a.value)
 				: [],
-		[data?.keywords],
+		[data?.authors],
 	);
 
 	return (
 		<AccordionFilter
+			label={t('authors')}
+			isExpanded
 			maxRows={3}
-			items={items}
 			isLoading={isLoading}
-			label={t('keywords')}
-			storeKey="keywords"
-			updateFilter={updateFilter('keywords')}
+			storeKey={storeKey ?? 'authors'}
+			items={authorsItems}
+			updateFilter={updateFilter('authors')}
 		/>
 	);
 };
 
-export default KeywordsFilter;
+export default AuthorsFilter;

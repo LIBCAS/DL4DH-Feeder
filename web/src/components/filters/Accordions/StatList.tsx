@@ -4,6 +4,7 @@ import styled from '@emotion/styled/macro';
 import Dialog from '@reach/dialog';
 import { FC, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import { OperationToTextLabel } from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
@@ -39,6 +40,7 @@ export const StatList: FC<{
 	const [exp, setExp] = useState<boolean>(!maxRows);
 	const [dialogOpen, setDialogOpen] = useState<string>('');
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -145,7 +147,7 @@ export const StatList: FC<{
 						refresh?.();
 					}}
 				>
-					<Text fontWeight="bold">Zobrazit vice</Text>
+					<Text fontWeight="bold">{t('filters:btn_show_more')}</Text>
 					<Flex color="primary">
 						<MdExpandMore
 							size={22}
@@ -169,7 +171,7 @@ export const StatList: FC<{
 								refresh?.();
 							}}
 						>
-							<Text fontWeight="bold">Zobrazit méně</Text>
+							<Text fontWeight="bold">{t('filters:btn_show_less')}</Text>
 							<Flex color="primary">
 								<MdExpandMore
 									size={22}

@@ -15,6 +15,7 @@
       "next_page":"Next page"
     },
     "of": "of",
+    "all": "All",
     "cancel": "Cancel",
     "close": "Close",
     "warning": "Warning",
@@ -163,6 +164,13 @@
       "private": "Private",
       "accessible": "All accessible documents",
       "all": "All"
+    },
+    "enrichment": {
+      "label": "Enrichment",
+      "enriched_only": "Enriched only",
+      "not_enriched_only": "Not enriched only",
+      "is_enriched": "Enriched"
+      
     },
     "year-range": {
       "label": "Publishing Year",

@@ -1,4 +1,5 @@
 import { FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailableFilters, ModelsEnum } from 'api/models';
 
@@ -15,23 +16,24 @@ type Props = {
 };
 
 const ModelsFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
+	const { t } = useTranslation('model');
 	const items: StatItem[] = useMemo(
 		() =>
 			data?.models
 				? [
 						...Object.keys(data?.models).map(key => ({
-							label: modelToText(key as ModelsEnum),
+							label: t(modelToText(key as ModelsEnum)),
 							key,
 							value: data.models[key],
 						})),
 				  ].sort((a, b) => b.value - a.value)
 				: [],
-		[data?.models],
+		[data?.models, t],
 	);
 
 	return (
 		<AccordionFilter
-			label="Typ dokumentu"
+			label={t('search:doctypes')}
 			isExpanded
 			isLoading={isLoading}
 			storeKey="models"
