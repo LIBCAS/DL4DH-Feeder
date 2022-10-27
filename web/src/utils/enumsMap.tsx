@@ -34,16 +34,16 @@ export const BROWSER_MAX_PHOTO_FILE_SIZE = 30971520;
 export const BACKEND_MAX_PHOTO_FILE_SIZE = 20971520;
 
 const ModelsTexts: Record<ModelsEnum, string> = {
-	ARCHIVAL: 'Archiválie',
-	GRAPHICS: 'Grafika',
-	MANUSCRIPT: 'Rukopis',
-	MAP: 'Mapa',
-	MONOGRAPH: 'Kniha',
-	PERIODICAL: 'Noviny a časopisy',
-	PERIODICALITEM: 'Noviny a časopisy',
-	SHEETMUSIC: 'Hudebniny',
-	MONOGRAPHUNIT: 'Kniha',
-	MONOGRAPHBUNDLE: 'Svazek knih',
+	ARCHIVAL: 'model',
+	GRAPHICS: 'graphic',
+	MANUSCRIPT: 'manuscript',
+	MAP: 'map',
+	MONOGRAPH: 'monograph',
+	PERIODICAL: 'periodical',
+	PERIODICALITEM: 'periodicalitem',
+	SHEETMUSIC: 'sheetmusic',
+	MONOGRAPHUNIT: 'monographunit',
+	MONOGRAPHBUNDLE: 'monographbundle',
 };
 const ModelsColors: Record<ModelsEnum, string> = {
 	ARCHIVAL: 'primary',
@@ -60,9 +60,7 @@ const ModelsColors: Record<ModelsEnum, string> = {
 
 export const modelToText = (model: ModelsEnum) => {
 	const parsed = model.split('/');
-	return parsed
-		.map(p => ModelsTexts[p.toUpperCase() as ModelsEnum] ?? p)
-		.join('/');
+	return parsed.map(p => ModelsTexts[p.toUpperCase() as ModelsEnum] ?? p);
 };
 
 export const modelToColor = (model: ModelsEnum) => {
@@ -75,11 +73,11 @@ export const modelToColor = (model: ModelsEnum) => {
 export const availabilityToText = (value: string) => {
 	switch (value) {
 		case 'PUBLIC':
-			return 'Pouze veřejné';
+			return 'search:accessibility:public';
 		case 'PRIVATE':
-			return 'Pouze neveřejné';
+			return 'search:accessibility:private';
 		case 'ALL':
-			return 'Všechny';
+			return 'search:accessibility:all';
 		default:
 			return 'Neznáma hodnota';
 	}
@@ -88,11 +86,11 @@ export const availabilityToText = (value: string) => {
 export const enrichmentToText = (value: string) => {
 	switch (value) {
 		case 'ENRICHED':
-			return 'Pouze obohacené';
+			return 'search:enrichment:enriched_only';
 		case 'NOT_ENRICHED':
-			return 'Pouze neobohacené';
+			return 'search:enrichment:enriched_only';
 		case 'ALL':
-			return 'Všechny';
+			return 'common:all';
 		default:
 			return 'Neznáma hodnota';
 	}

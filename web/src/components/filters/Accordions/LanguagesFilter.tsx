@@ -13,7 +13,7 @@ type Props = {
 	updateFilter: (type: string) => (key: string) => void;
 };
 
-const KeywordsFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
+const LanguagesFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
 	const { t } = useTranslation('search');
 	const items: StatItem[] = useMemo(
 		() =>
@@ -34,11 +34,11 @@ const KeywordsFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
 			maxRows={3}
 			items={items}
 			isLoading={isLoading}
-			label={t('keywords')}
-			storeKey="keywords"
-			updateFilter={updateFilter('keywords')}
+			label={t('languages')}
+			storeKey="languages"
+			updateFilter={updateFilter('languages')}
 		/>
 	);
 };
 
-export default KeywordsFilter;
+export default LanguagesFilter;

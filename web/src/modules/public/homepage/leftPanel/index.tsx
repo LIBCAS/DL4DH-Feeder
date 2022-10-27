@@ -1,23 +1,20 @@
-/** @jsxImportSource @emotion/react */
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import Accordion from 'components/accordion';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box } from 'components/styled';
 import AvailabilityFilter from 'components/filters/Accordions/AvailabilityFilter';
 import EnrichmentFilter from 'components/filters/Accordions/EnrichmentFilter';
 import KeywordsFilter from 'components/filters/Accordions/KeywordsFilter';
-import StatList, { StatItem } from 'components/filters/Accordions/StatList';
 import ModelsFilter from 'components/filters/Accordions/ModelsFilter';
+import AuthorsFilter from 'components/filters/Accordions/AuthorsFilter';
+import LanguagesFilter from 'components/filters/Accordions/LanguagesFilter';
+import PublishDateFilter from 'components/filters/Accordions/publishDateFilter';
 
 import { AvailableFilters } from 'api/models';
 
-import { mapLangToCS } from 'utils/languagesMap';
-
 import ActiveFilters from './ActiveFilters';
 import NameTagFilter from './NameTagFilter';
-import PublishDateFilter from './PublishDateFilter';
 
 type Props = {
 	data?: AvailableFilters;
@@ -25,45 +22,6 @@ type Props = {
 };
 
 const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
-	const yearsInterval = useMemo(() => {
-		const years = data?.years;
-		if (years) {
-			const numYears = Object.keys(years)
-				.map(k => parseInt(k))
-				.filter(y => y !== 0);
-			return { maxYear: Math.max(...numYears), minYear: Math.min(...numYears) };
-		} else {
-			return undefined;
-		}
-	}, [data]);
-
-	const authorsItems: StatItem[] = useMemo(
-		() =>
-			data?.authors
-				? [
-						...Object.keys(data?.authors).map(key => ({
-							key,
-							label: key,
-							value: data.authors[key],
-						})),
-				  ].sort((a, b) => b.value - a.value)
-				: [],
-		[data?.authors],
-	);
-	const languagesItems: StatItem[] = useMemo(
-		() =>
-			data?.languages
-				? [
-						...Object.keys(data?.languages).map(key => ({
-							key,
-							label: mapLangToCS?.[key] ?? key,
-							value: data.languages[key],
-						})),
-				  ].sort((a, b) => b.value - a.value)
-				: [],
-		[data?.languages],
-	);
-
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const handleUpdateFilter = useCallback(
@@ -116,44 +74,19 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 				updateFilter={handleUpdateFilter}
 				isLoading={isLoading}
 			/>
-			{authorsItems.length > 0 && (
-				<Accordion
-					label="Autor"
-					isExpanded
-					isLoading={isLoading}
-					storeKey="authors"
-				>
-					{onRefresh => (
-						<StatList
-							items={authorsItems}
-							maxRows={3}
-							refresh={onRefresh}
-							onClick={handleUpdateFilter('authors')}
-						/>
-					)}
-				</Accordion>
-			)}
-			{languagesItems.length > 0 && (
-				<Accordion label="Jazyk" isLoading={isLoading} storeKey="languages">
-					{onRefresh => (
-						<StatList
-							items={languagesItems}
-							maxRows={3}
-							refresh={onRefresh}
-							onClick={handleUpdateFilter('languages')}
-						/>
-					)}
-				</Accordion>
-			)}
-
-			<Accordion
-				label="Rok vydání"
-				isExpanded
+			<AuthorsFilter
+				data={data}
+				updateFilter={handleUpdateFilter}
 				isLoading={isLoading}
-				storeKey="publishDateFilter"
-			>
-				<PublishDateFilter interval={yearsInterval} />
-			</Accordion>
+			/>
+
+			<LanguagesFilter
+				data={data}
+				updateFilter={handleUpdateFilter}
+				isLoading={isLoading}
+			/>
+
+			<PublishDateFilter data={data} isLoading={isLoading} />
 
 			<NameTagFilter />
 

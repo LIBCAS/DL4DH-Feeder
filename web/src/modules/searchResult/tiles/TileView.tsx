@@ -4,6 +4,7 @@ import { FC, ReactNode } from 'react';
 import { MdCalendarToday, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
+import { useTranslation } from 'react-i18next';
 
 import TileGrid from 'components/tiles';
 import { Flex } from 'components/styled';
@@ -21,10 +22,11 @@ import { modelToText, modelToColor } from 'utils/enumsMap';
 
 export const PubModelTagBadge: FC<{ model: ModelsEnum }> = ({ model }) => {
 	const color = modelToColor(model);
+	const { t } = useTranslation('model');
 	return (
 		<Flex bg={color} color="white">
 			<Text py={1} my={0} px={3} fontSize="sm">
-				{modelToText(model)}
+				{t(modelToText(model))}
 			</Text>
 		</Flex>
 	);
@@ -52,6 +54,7 @@ const TileView: FC<Props> = ({
 	noResultsMsg,
 }) => {
 	const push = useNavigate();
+	const { t } = useTranslation('search');
 
 	return (
 		<Wrapper p={2}>
@@ -210,7 +213,7 @@ const TileView: FC<Props> = ({
 											{d.enriched && (
 												<Flex bg="primary" color="white" opacity="0.8" mr={2}>
 													<Text py={1} my={0} px={3} fontSize="sm">
-														Obohacená
+														{t('enrichment.is_enriched')}
 													</Text>
 												</Flex>
 											)}

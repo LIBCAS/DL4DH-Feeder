@@ -2,6 +2,7 @@
 import { css } from '@emotion/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import AvailabilityFilter from 'components/filters/Accordions/AvailabilityFilter';
 import BrowseFilter from 'components/filters/Accordions/BrowseFilter';
@@ -22,6 +23,7 @@ import { useAvailableFilters } from 'api/publicationsApi';
 
 import { modelToText } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
+import i18n from 'utils/localization';
 
 type TableItem = {
 	id: string;
@@ -110,6 +112,7 @@ const Browse = () => {
 	const nav = useNavigate();
 	const theme = useTheme();
 	const response = useAvailableFilters({ availability, query: browseQuery });
+	const { t } = useTranslation();
 
 	const [tableData, setTableData] = useState<TableItem[]>([]);
 
@@ -140,6 +143,14 @@ const Browse = () => {
 	}
 	return (
 		<Wrapper height="100vh" alignItems="flex-start" width={1} bg="paper">
+			{i18n.t('common', 'cancel')}
+			<br />
+			{i18n.t('common:cancel')}
+			<br />
+			{i18n.t('common/cancel')}
+			<br />
+			{i18n.t(['common', 'cancel'])}
+			<br />
 			<MainContainer
 				subHeader={{
 					leftJsx: (
@@ -224,7 +235,9 @@ const Browse = () => {
 								)
 							}
 						>
-							<Text flex={[5, 6, 7]}>{getLabel(row.label, category)}</Text>
+							<Text flex={[5, 6, 7]}>
+								{t('model.' + getLabel(row.label, category))}
+							</Text>
 
 							<Text textAlign="right" flex={1} mx={2}>
 								{row.count} x

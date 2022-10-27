@@ -2,6 +2,8 @@
 import { css } from '@emotion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex, Box } from 'components/styled';
 import IconButton from 'components/styled/IconButton';
@@ -30,10 +32,6 @@ import {
 } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
-// const keyToText: Record<string, string> = {
-// 	keywords: 'Klíčové slovo',
-// };
-
 function removeParam(
 	sp: URLSearchParams,
 	key: string,
@@ -53,32 +51,6 @@ function removeParam(
 	sp.delete('page');
 }
 
-const enumToText = (
-	type: string,
-	value: string,
-	collectionLabels: Record<string, Collection>,
-) => {
-	switch (type) {
-		case 'models':
-			return modelToText(value as ModelsEnum);
-		case 'availability':
-			return availabilityToText(value);
-		case 'enrichment':
-			return enrichmentToText(value);
-		case 'query':
-			return `Řetězec: "${value}"`;
-		case 'yearsInterval':
-			return `Léta: ${value}`;
-		case 'languages':
-			return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
-		case 'collections':
-			return `Sbírka: ${collectionLabels?.[value]?.descs?.cs ?? value}`;
-
-		default:
-			return value;
-	}
-};
-
 const ActiveFilters: React.FC = () => {
 	const theme = useTheme();
 	const { state } = useSearchContext();
@@ -86,6 +58,7 @@ const ActiveFilters: React.FC = () => {
 	const nav = useNavigate();
 	const aval = useAvailableFilters();
 	const NT = state.searchQuery?.nameTagFilters;
+	const { t } = useTranslation();
 
 	const yearsInterval = `${state.searchQuery?.from ?? null} - ${
 		state.searchQuery?.to ?? null
@@ -107,6 +80,35 @@ const ActiveFilters: React.FC = () => {
 		yearsInterval: yearsInterval.includes('null') ? [] : [yearsInterval],
 	};
 
+	const enumToText = useCallback(
+		(
+			type: string,
+			value: string,
+			collectionLabels: Record<string, Collection>,
+		) => {
+			switch (type) {
+				case 'models':
+					return modelToText(value as ModelsEnum);
+				case 'availability':
+					return t(availabilityToText(value));
+				case 'enrichment':
+					return t(enrichmentToText(value));
+				case 'query':
+					return `Řetězec: "${value}"`;
+				case 'yearsInterval':
+					return `Léta: ${value}`;
+				case 'languages':
+					return `Jazyk: ${mapLangToCS?.[value] ?? value}`;
+				case 'collections':
+					return `Sbírka: ${collectionLabels?.[value]?.descs?.cs ?? value}`;
+
+				default:
+					return value;
+			}
+		},
+		[t],
+	);
+
 	// no filters?
 	if (
 		!Object.keys(arrayFilters).some(k => arrayFilters[k].length > 0) &&
@@ -127,10 +129,10 @@ const ActiveFilters: React.FC = () => {
 			<Box my={3} px={2}>
 				<Flex justifyContent="space-between" alignItems="center" mb={2}>
 					<Text color="warning" fontWeight="bold" my={0}>
-						Aktivní filtry
+						{t('filters:used_header')}
 					</Text>
 					<IconButton
-						tooltip="Smazat všechny filtry"
+						tooltip={t('filters:tooltip_remove_filter_all')}
 						width={22}
 						height={22}
 						color="white"

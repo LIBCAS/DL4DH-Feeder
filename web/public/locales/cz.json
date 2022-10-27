@@ -15,6 +15,7 @@
       "next_page":"Další stránka"
     },
     "of": "z",
+    "all": "Vše",
     "cancel": "Zrušit",
     "close": "Zavřít",
     "warning": "Varování",
@@ -163,6 +164,13 @@
       "private": "Pouze neveřejné",
       "accessible": "Všechny dostupné dokumenty",
       "all": "Vše"
+    },
+    "enrichment": {
+      "label": "Obohacení",
+      "enriched_only": "Pouze obohacené",
+      "not_enriched_only": "Pouze neobohacené",
+      "is_enriched": "Obohacená"
+      
     },
     "year-range": {
       "label": "Rok vydání",

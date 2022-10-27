@@ -1,4 +1,5 @@
 import { FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailableFilters } from 'api/models';
 
@@ -23,23 +24,24 @@ const AvailabilityFilter: FC<Props> = ({
 	withoutCount,
 	activeItem,
 }) => {
+	const { t } = useTranslation('search');
 	const items: StatItem[] = useMemo(
 		() => [
 			{
-				label: 'Pouze veřejné',
+				label: t('accessibility.public'),
 				value: withoutCount ? undefined : data?.availability.public ?? 0,
 				key: 'PUBLIC',
 				bold: activeItem && activeItem === 'PUBLIC' ? true : false,
 			},
 			{
 				key: 'PRIVATE',
-				label: 'Pouze neveřejné',
+				label: t('accessibility.private'),
 				value: withoutCount ? undefined : data?.availability.private ?? 0,
 				bold: activeItem && activeItem === 'PRIVATE' ? true : false,
 			},
 			{
 				key: 'ALL',
-				label: 'Všechny',
+				label: t('accessibility.all'),
 				bold: activeItem && activeItem === 'ALL' ? true : false,
 				value: withoutCount
 					? undefined
@@ -47,12 +49,12 @@ const AvailabilityFilter: FC<Props> = ({
 					  (data?.availability.public ?? 0),
 			},
 		],
-		[data, withoutCount, activeItem],
+		[data, withoutCount, activeItem, t],
 	);
 
 	return (
 		<AccordionFilter
-			label="Dostupnost"
+			label={t('accessibility.label')}
 			isExpanded
 			isLoading={isLoading}
 			storeKey={storeKey ?? 'availability'}

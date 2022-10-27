@@ -1,4 +1,5 @@
 import { FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailableFilters } from 'api/models';
 
@@ -13,25 +14,26 @@ type Props = {
 };
 
 const EnrichmentFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
+	const { t } = useTranslation('search');
 	const items: StatItem[] = useMemo(
 		() => [
 			{
-				label: 'Pouze obohacené',
+				label: t('enrichment.enriched_only'),
 				value: data?.enrichment.ENRICHED ?? 0,
 				key: 'ENRICHED',
 			},
 			{
 				key: 'NOT_ENRICHED',
-				label: 'Pouze neobohacené',
+				label: t('enrichment.not_enriched_only'),
 				value: data?.enrichment.NOT_ENRICHED ?? 0,
 			},
 		],
-		[data],
+		[data, t],
 	);
 
 	return (
 		<AccordionFilter
-			label="Obohacení"
+			label={t('enrichment.label')}
 			isExpanded
 			isLoading={isLoading}
 			items={items}

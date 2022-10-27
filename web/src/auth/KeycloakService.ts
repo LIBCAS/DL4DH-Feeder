@@ -3,7 +3,8 @@ const keycloak = new Keycloak({
 	url:
 		// eslint-disable-next-line no-nested-ternary
 		window.origin === 'http://localhost:3000'
-			? 'https://keycloak.sekan.eu/'
+			? //? 'http://feeder.dev.inqool.cz'
+			  'https://keycloak.sekan.eu/'
 			: process.env.REACT_APP_KEYCLOAK_URL
 			? process.env.REACT_APP_KEYCLOAK_URL
 			: window.origin,
