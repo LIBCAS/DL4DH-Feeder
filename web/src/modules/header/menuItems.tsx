@@ -15,17 +15,21 @@ import { useInfoApi } from 'api/infoApi';
 
 import { useMobileView } from 'hooks/useViewport';
 
+import i18n from 'utils/localization';
+
 import UserBadge from './UserBadge';
+import LangSwitch from './LangSwitch';
 
 type MenuItem = {
 	to?: string;
 	href?: string | 'HOOK';
 	external?: boolean;
 	label: string;
-	component?: React.ReactNode;
+	jsx?: (variant: string) => JSX.Element;
 	newTab?: boolean;
 	order: number;
 	private?: boolean;
+	onClick?: () => void;
 };
 
 const menuItems: MenuItem[] = [
@@ -45,9 +49,13 @@ const menuItems: MenuItem[] = [
 		order: 2,
 	},
 	{
-		label: 'English',
-		component: Button,
+		label: i18n.language === 'cz' ? 'English' : 'Cz',
+		// eslint-disable-next-line react/display-name
+		jsx: (variant: string) => <LangSwitch variant={variant} />,
 		order: 3,
+		onClick: () => {
+			i18n.changeLanguage('en');
+		},
 	},
 	{
 		to: '/exports',
@@ -142,6 +150,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					minWidth={30}
 					px={1}
 					mr={1}
+					onClick={item.onClick}
 				>
 					{item.label}
 				</ButtonComponent>
@@ -154,6 +163,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					px={1}
 					my={2}
 					fontSize="inherit"
+					onClick={item.onClick}
 				>
 					{item.label}
 				</ButtonComponent>
@@ -169,9 +179,19 @@ const MenuButtons: FC<{ variant: 'desktop' | 'tablet' }> = ({ variant }) => {
 	).sort((a, b) => a.order - b.order);
 	return (
 		<>
-			{items.map((item, i) => (
-				<MenuButton item={item} variant={variant} key={`${item.label}-${i}`} />
-			))}
+			{items.map((item, i) => {
+				if (item.jsx) {
+					return item.jsx(variant);
+				} else {
+					return (
+						<MenuButton
+							item={item}
+							variant={variant}
+							key={`${item.label}-${i}`}
+						/>
+					);
+				}
+			})}
 			{variant === 'tablet' && <Divider mr={2} my={2} />}
 			<UserBadge variant={variant} />
 		</>
