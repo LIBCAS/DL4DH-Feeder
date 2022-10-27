@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react';
 import { css } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -18,6 +19,7 @@ const feeds = {
 
 const HomepageFeeds = () => {
 	const [activeTab, setActiveTab] = useState<string>('visited');
+	const { t } = useTranslation('homepage');
 
 	const Feed = feeds[activeTab];
 	const theme = useTheme();
@@ -60,7 +62,7 @@ const HomepageFeeds = () => {
 										color={activeTab === 'visited' ? 'primary' : 'textH4'}
 										variant="text"
 									>
-										NAVŠTÍVENÉ
+										{t('feeds.visited').toUpperCase()}
 									</Button>
 								</Flex>
 							),
@@ -91,7 +93,7 @@ const HomepageFeeds = () => {
 										color={activeTab === 'enriched' ? 'primary' : 'textH4'}
 										variant="text"
 									>
-										{'Nejnovější obohacené'.toUpperCase()}
+										{t('feeds.enriched').toUpperCase()}
 									</Button>
 								</Flex>
 							),

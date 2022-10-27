@@ -20,6 +20,7 @@
 		"formik": "^2.2.2",
 		"fuse.js": "^6.4.6",
 		"get-orientation": "^1.1.2",
+		"i18next": "^22.0.3",
 		"jwt-decode": "^3.1.2",
 		"keycloak-js": "^19.0.1",
 		"ky": "^0.28.6",
@@ -33,6 +34,7 @@
 		"react-dom": "^17.0.2",
 		"react-draggable": "^4.4.4",
 		"react-dropzone": "^11.4.2",
+		"react-i18next": "11.8.x",
 		"react-icons": "^4.4.0",
 		"react-query": "^3.39.1",
 		"react-router-dom": "^6.3.0",
@@ -50,8 +52,7 @@
 		"typescript": "^4.1.2",
 		"uuid": "^8.3.2",
 		"web-vitals": "^1.0.1",
-		"xml2js": "^0.4.23",
-		"yup": "^0.32.11"
+		"xml2js": "^0.4.23"
 	},
 	"devDependencies": {
 		"@emotion/eslint-plugin": "^11.0.0",
@@ -103,7 +104,7 @@
 			"react-app/jest"
 		]
 	},
-	"proxy": "http://feeder.dev.inqool.cz/",
+	"proxy": "https://feeder.nkp.cz/",
 	"lint-staged": {
 		"{src/**,.storybook,.}/*.{js,jsx,ts,tsx,json,md}": [
 			"prettier --write",

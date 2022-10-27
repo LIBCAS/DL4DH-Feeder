@@ -10,6 +10,7 @@ import {
 	MdSearch,
 } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
+import { useTranslation } from 'react-i18next';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import TextInput from 'components/form/input/TextInput';
@@ -33,6 +34,7 @@ const Homepage: FC = () => {
 	const [wrapperRef, { width }] = useMeasure({
 		debounce: 100,
 	});
+	const { t } = useTranslation('homepage');
 	const query = `${toSearch ? `query=${toSearch}` : ''}${
 		publicOnly ? `${toSearch ? '&' : ''}availability=PUBLIC` : ''
 	}`;
@@ -90,7 +92,7 @@ const Homepage: FC = () => {
 					>
 						<Flex ref={wrapperRef} width={1}>
 							<TextInput
-								placeholder="Hledejte v DL4DH Feeder"
+								placeholder={t('search_placeholder')}
 								label=""
 								labelType="inline"
 								color="primary"
@@ -148,7 +150,6 @@ const Homepage: FC = () => {
 												key={index}
 												onClick={() => {
 													setToSearch(h);
-													//handleUpdateContext(h);
 													setHints([]);
 												}}
 												css={css`
@@ -171,8 +172,8 @@ const Homepage: FC = () => {
 							<Checkbox
 								checked={publicOnly}
 								onChange={() => setPublicOnly(p => !p)}
-								aria-label="Pouze veřejné"
-								label="Pouze veřejné"
+								aria-label={t('public_only')}
+								label={t('public_only')}
 							/>
 						</Flex>
 					</Flex>
@@ -181,7 +182,7 @@ const Homepage: FC = () => {
 						to={`/search${query ? `?${query}` : ''}`}
 						variant="primary"
 					>
-						Vstoupit do DL4DH Feeder{' '}
+						{t('btn_enter')}
 						<Flex ml={2}>
 							<MdArrowForward size={22} />
 						</Flex>
@@ -201,7 +202,7 @@ const Homepage: FC = () => {
 					<Flex alignItems="center">
 						<MdInfo />
 						<Text ml={2} fontSize="md" fontWeight="bold">
-							Co je DL4DH Feeder?
+							{t('about')}
 						</Text>
 					</Flex>
 					<Text textAlign="center" fontSize="sm" px={[3, 5]}>
