@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MdBolt, MdClear, MdSearch } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
+import { useTranslation } from 'react-i18next';
 
 import Accordion from 'components/accordion';
 import TextInput from 'components/form/input/TextInput';
@@ -33,6 +34,8 @@ const NameTagFilter = () => {
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
 	});
+
+	const { t } = useTranslation('nametag');
 
 	useEffect(() => {
 		setNameTagFacet(sp.get('nameTagFacet') ?? '');
@@ -118,7 +121,7 @@ const NameTagFilter = () => {
 					<Flex alignItems="center">
 						<MdBolt size={14} />
 
-						<H4 mx={2}>Hledat NameTag</H4>
+						<H4 mx={2}>{t('search_nametag')}</H4>
 					</Flex>
 				}
 				//isLoading={isLoading}

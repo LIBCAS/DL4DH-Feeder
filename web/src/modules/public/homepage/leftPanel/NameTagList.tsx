@@ -1,5 +1,6 @@
 import { FC, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import Accordion from 'components/accordion';
 import { Flex } from 'components/styled';
@@ -10,16 +11,13 @@ import { nameTagQueryCtor } from 'utils';
 
 import { AvailableNameTagFilters, TagNameEnum } from 'api/models';
 
-import {
-	NameTagFilterToNameTagEnum,
-	NameTagIcon,
-	NameTagToText,
-} from 'utils/enumsMap';
+import { NameTagFilterToNameTagEnum, NameTagIcon } from 'utils/enumsMap';
 
 export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 	nameTagData,
 }) => {
 	const [searchParams, setSearchParams] = useSearchParams();
+	const { t } = useTranslation('nametag');
 
 	const nameTagKeys = Object.keys(nameTagData ?? {});
 
@@ -64,7 +62,7 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 						label={
 							<Flex alignItems="center">
 								<Icon size={14} />
-								<H4 ml={2}>{NameTagToText[formattedKey]}</H4>
+								<H4 ml={2}>{t(`labels.${formattedKey}`)}</H4>
 							</Flex>
 						}
 						isLoading={false}
@@ -72,7 +70,7 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 					>
 						{onRefresh => (
 							<StatList
-								listId={NameTagToText[formattedKey]}
+								listId={t(`labels.${formattedKey}`)}
 								items={nti.data}
 								maxRows={3}
 								refresh={onRefresh}

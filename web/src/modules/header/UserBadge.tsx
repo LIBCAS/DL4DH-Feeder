@@ -4,6 +4,7 @@ import { MdPerson } from 'react-icons/md';
 import { Menu, MenuButton, MenuList, MenuItem } from '@reach/menu-button';
 import { useKeycloak } from '@react-keycloak/web';
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
@@ -16,6 +17,7 @@ import '@reach/menu-button/styles.css';
 
 const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 	const { keycloak } = useKeycloak();
+	const { t } = useTranslation('navbar');
 
 	if (!keycloak.authenticated) {
 		return (
@@ -29,7 +31,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 					px={1}
 					mx={1}
 				>
-					<Text my={0}>Přihlásit</Text>
+					<Text my={0}>{t('login')}</Text>
 				</Button>
 			</Flex>
 		);
@@ -59,7 +61,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 					fontSize="inherit"
 					mr={4}
 				>
-					<Text>Odhlásit</Text>
+					<Text>{t('logout')}</Text>
 				</Button>
 			</Flex>
 		</>
@@ -89,7 +91,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 						Store.remove(Store.keys.Token);
 					}}
 				>
-					Odhlásit
+					{t('logout')}
 				</MenuItem>
 			</MenuList>
 		</Menu>

@@ -76,7 +76,7 @@ export const StatList: FC<{
 						<Flex position="relative">
 							<Dialog isOpen>
 								<Paper>
-									<H4>Zvolte operaci</H4>
+									<H4>{t('nametag:choose_operation')}</H4>
 									<Flex
 										width={1}
 										alignItems="center"
@@ -95,7 +95,7 @@ export const StatList: FC<{
 											>
 												{OperationToTextLabel['EQUAL']}
 												<Text ml="2" my={0} p={0}>
-													je
+													{t('nametag:EQUAL')}
 												</Text>
 											</Button>
 
@@ -108,7 +108,7 @@ export const StatList: FC<{
 											>
 												{OperationToTextLabel['NOT_EQUAL']}
 												<Text ml="2" my={0} p={0}>
-													není
+													{t('nametag:NOT_EQUAL')}
 												</Text>
 											</Button>
 										</Flex>
@@ -125,7 +125,7 @@ export const StatList: FC<{
 											setDialogOpen('');
 										}}
 									>
-										Zrušit
+										{t('common:cancel')}
 									</Button>
 								</Paper>
 							</Dialog>

@@ -2,7 +2,8 @@
   "homepage": {
     "btn_enter": "Enter DL4DH Feeder",
     "public_only":"Public only",
-    "search_placeholder": "Search in DL4DH Feeder",
+    "hp_search_placeholder": "Search in DL4DH Feeder",
+    "main_search_placeholder":"Search in DL4DH Feeder (word or filter the results)...",
     "about":"What is DL4DH Feeder?",
     "feeds": {
       "visited": "Visited",
@@ -30,6 +31,8 @@
       "few": "occurrences",
       "many": "occurrences"
     },
+    "public":"Public",
+    "private": "Private",
     "set_page_number": "Set page number",
     "show_whole_title": "Show whole title",
     "hide_whole_title": "Hide whole title",
@@ -104,7 +107,9 @@
     "home": "Home page",
     "checkbox_label": "only public",
     "login": "Log in",
-    "logout": "Log out"
+    "logout": "Log out",
+    "exports": "Exports",
+    "go_to_kramerius": "Go to Kramerius"
   },
   "searchbar": {
     "main": {
@@ -134,6 +139,7 @@
     "tooltip_display_cards": "Show results"
   },
   "search": {
+    "main_button": "Search in K+",
     "k3": "Search in the old digitization",
     "advanced": "Advanced Search",
     "results": "Results",
@@ -269,6 +275,26 @@
     "tab_recommended": "Recommended",
     "tab_latest": "Latest",
     "select_library": "Select Library"
+  },
+  "nametag": {
+    "search_nametag": "Search NameTag",
+    "EQUAL":"is",
+    "NOT_EQUAL":"is not",
+    "choose_operation": "Choose operation",
+    "labels": {
+      "NUMBERS_IN_ADDRESSES": "Numbers in addresses",
+      "GEOGRAPHICAL_NAMES": "Geographical names",
+      "INSTITUTIONS": "Institutions",
+      "MEDIA_NAMES": "Media names",
+      "NUMBER_EXPRESSIONS": "Number expressions",
+      "ARTIFACT_NAMES": "Artifact names",
+      "PERSONAL_NAMES": "Personal names",
+      "TIME_EXPRESSIONS": "Time expressions",
+      "COMPLEX_PERSON_NAMES": "Complex person names",
+      "COMPLEX_TIME_EXPRESSION": "Complex time expression",
+      "COMPLEX_ADDRESS_EXPRESSION": "Complex address expression",
+      "COMPLEX_BIBLIO_EXPRESSION": "Complex biblio expression"
+    }
   },
   "metadata": {
     "author": "Author",

@@ -1,18 +1,19 @@
 {
   "homepage": {
     "btn_enter": "Vstoupit do DL4DH Feeder",
-    "public_only":"Pouze veřejné",
-    "search_placeholder": "Hledejte v DL4DH Feeder",
-    "about":"Co je DL4DH Feeder?",
+    "public_only": "Pouze veřejné",
+    "hp_search_placeholder": "Hledejte v DL4DH Feeder",
+    "main_search_placeholder": "Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)...",
+    "about": "Co je DL4DH Feeder?",
     "feeds": {
-        "visited": "Navštívené",
-        "enriched": "Nejnovější obohacené"
+      "visited": "Navštívené",
+      "enriched": "Nejnovější obohacené"
     }
   },
   "common": {
     "pagination": {
-      "prev_page":"Předchozí stránka",
-      "next_page":"Další stránka"
+      "prev_page": "Předchozí stránka",
+      "next_page": "Další stránka"
     },
     "of": "z",
     "all": "Vše",
@@ -25,6 +26,8 @@
       "few": "stránky",
       "many": "stránek"
     },
+    "public": "Veřejné",
+    "private": "Neveřejné",
     "n_occurrences": {
       "one": "výskyt",
       "few": "výskyty",
@@ -104,7 +107,9 @@
     "home": "Domovská stránka",
     "checkbox_label": "pouze veřejné",
     "login": "Přihlásit",
-    "logout": "Odhlásit"
+    "logout": "Odhlásit",
+    "exports": "Exports",
+    "go_to_kramerius": "Přejít do Kraméria"
   },
   "searchbar": {
     "main": {
@@ -134,6 +139,7 @@
     "tooltip_display_cards": "Zobrazit karty s výsledky"
   },
   "search": {
+    "main_button": "Hledat v K+",
     "k3": "Hledat ve staré digitalizaci",
     "advanced": "Pokročilé hledání",
     "results": "Výsledky",
@@ -170,7 +176,6 @@
       "enriched_only": "Pouze obohacené",
       "not_enriched_only": "Pouze neobohacené",
       "is_enriched": "Obohacená"
-      
     },
     "year-range": {
       "label": "Rok vydání",
@@ -269,6 +274,26 @@
     "tab_recommended": "Doporučené",
     "tab_latest": "Nejnovější",
     "select_library": "Vybrat knihovnu"
+  },
+  "nametag": {
+    "search_nametag": "Hledat NameTag",
+    "EQUAL":"je",
+    "NOT_EQUAL":"není",
+    "choose_operation": "Zvolte operaci",
+    "labels": {
+      "NUMBERS_IN_ADDRESSES": "Čísla v adresách",
+      "GEOGRAPHICAL_NAMES": "Zeměpisné názvy",
+      "INSTITUTIONS": "Instituce",
+      "MEDIA_NAMES": "Názvy médií",
+      "NUMBER_EXPRESSIONS": "Kvantitativní výrazy",
+      "ARTIFACT_NAMES": "Názvy artefaktů",
+      "PERSONAL_NAMES": "Osobní jména",
+      "TIME_EXPRESSIONS": "Vyjádření času",
+      "COMPLEX_PERSON_NAMES": "Komplexní osobní jména",
+      "COMPLEX_TIME_EXPRESSION": "Komplexní vyjádření času",
+      "COMPLEX_ADDRESS_EXPRESSION": "Komplexní vyjádření adresy",
+      "COMPLEX_BIBLIO_EXPRESSION": "Bibliografické položky"
+    }
   },
   "metadata": {
     "author": "Autor",
