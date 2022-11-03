@@ -22,8 +22,6 @@ import { AvailabilityEnum, Collection, ModelsEnum } from 'api/models';
 import { useAvailableFilters } from 'api/publicationsApi';
 
 import { modelToText } from 'utils/enumsMap';
-import { mapLangToCS } from 'utils/languagesMap';
-import i18n from 'utils/localization';
 
 type TableItem = {
 	id: string;
@@ -36,7 +34,7 @@ type TableItem = {
 const categoryHandlers = {
 	languages: {
 		onClick: () => null,
-		labelMapper: (key: string) => mapLangToCS[key],
+		//	labelMapper: (key: string) => mapLangToCS[key],
 	},
 	models: {
 		onClick: () => null,
@@ -73,13 +71,22 @@ const getLabel = (
 ) =>
 	categoryHandlers[category]?.labelMapper?.(label, collections ?? []) ?? label;
 
-const makeList = (data: Record<string, number | Collection>): TableItem[] => {
+const makeList = (
+	data: Record<string, number | Collection>,
+	lang = 'cs',
+): TableItem[] => {
 	return Object.keys(data).map((key, index) => {
 		let count = 0;
 		let label = '';
 		if (typeof data[key] === 'object') {
 			count = (data[key] as Collection).numberOfDocs;
-			label = (data[key] as Collection).descs.cs;
+			label = (data[key] as Collection).descs[lang === 'cz' ? 'cs' : 'en'];
+			if (!label) {
+				label = (data[key] as Collection).descs.cs;
+			}
+			if (!label) {
+				label = key;
+			}
 		} else {
 			count = data[key] as number;
 			label = key;
@@ -112,7 +119,7 @@ const Browse = () => {
 	const nav = useNavigate();
 	const theme = useTheme();
 	const response = useAvailableFilters({ availability, query: browseQuery });
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [tableData, setTableData] = useState<TableItem[]>([]);
 
@@ -123,8 +130,8 @@ const Browse = () => {
 		[response.data],
 	);
 	const flitersList = useMemo(
-		() => makeList(filters?.[category] ?? {}),
-		[filters, category],
+		() => makeList(filters?.[category] ?? {}, i18n.language),
+		[filters, category, i18n.language],
 	);
 	useEffect(() => {
 		setTableData(sortList([...flitersList], sorting, category));
@@ -141,16 +148,9 @@ const Browse = () => {
 	if (response.isLoading) {
 		return <Loader />;
 	}
+
 	return (
 		<Wrapper height="100vh" alignItems="flex-start" width={1} bg="paper">
-			{i18n.t('common', 'cancel')}
-			<br />
-			{i18n.t('common:cancel')}
-			<br />
-			{i18n.t('common/cancel')}
-			<br />
-			{i18n.t(['common', 'cancel'])}
-			<br />
 			<MainContainer
 				subHeader={{
 					leftJsx: (
@@ -236,7 +236,13 @@ const Browse = () => {
 							}
 						>
 							<Text flex={[5, 6, 7]}>
-								{t('model.' + getLabel(row.label, category))}
+								{category === 'models' || category === 'languages'
+									? t(
+											category === 'models'
+												? 'model:' + getLabel(row.label, category)
+												: 'language:' + getLabel(row.label, category),
+									  )
+									: getLabel(row.label, category)}
 							</Text>
 
 							<Text textAlign="right" flex={1} mx={2}>
