@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
+import { useTranslation } from 'react-i18next';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -58,6 +59,7 @@ const MainSearchInput = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const nav = useNavigate();
 	const location = useLocation();
+	const { t } = useTranslation();
 
 	const [hints, setHints] = useState<string[]>([]);
 	/* useEffect(() => {
@@ -159,7 +161,7 @@ const MainSearchInput = () => {
 				ref={wrapperRef}
 			>
 				<TextInput
-					placeholder="Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)..."
+					placeholder={t('homepage:main_search_placeholder')}
 					label=""
 					labelType="inline"
 					color="primary"
@@ -232,8 +234,7 @@ const MainSearchInput = () => {
 													fontWeight={item === currentValue ? 'bold' : 'normal'}
 													ml={2}
 												>
-													{' '}
-													{NameTagToText[item]}
+													{t(`nametag:labels.${item}`)}
 												</Text>
 											</Flex>
 										);
@@ -300,7 +301,7 @@ const MainSearchInput = () => {
 													>
 														{OperationToTextLabel[item]}
 													</Text>
-													<Text ml={4}>{OperationToWord[item]}</Text>
+													<Text ml={4}>{t(`nametag:${item}`)}</Text>
 												</Flex>
 											);
 										}}
@@ -451,7 +452,7 @@ const MainSearchInput = () => {
 					`}
 					//disabled={localState === ''}
 				>
-					Hledat v K+
+					{t('search:main_button')}
 				</Button>
 			</Flex>
 		</>

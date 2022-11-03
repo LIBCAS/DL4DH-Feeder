@@ -92,7 +92,7 @@ const Homepage: FC = () => {
 					>
 						<Flex ref={wrapperRef} width={1}>
 							<TextInput
-								placeholder={t('search_placeholder')}
+								placeholder={t('hp_search_placeholder')}
 								label=""
 								labelType="inline"
 								color="primary"

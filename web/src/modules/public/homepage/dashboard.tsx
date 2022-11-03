@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import _ from 'lodash';
 import { FC, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
@@ -26,6 +27,7 @@ import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 const Dashboard: FC = () => {
 	const { state } = useSearchContext();
 	const { setResult } = useSearchResultContext();
+	const { t } = useTranslation();
 
 	const {
 		data,
@@ -71,7 +73,7 @@ const Dashboard: FC = () => {
 					leftJsx: (
 						<Flex alignItems="center" justifyContent="center">
 							<Text pl={3} fontSize="sm" fontWeight="bold">
-								Výsledky: {state.start + 1} -{' '}
+								{t('search:results')}: {state.start + 1} -{' '}
 								{state.hasMore
 									? state.start + state.pageSize
 									: state.totalCount}

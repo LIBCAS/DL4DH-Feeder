@@ -2,6 +2,7 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
 import { FC, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
@@ -15,7 +16,7 @@ import { PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
-import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 
@@ -28,25 +29,26 @@ const Cell = styled(Text)`
 	color: black;
 `;
 
-const renderCell = (row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
-	if (cellKey === 'model') {
-		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
-	}
-	if (cellKey === 'availability') {
-		return (
-			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
-		);
-	}
-	return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
-};
-
 const ListView: FC<{
 	data?: PublicationDto[];
 	isLoading: boolean;
 }> = ({ data, isLoading }) => {
 	const theme = useTheme();
-
+	const { t } = useTranslation();
 	const exportCtx = useBulkExportContext();
+
+	const renderCell = useCallback(
+		(row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
+			if (cellKey === 'model') {
+				return <Cell>{t(`model:${modelToText(row[cellKey])}`)}</Cell>;
+			}
+			if (cellKey === 'availability') {
+				return <Cell>{t(`common:${row[cellKey]}`)}</Cell>;
+			}
+			return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
+		},
+		[t],
+	);
 
 	const renderRow = useCallback(
 		(row: TColumnsLayout) => (
@@ -60,7 +62,6 @@ const ListView: FC<{
 						label=""
 						checked={exportCtx.uuidHeap[row.pid]?.selected}
 						onChange={e => {
-							console.log({ row });
 							exportCtx.setUuidHeap?.(p => ({
 								...p,
 								[row.pid]: {

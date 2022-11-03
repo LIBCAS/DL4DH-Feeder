@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import Text from 'components/styled/Text';
@@ -13,10 +14,10 @@ export type SortOption = {
 };
 
 export const sortOptions: SortOption[] = [
-	{ id: 'TITLE_ASC', label: 'Abecedně' },
-	{ id: 'CREATED_DESC', label: 'Nově přidané' },
-	{ id: 'DATE_DESC', label: 'Od nejnovějších' },
-	{ id: 'DATE_ASC', label: 'Od nejstarších' },
+	{ id: 'TITLE_ASC', label: 'alphabetical' },
+	{ id: 'CREATED_DESC', label: 'newest' },
+	{ id: 'DATE_DESC', label: 'latest' },
+	{ id: 'DATE_ASC', label: 'earliest' },
 ];
 
 const Sorting = () => {
@@ -26,9 +27,11 @@ const Sorting = () => {
 		[dispatch],
 	);
 
+	const { t } = useTranslation();
+
 	return (
 		<>
-			<Text mr={2}>Řazení</Text>
+			<Text mr={2}>{t('search:ordering:label')}</Text>
 			<SimpleSelect
 				variant="borderless"
 				value={state.sorting}
@@ -36,7 +39,9 @@ const Sorting = () => {
 				onChange={setSortOption}
 				keyFromOption={item => item?.id ?? ''}
 				width={150}
-				nameFromOption={item => (item !== null ? item.label : '')}
+				nameFromOption={item =>
+					item !== null ? t(`search:ordering:${item.label}`) : ''
+				}
 			/>
 		</>
 	);

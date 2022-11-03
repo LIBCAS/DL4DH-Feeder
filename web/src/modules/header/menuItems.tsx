@@ -4,6 +4,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import { FC, useState } from 'react';
 import Dialog from '@reach/dialog';
 import { MdMenu } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import Divider from 'components/styled/Divider';
 import Button, { NavHrefButton, NavLinkButton } from 'components/styled/Button';
@@ -35,17 +36,17 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
 	{
 		to: '/browse?category=collections',
-		label: 'Sbírky',
+		label: 'collections',
 		order: 0,
 	},
 	{
 		to: '/browse',
-		label: 'Procházet',
+		label: 'browse',
 		order: 1,
 	},
 	{
 		to: '/about',
-		label: 'Informace',
+		label: 'about',
 		order: 2,
 	},
 	{
@@ -59,14 +60,14 @@ const menuItems: MenuItem[] = [
 	},
 	{
 		to: '/exports',
-		label: 'Exporty',
+		label: 'exports',
 		order: 4,
 		private: true,
 	},
 
 	{
 		href: 'HOOK',
-		label: 'Přejít do Kraméria',
+		label: 'go_to_kramerius',
 		newTab: true,
 		external: true,
 		order: 5,
@@ -133,6 +134,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 	variant,
 }) => {
 	const ButtonComponent = item.href ? NavHrefButton : NavLinkButton;
+	const { t } = useTranslation('navbar');
 	const info = useInfoApi(item.external && item.href === 'HOOK');
 	const href = info.data?.kramerius.url ?? undefined;
 	if (info.isLoading) {
@@ -152,7 +154,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					mr={1}
 					onClick={item.onClick}
 				>
-					{item.label}
+					{t(item.label)}
 				</ButtonComponent>
 			) : (
 				<ButtonComponent
@@ -165,7 +167,7 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 					fontSize="inherit"
 					onClick={item.onClick}
 				>
-					{item.label}
+					{t(item.label)}
 				</ButtonComponent>
 			)}
 		</>

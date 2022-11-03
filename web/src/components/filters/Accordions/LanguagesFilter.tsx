@@ -17,16 +17,16 @@ const LanguagesFilter: FC<Props> = ({ data, isLoading, updateFilter }) => {
 	const { t } = useTranslation('search');
 	const items: StatItem[] = useMemo(
 		() =>
-			data?.keywords
+			data?.languages
 				? [
-						...Object.keys(data?.keywords).map(key => ({
+						...Object.keys(data?.languages).map(key => ({
 							key,
-							label: key,
-							value: data.keywords[key],
+							label: t(`language:${key}`),
+							value: data.languages[key],
 						})),
 				  ].sort((a, b) => b.value - a.value)
 				: [],
-		[data?.keywords],
+		[data?.languages, t],
 	);
 
 	return (
