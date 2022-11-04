@@ -13,12 +13,16 @@
   "common": {
     "pagination": {
       "prev_page": "Předchozí stránka",
-      "next_page": "Další stránka"
+      "next_page": "Další stránka",
+      "page_limit": "Záznamů na stránku:"
     },
     "of": "z",
     "all": "Vše",
     "cancel": "Zrušit",
     "close": "Zavřít",
+    "clear":"Smazat",
+    "back":"Zpět",
+    "confirm":"Potvrdit výběr",
     "warning": "Varování",
     "of_pages": "stránek",
     "n_pages": {
@@ -156,6 +160,7 @@
     "genres": "Žánr",
     "authors": "Autor",
     "inaccessible_document": "Dokument není veřejně přístupný",
+    "search_in_publication":"Vyhledávat v publikaci",
     "ordering": {
       "label": "Řazení",
       "relevance": "Podle Relevance",
@@ -277,8 +282,8 @@
   },
   "nametag": {
     "search_nametag": "Hledat NameTag",
-    "EQUAL":"je",
-    "NOT_EQUAL":"není",
+    "EQUAL": "je",
+    "NOT_EQUAL": "není",
     "choose_operation": "Zvolte operaci",
     "labels": {
       "NUMBERS_IN_ADDRESSES": "Čísla v adresách",
@@ -293,6 +298,31 @@
       "COMPLEX_TIME_EXPRESSION": "Komplexní vyjádření času",
       "COMPLEX_ADDRESS_EXPRESSION": "Komplexní vyjádření adresy",
       "COMPLEX_BIBLIO_EXPRESSION": "Bibliografické položky"
+    }
+  },
+  "list_view": {
+    "header": {
+      "title": "Název",
+      "model": "Typ",
+      "availability": "Dostupnost",
+      "date": "Datum"
+    }
+  },
+  "graph_view": {
+    "title":"Záznamy v grafickej podobe",
+    "axis_x": {
+      "label":"Os X",
+      "years": "Léta",
+      "authors": "Autor",
+      "keywords": "Klíčové slovo",
+      "models": "Typ dokumentu",
+      "languages":"Jazyk"
+    },
+    "sorting":{
+      "key":"Klíč",
+      "count":"Četnost",
+      "label":"Seřadit dle",
+      "direction":"Přepnout směr řazení"
     }
   },
   "metadata": {
@@ -351,6 +381,12 @@
       "url": "https://eodopen.eu/",
       "name": "EODOPEN"
     }
+  },
+  "publication_detail": {
+    "search":"Vyhledávání",
+    "detail":"Detail záznamu",
+    "search_in_set":"Vyhledávaní v množině záznamů"
+
   },
   "periodical": {
     "periodicalvolume": "Ročník {{part}}",

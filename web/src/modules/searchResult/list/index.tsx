@@ -90,7 +90,7 @@ const ListView: FC<{
 				))}
 			</>
 		),
-		[exportCtx],
+		[exportCtx, renderCell],
 	);
 
 	const renderHeader = useCallback(
@@ -111,12 +111,14 @@ const ListView: FC<{
 						color="white"
 						css={css``}
 					>
-						<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
+						<Cell color="white!important">
+							{t(`list_view:header.${headerLabels[cellKey].translationKey}`)}
+						</Cell>
 					</Flex>
 				))}
 			</>
 		),
-		[],
+		[t],
 	);
 	const items = data ?? [];
 

@@ -13,6 +13,7 @@ import {
 import { debounce } from 'lodash-es';
 import useMeasure from 'react-use-measure';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import Text from 'components/styled/Text';
 import TextInput from 'components/form/input/TextInput';
@@ -58,6 +59,7 @@ const QuerySearchInput: FC<Props> = ({
 	const mainInputRef = useRef<HTMLInputElement | null>(null);
 	const testRef = useRef<HTMLInputElement | null>(null);
 	const [hh, setHh] = useState(0);
+	const { t } = useTranslation();
 
 	const [sp] = useSearchParams();
 
@@ -102,9 +104,7 @@ const QuerySearchInput: FC<Props> = ({
 			>
 				<TextInput
 					placeholder={
-						placeholder
-							? placeholder
-							: 'Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)...'
+						placeholder ? placeholder : t('homepage:hp_search_placeholder')
 					}
 					label=""
 					labelType="inline"
@@ -253,8 +253,8 @@ const QuerySearchInput: FC<Props> = ({
 						<Checkbox
 							checked={publicOnly}
 							onChange={() => setPublicOnly(p => !p)}
-							aria-label="Pouze veřejné"
-							label="Pouze veřejné"
+							aria-label={t('homepage:public_only')}
+							label={t('homepage:public_only')}
 						/>
 					</Flex>
 				)}
