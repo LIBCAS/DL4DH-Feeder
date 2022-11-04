@@ -5,6 +5,7 @@ import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 import { FixedSizeGrid } from 'react-window';
+import { useTranslation } from 'react-i18next';
 
 import TextInput from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -35,6 +36,7 @@ const PubThumbnails: FC<Props> = ({
 	searchMode,
 }) => {
 	const COLUMNS_COUNT = pagesSearchResult?.length ?? 0 > 0 ? 1 : 3;
+	const { t } = useTranslation();
 	const pubCtx = usePublicationContext();
 	const pageId = isSecond
 		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
@@ -156,7 +158,8 @@ const PubThumbnails: FC<Props> = ({
 							}}
 						/>
 						<Text fontSize="md">
-							z <strong>{pages.length}</strong> stránek
+							{t('common:of')} <strong>{pages.length}</strong>{' '}
+							{t('common:of_pages')}
 						</Text>
 					</Flex>
 

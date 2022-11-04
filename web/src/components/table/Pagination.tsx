@@ -143,7 +143,7 @@ const Pagination: FC<Props> = ({
 			{!hideLimitOptions && (
 				<Flex pr={2}>
 					<label htmlFor="pagination-select">
-						<Text mr={1}>Záznamů na stránku:</Text>
+						<Text mr={1}>{t('pagination.page_limit')}</Text>
 					</label>
 					<select
 						id="pagination-select"

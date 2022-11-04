@@ -12,6 +12,7 @@ import {
 	Brush,
 } from 'recharts';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 import Text from 'components/styled/Text';
 import { Box, Flex } from 'components/styled';
@@ -22,8 +23,6 @@ import IconButton from 'components/styled/IconButton';
 import { useTheme } from 'theme';
 
 import { AvailableFilters } from 'api/models';
-
-import { mapLangToCS } from 'utils/languagesMap';
 
 type Props = {
 	data: AvailableFilters;
@@ -36,25 +35,29 @@ type OptionXAxisType = {
 };
 type OptionXAxisSorting = 'key' | 'count';
 
-const OptionsXAxis: OptionXAxisType[] = [
-	{ key: 'years', label: 'Léta' },
-	{ key: 'authors', label: 'Autor' },
-	{ key: 'keywords', label: 'Klíčové slovo' },
-	{ key: 'models', label: 'Typ dokumentu' },
-	{
-		key: 'languages',
-		label: 'Jazyk',
-		itemLabelFunction: (key: string) => mapLangToCS?.[key] ?? key,
-	},
-];
-
-const SortingText: Record<OptionXAxisSorting, string> = {
-	key: 'Klíč',
-	count: 'Četnost',
-};
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
-	/* const [zoom, setZoom] = useState(50); */
+	const { t } = useTranslation('graph_view');
+
+	const OptionsXAxis: OptionXAxisType[] = useMemo(
+		() => [
+			{ key: 'years', label: t('axis_x.years') },
+			{ key: 'authors', label: t('axis_x.authors') },
+			{ key: 'keywords', label: t('axis_x.keywords') },
+			{
+				key: 'models',
+				label: t('axis_x.models'),
+				itemLabelFunction: (key: string) => t(`model:${key}`) ?? key,
+			},
+			{
+				key: 'languages',
+				label: t('axis_x.languages'),
+				itemLabelFunction: (key: string) => t(`language:${key}`) ?? key,
+			},
+		],
+		[t],
+	);
+
 	const [sorting, setSorting] = useState<OptionXAxisSorting>('key');
 	const [axisX, setAxisX] = useState<OptionXAxisType>(OptionsXAxis[0]);
 	const [sortDirection, setSortDirection] = useState<number>(1);
@@ -74,22 +77,23 @@ const GraphView: FC<Props> = ({ data }) => {
 						parseInt(a[sorting]) * sortDirection -
 						parseInt(b[sorting]) * sortDirection,
 				),
-		[formattedData, sorting, axisX, sortDirection],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[formattedData, sorting, axisX, sortDirection, t],
 	);
 
 	return (
 		<Box position="relative" height="100%" width={1} overflow="hidden">
 			<Flex justifyContent="space-between" m={2} alignItems="center">
-				<TitleText textAlign="left" ml={1}>
-					Záznamy v grafickej podobe
+				<TitleText textAlign="left" ml={1} fontSize="xl">
+					{t('title')}
 				</TitleText>
 				<Flex alignItems="center">
-					<Text mr={2}>Os X</Text>
+					<Text mr={2}>{t('axis_x.label')}</Text>
 					<SimpleSelect
 						label=""
 						options={OptionsXAxis}
 						onChange={item => setAxisX(item)}
-						nameFromOption={item => item?.label ?? ''}
+						nameFromOption={item => t(`${item ? item.label : 'axis_x.years'}`)}
 						keyFromOption={item => item?.key ?? ''}
 						value={axisX}
 						minWidth={150}
@@ -100,12 +104,15 @@ const GraphView: FC<Props> = ({ data }) => {
 						`}
 					/>
 					<Text mr={2} ml={3}>
-						Seřadit dle
+						{t('sorting.label')}
 					</Text>
 					<SimpleSelect<OptionXAxisSorting>
 						options={['key', 'count']}
-						nameFromOption={item => SortingText[item ?? 'key']}
+						nameFromOption={item => t(`sorting.${item ?? 'key'}`)}
 						onChange={newVal => setSorting(newVal)}
+						// renderSelectedItem={(item, nameFromOption) => (
+						// 	<Text>{nameFromOption(item)}</Text>
+						// )}
 						value={sorting}
 						width={100}
 						variant="outlined"
@@ -130,7 +137,7 @@ const GraphView: FC<Props> = ({ data }) => {
 							<IconButton
 								color="primary"
 								onClick={() => setSortDirection(z => z * -1)}
-								title="Přepnout směr řazení"
+								tooltip={t('sorting.direction')}
 							>
 								{sortDirection === 1 ? (
 									<FaSortAmountUp size={22} />

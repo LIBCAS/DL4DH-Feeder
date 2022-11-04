@@ -2,6 +2,7 @@
 import styled from '@emotion/styled/macro';
 import { FC, useCallback, useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
+import { useTranslation } from 'react-i18next';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
@@ -51,6 +52,7 @@ const SplitScreenView: FC<{
 	});
 
 	const [selectedRow, setSelectedRow] = useState<number | undefined>(undefined);
+	const { t } = useTranslation();
 
 	const renderHeader = useCallback(
 		() => (
@@ -75,7 +77,9 @@ const SplitScreenView: FC<{
 						fontWeight="bold"
 						color="white"
 					>
-						<Cell color="white!important">{headerLabels[cellKey].text}</Cell>
+						<Cell color="white!important">
+							{t(`list_view:header.${headerLabels[cellKey].translationKey}`)}
+						</Cell>
 					</Flex>
 				))}
 			</>

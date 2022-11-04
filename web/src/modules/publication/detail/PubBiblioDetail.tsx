@@ -2,7 +2,6 @@
 import { css } from '@emotion/core';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { MdTextFields } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
 
@@ -10,7 +9,6 @@ import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
-import IconButton from 'components/styled/IconButton';
 import Text, { H2, H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';

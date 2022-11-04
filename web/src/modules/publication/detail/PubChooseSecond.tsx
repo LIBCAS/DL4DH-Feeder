@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import { Flex } from 'components/styled';
@@ -29,6 +30,7 @@ import { usePublicationContext } from '../ctx/pub-ctx';
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
 		const [query, setQuery] = useState<string | undefined>('');
+		const { t } = useTranslation();
 
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
@@ -144,15 +146,15 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 							loading={isLoading}
 							disabled={isLoading || uuid === ''}
 						>
-							Potvrdit výběr
+							{t('common:confirm')}
 						</Button>
 						{step > 0 && (
 							<Button variant="outlined" onClick={() => setStep(0)}>
-								Zpět
+								{t('common:back')}
 							</Button>
 						)}
 						<Button variant="outlined" onClick={onClose}>
-							Zavřít
+							{t('common:close')}
 						</Button>
 					</Flex>
 				</Paper>

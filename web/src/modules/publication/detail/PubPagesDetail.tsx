@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import TagNameDropDown from 'components/search/TagNameDropDown';
@@ -34,6 +35,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	const PAGE_KEY = isSecond ? 'page2' : 'page';
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
+	const { t } = useTranslation();
 
 	const [nameTag, setNameTag] = useState<TagNameEnum | null>(
 		(sp.get(NT_KEY) as TagNameEnum) ?? null,
@@ -136,7 +138,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					sp.set(SP_KEY, q);
 					setSp(sp);
 				}}
-				placeholder="Vyhledávat v publikaci"
+				placeholder={t('search:search_in_publication')}
 				urlKeyOfValue={SP_KEY}
 				onQueryClear={() => {
 					setQuery('');

@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import SidePanelHideButton from 'components/sidepanels/SidePanelHideButton';
@@ -34,6 +35,7 @@ const PublicationSidePanel: FC<Props> = ({
 }) => {
 	const theme = useTheme();
 	const [chooseSecondDialogOpen, setChooseSecondDialogOpen] = useState(false);
+	const { t } = useTranslation('publication_detail');
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'search' : defaultView ?? 'detail',
@@ -76,7 +78,7 @@ const PublicationSidePanel: FC<Props> = ({
 								variant="primary"
 								onClick={() => setChooseSecondDialogOpen(p => !p)}
 							>
-								Vyhledávaní v množině záznamů
+								{t('search_in_set')}
 							</Button>
 							{chooseSecondDialogOpen && (
 								<PubChooseSecond
@@ -107,7 +109,7 @@ const PublicationSidePanel: FC<Props> = ({
 										hoverDisable
 										variant={viewMode === 'search' ? 'primary' : 'outlined'}
 									>
-										Vyhledávání
+										{t('search')}
 									</Button>
 								),
 							},
@@ -120,7 +122,7 @@ const PublicationSidePanel: FC<Props> = ({
 										ml={2}
 										variant={viewMode === 'detail' ? 'primary' : 'outlined'}
 									>
-										Detail záznamu
+										{t('detail')}
 									</Button>
 								),
 							},

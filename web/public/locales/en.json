@@ -13,12 +13,16 @@
   "common": {
     "pagination": {
       "prev_page":"Previous page",
-      "next_page":"Next page"
+      "next_page":"Next page",
+      "page_limit": "Page limit:"
     },
     "of": "of",
     "all": "All",
     "cancel": "Cancel",
+    "clear":"Clear",
     "close": "Close",
+    "back":"Back",
+    "confirm":"Confirm selection",
     "warning": "Warning",
     "of_pages": "pages",
     "n_pages": {
@@ -156,6 +160,7 @@
     "genres": "Genre",
     "authors": "Author",
     "inaccessible_document": "The document is not publicly accessible",
+    "search_in_publication":"Search in publication",
     "ordering": {
       "label": "Ordering",
       "relevance": "Relevance",
@@ -296,6 +301,31 @@
       "COMPLEX_BIBLIO_EXPRESSION": "Complex biblio expression"
     }
   },
+  "list_view": {
+    "header": {
+      "title": "Title",
+      "model": "Document type",
+      "availability": "Availability",
+      "date": "Date"
+    }
+  },
+  "graph_view": {
+    "title":"Graph view",
+    "axis_x": {
+      "label":"X axis",
+      "years": "Years",
+      "authors": "Authors",
+      "keywords": "Keywords",
+      "models": "Document type",
+      "languages":"Language"
+    },
+    "sorting":{
+      "key":"Key",
+      "count":"Count",
+      "label":"Sort by",
+      "direction":"Switch sorting direction"
+    }
+  },
   "metadata": {
     "author": "Author",
     "author_other": "Other makers",
@@ -353,6 +383,13 @@
       "name": "EODOPEN"
     }
   },
+  "publication_detail": {
+    "search":"Search",
+    "detail":"Detail",
+    "search_in_set":"Search in set of records"
+
+  },
+
   "periodical": {
     "periodicalvolume": "Volume {{part}}",
     "periodicalitem": "Issue {{part}}",

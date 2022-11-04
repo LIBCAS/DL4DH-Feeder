@@ -16,12 +16,12 @@ export const rowLayout: Record<keyof TColumnsLayout, number> = {
 
 export const headerLabels: Record<
 	keyof TColumnsLayout,
-	{ text?: string; hidden?: boolean }
+	{ translationKey?: string; hidden?: boolean }
 > = {
-	title: { text: 'Název' },
-	model: { text: 'Typ' },
-	availability: { text: 'Dostupnost' },
-	date: { text: 'Datum' },
+	title: { translationKey: 'title' },
+	model: { translationKey: 'model' },
+	availability: { translationKey: 'availability' },
+	date: { translationKey: 'date' },
 
 	pid: { hidden: true },
 	enriched: { hidden: true },

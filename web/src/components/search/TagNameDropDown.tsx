@@ -2,12 +2,14 @@
 import { css } from '@emotion/core';
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
 import SimpleSelect, { ClickAway } from 'components/form/select/SimpleSelect';
+import IconButton from 'components/styled/IconButton';
 
-import { theme } from 'theme';
+import { useTheme } from 'theme';
 
 import { TagNameEnum } from 'api/models';
 
@@ -31,6 +33,8 @@ const TagNameDropDown: React.FC<Props> = ({
 }) => {
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
+	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const [selectedTagOp, setSelectedTagOp] = useState<
 		'EQUAL' | 'NOT_EQUAL' | null
@@ -52,10 +56,22 @@ const TagNameDropDown: React.FC<Props> = ({
 					nameFromOption={item => (item ? NameTagToText[item] : '')}
 					renderSelectedItem={
 						selectedItemView === 'ICON'
-							? (item, nameFromOption) => {
+							? item => {
 									if (item) {
 										const Icon = NameTagIcon[item];
-										return <Icon title={nameFromOption(item)} size={24} />;
+										return (
+											<IconButton
+												tooltip={t(`nametag:labels:${item}`)}
+												css={css`
+													color: ${theme.colors.primary};
+													&:hover {
+														background-color: initial;
+													}
+												`}
+											>
+												<Icon size={18} />
+											</IconButton>
+										);
 									} else {
 										return <></>;
 									}
@@ -71,7 +87,7 @@ const TagNameDropDown: React.FC<Props> = ({
 										fontWeight={item === currentValue ? 'bold' : 'normal'}
 										ml={2}
 									>
-										SMAZAT
+										{t('common:clear')}
 									</Text>
 								</Flex>
 							) : (
@@ -91,8 +107,7 @@ const TagNameDropDown: React.FC<Props> = ({
 									fontWeight={item === currentValue ? 'bold' : 'normal'}
 									ml={2}
 								>
-									{' '}
-									{NameTagToText[item]}
+									{t(`nametag:labels:${item}`)}
 								</Text>
 							</Flex>
 						);
