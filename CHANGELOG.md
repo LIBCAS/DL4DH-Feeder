@@ -1,10 +1,9 @@
 # Changelog
 
-## v0.6.1 (upcoming)
+## v0.6.1
 
-- [TODO] advanced search filter
-- [TODO] analysis of "text mode" in zoomify view (to replace current basic OCR view)
-- [TODO] add multilanguage support
+- homepage visited and newest enriched publication tiles added
+- multilanguage support and translations added
 
 ## v0.6.0
 
