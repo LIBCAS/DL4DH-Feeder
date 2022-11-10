@@ -2,8 +2,9 @@
 import { css } from '@emotion/core';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, NavLink } from 'react-router-dom';
 import XML from 'xml2js';
+import { useTranslation } from 'react-i18next';
 
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
@@ -29,6 +30,12 @@ import PrintDialog from '../print/PrintDialog';
 
 import MetaStreamsDialog from './MetaStreamsDialog';
 
+//biblio periodikum
+//https://ndk.cz/view/uuid:947f10f0-ca96-11e7-bfaa-005056827e52?page=uuid:d12e2000-028f-11e8-816d-5ef3fc9bb22f
+
+//biblio svazek knih
+//http://feeder.dev.inqool.cz/view/uuid:60447ee0-4f90-11ed-ad9c-5ef3fc9bb22f?page=uuid:703a3bd3-5b96-4102-aa72-bbe4fef45cf2
+
 const xmlItemToText = (item: string | string[], key: string) => {
 	if (Array.isArray(item)) {
 		return item
@@ -45,6 +52,15 @@ const xmlItemToText = (item: string | string[], key: string) => {
 	}
 	return '';
 };
+
+export const BibLink: FC<{ to: string; label?: string | string[] }> = ({
+	to,
+	label,
+}) => (
+	<NavLinkButton variant="text" m={0} p={0} to={to}>
+		<H5 m={0}>{label ?? ''}</H5>
+	</NavLinkButton>
+);
 
 const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 	const wrapper = 'oai_dc:dc';
@@ -101,6 +117,8 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
 	const [parsedXML, setParsedXML] = useState<unknown>();
+	const nav = useNavigate();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		XML.parseString(xmlString, (err, result) => setParsedXML(result));
@@ -108,6 +126,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	const biblio = useMemo(() => parseDCXML(parsedXML), [parsedXML]);
 
+	const model = useMemo(
+		() => xmlItemToText(biblio.type ?? [], 'type'),
+		[biblio],
+	);
+	console.log({ biblio });
 	if (isLoading || pubDetail.isLoading || pageDetail.isLoading) {
 		return <LoaderSpin />;
 	}
@@ -122,6 +145,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 		.flat()
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
 
+	console.log({ pubDetail });
 	return (
 		<Flex width={1} flexDirection="column" position="relative" height="100%">
 			<Flex
@@ -160,7 +184,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 								px={0}
 								//onClick={() => nav(`/periodical/${pc.pid}`)}
 							>
-								Přejít na {ModelToText[pc.model]}
+								Přejít na {t(`model:${pc.model}`)}
 							</NavLinkButton>
 						</Box>
 					))}
@@ -188,12 +212,17 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						</>
 					)}
 				</Box>
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						Autor
-					</Text>
-					<H5>{biblio.author}</H5>
-				</Box>
+				{biblio.author && (
+					<Box mb={3}>
+						<Text fontSize="13.5px" color="#9e9e9e">
+							Autor
+						</Text>
+						<BibLink
+							to={`/search?authors=${biblio.author}`}
+							label={biblio.author}
+						/>
+					</Box>
+				)}
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Nakladatelské údaje
@@ -206,7 +235,10 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Typ dokumentu
 					</Text>
-					<H5>{xmlItemToText(biblio.type ?? [], 'type')}</H5>
+					<BibLink
+						to={`/search?model=${pageContext?.[0].model}`}
+						label={t(`model:${pageContext?.[0].model}`)}
+					/>
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
@@ -251,7 +283,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						{pubDetail.data?.enriched && (
 							<Flex bg="primary" color="white" opacity="0.8" mr={2}>
 								<Text py={1} my={0} px={3} fontSize="sm">
-									Obohacená
+									{t('search:enrichment:is_enriched')}
 								</Text>
 							</Flex>
 						)}
