@@ -19,7 +19,11 @@ import { PubModelTagBadge } from 'modules/searchResult/tiles/TileView';
 
 import { useTheme } from 'theme';
 
-import { usePublicationDetail, useStreams } from 'api/publicationsApi';
+import {
+	usePublicationChildren,
+	usePublicationDetail,
+	useStreams,
+} from 'api/publicationsApi';
 import { ModelsEnum } from 'api/models';
 
 import useBibilio from 'hooks/useBiblio';
@@ -147,10 +151,13 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 			pageId === 'ctx-left-current-page-uuid-error',
 	);
 
-	//const detail = usePublicationDetailWithRoot(id ?? 'biblio_id_undefined');
-
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
-	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(id);
+	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(
+		pubDetail.data?.root_pid ?? undefined,
+	);
+	// const { data: rootChildren } = usePublicationChildren(
+	// 	pubDetail.data?.root_pid ?? undefined,
+	// );
 
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
@@ -170,7 +177,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	) {
 		return <LoaderSpin />;
 	}
-	console.log({ bmods });
+
 	const isPrintableOrExportable =
 		window.location.pathname.includes('/view/') ||
 		window.location.pathname.includes('/multiview/');
@@ -179,7 +186,19 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	const details = pubDetail.data?.details;
 	const pageContext = pubDetail.data?.context
 		.flat()
-		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
+		.filter(
+			c =>
+				c.model !== 'periodicalitem' &&
+				c.model !== 'supplement' &&
+				c.model !== 'monographunit',
+		);
+	console.log({ pageContext });
+
+	const mapContextToUnitType = {
+		monograph: 'unit_list',
+		periodical: 'volume_list',
+		periodicalvolume: 'issue_list',
+	};
 
 	return (
 		<Flex width={1} flexDirection="column" position="relative" height="100%">
@@ -215,7 +234,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					<Text color="#616161" fontSize="15px">
 						{bmods?.subTitle ?? ''}
 					</Text>
-					{pageContext?.map(pc => (
+					{(pageContext ?? []).map(pc => (
 						<Box key={pc.pid}>
 							<NavLinkButton
 								to={`/periodical/${pc.pid}`}
@@ -224,13 +243,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 								color="textCommon"
 								fontWeight="bold"
 								px={0}
-								//onClick={() => nav(`/periodical/${pc.pid}`)}
 							>
-								Přejít na {t(`model:${pc.model}`)}
+								{t(`metadata:${mapContextToUnitType[pc.model]}`)}
 							</NavLinkButton>
 						</Box>
 					))}
-					<Divider my={2} />
 
 					{/* <Button variant="text" onClick={() => nav(`/periodical/${rootId}`)}>
 						Přejít na {ModelToText[rootDetail?.model ?? '']}
@@ -238,9 +255,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				</Box>
 				<Divider />
 				<Box mb={3}>
-					<H3 color="#616161" fontSize="16.5px">
-						{rootTitle}
-					</H3>
 					{details && (
 						<>
 							<H3 color="#616161" fontSize="16.5px">
@@ -265,7 +279,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				)}
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
-						Nakladatelské údaje
+						{t('metadata:publisher')}
 					</Text>
 					<H5>
 						{biblio.publisher}, {biblio.year}
@@ -273,22 +287,35 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
-						Typ dokumentu
+						{t('metadata:doctype')}
 					</Text>
 					<BibLink
 						to={`/search?model=${pageContext?.[0].model}`}
 						label={t(`model:${pageContext?.[0].model}`)}
 					/>
 				</Box>
+
+				{(bmods?.keywords?.length ?? 0) > 0 && (
+					<Box mb={3}>
+						<Text fontSize="13.5px" color="#9e9e9e">
+							{t('metadata:keywords')}
+						</Text>
+						{bmods?.keywords.map((k, i) => (
+							<div key={`${k} - ${i}`}>
+								<BibLink to={`/search?keywords=${k}`} label={k} />
+							</div>
+						))}
+					</Box>
+				)}
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
-						Jazyk
+						{t('metadata:languages')}
 					</Text>
 					<ParsedLanguages langs={biblio.language ?? []} t={t} />
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
-						Poznámky
+						{t('metadata:notes')}
 					</Text>
 					{(biblio?.description ?? []).map(desc => (
 						<H5 key={desc}>{desc}</H5>
