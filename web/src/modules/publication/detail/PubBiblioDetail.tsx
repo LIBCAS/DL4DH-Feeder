@@ -2,15 +2,16 @@
 import { css } from '@emotion/core';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, NavLink } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
 import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
-import Text, { H2, H3, H5 } from 'components/styled/Text';
+import Text, { H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import ShareDialog from 'modules/share/ShareDialog';
@@ -21,8 +22,9 @@ import { useTheme } from 'theme';
 import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 import { ModelsEnum } from 'api/models';
 
+import useBibilio from 'hooks/useBiblio';
+
 import { ModelToText } from 'utils/enumsMap';
-import { mapLangToCS } from 'utils/languagesMap';
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
@@ -36,21 +38,26 @@ import MetaStreamsDialog from './MetaStreamsDialog';
 //biblio svazek knih
 //http://feeder.dev.inqool.cz/view/uuid:60447ee0-4f90-11ed-ad9c-5ef3fc9bb22f?page=uuid:703a3bd3-5b96-4102-aa72-bbe4fef45cf2
 
-const xmlItemToText = (item: string | string[], key: string) => {
+//viacero jazykov
+//view/uuid:b2b8aed0-b345-11e3-b833-005056827e52?page=uuid:57013930-bb07-11e3-a597-5ef3fc9bb22f
+
+const xmlItemToText = (
+	item: string | string[],
+	key: string,
+	trans: TFunction<'translation'>,
+): string[] => {
 	if (Array.isArray(item)) {
-		return item
-			.map(it => {
-				if (key === 'type') {
-					return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
-				}
-				if (key === 'language') {
-					return mapLangToCS[it] ?? 'Neznámy';
-				}
-				return it;
-			})
-			.join(', ');
+		return item.map(it => {
+			if (key === 'type') {
+				return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
+			}
+			if (key === 'language') {
+				return trans(`language:${it}`) ?? '';
+			}
+			return it;
+		});
 	}
-	return '';
+	return [];
 };
 
 export const BibLink: FC<{ to: string; label?: string | string[] }> = ({
@@ -61,6 +68,33 @@ export const BibLink: FC<{ to: string; label?: string | string[] }> = ({
 		<H5 m={0}>{label ?? ''}</H5>
 	</NavLinkButton>
 );
+
+const ParsedLanguages: FC<{
+	langs: string | string[];
+	t: TFunction<'translation'>;
+}> = ({ langs, t }) => {
+	if (Array.isArray(langs)) {
+		return (
+			<div style={{ display: 'block' }}>
+				{langs.map((lang, i) => (
+					<div key={lang}>
+						<BibLink
+							to={`/search?languages=${lang}`}
+							label={t(`language:${lang}`) ?? ''}
+						/>
+					</div>
+				))}
+			</div>
+		);
+	} else {
+		return (
+			<BibLink
+				to={`/search?languages=${langs}`}
+				label={t(`language:${langs}`) ?? ''}
+			/>
+		);
+	}
+};
 
 const parseDCXML = (xml: unknown): Partial<Record<string, string[]>> => {
 	const wrapper = 'oai_dc:dc';
@@ -116,8 +150,10 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	//const detail = usePublicationDetailWithRoot(id ?? 'biblio_id_undefined');
 
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
+	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(id);
+
 	const [parsedXML, setParsedXML] = useState<unknown>();
-	const nav = useNavigate();
+
 	const { t } = useTranslation();
 
 	useEffect(() => {
@@ -126,15 +162,15 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	const biblio = useMemo(() => parseDCXML(parsedXML), [parsedXML]);
 
-	const model = useMemo(
-		() => xmlItemToText(biblio.type ?? [], 'type'),
-		[biblio],
-	);
-	console.log({ biblio });
-	if (isLoading || pubDetail.isLoading || pageDetail.isLoading) {
+	if (
+		isBiblioLoading ||
+		isLoading ||
+		pubDetail.isLoading ||
+		pageDetail.isLoading
+	) {
 		return <LoaderSpin />;
 	}
-
+	console.log({ bmods });
 	const isPrintableOrExportable =
 		window.location.pathname.includes('/view/') ||
 		window.location.pathname.includes('/multiview/');
@@ -145,7 +181,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 		.flat()
 		.filter(c => c.model !== 'periodicalitem' && c.model !== 'supplement');
 
-	console.log({ pubDetail });
 	return (
 		<Flex width={1} flexDirection="column" position="relative" height="100%">
 			<Flex
@@ -167,12 +202,19 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 			<Divider />
 			<Box
 				p={3}
+				pt={1}
 				overflowY="auto"
 				maxHeight={`calc(100vh - ${
 					variant === 'right' ? 120 : 90
 				}px - ${INIT_HEADER_HEIGHT}px)`}
 			>
 				<Box mb={3}>
+					<Text color="#616161" fontSize="16.5px" fontWeight="bold">
+						{bmods?.title ?? ''}
+					</Text>
+					<Text color="#616161" fontSize="15px">
+						{bmods?.subTitle ?? ''}
+					</Text>
 					{pageContext?.map(pc => (
 						<Box key={pc.pid}>
 							<NavLinkButton
@@ -189,9 +231,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						</Box>
 					))}
 					<Divider my={2} />
-					<H2 color="#616161" fontSize="18.5px">
-						{rootTitle}
-					</H2>
+
 					{/* <Button variant="text" onClick={() => nav(`/periodical/${rootId}`)}>
 						Přejít na {ModelToText[rootDetail?.model ?? '']}
 					</Button> */}
@@ -244,7 +284,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					<Text fontSize="13.5px" color="#9e9e9e">
 						Jazyk
 					</Text>
-					<H5>{xmlItemToText(biblio.language ?? [], 'language')}</H5>
+					<ParsedLanguages langs={biblio.language ?? []} t={t} />
 				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
