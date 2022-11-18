@@ -5,6 +5,15 @@ import { useStreams } from 'api/publicationsApi';
 
 type BiblioKeyword = {
 	'mods:topic': string[];
+	'mods:geographic': string[];
+};
+
+type ModsObject = {
+	_: string;
+	$: {
+		authority: string;
+		type: string;
+	};
 };
 
 type BiblioModsXML = {
@@ -22,6 +31,18 @@ type BiblioModsXML = {
 			'mods:name': {
 				'mods:namePart': [string, unknown];
 			}[];
+			'mods:genre': (
+				| ModsObject
+				| string // napr volume,.. ?
+			)[];
+			'mods:location': {
+				'mods:physicalLocation': string[] | ModsObject[];
+				'mods:shelfLocator': string[] | ModsObject[];
+			}[];
+			'mods:physicalDescription': {
+				'mods:form': ModsObject[];
+				'mods:extent': (ModsObject | string)[];
+			}[];
 		}[];
 	};
 };
@@ -31,20 +52,44 @@ type BiblioModsParsed = {
 	subTitle: string;
 	partNumber: string;
 	keywords: string[];
+	genre: string;
+	geographic: string[];
+	location: string;
+	shelfLocator: string;
+	physicalDescription: string;
 };
 
 const convertModsToObj = (parsedXML: BiblioModsXML): BiblioModsParsed => {
 	console.log({ parsedXML });
-	const titleInfo =
-		parsedXML?.['mods:modsCollection']?.['mods:mods']?.[0]?.[
-			'mods:titleInfo'
-		]?.[0] ?? {};
-	const keywords = (
-		parsedXML?.['mods:modsCollection']?.['mods:mods']?.[0]?.['mods:subject'] ??
-		[]
-	)
+	const base = parsedXML?.['mods:modsCollection']?.['mods:mods']?.[0] ?? {};
+	const titleInfo = base?.['mods:titleInfo']?.[0] ?? {};
+	const subject = base?.['mods:subject'] ?? [];
+	const keywords = subject
 		.map(topic => topic['mods:topic']?.[0])
 		.filter(t => t);
+	const geographic = subject
+		.map(topic => topic['mods:geographic']?.[0])
+		.filter(t => t);
+
+	const genre =
+		base?.['mods:genre'].find(g => g?.['$']?.authority === 'czenas')?.['_'] ??
+		undefined;
+
+	const locationRaw =
+		base?.['mods:location']?.[0]?.['mods:physicalLocation']?.[0];
+	const location = locationRaw?.['_'] ? locationRaw?.['_'] : locationRaw ?? '';
+
+	const shelfLocatorRaw =
+		base?.['mods:location']?.[0]?.['mods:shelfLocator']?.[0];
+	const shelfLocator = shelfLocatorRaw?.['_']
+		? shelfLocatorRaw?.['_']
+		: shelfLocatorRaw ?? '';
+	const physicalDescriptionRaw =
+		base?.['mods:physicalDescription']?.[0]?.['mods:extent']?.[0];
+	const physicalDescription = physicalDescriptionRaw?.['_']
+		? physicalDescriptionRaw?.['_']
+		: physicalDescriptionRaw ?? '';
+
 	const title = titleInfo?.['mods:title']?.[0] ?? undefined;
 	const subTitle = titleInfo?.['mods:subTitle']?.[0] ?? undefined;
 	const partNumber = titleInfo?.['mods:partNumber']?.[0] ?? undefined;
@@ -53,6 +98,11 @@ const convertModsToObj = (parsedXML: BiblioModsXML): BiblioModsParsed => {
 		subTitle,
 		partNumber,
 		keywords,
+		genre,
+		geographic,
+		location,
+		shelfLocator,
+		physicalDescription,
 	};
 };
 

@@ -150,15 +150,19 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 		pageId === 'ctx-right-current-page-uuid-error' ||
 			pageId === 'ctx-left-current-page-uuid-error',
 	);
-
+	const rootId = pubDetail.data?.root_pid ?? undefined;
+	const isPeriodical = rootId !== id;
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
-	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(
-		pubDetail.data?.root_pid ?? undefined,
+	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(rootId);
+
+	const { biblio: bmods2, isLoading: isBiblioLoading2 } = useBibilio(
+		id ?? undefined,
 	);
 	// const { data: rootChildren } = usePublicationChildren(
 	// 	pubDetail.data?.root_pid ?? undefined,
 	// );
 
+	console.log({ rootId, id });
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
 	const { t } = useTranslation();
@@ -187,12 +191,12 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	const pageContext = pubDetail.data?.context
 		.flat()
 		.filter(
-			c =>
-				c.model !== 'periodicalitem' &&
-				c.model !== 'supplement' &&
-				c.model !== 'monographunit',
+			({ model }) =>
+				model !== 'periodicalitem' &&
+				model !== 'supplement' &&
+				model !== 'monographunit',
 		);
-	console.log({ pageContext });
+	console.log({ bmods, bmods2 });
 
 	const mapContextToUnitType = {
 		monograph: 'unit_list',
@@ -234,24 +238,24 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					<Text color="#616161" fontSize="15px">
 						{bmods?.subTitle ?? ''}
 					</Text>
-					{(pageContext ?? []).map(pc => (
-						<Box key={pc.pid}>
-							<NavLinkButton
-								to={`/periodical/${pc.pid}`}
-								key={pc.pid}
-								variant="text"
-								color="textCommon"
-								fontWeight="bold"
-								px={0}
-							>
-								{t(`metadata:${mapContextToUnitType[pc.model]}`)}
-							</NavLinkButton>
-						</Box>
-					))}
-
-					{/* <Button variant="text" onClick={() => nav(`/periodical/${rootId}`)}>
-						Přejít na {ModelToText[rootDetail?.model ?? '']}
-					</Button> */}
+					{isPeriodical && (
+						<>
+							{(pageContext ?? []).map(pc => (
+								<Box key={pc.pid}>
+									<NavLinkButton
+										to={`/periodical/${pc.pid}`}
+										key={pc.pid}
+										variant="text"
+										color="textCommon"
+										fontWeight="bold"
+										px={0}
+									>
+										{t(`metadata:${mapContextToUnitType[pc.model]}`)}
+									</NavLinkButton>
+								</Box>
+							))}
+						</>
+					)}
 				</Box>
 				<Divider />
 				<Box mb={3}>
@@ -266,6 +270,88 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						</>
 					)}
 				</Box>
+				<Box
+					css={
+						isPeriodical
+							? css`
+									padding-left: 16px;
+									border-left: 6px solid ${theme.colors.border};
+							  `
+							: css``
+					}
+				>
+					{isPeriodical && (
+						<>
+							<Text color="#616161" fontSize="16.5px" fontWeight="bold">
+								{bmods2?.title ?? ''}
+							</Text>
+							<Text color="#616161" fontSize="15px">
+								{bmods2?.subTitle ?? ''}
+							</Text>
+						</>
+					)}
+					{(bmods2?.keywords?.length ?? 0) > 0 && (
+						<Box mb={3}>
+							<Text fontSize="13.5px" color="#9e9e9e">
+								{t('metadata:keywords')}
+							</Text>
+							{bmods2?.keywords.map((k, i) => (
+								<div key={`${k} - ${i}`}>
+									<BibLink to={`/search?keywords=${k}`} label={k} />
+								</div>
+							))}
+						</Box>
+					)}
+					{(bmods2?.geographic?.length ?? 0) > 0 && (
+						<Box mb={3}>
+							<Text fontSize="13.5px" color="#9e9e9e">
+								{t('metadata:geonames')}
+							</Text>
+							{bmods2?.geographic.map((k, i) => (
+								<div key={`${k} - ${i}`}>
+									<BibLink to={`/search?keywords=${k}`} label={k} />
+								</div>
+							))}
+						</Box>
+					)}
+					{bmods2?.genre && (
+						<Box mb={3}>
+							<Text fontSize="13.5px" color="#9e9e9e">
+								{t('metadata:genres')}
+							</Text>
+
+							<H5>{bmods2.genre}</H5>
+						</Box>
+					)}
+					{bmods2?.location && (
+						<Box mb={3}>
+							<Text fontSize="13.5px" color="#9e9e9e">
+								{t('metadata:location')}
+							</Text>
+
+							<H5 fontSize="13.5px" color="black">
+								{t(`sigla:${bmods2?.location}`)}
+							</H5>
+							<H5 fontSize="13.5px" color="black">
+								{t('metadata:shelf_locator', {
+									shelf_locator: bmods2.shelfLocator,
+								})}
+							</H5>
+						</Box>
+					)}
+					{bmods2?.physicalDescription && (
+						<Box mb={3}>
+							<Text fontSize="13.5px" color="#9e9e9e">
+								{t('metadata:physical_description')}
+							</Text>
+
+							<H5 fontSize="13.5px" color="black">
+								{t('metadata:extent')}: {bmods2.physicalDescription}
+							</H5>
+						</Box>
+					)}
+				</Box>
+
 				{biblio.author && (
 					<Box mb={3}>
 						<Text fontSize="13.5px" color="#9e9e9e">
@@ -307,6 +393,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						))}
 					</Box>
 				)}
+
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
 						{t('metadata:languages')}
