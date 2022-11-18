@@ -9,6 +9,7 @@ import { Flex } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import RadioButton from 'components/styled/RadioButton';
+import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { PublicationDto } from 'api/models';
 
@@ -26,8 +27,8 @@ const Cell = styled(Text)`
 `;
 
 const renderCell = (
-	row: Omit<TColumnsLayout, 'enriched' | 'pid'>,
-	cellKey: keyof Omit<TColumnsLayout, 'enriched' | 'pid'>,
+	row: Omit<TColumnsLayout, 'pid'>,
+	cellKey: keyof Omit<TColumnsLayout, 'pid'>,
 ) => {
 	if (cellKey === 'model') {
 		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
@@ -36,6 +37,13 @@ const renderCell = (
 	if (cellKey === 'availability') {
 		return (
 			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
+		);
+	}
+	if (cellKey === 'enriched') {
+		return (
+			<Cell>
+				<Checkbox checked={row[cellKey]} />
+			</Cell>
 		);
 	}
 	return <Cell title={row[cellKey] ?? '--'}>{row[cellKey] ?? '--'}</Cell>;

@@ -19,16 +19,11 @@ import { PubModelTagBadge } from 'modules/searchResult/tiles/TileView';
 
 import { useTheme } from 'theme';
 
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-	useStreams,
-} from 'api/publicationsApi';
+import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 import { ModelsEnum } from 'api/models';
 
 import useBibilio from 'hooks/useBiblio';
 
-import { ModelToText } from 'utils/enumsMap';
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
@@ -45,24 +40,24 @@ import MetaStreamsDialog from './MetaStreamsDialog';
 //viacero jazykov
 //view/uuid:b2b8aed0-b345-11e3-b833-005056827e52?page=uuid:57013930-bb07-11e3-a597-5ef3fc9bb22f
 
-const xmlItemToText = (
-	item: string | string[],
-	key: string,
-	trans: TFunction<'translation'>,
-): string[] => {
-	if (Array.isArray(item)) {
-		return item.map(it => {
-			if (key === 'type') {
-				return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
-			}
-			if (key === 'language') {
-				return trans(`language:${it}`) ?? '';
-			}
-			return it;
-		});
-	}
-	return [];
-};
+// const xmlItemToText = (
+// 	item: string | string[],
+// 	key: string,
+// 	trans: TFunction<'translation'>,
+// ): string[] => {
+// 	if (Array.isArray(item)) {
+// 		return item.map(it => {
+// 			if (key === 'type') {
+// 				return ModelToText?.[it.split(':')[1]] ?? 'Neznámy';
+// 			}
+// 			if (key === 'language') {
+// 				return trans(`language:${it}`) ?? '';
+// 			}
+// 			return it;
+// 		});
+// 	}
+// 	return [];
+// };
 
 export const BibLink: FC<{ to: string; label?: string | string[] }> = ({
 	to,
@@ -80,7 +75,7 @@ const ParsedLanguages: FC<{
 	if (Array.isArray(langs)) {
 		return (
 			<div style={{ display: 'block' }}>
-				{langs.map((lang, i) => (
+				{langs.map(lang => (
 					<div key={lang}>
 						<BibLink
 							to={`/search?languages=${lang}`}
@@ -158,11 +153,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	const { biblio: bmods2, isLoading: isBiblioLoading2 } = useBibilio(
 		id ?? undefined,
 	);
-	// const { data: rootChildren } = usePublicationChildren(
-	// 	pubDetail.data?.root_pid ?? undefined,
-	// );
 
-	console.log({ rootId, id });
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
 	const { t } = useTranslation();
@@ -175,6 +166,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	if (
 		isBiblioLoading ||
+		isBiblioLoading2 ||
 		isLoading ||
 		pubDetail.isLoading ||
 		pageDetail.isLoading
@@ -186,7 +178,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 		window.location.pathname.includes('/view/') ||
 		window.location.pathname.includes('/multiview/');
 
-	const rootTitle = pubDetail.data?.root_title ?? 'r';
 	const details = pubDetail.data?.details;
 	const pageContext = pubDetail.data?.context
 		.flat()

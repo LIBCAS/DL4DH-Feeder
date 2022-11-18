@@ -45,6 +45,13 @@ const ListView: FC<{
 			if (cellKey === 'availability') {
 				return <Cell>{t(`common:${row[cellKey]}`)}</Cell>;
 			}
+			if (cellKey === 'enriched') {
+				return (
+					<Cell>
+						<Checkbox checked={row[cellKey]} />
+					</Cell>
+				);
+			}
 			return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 		},
 		[t],
@@ -82,7 +89,8 @@ const ListView: FC<{
 						justifyContent="flex-start"
 						flex={rowLayout[cellKey]}
 						fontSize="md"
-						p={2}
+						py={2}
+						pr={1}
 						pl={[2, 3]}
 					>
 						{renderCell(row, cellKey)}

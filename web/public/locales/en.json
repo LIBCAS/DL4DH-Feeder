@@ -306,7 +306,8 @@
       "title": "Title",
       "model": "Document type",
       "availability": "Availability",
-      "date": "Date"
+      "date": "Date",
+      "enrichment":"Enrichment"
     }
   },
   "graph_view": {
