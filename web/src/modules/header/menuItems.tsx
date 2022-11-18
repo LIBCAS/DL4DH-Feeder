@@ -5,6 +5,7 @@ import { FC, useState } from 'react';
 import Dialog from '@reach/dialog';
 import { MdMenu } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import Divider from 'components/styled/Divider';
 import Button, { NavHrefButton, NavLinkButton } from 'components/styled/Button';
@@ -135,8 +136,15 @@ const MenuButton: FC<{ item: MenuItem; variant: 'desktop' | 'tablet' }> = ({
 }) => {
 	const ButtonComponent = item.href ? NavHrefButton : NavLinkButton;
 	const { t } = useTranslation('navbar');
+	const location = useLocation();
 	const info = useInfoApi(item.external && item.href === 'HOOK');
-	const href = info.data?.kramerius.url ?? undefined;
+	const newOrigin = info.data?.kramerius.url ?? undefined;
+	// eslint-disable-next-line no-nested-ternary
+	const href = newOrigin
+		? location.pathname.includes('multiview')
+			? newOrigin
+			: newOrigin + location.pathname + location.search
+		: undefined;
 	if (info.isLoading) {
 		return <Loader />;
 	}

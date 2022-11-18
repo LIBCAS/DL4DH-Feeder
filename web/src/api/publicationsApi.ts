@@ -78,7 +78,7 @@ export const usePublicationDetailWithRoot = (
 		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
 	);
 
-export const usePublicationChildren = (uuid: string) =>
+export const usePublicationChildren = (uuid: string | undefined) =>
 	useQuery(
 		['children', uuid],
 		() =>
@@ -88,6 +88,7 @@ export const usePublicationChildren = (uuid: string) =>
 		{
 			staleTime: Infinity,
 			refetchOnWindowFocus: false,
+			enabled: !!uuid,
 		},
 	);
 /***************************THUMBNAILS***************************** */
@@ -219,7 +220,12 @@ export const useStreamList = (uuid: string): StreamsOptions => {
 	};
 };
 
-export const useStreams = (uuid: string, stream: string, mime?: string) => {
+export const useStreams = (
+	uuid: string,
+	stream: string,
+	mime?: string,
+	disabled?: boolean,
+) => {
 	const [data, setData] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -235,6 +241,7 @@ export const useStreams = (uuid: string, stream: string, mime?: string) => {
 			retry: 0,
 			refetchInterval: 600000,
 			refetchOnWindowFocus: false,
+			enabled: !disabled,
 		},
 	);
 	useEffect(() => {
