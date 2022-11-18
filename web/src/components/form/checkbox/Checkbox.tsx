@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FieldMetaProps } from 'formik';
 import React from 'react';
 import { space, SpaceProps } from 'styled-system';
+import { IconType } from 'react-icons/lib';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -17,7 +18,7 @@ import { FocusStyle, InvertFocusStyle } from 'theme/GlobalStyles';
 export type CheckboxProps = {
 	label?: string;
 	required?: boolean;
-
+	CustomCheckedIcon?: IconType;
 	error?: FieldMetaProps<boolean>['error'];
 	touched?: boolean;
 	onSetTouched?: (id: string, value: boolean) => void;
@@ -100,6 +101,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
 	touched,
 	colorVariant,
 	onSetTouched,
+	CustomCheckedIcon,
 	...inputProps
 }) => {
 	const theme = useTheme();
@@ -134,7 +136,11 @@ const Checkbox: React.FC<CheckboxProps> = ({
 							inputProps.onChange?.(e);
 						}}
 					/>
-					<CheckmarkIcon size={14} color={checked ? 'white' : 'text'} />
+					{CustomCheckedIcon ? (
+						<CustomCheckedIcon size={16} color={checked ? 'white' : 'text'} />
+					) : (
+						<CheckmarkIcon size={14} color={checked ? 'white' : 'text'} />
+					)}
 				</StyledCheckbox>
 				{label && (
 					<Text

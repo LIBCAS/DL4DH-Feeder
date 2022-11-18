@@ -7,10 +7,10 @@ export type TColumnsLayout = Pick<
 
 export const rowLayout: Record<keyof TColumnsLayout, number> = {
 	title: 3,
-	model: 1,
+	model: 0.5,
 	availability: 0.5,
 	date: 0.5,
-	enriched: 0,
+	enriched: 0.3,
 	pid: 0,
 };
 
@@ -24,12 +24,13 @@ export const headerLabels: Record<
 	date: { translationKey: 'date' },
 
 	pid: { hidden: true },
-	enriched: { hidden: true },
+	enriched: { translationKey: 'enrichment' },
 };
 
-export const colsOrder: (keyof Omit<TColumnsLayout, 'enriched' | 'pid'>)[] = [
+export const colsOrder: (keyof Omit<TColumnsLayout, 'pid'>)[] = [
 	'title',
 	'model',
+	'enriched',
 	'date',
 	'availability',
 ];

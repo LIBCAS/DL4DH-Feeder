@@ -305,7 +305,8 @@
       "title": "Název",
       "model": "Typ",
       "availability": "Dostupnost",
-      "date": "Datum"
+      "date": "Datum",
+      "enrichment":"Obohacená"
     }
   },
   "graph_view": {

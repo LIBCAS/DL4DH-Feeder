@@ -32,7 +32,7 @@ const SubHeader: FC<{
 				border-bottom: 1px solid ${theme.colors.border};
 			`}
 			bg="white"
-			zIndex={1}
+			zIndex={2}
 		>
 			<Flex
 				flexShrink={0}

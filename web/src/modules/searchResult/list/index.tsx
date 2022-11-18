@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useCallback } from 'react';
+import { FC, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdClear } from 'react-icons/md';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
@@ -14,7 +15,7 @@ import { useTheme } from 'theme';
 
 import { PublicationDto } from 'api/models';
 
-import { useBulkExportContext } from 'hooks/useBulkExport';
+import { useBulkExportContext, UuidHeap } from 'hooks/useBulkExport';
 
 import { modelToText } from 'utils/enumsMap';
 
@@ -36,6 +37,7 @@ const ListView: FC<{
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const exportCtx = useBulkExportContext();
+	const [selectedAll, setSelectedAll] = useState<boolean>(false);
 
 	const renderCell = useCallback(
 		(row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
@@ -44,6 +46,13 @@ const ListView: FC<{
 			}
 			if (cellKey === 'availability') {
 				return <Cell>{t(`common:${row[cellKey]}`)}</Cell>;
+			}
+			if (cellKey === 'enriched') {
+				return (
+					<Cell>
+						<Checkbox checked={row[cellKey]} />
+					</Cell>
+				);
 			}
 			return <Cell title="cell">{row[cellKey] ?? '--'}</Cell>;
 		},
@@ -82,7 +91,8 @@ const ListView: FC<{
 						justifyContent="flex-start"
 						flex={rowLayout[cellKey]}
 						fontSize="md"
-						p={2}
+						py={2}
+						pr={1}
 						pl={[2, 3]}
 					>
 						{renderCell(row, cellKey)}
@@ -97,7 +107,25 @@ const ListView: FC<{
 		() => (
 			<>
 				<Flex pl={[2, 3]} alignItems="center" py={0}>
-					<Checkbox label="" colorVariant="inverted" />
+					<Checkbox
+						label=""
+						//colorVariant="inverted"
+						CustomCheckedIcon={selectedAll ? MdClear : undefined}
+						checked={selectedAll}
+						onChange={e => {
+							const heap: UuidHeap = {};
+							setSelectedAll(p => !p);
+							(data ?? []).forEach(d => {
+								heap[d.pid] = {
+									selected: e.target.checked,
+									title: d.title,
+									enriched: d.enriched,
+									publication: d,
+								};
+							});
+							exportCtx.setUuidHeap?.(heap);
+						}}
+					/>
 				</Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
@@ -118,7 +146,7 @@ const ListView: FC<{
 				))}
 			</>
 		),
-		[t],
+		[t, data, selectedAll, exportCtx],
 	);
 	const items = data ?? [];
 
