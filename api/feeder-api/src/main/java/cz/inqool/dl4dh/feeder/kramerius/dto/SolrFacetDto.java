@@ -3,6 +3,7 @@ package cz.inqool.dl4dh.feeder.kramerius.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class SolrFacetDto {
         return facet_fields.entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> keyTransform(e.getKey()), e -> {
-                    Map<String, Object> map = new TreeMap<>();
+                    Map<String, Object> map = new TreeMap<>(Collator.getInstance(Locale.forLanguageTag("cs")));
                     for (int i = 0; i < e.getValue().size(); i+=2) {
                         String key = (String)e.getValue().get(i);
                         //For models return only base types
