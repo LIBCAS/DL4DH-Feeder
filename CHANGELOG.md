@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.2
+
+- enrichment checkbox added in list view (https://github.com/LIBCAS/DL4DH-Feeder/issues/16)
+- select all / deselect all (https://github.com/LIBCAS/DL4DH-Feeder/issues/14)
+- biblio_mods stream parsing added (biblio info on side panel)
+- another translations added
+
 ## v0.6.1
 
 - homepage visited and newest enriched publication tiles added
