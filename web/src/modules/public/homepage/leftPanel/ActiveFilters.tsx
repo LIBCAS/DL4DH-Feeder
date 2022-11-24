@@ -43,9 +43,14 @@ function removeParam(
 		sp.delete('to');
 		return;
 	}
-
+	if (key === 'query') {
+		sp.delete('field');
+		sp.delete('value');
+	}
 	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
+
 	const newEntries = entries.filter(entry => entry !== value);
+
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
 	sp.delete('page');
