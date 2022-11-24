@@ -48,7 +48,7 @@ public class FiltersDto {
     }
 
     public boolean useEdismax() {
-        return advancedFilterField != null && advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
+        return advancedFilterField != null && !advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
     }
 
     public String getEdismaxFields(boolean includeNameTag) {
