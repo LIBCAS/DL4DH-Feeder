@@ -55,8 +55,9 @@ public class SearchApi {
             Arrays.stream(nameTagType.getSolrField().split(",")).forEach(query::addFacetField);
             query.setParam("facet.contains", filters.getQuery())
                     .setParam("facet.contains.ignoreCase", "true")
-                    .setQuery(filters.toQuery())
-                    .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article")));
+                    .setParam("q1", filters.getQuery())
+                    .setQuery(filters.toQuery(true))
+                    .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article"), true));
             QueryResponse response = solr.query(query);
             return Arrays.stream(nameTagType.getSolrField().split(","))
                     .map(f -> response.getFacetField(f)
@@ -76,7 +77,7 @@ public class SearchApi {
                         .queryParam("defType", "edismax")
                         .queryParam("fl", "PID,dc.title")
                         .queryParam("q", "dc.title:"+q.replaceAll(":","\\\\:")+"*")
-                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
+                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"), false))
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")
                         .queryParam("bq", "dostupnost:public^5")
@@ -95,7 +96,8 @@ public class SearchApi {
         return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
-                            .queryParam("q", filters.toQuery())
+                            .queryParam("q", filters.toQuery(true))
+                            .queryParam("q1", filters.getQuery())
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true");
@@ -139,10 +141,13 @@ public class SearchApi {
         // Search in Kramerius+
         int enriched = 0;
         List<String> ids = null;
+
+        // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
         if (filters.useOnlyEnriched()) {
             SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
                     .uri("/select", uriBuilder -> uriBuilder
-                            .queryParam("q", filters.toQuery())
+                            .queryParam("q", filters.toQuery(true))
+                            .queryParam("q1", filters.getQuery())
 //                        .queryParam("group", "true")
 //                        .queryParam("group.ngroups", "true")
 //                        .queryParam("group.field", "root_pid")
@@ -172,8 +177,9 @@ public class SearchApi {
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
-                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) : filters.toQuery())
-                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
+                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) : filters.toQuery(false))
+                        .queryParam("q1", filters.getQuery())
+                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"), false))
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
                         .queryParam("facet.field","keywords")
@@ -212,6 +218,7 @@ public class SearchApi {
             put(EnrichmentEnum.ALL.toString(), notEnriched);
         }});
 
+        // Get PIDs of showing documents and check, if they are already enriched
         Set<String> enrichedPIDs = reduceToEnrichedPIDs(result
                 .getResponse().getDocs().stream()
                 .map(d -> (String)d.get("PID"))

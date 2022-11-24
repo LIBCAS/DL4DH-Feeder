@@ -1,9 +1,6 @@
 package cz.inqool.dl4dh.feeder.dto;
 
-import cz.inqool.dl4dh.feeder.enums.AvailabilityEnum;
-import cz.inqool.dl4dh.feeder.enums.DocumentModelEnum;
-import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
-import cz.inqool.dl4dh.feeder.enums.FiltersSortEnum;
+import cz.inqool.dl4dh.feeder.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,20 +46,18 @@ public class FiltersDto {
                 (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED));
     }
 
-    public String toQuery() {
-        List<String> filters = new ArrayList<>();
-        if (!query.isEmpty()) {
-            filters.add("dc.title:\""+getQueryEscaped()+"*\"");
-        }
-        if (nameTagFilters != null) {
-            for (NameTagFilterDto nameTagFilter : nameTagFilters) {
-                filters.add(nameTagFilter.toFilter());
-            }
-        }
-        return filters.isEmpty() ? "*:*" : String.join(" AND ", filters);
+    public String toQuery(boolean includeNameTag) {
+        return "_query_:\"{!edismax qf='dc.title^10 dc.creator^2 keywords "
+                +(includeNameTag ? NameTagEntityType.ALL.getSolrField().replace(",", " ") : "")
+                +"' v=$q1}\"";
+//        List<String> filters = new ArrayList<>();
+//        if (!query.isEmpty()) {
+//            filters.add("dc.title:\""+getQueryEscaped()+"*\"");
+//        }
+//        return filters.isEmpty() ? "*:*" : String.join(" AND ", filters);
     }
 
-    public String toFqQuery(List<String> base) {
+    public String toFqQuery(List<String> base, boolean includeNameTag) {
         List<List<String>> list = new ArrayList<>();
         list.add(base);
 
@@ -108,6 +103,12 @@ public class FiltersDto {
                 yearList.add("datum_begin:[* TO "+ to +"]");
             }
             list.add(List.of(String.join(" AND ", yearList)));
+        }
+
+        if (nameTagFilters != null && includeNameTag) {
+            for (NameTagFilterDto nameTagFilter : nameTagFilters) {
+                list.add(List.of(nameTagFilter.toFilter()));
+            }
         }
 
         return list.stream().map(v -> "("+String.join(" OR ", v)+")").collect(Collectors.joining(" AND "));
