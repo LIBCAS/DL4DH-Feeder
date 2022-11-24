@@ -47,6 +47,9 @@ public class FiltersDto {
     }
 
     public String toQuery(boolean includeNameTag) {
+        if (query.isEmpty()) {
+            return "*:*";
+        }
         return "_query_:\"{!edismax qf='dc.title^10 dc.creator^2 keywords "
                 +(includeNameTag ? NameTagEntityType.ALL.getSolrField().replace(",", " ") : "")
                 +"' v=$q1}\"";
