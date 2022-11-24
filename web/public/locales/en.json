@@ -25,6 +25,8 @@
     "confirm":"Confirm selection",
     "warning": "Warning",
     "of_pages": "pages",
+    "yes": "Yes",
+    "no": "No",
     "n_pages": {
       "one": "page",
       "few": "pages",

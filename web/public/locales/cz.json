@@ -25,6 +25,8 @@
     "confirm":"Potvrdit výběr",
     "warning": "Varování",
     "of_pages": "stránek",
+    "yes": "Ano",
+    "no": "Ne",
     "n_pages": {
       "one": "stránka",
       "few": "stránky",

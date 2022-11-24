@@ -50,7 +50,10 @@ const ListView: FC<{
 			if (cellKey === 'enriched') {
 				return (
 					<Cell>
-						<Checkbox checked={row[cellKey]} />
+						<Checkbox
+							checked={row[cellKey]}
+							label={t(`common:${row[cellKey] ? 'yes' : 'no'}`)}
+						/>
 					</Cell>
 				);
 			}

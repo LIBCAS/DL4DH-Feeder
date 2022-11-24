@@ -28,6 +28,19 @@ const ModalDialog: FC<Props> = ({ label, control, children, customCss }) => {
 				css={
 					customCss ??
 					(() => css`
+						@keyframes animOpacity {
+							from {
+								opacity: 0;
+								transform: scale(10%);
+							}
+							to {
+								opacity: 1;
+								transform: scale(100%);
+							}
+						}
+						animation: animOpacity;
+						animation-duration: 0.08s;
+
 						padding: 0 !important;
 						/* overflow: hidden; */
 						min-width: ${theme.breakpoints[0]};
