@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.5.1
+  version: 0.6.2
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url
@@ -543,6 +543,27 @@ components:
           - ENRICHED
           - NOT_ENRICHED
           - ALL
+        advancedFilterField:
+          type: string
+          enum:
+          - TITLE
+          - AUTHOR
+          - KEYWORDS
+          - NUMBERS_IN_ADDRESSES
+          - GEOGRAPHICAL_NAMES
+          - INSTITUTIONS
+          - MEDIA_NAMES
+          - NUMBER_EXPRESSIONS
+          - ARTIFACT_NAMES
+          - PERSONAL_NAMES
+          - TIME_EXPRESSIONS
+          - COMPLEX_PERSON_NAMES
+          - COMPLEX_TIME_EXPRESSION
+          - COMPLEX_ADDRESS_EXPRESSION
+          - COMPLEX_BIBLIO_EXPRESSION
+          - ALL_BASIC_METADATA
+          - ALL_NAMETAG_DATA
+          - NONE
         nameTagFilters:
           type: array
           items:

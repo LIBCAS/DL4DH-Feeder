@@ -19,21 +19,22 @@ public enum AdvancedFilterFieldEnum {
     COMPLEX_TIME_EXPRESSION("nameTag.complexTimeExpression"),
     COMPLEX_ADDRESS_EXPRESSION("nameTag.complexAddressExpression"),
     COMPLEX_BIBLIO_EXPRESSION("nameTag.complexBiblioExpression"),
-//    ALL("dc.title^10 "+
-//            "dc.creator^2 "+
-//            "keywords " +
-//            "nameTag.numbersInAddresses "+
-//            "nameTag.geographicalNames "+
-//            "nameTag.institutions "+
-//            "nameTag.mediaNames "+
-//            "nameTag.numberExpressions "+
-//            "nameTag.artifactNames "+
-//            "nameTag.personalNames "+
-//            "nameTag.timeExpression "+
-//            "nameTag.complexPersonNames "+
-//            "nameTag.complexTimeExpression "+
-//            "nameTag.complexAddressExpression "+
-//            "nameTag.complexBiblioExpression"),
+    ALL_BASIC_METADATA("dc.title^10 "+
+            "dc.creator^2 "+
+            "keywords"),
+    ALL_NAMETAG_DATA(
+            "nameTag.numbersInAddresses "+
+            "nameTag.geographicalNames "+
+            "nameTag.institutions "+
+            "nameTag.mediaNames "+
+            "nameTag.numberExpressions "+
+            "nameTag.artifactNames "+
+            "nameTag.personalNames "+
+            "nameTag.timeExpression "+
+            "nameTag.complexPersonNames "+
+            "nameTag.complexTimeExpression "+
+            "nameTag.complexAddressExpression "+
+            "nameTag.complexBiblioExpression"),
     NONE("");
 
     private final String solrField;

@@ -6,6 +6,9 @@
 - select all / deselect all (https://github.com/LIBCAS/DL4DH-Feeder/issues/14)
 - biblio_mods stream parsing added (biblio info on side panel)
 - another translations added
+- optimized check query for enrichment flag
+- advanced filter through solr edismax parser
+- FIX: search while used nameTag hinter
 
 ## v0.6.1
 

@@ -26,7 +26,7 @@ public class FiltersDto {
 
     //K+ filters
     private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
-    private AdvancedFilterFieldEnum advancedFilterField = null;
+    private AdvancedFilterFieldEnum advancedFilterField = AdvancedFilterFieldEnum.NONE;
     private List<NameTagFilterDto> nameTagFilters;
     private String nameTagFacet = "";
 
