@@ -8,6 +8,7 @@ import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
+import AdvancedFilter from 'components/filters/AdvancedFilters';
 
 import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
 import Results from 'modules/searchResult/index';
@@ -82,12 +83,15 @@ const Dashboard: FC = () => {
 						</Flex>
 					),
 					mainJsx: (
-						<Flex width={1} justifyContent="flex-end">
-							<DashboardViewModeSwitcher />
-							<Flex mr={3} alignItems="center">
-								<Sorting />
-								{state.viewMode === 'list' && <BulkExportDialog />}
-								{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
+						<Flex width={1} justifyContent="space-between">
+							<AdvancedFilter />
+							<Flex>
+								<DashboardViewModeSwitcher />
+								<Flex mr={3} alignItems="center">
+									<Sorting />
+									{state.viewMode === 'list' && <BulkExportDialog />}
+									{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
+								</Flex>
 							</Flex>
 						</Flex>
 					),

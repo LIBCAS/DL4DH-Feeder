@@ -1,6 +1,7 @@
 import { omit } from 'lodash-es';
 import { parse } from 'query-string';
 import { useMemo } from 'react';
+import _ from 'lodash';
 
 import { ModelsEnum, NameTagFilterDto, TagNameEnum } from 'api/models';
 
@@ -17,12 +18,18 @@ type TRawSearchQuery = Omit<TSearchQuery, 'nameTagFilters'> & {
 };
 //TODO: Main searchquery parser, make hook from it and call it somwhere else probably (header? app?)
 const sanitizeSearchQuery = (q: TRawSearchQuery) => {
-	const sanitized = { ...omit(q, ['NT']) } as TSearchQuery;
+	const sanitized = { ...omit(q, ['NT', 'field', 'value']) } as TSearchQuery;
 	const page = q.page;
 	sanitized.page = page ?? 1;
+	const field = _.get(q, 'field');
+	const valueQuery = _.get(q, 'value');
+	if (field) {
+		sanitized.advancedFilterField = field;
+	}
 
-	//sanitized.yearFrom = get(q, 'from') ?? null;
-	//sanitized.yearTo = get(q, 'to') ?? null;
+	if (valueQuery) {
+		sanitized.query = valueQuery;
+	}
 
 	let NT = q?.NT;
 	if (typeof q.models === 'string') {

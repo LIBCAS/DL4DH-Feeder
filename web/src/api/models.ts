@@ -98,6 +98,7 @@ export type FiltersDto = {
 	enrichment: EnrichmentFilterType;
 	nameTagFacet: string;
 	collections: string[];
+	advancedFilterField: AdvancedFilterFieldEnum;
 };
 
 export type PublicationChild = {
@@ -204,3 +205,23 @@ export type StreamTypeEnum =
 	| 'TEXT_OCR'
 	| 'IMG_THUMB'
 	| 'DC';
+
+export type AdvancedFilterFieldEnum =
+	| 'TITLE'
+	| 'AUTHOR'
+	| 'KEYWORDS'
+	| 'NUMBERS_IN_ADDRESSES'
+	| 'GEOGRAPHICAL_NAMES'
+	| 'INSTITUTIONS'
+	| 'MEDIA_NAMES'
+	| 'NUMBER_EXPRESSIONS'
+	| 'ARTIFACT_NAMES'
+	| 'PERSONAL_NAMES'
+	| 'TIME_EXPRESSIONS'
+	| 'COMPLEX_PERSON_NAMES'
+	| 'COMPLEX_TIME_EXPRESSION'
+	| 'COMPLEX_ADDRESS_EXPRESSION'
+	| 'COMPLEX_BIBLIO_EXPRESSION'
+	| 'ALL_BASIC_METADATA'
+	| 'ALL_NAMETAG_DATA'
+	| 'NONE';
