@@ -132,6 +132,7 @@ public class SearchApi {
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
                         .queryParam("facet.field", "root_pid")
+                        .queryParam("facet.limit", "500")
                         .build())
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
@@ -153,6 +154,7 @@ public class SearchApi {
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
+                            .queryParam("facet.limit", "500")
                             .queryParam("rows",0);
                     if (filters.useEdismax()) {
                         uriBuilder.queryParam("defType", "edismax")
