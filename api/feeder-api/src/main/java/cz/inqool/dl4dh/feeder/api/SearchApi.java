@@ -55,10 +55,12 @@ public class SearchApi {
             Arrays.stream(nameTagType.getSolrField().split(",")).forEach(query::addFacetField);
             query.setParam("facet.contains", filters.getQuery())
                     .setParam("facet.contains.ignoreCase", "true")
-                    .setParam("defType", "edismax")
-                    .setParam("qf", filters.getEdismaxFields(true))
-                    .setQuery(filters.getQuery())
+                    .setQuery(filters.toQuery())
                     .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article"), true));
+            if (filters.useEdismax()) {
+                query.setParam("defType", "edismax")
+                        .setParam("qf", filters.getEdismaxFields(true));
+            }
             QueryResponse response = solr.query(query);
             return Arrays.stream(nameTagType.getSolrField().split(","))
                     .map(f -> response.getFacetField(f)
@@ -97,12 +99,14 @@ public class SearchApi {
         return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
-                            .queryParam("q", filters.getQuery())
-                            .queryParam("defType", "edismax")
-                            .queryParam("qf", filters.getEdismaxFields(true))
+                            .queryParam("q", filters.toQuery())
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true");
+                    if (filters.useEdismax()) {
+                        uriBuilder.queryParam("defType", "edismax")
+                                .queryParam("qf", filters.getEdismaxFields(true));
+                    }
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
                     }
@@ -147,21 +151,25 @@ public class SearchApi {
         // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
         if (filters.useOnlyEnriched()) {
             SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
-                    .uri("/select", uriBuilder -> uriBuilder
-                            .queryParam("q", filters.getQuery())
-                            .queryParam("defType", "edismax")
-                            .queryParam("qf", filters.getEdismaxFields(true))
+                    .uri("/select", uriBuilder -> {
+                        uriBuilder
+                                .queryParam("q", filters.toQuery())
 //                        .queryParam("group", "true")
 //                        .queryParam("group.ngroups", "true")
 //                        .queryParam("group.field", "root_pid")
-                            .queryParam("facet", "true")
-                            .queryParam("facet.mincount", "1")
-                            .queryParam("facet.field", "root_pid")
-                            .queryParam("rows",0)
+                                .queryParam("facet", "true")
+                                .queryParam("facet.mincount", "1")
+                                .queryParam("facet.field", "root_pid")
+                                .queryParam("rows",0);
 //                        .queryParam("sort",filters.getSort().toSolrSort())
 //                        .queryParam("rows",filters.getPageSize())
 //                        .queryParam("start",filters.getStart())
-                            .build())
+                        if (filters.useEdismax()) {
+                            uriBuilder.queryParam("defType", "edismax")
+                                    .queryParam("qf", filters.getEdismaxFields(true));
+                        }
+                        return uriBuilder.build();
+                    })
                     .acceptCharset(StandardCharsets.UTF_8)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
@@ -183,9 +191,11 @@ public class SearchApi {
                         uriBuilder.queryParam("q", finalIds.stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")));
                     }
                     else {
-                        uriBuilder.queryParam("q", filters.getQuery())
-                                .queryParam("defType", "edismax")
-                                .queryParam("qf", filters.getEdismaxFields(false));
+                        uriBuilder.queryParam("q", filters.toQuery());
+                        if (filters.useEdismax()) {
+                            uriBuilder.queryParam("defType", "edismax")
+                                    .queryParam("qf", filters.getEdismaxFields(false));
+                        }
                     }
                     return uriBuilder.queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
                             .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), false))

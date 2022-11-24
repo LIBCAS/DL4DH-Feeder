@@ -26,6 +26,7 @@ public class FiltersDto {
 
     //K+ filters
     private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
+    private AdvancedFilterFieldEnum advancedFilterField = null;
     private List<NameTagFilterDto> nameTagFilters;
     private String nameTagFacet = "";
 
@@ -46,12 +47,27 @@ public class FiltersDto {
                 (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED));
     }
 
+    public boolean useEdismax() {
+        return advancedFilterField != null && !query.isEmpty();
+    }
+
     public String getEdismaxFields(boolean includeNameTag) {
-        String fields = "dc.title^10 dc.creator^2 keywords";
-        if (includeNameTag) {
-            fields += " " + NameTagEntityType.ALL.getSolrField().replace(",", " ");
+        if (advancedFilterField == null) {
+            return "";
         }
-        return fields;
+        if (includeNameTag) {
+            return advancedFilterField.getSolrField();
+        }
+        return Arrays.stream(advancedFilterField.getSolrField().split(" "))
+                .filter(f -> !f.startsWith("nameTag."))
+                .collect(Collectors.joining(" "));
+    }
+
+    public String toQuery() {
+        if (useEdismax()) {
+            return query;
+        }
+        return !query.isEmpty() ? "dc.title:\""+getQueryEscaped()+"*\"" : "*:*";
     }
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {
