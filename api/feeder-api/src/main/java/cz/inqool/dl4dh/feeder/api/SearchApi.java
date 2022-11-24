@@ -4,7 +4,6 @@ import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.SolrGroupItemDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -87,57 +86,93 @@ public class SearchApi {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(SolrQueryResponseDto.class)
-                .block();
+                .blockOptional()
+                .orElseThrow();
         return result.getResponse().getDocs().stream().map(d -> (String)d.get("dc.title")).collect(Collectors.toList());
     }
 
-    @PostMapping(value = "")
-    public SearchDto search(@RequestBody FiltersDto filters) {
-        // Search in Kramerius+
-        List<String> ids = null;
-
-        SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
+    private Map<String, Map<String, Object>> getNameTagFacets(FiltersDto filters) {
+        return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
-                        .queryParam("fl", "root_pid")
-                        .queryParam("q", filters.toQuery())
-//                        .queryParam("group", "true")
-//                        .queryParam("group.ngroups", "true")
-//                        .queryParam("group.field", "root_pid")
-                        .queryParam("facet", "true")
-                        .queryParam("facet.mincount", "1")
-                        .queryParam("facet.contains.ignoreCase", "true")
-                        .queryParam("facet.field", "root_pid");
+                            .queryParam("q", filters.toQuery())
+                            .queryParam("facet", "true")
+                            .queryParam("facet.mincount", "1")
+                            .queryParam("facet.contains.ignoreCase", "true");
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
                     }
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
                     return uriBuilder.queryParam("rows",0)
-//                            .queryParam("sort",filters.getSort().toSolrSort())
-//                            .queryParam("rows",filters.getPageSize())
-//                            .queryParam("start",filters.getStart())
                             .build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                .block();
-        Map<String, Map<String, Object>> kPlusFacets = resultKPlus.getFacet_counts().transformed();
-        Map<String, Object> kPlusRootPids = kPlusFacets.get("root_pid");
-        Integer enriched = kPlusRootPids.size();
+                .blockOptional()
+                .orElseThrow()
+                .getFacet_counts()
+                .transformed();
+    }
+
+    private Set<String> reduceToEnrichedPIDs(Set<String> PIDs) {
+        return solrWebClient.get()
+                .uri("/select", uriBuilder -> uriBuilder
+                        .queryParam("q", PIDs.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")))
+                        .queryParam("rows","0")
+                        .queryParam("facet", "true")
+                        .queryParam("facet.mincount", "1")
+                        .queryParam("facet.field", "root_pid")
+                        .build())
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                .blockOptional()
+                .orElseThrow()
+                .getFacet_counts().transformed().get("root_pid").keySet();
+    }
+
+    @PostMapping(value = "")
+    public SearchDto search(@RequestBody FiltersDto filters) {
+        // Search in Kramerius+
+        int enriched = 0;
+        List<String> ids = null;
         if (filters.useOnlyEnriched()) {
+            SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
+                    .uri("/select", uriBuilder -> uriBuilder
+                            .queryParam("q", filters.toQuery())
+//                        .queryParam("group", "true")
+//                        .queryParam("group.ngroups", "true")
+//                        .queryParam("group.field", "root_pid")
+                            .queryParam("facet", "true")
+                            .queryParam("facet.mincount", "1")
+                            .queryParam("facet.field", "root_pid")
+                            .queryParam("rows",0)
+//                        .queryParam("sort",filters.getSort().toSolrSort())
+//                        .queryParam("rows",filters.getPageSize())
+//                        .queryParam("start",filters.getStart())
+                            .build())
+                    .acceptCharset(StandardCharsets.UTF_8)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                    .blockOptional()
+                    .orElseThrow();
+            Map<String, Object> kPlusRootPids = resultKPlus.getFacet_counts().transformed().get("root_pid");
+
+            enriched = kPlusRootPids.size();
 //            ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
             ids = new ArrayList<>(kPlusRootPids.keySet());
         }
-        kPlusFacets.remove("root_pid");
 
         // Search in Kramerius
         List<String> finalIds = ids;
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
-                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) :  filters.toQuery())
+                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) : filters.toQuery())
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit")))
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
@@ -158,7 +193,8 @@ public class SearchApi {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                .block();
+                .blockOptional()
+                .orElseThrow();
 
         // Prepare collections for facets
         List<CollectionDto> collectionsList = kramerius.get().uri("/vc").retrieve()
@@ -169,12 +205,17 @@ public class SearchApi {
         // Add new facet enrichment as a combination of results from Kramerius and Kramerius+
         Integer notEnriched = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
         Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
+        Integer finalEnriched = enriched;
         facets.put("enrichment", new HashMap<>(){{
-            put(EnrichmentEnum.ENRICHED.toString(), enriched);
-            put(EnrichmentEnum.NOT_ENRICHED.toString(), notEnriched - enriched);
+            put(EnrichmentEnum.ENRICHED.toString(), finalEnriched);
+            put(EnrichmentEnum.NOT_ENRICHED.toString(), notEnriched - finalEnriched);
             put(EnrichmentEnum.ALL.toString(), notEnriched);
         }});
 
+        Set<String> enrichedPIDs = reduceToEnrichedPIDs(result
+                .getResponse().getDocs().stream()
+                .map(d -> (String)d.get("PID"))
+                .collect(Collectors.toSet()));
         return new SearchDto(
                 new PublicationsListDto(
                         result.getResponse().getNumFound(),
@@ -188,21 +229,11 @@ public class SearchApi {
                                         (String)d.get("dc.title"),
                                         (String)d.get("PID"),
                                         (String)d.get("root_title"),
-                                        solrWebClient.get()     // TODO do it only in one request for all publications
-                                                .uri("/select", uriBuilder -> uriBuilder
-                                                        .queryParam("fl", "root_pid")
-                                                        .queryParam("q", "PID:\""+d.get("PID")+"\"")
-                                                        .queryParam("rows","0")
-                                                        .build())
-                                                .acceptCharset(StandardCharsets.UTF_8)
-                                                .accept(MediaType.APPLICATION_JSON)
-                                                .retrieve()
-                                                .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                                                .block().getResponse().getNumFound() > 0
+                                        enrichedPIDs.contains((String)d.get("PID"))
                                 )
                         ).collect(Collectors.toList())),
                 facets,
-                kPlusFacets);
+                getNameTagFacets(filters));
     }
 
     @GetMapping(value = "/collections")
