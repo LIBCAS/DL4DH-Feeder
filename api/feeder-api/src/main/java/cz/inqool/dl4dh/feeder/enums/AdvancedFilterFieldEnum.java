@@ -21,7 +21,7 @@ public enum AdvancedFilterFieldEnum {
     COMPLEX_BIBLIO_EXPRESSION("nameTag.complexBiblioExpression"),
     ALL("dc.title^10 "+
             "dc.creator^2 "+
-            "keywords" +
+            "keywords " +
             "nameTag.numbersInAddresses "+
             "nameTag.geographicalNames "+
             "nameTag.institutions "+
@@ -33,7 +33,8 @@ public enum AdvancedFilterFieldEnum {
             "nameTag.complexPersonNames "+
             "nameTag.complexTimeExpression "+
             "nameTag.complexAddressExpression "+
-            "nameTag.complexBiblioExpression");
+            "nameTag.complexBiblioExpression"),
+    NONE("");
 
     private final String solrField;
 
