@@ -44,7 +44,8 @@ public class FiltersDto {
 
     public boolean useOnlyEnriched() {
         return (nameTagFilters != null && !nameTagFilters.isEmpty()) ||
-                (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED));
+                (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED)) ||
+                (advancedFilterField != null && advancedFilterField.getSolrField().contains("nameTag."));
     }
 
     public boolean useEdismax() {
