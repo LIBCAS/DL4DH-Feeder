@@ -145,50 +145,35 @@ public class SearchApi {
     @PostMapping(value = "")
     public SearchDto search(@RequestBody FiltersDto filters) {
         // Search in Kramerius+
-        int enriched = 0;
-        List<String> ids = null;
-
         // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
-        if (filters.useOnlyEnriched()) {
-            SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
-                    .uri("/select", uriBuilder -> {
-                        uriBuilder
-                                .queryParam("q", filters.toQuery())
-//                        .queryParam("group", "true")
-//                        .queryParam("group.ngroups", "true")
-//                        .queryParam("group.field", "root_pid")
-                                .queryParam("facet", "true")
-                                .queryParam("facet.mincount", "1")
-                                .queryParam("facet.field", "root_pid")
-                                .queryParam("rows",0);
-//                        .queryParam("sort",filters.getSort().toSolrSort())
-//                        .queryParam("rows",filters.getPageSize())
-//                        .queryParam("start",filters.getStart())
-                        if (filters.useEdismax()) {
-                            uriBuilder.queryParam("defType", "edismax")
-                                    .queryParam("qf", filters.getEdismaxFields(true));
-                        }
-                        return uriBuilder.build();
-                    })
-                    .acceptCharset(StandardCharsets.UTF_8)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                    .blockOptional()
-                    .orElseThrow();
-            Map<String, Object> kPlusRootPids = resultKPlus.getFacet_counts().transformed().get("root_pid");
-
-            enriched = kPlusRootPids.size();
-//            ids = resultKPlus.getGrouped().get("root_pid").getGroups().stream().map(SolrGroupItemDto::getGroupValue).collect(Collectors.toList());
-            ids = new ArrayList<>(kPlusRootPids.keySet());
-        }
+        SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
+                .uri("/select", uriBuilder -> {
+                    uriBuilder
+                            .queryParam("q", filters.toQuery())
+                            .queryParam("facet", "true")
+                            .queryParam("facet.mincount", "1")
+                            .queryParam("facet.field", "root_pid")
+                            .queryParam("rows",0);
+                    if (filters.useEdismax()) {
+                        uriBuilder.queryParam("defType", "edismax")
+                                .queryParam("qf", filters.getEdismaxFields(true));
+                    }
+                    return uriBuilder.build();
+                })
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                .blockOptional()
+                .orElseThrow();
+        Map<String, Object> kPlusRootPids = resultKPlus.getFacet_counts().transformed().get("root_pid");
+        int enriched = kPlusRootPids.size();
 
         // Search in Kramerius
-        List<String> finalIds = ids;
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> {
-                    if (finalIds != null) {
-                        uriBuilder.queryParam("q", finalIds.stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")));
+                    if (filters.useOnlyEnriched()) {
+                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")));
                     }
                     else {
                         uriBuilder.queryParam("q", filters.toQuery());
@@ -229,13 +214,13 @@ public class SearchApi {
                 .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()));
 
         // Add new facet enrichment as a combination of results from Kramerius and Kramerius+
-        Integer notEnriched = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
-        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
+        Integer allDocuments = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
         Integer finalEnriched = enriched;
+        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
         facets.put("enrichment", new HashMap<>(){{
             put(EnrichmentEnum.ENRICHED.toString(), finalEnriched);
-            put(EnrichmentEnum.NOT_ENRICHED.toString(), notEnriched - finalEnriched);
-            put(EnrichmentEnum.ALL.toString(), notEnriched);
+            put(EnrichmentEnum.NOT_ENRICHED.toString(), allDocuments - finalEnriched);
+            put(EnrichmentEnum.ALL.toString(), allDocuments);
         }});
 
         // Get PIDs of showing documents and check, if they are already enriched
