@@ -46,18 +46,12 @@ public class FiltersDto {
                 (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED));
     }
 
-    public String toQuery(boolean includeNameTag) {
-        if (query.isEmpty()) {
-            return "*:*";
+    public String getEdismaxFields(boolean includeNameTag) {
+        String fields = "dc.title^10 dc.creator^2 keywords";
+        if (includeNameTag) {
+            fields += " " + NameTagEntityType.ALL.getSolrField().replace(",", " ");
         }
-        return "_query_:\"{!edismax qf='dc.title^10 dc.creator^2 keywords "
-                +(includeNameTag ? NameTagEntityType.ALL.getSolrField().replace(",", " ") : "")
-                +"' v=$q1}\"";
-//        List<String> filters = new ArrayList<>();
-//        if (!query.isEmpty()) {
-//            filters.add("dc.title:\""+getQueryEscaped()+"*\"");
-//        }
-//        return filters.isEmpty() ? "*:*" : String.join(" AND ", filters);
+        return fields;
     }
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {

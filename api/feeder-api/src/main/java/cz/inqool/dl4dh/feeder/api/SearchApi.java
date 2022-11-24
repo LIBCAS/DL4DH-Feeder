@@ -55,8 +55,9 @@ public class SearchApi {
             Arrays.stream(nameTagType.getSolrField().split(",")).forEach(query::addFacetField);
             query.setParam("facet.contains", filters.getQuery())
                     .setParam("facet.contains.ignoreCase", "true")
-                    .setParam("q1", filters.getQuery())
-                    .setQuery(filters.toQuery(true))
+                    .setParam("defType", "edismax")
+                    .setParam("qf", filters.getEdismaxFields(true))
+                    .setQuery(filters.getQuery())
                     .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article"), true));
             QueryResponse response = solr.query(query);
             return Arrays.stream(nameTagType.getSolrField().split(","))
@@ -96,8 +97,9 @@ public class SearchApi {
         return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
-                            .queryParam("q", filters.toQuery(true))
-                            .queryParam("q1", filters.getQuery())
+                            .queryParam("q", filters.getQuery())
+                            .queryParam("defType", "edismax")
+                            .queryParam("qf", filters.getEdismaxFields(true))
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true");
@@ -146,8 +148,9 @@ public class SearchApi {
         if (filters.useOnlyEnriched()) {
             SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
                     .uri("/select", uriBuilder -> uriBuilder
-                            .queryParam("q", filters.toQuery(true))
-                            .queryParam("q1", filters.getQuery())
+                            .queryParam("q", filters.getQuery())
+                            .queryParam("defType", "edismax")
+                            .queryParam("qf", filters.getEdismaxFields(true))
 //                        .queryParam("group", "true")
 //                        .queryParam("group.ngroups", "true")
 //                        .queryParam("group.field", "root_pid")
@@ -175,26 +178,33 @@ public class SearchApi {
         // Search in Kramerius
         List<String> finalIds = ids;
         SolrQueryWithFacetResponseDto result = kramerius.get()
-                .uri("/search", uriBuilder -> uriBuilder
-                        .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
-                        .queryParam("q", finalIds != null ? finalIds.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")) : filters.toQuery(false))
-                        .queryParam("q1", filters.getQuery())
-                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"), false))
-                        .queryParam("facet", "true")
-                        .queryParam("facet.mincount", "1")
-                        .queryParam("facet.field","keywords")
-                        .queryParam("facet.field","language")
-                        .queryParam("facet.field","facet_autor")
-                        .queryParam("facet.field","model_path")
-                        .queryParam("facet.field","dostupnost")
-                        .queryParam("facet.field","collection")
-                        .queryParam("facet.field","datum_begin")
-                        .queryParam("f.datum_begin.facet.limit","-1")
-                        .queryParam("f.collection.facet.limit","-1")
-                        .queryParam("sort",filters.getSort().toSolrSort())
-                        .queryParam("rows",filters.getPageSize())
-                        .queryParam("start",filters.getStart())
-                        .build())
+                .uri("/search", uriBuilder -> {
+                    if (finalIds != null) {
+                        uriBuilder.queryParam("q", finalIds.stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")));
+                    }
+                    else {
+                        uriBuilder.queryParam("q", filters.getQuery())
+                                .queryParam("defType", "edismax")
+                                .queryParam("qf", filters.getEdismaxFields(false));
+                    }
+                    return uriBuilder.queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
+                            .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), false))
+                            .queryParam("facet", "true")
+                            .queryParam("facet.mincount", "1")
+                            .queryParam("facet.field", "keywords")
+                            .queryParam("facet.field", "language")
+                            .queryParam("facet.field", "facet_autor")
+                            .queryParam("facet.field", "model_path")
+                            .queryParam("facet.field", "dostupnost")
+                            .queryParam("facet.field", "collection")
+                            .queryParam("facet.field", "datum_begin")
+                            .queryParam("f.datum_begin.facet.limit", "-1")
+                            .queryParam("f.collection.facet.limit", "-1")
+                            .queryParam("sort", filters.getSort().toSolrSort())
+                            .queryParam("rows", filters.getPageSize())
+                            .queryParam("start", filters.getStart())
+                            .build();
+                })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
