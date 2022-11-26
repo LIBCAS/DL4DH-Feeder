@@ -175,7 +175,7 @@ public class SearchApi {
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> {
                     if (filters.useOnlyEnriched()) {
-                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")));
+                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize()).collect(Collectors.joining(" OR ")));
                     }
                     else {
                         uriBuilder.queryParam("q", filters.toQuery());
