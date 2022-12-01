@@ -1,7 +1,10 @@
 import { FC, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { MdLock } from 'react-icons/md';
 
 import { Flex } from 'components/styled';
+import Text from 'components/styled/Text';
 
 import ZoomifyView from 'modules/zoomify/ZoomifyView';
 
@@ -12,9 +15,44 @@ import PubPageNotFound from './PubPageNotFound';
 type Props = {
 	page: string;
 	pageOfSecond?: string;
+	leftPublic?: boolean;
+	rightPublic?: boolean;
 };
 
-const PubMainDetail: FC<Props> = ({ page, pageOfSecond }) => {
+const PriavatePublicationInfo: FC<{ isMultiView?: boolean }> = ({
+	isMultiView,
+}) => {
+	const { t } = useTranslation();
+
+	return (
+		<Flex
+			width={isMultiView ? '50%' : '100%'}
+			p={4}
+			alignItems="center"
+			justifyContent="center"
+			fontWeight="bold"
+			fontSize="xl"
+			height="100vh"
+		>
+			<Flex
+				justifyContent="center"
+				alignItems="center"
+				flexDirection="column"
+				mt={-100}
+			>
+				<MdLock size={60} />
+				<Text>{t('licence:private_label')}</Text>
+			</Flex>
+		</Flex>
+	);
+};
+
+const PubMainDetail: FC<Props> = ({
+	page,
+	pageOfSecond,
+	leftPublic,
+	rightPublic,
+}) => {
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const [sp] = useSearchParams();
 	const pctx = usePublicationContext();
@@ -35,18 +73,30 @@ const PubMainDetail: FC<Props> = ({ page, pageOfSecond }) => {
 			{fulltext1 && !pageUrl1 && !pctx.isLoadingLeft ? (
 				<PubPageNotFound multiview={!!pageOfSecond} />
 			) : (
-				<ZoomifyView id={page} isMultiView={!!pageOfSecond} />
+				<>
+					{leftPublic ? (
+						<ZoomifyView id={page} isMultiView={!!pageOfSecond} />
+					) : (
+						<PriavatePublicationInfo isMultiView={!!pageOfSecond} />
+					)}
+				</>
 			)}
 			{pageOfSecond && (
 				<>
 					{fulltext2 && !pageUrl2 && !pctx.isLoadingRight ? (
 						<PubPageNotFound isSecond multiview={!!pageOfSecond} />
 					) : (
-						<ZoomifyView
-							id={pageOfSecond}
-							isSecond
-							isMultiView={!!pageOfSecond}
-						/>
+						<>
+							{rightPublic ? (
+								<ZoomifyView
+									id={pageOfSecond}
+									isSecond
+									isMultiView={!!pageOfSecond}
+								/>
+							) : (
+								<PriavatePublicationInfo isMultiView={!!pageOfSecond} />
+							)}
+						</>
 					)}
 				</>
 			)}

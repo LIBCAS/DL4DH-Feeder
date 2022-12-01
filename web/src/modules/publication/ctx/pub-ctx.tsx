@@ -10,6 +10,11 @@ type CurrentPage = {
 	textMode?: boolean;
 };
 
+type OcrMode = {
+	left: 'ocr' | 'zoomify';
+	right: 'ocr' | 'zoomify';
+};
+
 //TODO: REFACTOR, UNIFY, MAKE READABLE
 
 type PubCtxType = {
@@ -58,6 +63,9 @@ type PubCtxType = {
 
 	fulltextRight: string | null;
 	setFulltextRight: React.Dispatch<React.SetStateAction<string | null>>;
+
+	ocrMode: OcrMode | null;
+	setOcrMode: React.Dispatch<React.SetStateAction<OcrMode | null>>;
 };
 
 const PublicationContext = createContext<PubCtxType>(undefined as never);
@@ -95,6 +103,8 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 	const [fulltextLeft, setFulltextLeft] = useState<string | null>(null);
 	const [fulltextRight, setFulltextRight] = useState<string | null>(null);
 
+	const [ocrMode, setOcrMode] = useState<OcrMode | null>(null);
+
 	const ctx: PubCtxType = useMemo(
 		() => ({
 			publication,
@@ -121,6 +131,8 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			fulltextRight,
 			setFulltextLeft,
 			setFulltextRight,
+			ocrMode,
+			setOcrMode,
 		}),
 		[
 			publication,
@@ -147,6 +159,8 @@ export function PubDetailCtxProvider(props: { children: React.ReactNode }) {
 			fulltextRight,
 			setFulltextLeft,
 			setFulltextRight,
+			ocrMode,
+			setOcrMode,
 		],
 	);
 

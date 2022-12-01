@@ -60,7 +60,7 @@ type BiblioModsParsed = {
 };
 
 const convertModsToObj = (parsedXML: BiblioModsXML): BiblioModsParsed => {
-	console.log({ parsedXML });
+	//console.log({ parsedXML });
 	const base = parsedXML?.['mods:modsCollection']?.['mods:mods']?.[0] ?? {};
 	const titleInfo = base?.['mods:titleInfo']?.[0] ?? {};
 	const subject = base?.['mods:subject'] ?? [];

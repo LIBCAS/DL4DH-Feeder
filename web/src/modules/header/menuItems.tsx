@@ -36,13 +36,13 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
 	{
-		to: '/browse?category=collections',
-		label: 'collections',
+		to: '/browse',
+		label: 'browse',
 		order: 0,
 	},
 	{
-		to: '/browse',
-		label: 'browse',
+		to: '/browse?category=collections',
+		label: 'collections',
 		order: 1,
 	},
 	{
@@ -50,19 +50,11 @@ const menuItems: MenuItem[] = [
 		label: 'about',
 		order: 2,
 	},
-	{
-		label: i18n.language === 'cz' ? 'English' : 'Cz',
-		// eslint-disable-next-line react/display-name
-		jsx: (variant: string) => <LangSwitch variant={variant} />,
-		order: 3,
-		onClick: () => {
-			i18n.changeLanguage('en');
-		},
-	},
+
 	{
 		to: '/exports',
 		label: 'exports',
-		order: 4,
+		order: 3,
 		private: true,
 	},
 
@@ -71,7 +63,24 @@ const menuItems: MenuItem[] = [
 		label: 'go_to_kramerius',
 		newTab: true,
 		external: true,
+		order: 4,
+	},
+	{
+		label: '',
 		order: 5,
+		// eslint-disable-next-line react/display-name
+		jsx: (variant: string) => (
+			<UserBadge variant={variant as 'desktop' | 'tablet'} />
+		),
+	},
+	{
+		label: i18n.language === 'cz' ? 'English' : 'Cz',
+		// eslint-disable-next-line react/display-name
+		jsx: (variant: string) => <LangSwitch variant={variant} />,
+		order: 6,
+		onClick: () => {
+			i18n.changeLanguage('en');
+		},
 	},
 ];
 
@@ -203,7 +212,6 @@ const MenuButtons: FC<{ variant: 'desktop' | 'tablet' }> = ({ variant }) => {
 				}
 			})}
 			{variant === 'tablet' && <Divider mr={2} my={2} />}
-			<UserBadge variant={variant} />
 		</>
 	);
 };

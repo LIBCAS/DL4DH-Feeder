@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useEffect, useMemo, useState } from 'react';
-import { MdLock } from 'react-icons/md';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
-import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
@@ -131,7 +129,8 @@ const MultiView = () => {
 	}
 
 	//FIXME: isPubliuc musi byt pre obe publikacie zvlast
-	const isPublic = detail1.data?.policy === 'public';
+	const isPublicLeft = detail1.data?.policy === 'public';
+	const isPublicRight = detail2.data?.policy === 'public';
 
 	return (
 		<ResponsiveWrapper
@@ -172,31 +171,15 @@ const MultiView = () => {
 						isCollapsed={leftCollapsed}
 					/>
 				</Flex>
-				{isPublic ? (
-					<Flex height="100vh" width="100%">
-						<PubMainDetail page={pageId1} pageOfSecond={pageId2} />
-					</Flex>
-				) : (
-					<Flex
-						width="100%"
-						p={4}
-						alignItems="center"
-						justifyContent="center"
-						fontWeight="bold"
-						fontSize="xl"
-						height="100vh"
-					>
-						<Flex
-							justifyContent="center"
-							alignItems="center"
-							flexDirection="column"
-							mt={-100}
-						>
-							<MdLock size={60} />
-							<Text>Tento dokument není veřejný</Text>
-						</Flex>
-					</Flex>
-				)}
+
+				<Flex height="100vh" width="100%">
+					<PubMainDetail
+						page={pageId1}
+						pageOfSecond={pageId2}
+						leftPublic={isPublicLeft}
+						rightPublic={isPublicRight}
+					/>
+				</Flex>
 
 				<PublicationSidePanel
 					variant="right"

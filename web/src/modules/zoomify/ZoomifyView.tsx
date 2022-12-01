@@ -246,9 +246,10 @@ const ZoomifyView = React.forwardRef<
 	const pbctx = usePublicationContext();
 
 	const textMode = isSecond
-		? pbctx.currentPageOfSecond?.textMode ?? false
-		: pbctx.currentPage?.textMode ?? false;
-
+		? pbctx.ocrMode?.right === 'ocr' ?? false
+		: pbctx.ocrMode?.left === 'ocr' ?? false;
+	console.log(pbctx.ocrMode);
+	console.log({ textMode });
 	useEffect(() => {
 		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
 		counter.current++;

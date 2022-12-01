@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { useEffect, useMemo } from 'react';
 import { MdLock } from 'react-icons/md';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
@@ -22,8 +23,8 @@ import { usePublicationContext } from '../ctx/pub-ctx';
 import PeriodicalSidePanel from './PeriodicalSidePanel';
 
 const PeriodicalDetail = () => {
+	const { t } = useTranslation();
 	const { id } = useParams<{ id: string }>();
-
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
@@ -145,7 +146,7 @@ const PeriodicalDetail = () => {
 							mt={-100}
 						>
 							<MdLock size={60} />
-							<Text>Tento dokument není veřejný</Text>
+							<Text>{t('licence:private_label')}</Text>
 						</Flex>
 					</Flex>
 				)}

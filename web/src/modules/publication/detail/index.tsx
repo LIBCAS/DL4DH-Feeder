@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useEffect, useMemo, useState } from 'react';
-import { MdLock } from 'react-icons/md';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Flex } from 'components/styled';
@@ -129,62 +128,34 @@ const PublicationDetail = () => {
 						isCollapsed={leftCollapsed}
 					/>
 				</Flex>
-				{isPublic ? (
-					<>
-						{!datanode ? (
-							<Wrapper
-								overflowY="auto"
-								overflowX="hidden"
-								p={3}
-								maxHeight="90vh"
-							>
-								<PeriodicalTiles data={pubChildren.data} />
-								<Text>Dlasie info</Text>
-								<Flex flexWrap="wrap">
-									{(pubChildren.data ?? []).map(ch => (
-										<Flex
-											key={ch.pid}
-											p={3}
-											m={2}
-											flexWrap="wrap"
-											css={css`
-												border: 1px solid ${theme.colors.primary};
-											`}
-										>
-											{Object.keys(ch.details).map(k => (
-												<Text key={k} m={2}>
-													{k} : {ch.details[k]}
-												</Text>
-											))}
-										</Flex>
+
+				{!datanode ? (
+					<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
+						<PeriodicalTiles data={pubChildren.data} />
+						<Text>Dlasie info</Text>
+						<Flex flexWrap="wrap">
+							{(pubChildren.data ?? []).map(ch => (
+								<Flex
+									key={ch.pid}
+									p={3}
+									m={2}
+									flexWrap="wrap"
+									css={css`
+										border: 1px solid ${theme.colors.primary};
+									`}
+								>
+									{Object.keys(ch.details).map(k => (
+										<Text key={k} m={2}>
+											{k} : {ch.details[k]}
+										</Text>
 									))}
 								</Flex>
-							</Wrapper>
-						) : (
-							<Flex height="100vh" width="100%">
-								<PubMainDetail page={pageId} />
-							</Flex>
-						)}
-					</>
-				) : (
-					<Flex
-						width="100%"
-						p={4}
-						alignItems="center"
-						justifyContent="center"
-						fontWeight="bold"
-						fontSize="xl"
-						height="100vh"
-					>
-						<Flex
-							justifyContent="center"
-							alignItems="center"
-							flexDirection="column"
-							mt={-100}
-						>
-							<MdLock size={60} />
-							<Text>Tento dokument není veřejný</Text>
+							))}
 						</Flex>
+					</Wrapper>
+				) : (
+					<Flex height="100vh" width="100%">
+						<PubMainDetail page={pageId} leftPublic={isPublic} />
 					</Flex>
 				)}
 
