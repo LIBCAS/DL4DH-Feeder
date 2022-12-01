@@ -25,6 +25,8 @@
     "confirm":"Confirm selection",
     "warning": "Warning",
     "of_pages": "pages",
+    "yes": "Yes",
+    "no": "No",
     "n_pages": {
       "one": "page",
       "few": "pages",
@@ -160,7 +162,7 @@
     "genres": "Genre",
     "authors": "Author",
     "inaccessible_document": "The document is not publicly accessible",
-    "search_in_publication":"Search in publication",
+    "search_in_publication":"Search by content",
     "ordering": {
       "label": "Ordering",
       "relevance": "Relevance",
@@ -387,7 +389,9 @@
   "publication_detail": {
     "search":"Search",
     "detail":"Detail",
-    "search_in_set":"Search in set of records"
+    "search_in_set":"Search in set of records",
+    "search_in_set_right":"Search publications (right)",
+    "search_in_set_left":"Search publications (left)"
 
   },
 
@@ -428,7 +432,10 @@
     "tooltip_hide_right": "Hide details",
     "tooltip_show_right": "Show details",
     "tooltip_select_text": "Select text",
-    "tooltip_crop_image": "Crop image"
+    "tooltip_crop_image": "Crop image",
+    "tooltip_scan_mode":"Show scanned page",
+    "tooltip_ocr_mode":"Show OCR result",
+    "tooltip_rotate_left": "Rotate left"
   },
   "book_controls": {
     "tooltip_print": "Prepare to print",

@@ -187,7 +187,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				model !== 'supplement' &&
 				model !== 'monographunit',
 		);
-	console.log({ bmods, bmods2 });
+	// console.log({ bmods, bmods2 });
 
 	const mapContextToUnitType = {
 		monograph: 'unit_list',

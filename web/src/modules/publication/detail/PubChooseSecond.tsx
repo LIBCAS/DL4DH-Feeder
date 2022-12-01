@@ -171,19 +171,36 @@ const ChoosePeriodical: FC<{
 }> = ({ id: rootId, onClose, variant }) => {
 	//TODO: cleanup
 	const pubCtx = usePublicationContext();
-	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
+	const {
+		id: singleId,
+		id1: mIdLeft,
+		id2: mIdRight,
+	} = useParams<{ id: string; id1: string; id2: string }>();
 	const [sp] = useSearchParams();
-	const currentId = variant === 'left' ? id1 : id2;
+	let currentIdToBeChanged: string | undefined = undefined;
+	let notChangingId: string | undefined = undefined;
+	let notChangingPage: string | undefined = undefined;
+	let notChangingFulltext: string | undefined = undefined;
 
-	const notChangingId =
-		variant === 'left'
-			? pubCtx.secondPublication?.pid ?? 'ctx-right-pubid-error'
-			: pubCtx.publication?.pid ?? 'ctx-left-pubid-error';
-	const notChangingPage =
-		variant === 'left' ? sp.get('page2') ?? '' : sp.get('page') ?? '';
-
-	const [id, setId] = useState(rootId);
-	const childrenResponse = usePublicationChildren(id ?? '');
+	if (!singleId) {
+		//is multiview variant
+		currentIdToBeChanged = variant === 'left' ? mIdLeft : mIdRight;
+		notChangingId =
+			variant === 'left'
+				? mIdRight ?? 'ctx-right-pubid-error'
+				: mIdLeft ?? 'ctx-left-pubid-error';
+		notChangingPage =
+			variant === 'left' ? sp.get('page2') ?? '' : sp.get('page') ?? '';
+		notChangingFulltext =
+			variant === 'left' ? sp.get('fulltext2') ?? '' : sp.get('fulltext') ?? '';
+	} else {
+		currentIdToBeChanged = singleId;
+		notChangingId = currentIdToBeChanged;
+		notChangingPage = sp.get('page') ?? '';
+		notChangingFulltext = sp.get('fulltext') ?? '';
+	}
+	const [newId, setNewId] = useState(rootId);
+	const childrenResponse = usePublicationChildren(newId ?? '');
 	const nav = useNavigate();
 	const children = useMemo(
 		() => childrenResponse.data ?? [],
@@ -192,26 +209,37 @@ const ChoosePeriodical: FC<{
 
 	useEffect(() => {
 		if (children?.[0]?.datanode) {
-			if (currentId === id) {
+			if (currentIdToBeChanged === newId) {
 				onClose();
 			} else {
 				variant === 'left'
-					? nav(`/multiview/${id}/${notChangingId}?page2=${notChangingPage}`)
-					: nav(`/multiview/${notChangingId}/${id}?page=${notChangingPage}`);
+					? nav(
+							`/multiview/${newId}/${notChangingId}?page2=${notChangingPage}${
+								notChangingFulltext ? `&fulltext2=${notChangingFulltext}` : ``
+							}`,
+					  )
+					: nav(
+							`/multiview/${notChangingId}/${newId}?page=${notChangingPage}${
+								notChangingFulltext ? `&fulltext=${notChangingFulltext}` : ``
+							}`,
+					  );
 			}
 		}
 		if (children.length === 1 && !children?.[0]?.datanode) {
-			setId(children[0].pid);
+			setNewId(children[0].pid);
 		}
 	}, [
 		children,
-		id,
+		newId,
 		notChangingId,
 		nav,
-		currentId,
+		currentIdToBeChanged,
 		onClose,
 		variant,
 		notChangingPage,
+		pubCtx,
+		singleId,
+		notChangingFulltext,
 	]);
 
 	if (childrenResponse.isLoading) {
@@ -221,7 +249,7 @@ const ChoosePeriodical: FC<{
 	return (
 		<Wrapper>
 			<H2>Vyberte se seznamu:</H2>
-			<PeriodicalTiles data={children} onSelect={id => setId(id)} />
+			<PeriodicalTiles data={children} onSelect={id => setNewId(id)} />
 		</Wrapper>
 	);
 };

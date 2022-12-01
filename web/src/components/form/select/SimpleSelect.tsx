@@ -102,6 +102,18 @@ const SimpleSelect = <T extends unknown>({
 				`}
 				cursor: pointer;
 				box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.24);
+				@keyframes animOpacity {
+					from {
+						opacity: 0;
+						transform: scale(90%);
+					}
+					to {
+						opacity: 1;
+						transform: scale(100%);
+					}
+				}
+				animation: animOpacity;
+				animation-duration: 0.08s;
 			`}
 		>
 			<Box position="relative" bg="white" width={1}>

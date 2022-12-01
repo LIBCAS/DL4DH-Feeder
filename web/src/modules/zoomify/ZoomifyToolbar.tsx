@@ -6,6 +6,7 @@ import {
 	MdExpandMore,
 	MdFullscreen,
 	MdFullscreenExit,
+	MdImage,
 	MdRotateLeft,
 	MdRotateRight,
 	MdTextFields,
@@ -13,6 +14,7 @@ import {
 	MdZoomOut,
 } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -79,6 +81,7 @@ const ZoomifyToolbar: FC<Props> = ({
 	isSecond,
 	isMultiView,
 }) => {
+	const { t } = useTranslation('view_controls');
 	const [fullscreen, setFullscreen] = useState<boolean>(false);
 	const pbctx = usePublicationContext();
 	const [pageUrl, setPageUrl] = useSearchParams();
@@ -111,7 +114,7 @@ const ZoomifyToolbar: FC<Props> = ({
 			>
 				<ToolButton
 					disabled={!currentPage?.prevPid}
-					tooltip="Předchozí strana"
+					tooltip={t('tooltip_page_left')}
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.prevPid ?? page);
 						setPageUrl(pageUrl);
@@ -126,42 +129,66 @@ const ZoomifyToolbar: FC<Props> = ({
 					}
 				/>
 				<ToolButton
-					tooltip="OCR"
+					tooltip={
+						pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr'
+							? t('tooltip_scan_mode')
+							: t('tooltip_ocr_mode')
+					}
 					onClick={() => {
 						if (currentPage) {
+							const newOcrMode = pbctx.ocrMode ?? {
+								left: 'zoomify',
+								right: 'zoomify',
+							};
+							if (isSecond) {
+								newOcrMode.right =
+									newOcrMode.right === 'zoomify' ? 'ocr' : 'zoomify';
+							} else {
+								newOcrMode.left =
+									newOcrMode.left === 'zoomify' ? 'ocr' : 'zoomify';
+							}
+
+							pbctx.setOcrMode(newOcrMode);
+
 							setCurrentPage({
 								...currentPage,
-								textMode: !currentPage.textMode,
+								textMode: newOcrMode[isSecond ? 'right' : 'left'] === 'ocr',
 							});
 						}
 					}}
-					Icon={<MdTextFields size={ICON_SIZE} />}
+					Icon={
+						pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr' ? (
+							<MdImage size={ICON_SIZE} />
+						) : (
+							<MdTextFields size={ICON_SIZE} />
+						)
+					}
 				/>
 
 				<ToolButton
-					tooltip="Rotovat doleva"
+					tooltip={t('tooltip_rotate_left')}
 					onClick={() => onUpdateRotation(r => (r - 90) % 360)}
 					Icon={<MdRotateLeft size={ICON_SIZE} />}
 				/>
 				<ToolButton
-					tooltip="Rotovat doprava"
+					tooltip={t('tooltip_rotate_right')}
 					onClick={() => onUpdateRotation(r => (r + 90) % 360)}
 					Icon={<MdRotateRight size={ICON_SIZE} />}
 				/>
 				<ToolButton
-					tooltip="Přiblížit"
+					tooltip={t('tooltip_zoom_in')}
 					onClick={onZoomIn}
 					Icon={<MdZoomIn size={ICON_SIZE} />}
 				/>
 				<ToolButton
-					tooltip="Oddálit"
+					tooltip={t('tooltip_zoom_out')}
 					onClick={onZoomOut}
 					Icon={<MdZoomOut size={ICON_SIZE} />}
 				/>
 
 				{!isSecond && (
 					<ToolButton
-						tooltip="Na celou obrazovku"
+						tooltip={t(`tooltip_${fullscreen ? 'exit' : 'enter'}_fullscreen`)}
 						onClick={() => {
 							if (fullscreen) {
 								document?.exitFullscreen();
@@ -191,7 +218,7 @@ const ZoomifyToolbar: FC<Props> = ({
 
 				<ToolButton
 					disabled={!currentPage?.nextPid}
-					tooltip="Další strana"
+					tooltip={t('tooltip_page_right')}
 					onClick={() => {
 						pageUrl.set(pageParamName, currentPage?.nextPid ?? page);
 						setPageUrl(pageUrl);

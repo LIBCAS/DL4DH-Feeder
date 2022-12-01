@@ -25,6 +25,8 @@
     "confirm":"Potvrdit výběr",
     "warning": "Varování",
     "of_pages": "stránek",
+    "yes": "Ano",
+    "no": "Ne",
     "n_pages": {
       "one": "stránka",
       "few": "stránky",
@@ -112,7 +114,7 @@
     "checkbox_label": "pouze veřejné",
     "login": "Přihlásit",
     "logout": "Odhlásit",
-    "exports": "Exports",
+    "exports": "Exporty",
     "go_to_kramerius": "Přejít do Kraméria"
   },
   "searchbar": {
@@ -160,7 +162,7 @@
     "genres": "Žánr",
     "authors": "Autor",
     "inaccessible_document": "Dokument není veřejně přístupný",
-    "search_in_publication":"Vyhledávat v publikaci",
+    "search_in_publication":"Hledat v obsahu stránek",
     "ordering": {
       "label": "Řazení",
       "relevance": "Podle Relevance",
@@ -384,9 +386,11 @@
     }
   },
   "publication_detail": {
-    "search":"Vyhledávání",
+    "search":"Hledat na stránkách",
     "detail":"Detail záznamu",
-    "search_in_set":"Vyhledávaní v množině záznamů"
+    "search_in_set":"Vybrat položky vpravo",
+    "search_in_set_right":"Vybrat položky vpravo",
+    "search_in_set_left":"Vybrat položky vlevo"
 
   },
   "periodical": {
@@ -426,7 +430,10 @@
     "tooltip_hide_right": "Schovat podrobnosti",
     "tooltip_show_right": "Zobrazit podrobnosti",
     "tooltip_select_text": "Vybrat text",
-    "tooltip_crop_image": "Výřez obrázků"
+    "tooltip_crop_image": "Výřez obrázků",
+    "tooltip_scan_mode":"Zobrazit naskenovanou stránku",
+    "tooltip_ocr_mode":"Zobrazit výsledek OCR",
+    "tooltip_rotate_left": "Otočit doleva"
   },
   "book_controls": {
     "tooltip_print": "Příprava k tisku",
