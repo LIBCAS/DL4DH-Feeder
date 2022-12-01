@@ -41,9 +41,6 @@ const PublicationSidePanel: FC<Props> = ({
 		isSecond ? 'search' : defaultView ?? 'detail',
 	);
 
-	//TODO: avoid url check
-	const isMultiviewActive = window.location.pathname.includes('multiview');
-
 	return (
 		<Flex
 			position="relative"
@@ -67,29 +64,30 @@ const PublicationSidePanel: FC<Props> = ({
 			<Flex
 				position="relative"
 				alignItems="flex-start"
-				// overflowY="auto"
 				width={1}
 				flexDirection="column"
 			>
-				{(isMultiviewActive || variant === 'right') && (
-					<>
-						<Flex alignItems="center" justifyContent="center" p={2} width={1}>
-							<Button
-								variant="primary"
-								onClick={() => setChooseSecondDialogOpen(p => !p)}
-							>
-								{t('search_in_set')}
-							</Button>
-							{chooseSecondDialogOpen && (
-								<PubChooseSecond
-									onClose={() => setChooseSecondDialogOpen(false)}
-									variant={variant}
-								/>
+				<>
+					<Flex alignItems="center" justifyContent="center" p={2} width={1}>
+						<Button
+							variant="primary"
+							onClick={() => setChooseSecondDialogOpen(p => !p)}
+						>
+							{t(
+								variant === 'right'
+									? 'search_in_set_right'
+									: 'search_in_set_left',
 							)}
-						</Flex>
-						<Divider />
-					</>
-				)}
+						</Button>
+						{chooseSecondDialogOpen && (
+							<PubChooseSecond
+								onClose={() => setChooseSecondDialogOpen(false)}
+								variant={variant}
+							/>
+						)}
+					</Flex>
+					<Divider />
+				</>
 
 				<Flex
 					height={50}

@@ -388,7 +388,9 @@
   "publication_detail": {
     "search":"Vyhledávání",
     "detail":"Detail záznamu",
-    "search_in_set":"Vyhledávaní v množině záznamů"
+    "search_in_set":"Vybrat položky vpravo",
+    "search_in_set_right":"Vybrat položky vpravo",
+    "search_in_set_left":"Vybrat položky vlevo"
 
   },
   "periodical": {

@@ -389,7 +389,9 @@
   "publication_detail": {
     "search":"Search",
     "detail":"Detail",
-    "search_in_set":"Search in set of records"
+    "search_in_set":"Search in set of records",
+    "search_in_set_right":"Search publications (right)",
+    "search_in_set_left":"Search publications (left)"
 
   },
 
