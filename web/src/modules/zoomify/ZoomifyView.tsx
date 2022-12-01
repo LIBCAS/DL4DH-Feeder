@@ -26,6 +26,9 @@ import { useTheme } from 'theme';
 
 import { useImageProperties } from 'api/publicationsApi';
 
+import useViewport from 'hooks/useViewport';
+
+import { getBestFitResolution } from './zoomifyUtils';
 import ZoomifyToolbar from './ZoomifyToolbar';
 import AltoDialog from './AltoDialog';
 import OcrView from './OcrView';
@@ -75,6 +78,7 @@ const MapWrapper: FC<{
 	const [sp] = useSearchParams();
 	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
 	const highlightPolygons = useHighlightWord(imgId ?? '', isSecond);
+	const { width: screenWidth, height: screenHeight } = useViewport();
 
 	const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 
@@ -131,13 +135,23 @@ const MapWrapper: FC<{
 				//resolutions: layer?.getSource()?.getTileGrid()?.getResolutions(),
 				extent: extent,
 				constrainOnlyCenter: true,
-				maxResolution: 4.5, // TODO: max a min res vypocitat podla rozlisenia viewportu obrazovky a obrazku, max je zoomout min je zoomin
+				maxResolution:
+					getBestFitResolution(imgWidth, imgHeight, screenWidth, screenHeight) *
+					1.5,
 				minResolution: 0.2,
 				maxZoom: 15,
 			}),
 		});
 		map.current?.getView().fit(extent as Extent);
-	}, [imgId, imgWidth, imgHeight, fulltext, zoomifyUrl]);
+	}, [
+		imgId,
+		imgWidth,
+		imgHeight,
+		fulltext,
+		zoomifyUrl,
+		screenWidth,
+		screenHeight,
+	]);
 
 	useEffect(() => {
 		if (highlightPolygons?.length ?? 0 > 0) {
