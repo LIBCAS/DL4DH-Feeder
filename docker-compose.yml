@@ -72,6 +72,9 @@ services:
           memory: 15m
     labels:
       kompose.service.expose: "${CI_ENVIRONMENT_HOSTNAME}"
+      kompose.service.expose.tls-secret: feeder-tls
+      acme.cert-manager.io/http01-edit-in-place: "true"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/proxy-body-size: "20m"
       nginx.ingress.kubernetes.io/client-max-body-size: "20m"
