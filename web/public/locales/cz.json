@@ -217,7 +217,19 @@
     "export_mode_switch_on": "Exportovat",
     "export_mode_switch_off": "Zrušit export",
     "export_mode_switch_tooltip": "Označit publikace pro export",
-    "export_dialog_button": "Exportovat publikace"
+    "export_dialog_button": "Exportovat publikace",
+    "exports_dashboard" : {
+      "page_title":"Exporty",
+      "login_request":"Pro přístup k této stránce je nutné se přihlásit.",
+      "login":"Přihlásit se",
+      "tooltip_sort_by":"",
+      "download":"Stáhnout",
+      "export_name":"Název",
+      "status":"",
+      "created":"",
+      "format":"",
+      "action":""
+    }
   },
   "browse": {
     "category": {
