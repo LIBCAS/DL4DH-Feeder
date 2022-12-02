@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import { FC, useMemo } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -57,7 +58,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const enriched =
 		Object.keys(exportCtx.uuidHeap).length > 0 &&
 		!Object.keys(exportCtx.uuidHeap).some(
-			uuid => !exportCtx.uuidHeap[uuid].enriched,
+			uuid => !exportCtx.uuidHeap[uuid].publication.enriched,
 		);
 
 	const formatOptions: ExportFormatOption[] = enriched
@@ -375,7 +376,34 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	);
 };
 
+export const BulkExportModeSwitch: FC = () => {
+	const { setExportModeOn, exportModeOn } = useBulkExportContext();
+	const { t } = useTranslation('exports');
+	return (
+		<Button
+			onClick={() => setExportModeOn?.(p => !p)}
+			variant="primary"
+			backgroundColor={exportModeOn ? 'enriched' : 'primary'}
+			color={exportModeOn ? 'textH4' : 'white'}
+			px={0}
+			tooltip={t('export_mode_switch_tooltip')}
+		>
+			{exportModeOn ? (
+				<>
+					<Flex mr={1}>
+						<MdClose />
+					</Flex>
+					{t('export_mode_switch_off')}
+				</>
+			) : (
+				t('export_mode_switch_on')
+			)}
+		</Button>
+	);
+};
+
 const BulkExportDialog: FC = () => {
+	const { t } = useTranslation('exports');
 	return (
 		<ModalDialog
 			label="Info"
@@ -385,9 +413,9 @@ const BulkExportDialog: FC = () => {
 					minWidth={60}
 					variant="primary"
 					onClick={openModal}
-					tooltip="Exportovat publikace"
+					tooltip={t('export_dialog_button')}
 				>
-					Export
+					{t('export_dialog_button')}
 				</Button>
 			)}
 		>

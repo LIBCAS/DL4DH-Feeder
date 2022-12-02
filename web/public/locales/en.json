@@ -214,6 +214,12 @@
       "tab": "Query"
     }
   },
+  "exports":{
+    "export_mode_switch_on": "Export",
+    "export_mode_switch_off": "Cancel export",
+    "export_mode_switch_tooltip": "Choose publications for export",
+    "export_dialog_button": "Export publications"
+  },
   "browse": {
     "category": {
       "label": "Browse",

@@ -213,6 +213,12 @@
       "tab": "Dotaz"
     }
   },
+  "exports":{
+    "export_mode_switch_on": "Exportovat",
+    "export_mode_switch_off": "Zrušit export",
+    "export_mode_switch_tooltip": "Označit publikace pro export",
+    "export_dialog_button": "Exportovat publikace"
+  },
   "browse": {
     "category": {
       "label": "Procházet",

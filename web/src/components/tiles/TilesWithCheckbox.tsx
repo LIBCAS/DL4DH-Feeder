@@ -9,17 +9,20 @@ import Button from 'components/styled/Button';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
+import Divider from 'components/styled/Divider';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import ListView from 'modules/searchResult/list';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 import TileView from 'modules/searchResult/tiles/TileView';
+import DashboardModeSwither from 'modules/public/homepage/DashboardViewModeSwitcher';
 
 import { useTheme } from 'theme';
 
 import { PublicationChild, PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
+import { useSearchContext } from 'hooks/useSearchContext';
 
 type FormProps = {
 	closeModal: () => void;
@@ -277,6 +280,7 @@ export const EditSelectedChildren: FC<Props> = ({
 
 export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 	const { uuidHeap } = useBulkExportContext();
+	const { state } = useSearchContext();
 	const data = useMemo(
 		() => Object.keys(uuidHeap).map(k => uuidHeap[k].publication),
 		[uuidHeap],
@@ -310,14 +314,23 @@ export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 						margin="5vh auto"
 						m={0}
 						minWidth={['initial', '80vw']}
+						maxHeight="75vh"
 						overflow="visible"
 						width={'100%'}
-						//height={'80vh'}
 					>
 						<Flex alignItems="center" justifyContent="space-between">
 							<H1>Seznam publikací pro export</H1>
+							<DashboardModeSwither graphViewHidden />
 						</Flex>
-						<ListView data={data} isLoading={false} />
+						{state.viewMode === 'list' && (
+							<ListView data={data} isLoading={false} />
+						)}{' '}
+						{state.viewMode === 'tiles' && (
+							<Flex overflowY="scroll" p={3}>
+								<TileView data={data} />
+							</Flex>
+						)}
+						<Divider my={2} />
 						<Flex m={2} justifyContent="flex-end">
 							<Button
 								variant="primary"
@@ -325,7 +338,7 @@ export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 									closeModal();
 								}}
 							>
-								Potvrdit
+								Zavřít
 							</Button>
 						</Flex>
 					</Paper>

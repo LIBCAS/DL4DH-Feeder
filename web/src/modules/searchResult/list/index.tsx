@@ -121,8 +121,6 @@ const ListView: FC<{
 							(data ?? []).forEach(d => {
 								heap[d.pid] = {
 									selected: e.target.checked,
-									title: d.title,
-									enriched: d.enriched,
 									publication: d,
 								};
 							});

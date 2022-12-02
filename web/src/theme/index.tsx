@@ -23,6 +23,7 @@ const nkpRoot = {
 	success: '#3CC13B',
 	warning: '#F59100',
 	enriched: 'rgb(228, 179, 107)',
+	enrichedTransparent: 'rgba(228, 179, 107, 0.6)',
 	lightGrey: '#F3F6F8',
 	lighterGrey: '#F7FAFC',
 	darkerGrey: '#B0B0B0',

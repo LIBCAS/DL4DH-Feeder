@@ -10,7 +10,7 @@ import { useTheme } from 'theme';
 
 import { ModelsEnum, PublicationChild } from 'api/models';
 
-import { PubModelTagBadge } from './TileView';
+import { PubModelTagBadge } from './GenericTileItem';
 
 const getTitle = (details: PublicationChild['details']): string => {
 	let t = details.title ?? '';

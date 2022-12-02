@@ -12,7 +12,11 @@ import { useTheme } from 'theme';
 
 import { useSearchContext, ViewMode } from 'hooks/useSearchContext';
 
-const DashboardModeSwither = () => {
+type Props = {
+	graphViewHidden?: boolean;
+};
+
+const DashboardModeSwither: React.FC<Props> = ({ graphViewHidden }) => {
 	const theme = useTheme();
 	const { state, dispatch } = useSearchContext();
 
@@ -48,7 +52,10 @@ const DashboardModeSwither = () => {
 					{
 						key: 'graph',
 						jsx: (
-							<Flex mx={2}>
+							<Flex
+								mx={2}
+								display={graphViewHidden ? 'none!important' : 'flex'}
+							>
 								<IconButton color="inherit" tooltip="Zobrazení grafu statistik">
 									<MdEqualizer size={20} />
 								</IconButton>

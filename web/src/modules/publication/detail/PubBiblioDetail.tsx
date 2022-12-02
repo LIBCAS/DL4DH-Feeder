@@ -15,7 +15,7 @@ import Text, { H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import ShareDialog from 'modules/share/ShareDialog';
-import { PubModelTagBadge } from 'modules/searchResult/tiles/TileView';
+import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 
 import { useTheme } from 'theme';
 
