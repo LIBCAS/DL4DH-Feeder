@@ -155,7 +155,10 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 
 									const blob = await file.blob();
 									const url = URL.createObjectURL(blob);
-									downloadFile(url, `${exportDto.id}.zip`);
+									downloadFile(
+										url,
+										`${exportDto?.publicationTitle ?? exportDto.id}.zip`,
+									);
 								}}
 							>
 								<Flex

@@ -20,8 +20,6 @@ import { api } from 'api';
 
 import { ExportListParams, useExportList } from 'api/exportsApi';
 
-import { ExportJobStatusToText } from 'utils/enumsMap';
-
 import ExportDetailDialog from './ExportDetailDialog';
 
 const Cell = styled(Text)`
@@ -100,36 +98,41 @@ const HeaderCell: FC<{
 	params: ExportListParams;
 	updateParams: React.Dispatch<React.SetStateAction<ExportListParams>>;
 	flex: number;
-}> = ({ flex, field, params, label, updateParams }) => (
-	<Box flex={flex}>
-		<Button
-			variant="text"
-			p={0}
-			onClick={() =>
-				updateParams(p => ({
-					...p,
-					sort: {
-						field,
-						direction: p.sort.direction === 'ASC' ? 'DESC' : 'ASC',
-					},
-				}))
-			}
-			color="white"
-			fontSize="lg"
-			tooltip={`Řadit dle ${label}`}
-		>
-			{label}{' '}
-			{params.sort.field === field && (
-				<MdArrowDropDown
-					size={24}
-					css={css`
-						transform: rotate(${params.sort.direction === 'ASC' ? 180 : 0}deg);
-					`}
-				/>
-			)}
-		</Button>
-	</Box>
-);
+}> = ({ flex, field, params, label, updateParams }) => {
+	const { t } = useTranslation('exports');
+	return (
+		<Box flex={flex}>
+			<Button
+				variant="text"
+				p={0}
+				onClick={() =>
+					updateParams(p => ({
+						...p,
+						sort: {
+							field,
+							direction: p.sort.direction === 'ASC' ? 'DESC' : 'ASC',
+						},
+					}))
+				}
+				color="white"
+				fontSize="lg"
+				tooltip={`${t('exports_dashboard.tooltip_sort_by')} ${label}`}
+			>
+				{label}{' '}
+				{params.sort.field === field && (
+					<MdArrowDropDown
+						size={24}
+						css={css`
+							transform: rotate(
+								${params.sort.direction === 'ASC' ? 180 : 0}deg
+							);
+						`}
+					/>
+				)}
+			</Button>
+		</Box>
+	);
+};
 
 const Exportslist = () => {
 	const [params, setParams] = useState<ExportListParams>({
@@ -184,7 +187,7 @@ const Exportslist = () => {
 								</Cell>
 							</Box>
 							<Box flex={2}>
-								<Cell>{ExportJobStatusToText[row.status]}</Cell>
+								<Cell>{t(`status_enum.${row.status}`)}</Cell>
 							</Box>
 							<Box flex={1}>
 								<Cell>{row.format}</Cell>
@@ -199,7 +202,10 @@ const Exportslist = () => {
 											);
 											const blob = await file.blob();
 											const url = URL.createObjectURL(blob);
-											downloadFile(url, `${row.id}.zip`);
+											downloadFile(
+												url,
+												`${row.publicationTitle ?? row.id}.zip`,
+											);
 										}}
 									>
 										<Flex alignItems="center" pr={1} py={0} color="black">
@@ -236,25 +242,25 @@ const Exportslist = () => {
 								field="created"
 								updateParams={setParams}
 								params={params}
-								label="Vytvořeno"
+								label={t('exports_dashboard.created')}
 							/>
 							<HeaderCell
 								flex={2}
 								field="status"
 								updateParams={setParams}
 								params={params}
-								label="Status"
+								label={t('exports_dashboard.status')}
 							/>
 							<HeaderCell
 								flex={1}
 								field="format"
 								updateParams={setParams}
 								params={params}
-								label="Formát"
+								label={t('exports_dashboard.format')}
 							/>
 
 							<Box flex={1} maxWidth={100}>
-								Akce
+								{t('exports_dashboard.action')}
 							</Box>
 						</Flex>
 					)}
