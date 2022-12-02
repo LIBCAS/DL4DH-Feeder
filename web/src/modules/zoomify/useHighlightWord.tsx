@@ -84,20 +84,20 @@ export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
 							.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '')
 							.toUpperCase(),
 				)
-				// .map(f => ({
-				// 	hpos: parseInt(f.$.HPOS),
-				// 	vpos: parseInt(f.$.VPOS),
-				// 	swidth: parseInt(f.$.WIDTH),
-				// 	sheight: parseInt(f.$.HEIGHT),
-				// }))
 				.map(f => ({
-					hpos: parseInt(f.$.VPOS),
-					vpos: 2524 - 1.8 * parseInt(f.$.HPOS),
-					swidth: parseInt(f.$.HEIGHT),
-					sheight: parseInt(f.$.WIDTH),
-					what: 1.8 * parseInt(f.$.HPOS),
+					hpos: parseInt(f.$.HPOS),
+					vpos: parseInt(f.$.VPOS),
+					swidth: parseInt(f.$.WIDTH),
+					sheight: parseInt(f.$.HEIGHT),
 				}))
-		: [];
+		: // .map(f => ({
+		  // 	hpos: parseInt(f.$.VPOS),
+		  // 	vpos: 2524 - 1.8 * parseInt(f.$.HPOS),
+		  // 	swidth: parseInt(f.$.HEIGHT),
+		  // 	sheight: parseInt(f.$.WIDTH),
+		  // 	what: 1.8 * parseInt(f.$.HPOS),
+		  // }))
+		  [];
 
 	return filtered;
 };
