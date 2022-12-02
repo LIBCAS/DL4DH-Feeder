@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import { FC, useMemo } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -15,6 +16,7 @@ import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
+import TextInput from 'components/form/input/TextInput';
 
 import { api } from 'api';
 
@@ -40,10 +42,22 @@ type Props = {
 	closeModal: () => void;
 };
 
+const generateExportName = () => {
+	const formatNumber = (x: number): string => (x < 10 ? `0${x}` : x.toString());
+	const date = new Date();
+	const yy = formatNumber(date.getFullYear());
+	const mm = formatNumber(date.getMonth());
+	const dd = formatNumber(date.getDay());
+	const hh = formatNumber(date.getHours());
+	const mins = formatNumber(date.getMinutes());
+	const ss = formatNumber(date.getSeconds());
+	return `export-${yy}${mm}${dd}-${hh}${mins}${ss}`;
+};
+
 export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
-	//TODO:
+	const generatedName = useMemo(() => generateExportName(), []);
 
 	const exportCtx = useBulkExportContext();
 	const publicationIds = useMemo(
@@ -57,7 +71,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const enriched =
 		Object.keys(exportCtx.uuidHeap).length > 0 &&
 		!Object.keys(exportCtx.uuidHeap).some(
-			uuid => !exportCtx.uuidHeap[uuid].enriched,
+			uuid => !exportCtx.uuidHeap[uuid].publication.enriched,
 		);
 
 	const formatOptions: ExportFormatOption[] = enriched
@@ -72,6 +86,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			exportAll: false,
 			delimiter: delimiterEnum.comma,
 			pagesFilter: [],
+			exportName: '',
 		},
 
 		onSubmit: async values => {
@@ -80,10 +95,14 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				config,
 				publicationIds,
 			};
+			let exportName = generatedName;
+			if (values.exportName.trim() !== '') {
+				exportName = values.exportName.trim();
+			}
 
 			try {
 				const response = await api().post(
-					`exports/generate/${values.format.id}`,
+					`exports/generate/${values.format.id}?name=${exportName}`,
 					{ json },
 				);
 
@@ -171,7 +190,8 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 		);
 	}
 
-	const { handleSubmit, setFieldValue, values, isSubmitting } = formik;
+	const { handleSubmit, setFieldValue, values, isSubmitting, handleChange } =
+		formik;
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -204,6 +224,23 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						<Text fontSize="sm">
 							Všechny obohacené: <b>{enriched ? 'Áno' : 'Ne'}</b>
 						</Text>
+
+						<Divider my={2} />
+
+						<Text my={2} mt={4}>
+							Název exportu
+						</Text>
+						<TextInput
+							id="exportName"
+							mb={2}
+							label=""
+							labelType="inline"
+							value={values.exportName}
+							onChange={handleChange}
+							placeholder={generatedName}
+							width={1}
+							bg="white"
+						/>
 
 						<Text my={2} mt={4}>
 							Formát
@@ -375,7 +412,34 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	);
 };
 
+export const BulkExportModeSwitch: FC = () => {
+	const { setExportModeOn, exportModeOn } = useBulkExportContext();
+	const { t } = useTranslation('exports');
+	return (
+		<Button
+			onClick={() => setExportModeOn?.(p => !p)}
+			variant="primary"
+			backgroundColor={exportModeOn ? 'enriched' : 'primary'}
+			color={exportModeOn ? 'textH4' : 'white'}
+			px={0}
+			tooltip={t('export_mode_switch_tooltip')}
+		>
+			{exportModeOn ? (
+				<>
+					<Flex mr={1}>
+						<MdClose />
+					</Flex>
+					{t('export_mode_switch_off')}
+				</>
+			) : (
+				t('export_mode_switch_on')
+			)}
+		</Button>
+	);
+};
+
 const BulkExportDialog: FC = () => {
+	const { t } = useTranslation('exports');
 	return (
 		<ModalDialog
 			label="Info"
@@ -385,9 +449,9 @@ const BulkExportDialog: FC = () => {
 					minWidth={60}
 					variant="primary"
 					onClick={openModal}
-					tooltip="Exportovat publikace"
+					tooltip={t('export_dialog_button')}
 				>
-					Export
+					{t('export_dialog_button')}
 				</Button>
 			)}
 		>

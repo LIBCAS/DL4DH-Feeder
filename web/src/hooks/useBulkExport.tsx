@@ -6,9 +6,6 @@ export type UuidHeap = Record<
 	string,
 	{
 		selected: boolean;
-		title: string;
-		enriched: boolean;
-		//TODO: get rid of title and enriched
 		publication: PublicationDto;
 	}
 >;
@@ -16,18 +13,26 @@ export type UuidHeap = Record<
 export type BulkExportContextType = {
 	uuidHeap: UuidHeap;
 	setUuidHeap?: React.Dispatch<React.SetStateAction<UuidHeap>>;
+	exportModeOn: boolean;
+	setExportModeOn?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const BulkExportCtx = createContext<BulkExportContextType>({ uuidHeap: {} });
+const BulkExportCtx = createContext<BulkExportContextType>({
+	uuidHeap: {},
+	exportModeOn: false,
+});
 
 export const BulkExportContextProvider: React.FC = ({ children }) => {
 	const [uuidHeap, setUuidHeap] = useState<UuidHeap>({});
+	const [exportModeOn, setExportModeOn] = useState<boolean>(false);
 	const ctx = useMemo(
 		() => ({
 			uuidHeap,
 			setUuidHeap,
+			exportModeOn,
+			setExportModeOn,
 		}),
-		[uuidHeap, setUuidHeap],
+		[uuidHeap, exportModeOn],
 	);
 
 	return (

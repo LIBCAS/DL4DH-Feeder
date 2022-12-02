@@ -98,6 +98,6 @@ export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
 					what: 1.8 * parseInt(f.$.HPOS),
 				}))
 		: [];
-	console.log({ filtered });
+
 	return filtered;
 };

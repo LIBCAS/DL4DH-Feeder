@@ -16,6 +16,7 @@ import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
 import { EditSelectedChildren } from 'components/tiles/TilesWithCheckbox';
+import TextInput from 'components/form/input/TextInput';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
@@ -48,6 +49,7 @@ export type ExportFormType = {
 	nameTagParams?: TagParam[];
 	udPipeParams?: PipeParam[];
 	pagesFilter: string[];
+	exportName: string;
 };
 
 export type ExportParasConfig = {
@@ -208,15 +210,18 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 			exportAll: false,
 			delimiter: delimiterEnum.comma,
 			pagesFilter: [],
+			exportName: '',
 		},
 
 		onSubmit: async values => {
 			const config = formatValues(values);
 			const json: ExportParamsDto = { config, publicationIds: [pubId] };
 
+			const exportName = values.exportName.trim();
+
 			try {
 				const response = await api().post(
-					`exports/generate/${values.format.id}`,
+					`exports/generate/${values.format.id}?name=${exportName}`,
 					{ json },
 				);
 
@@ -276,12 +281,8 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 		);
 	}
 
-	const {
-		handleSubmit,
-		/* handleChange ,*/ setFieldValue,
-		values,
-		isSubmitting,
-	} = formik;
+	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
+		formik;
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -313,6 +314,21 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 						<Text fontSize="sm">
 							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
 						</Text>
+
+						<Text my={2} mt={4}>
+							Název exportu
+						</Text>
+						<TextInput
+							id="exportName"
+							mb={2}
+							label=""
+							labelType="inline"
+							value={values.exportName}
+							onChange={handleChange}
+							placeholder={pubTitle}
+							width={1}
+							bg="white"
+						/>
 
 						<Text my={2} mt={4}>
 							Formát
@@ -478,7 +494,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									preSelected={getPreselectedChildren(values.pagesFilter)}
 									isSecond={isSecond}
 									disabled={
-										values.format.id !== 'json' && values.format.id !== 'csv'
+										values.format.id !== 'json' &&
+										values.format.id !== 'csv' &&
+										values.format.id !== 'alto' &&
+										values.format.id !== 'text'
 									}
 									onEdit={selected => {
 										setFieldValue('pagesFilter', selected);

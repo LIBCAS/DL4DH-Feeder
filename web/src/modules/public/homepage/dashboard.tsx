@@ -13,7 +13,8 @@ import AdvancedFilter from 'components/filters/AdvancedFilters';
 import SearchResultLeftPanel from 'modules/public/homepage/leftPanel';
 import Results from 'modules/searchResult/index';
 import Sorting from 'modules/sorting/Sorting';
-import BulkExportDialog from 'modules/export/BulkExportDialog';
+import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
+import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
 
 import {
 	useAvailableFilters,
@@ -22,6 +23,7 @@ import {
 
 import { useSearchContext } from 'hooks/useSearchContext';
 import { useSearchResultContext } from 'hooks/useSearchResultContext';
+import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 
@@ -42,7 +44,7 @@ const Dashboard: FC = () => {
 		start: state.start,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
-		...state.searchQuery,
+		..._.omit(state.searchQuery, 'page'),
 	});
 
 	const {
@@ -50,6 +52,8 @@ const Dashboard: FC = () => {
 		dataUpdatedAt: filtersKey,
 		isLoading: isFiltersLoading,
 	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
+
+	const { exportModeOn } = useBulkExportContext();
 
 	useEffect(() => {
 		if (data) {
@@ -84,12 +88,18 @@ const Dashboard: FC = () => {
 					),
 					mainJsx: (
 						<Flex width={1} justifyContent="space-between">
-							<AdvancedFilter />
+							<Flex alignItems="center">
+								{exportModeOn ? (
+									<BulkExportAdditionalButtons />
+								) : (
+									<AdvancedFilter />
+								)}
+							</Flex>
 							<Flex>
 								<DashboardViewModeSwitcher />
 								<Flex mr={3} alignItems="center">
 									<Sorting />
-									{state.viewMode === 'list' && <BulkExportDialog />}
+									{state.viewMode !== 'graph' && <BulkExportModeSwitch />}
 									{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
 								</Flex>
 							</Flex>
