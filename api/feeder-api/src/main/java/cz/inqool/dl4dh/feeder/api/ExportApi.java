@@ -98,7 +98,7 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/generate/{format}")
-    public Export create(@PathVariable(value="format") String format, @RequestBody String body, Principal user) {
+    public Export create(@PathVariable(value="format") String format, @RequestBody String body, @RequestParam(required = false) String name, Principal user) {
         ExportRequestDto exportRequest = krameriusPlus.post()
                 .uri("/exports/"+format).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
@@ -115,7 +115,7 @@ public class ExportApi {
         Export export = new Export();
         export.setJobId(exportRequest.getId());
         export.setPublicationId(publicationId);
-        export.setPublicationTitle(publication.getTitle());
+        export.setPublicationTitle(name != null ? name : publication.getTitle());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
         export.setDelimiter(job.getConfig().getParameters().getDelimiter());
