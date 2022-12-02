@@ -4,6 +4,7 @@ import styled from '@emotion/styled/macro';
 import { useKeycloak } from '@react-keycloak/web';
 import { FC, useState } from 'react';
 import { MdArrowDropDown, MdDownload } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -33,6 +34,7 @@ const Cell = styled(Text)`
 
 const ExportsDashboard = () => {
 	const { keycloak } = useKeycloak();
+	const { t } = useTranslation('exports');
 
 	if (!keycloak.authenticated) {
 		return (
@@ -51,7 +53,7 @@ const ExportsDashboard = () => {
 							color="#444444!important"
 							fontWeight="normal"
 						>
-							Pro přístup k této stránce je nutné se přihlásit.
+							{t('exports_dashboard.login_request')}
 						</H1>
 						<Button
 							variant="primary"
@@ -59,7 +61,7 @@ const ExportsDashboard = () => {
 								keycloak.login();
 							}}
 						>
-							Přihlásit se
+							{t('exports_dashboard.login')}
 						</Button>
 					</Box>
 				</Paper>
@@ -83,7 +85,7 @@ const ExportsDashboard = () => {
 						color="#444444!important"
 						fontWeight="normal"
 					>
-						Exporty
+						{t('exports_dashboard.page_title')}
 					</H1>
 					<Exportslist />
 				</Box>
@@ -138,6 +140,7 @@ const Exportslist = () => {
 	const [enabled, setEnabled] = useState<string | undefined>(undefined);
 	const response = useExportList(params, enabled === undefined);
 	const data = response.data?.content ?? [];
+	const { t } = useTranslation('exports');
 	return (
 		<Box width={1}>
 			<Flex
@@ -201,7 +204,7 @@ const Exportslist = () => {
 									>
 										<Flex alignItems="center" pr={1} py={0} color="black">
 											<Text my={0} py={2} px={1}>
-												Stáhnout
+												{t('exports_dashboard.download')}
 											</Text>{' '}
 											<MdDownload size={20} />
 										</Flex>
@@ -226,7 +229,7 @@ const Exportslist = () => {
 								field="publicationTitle"
 								updateParams={setParams}
 								params={params}
-								label="Název publikace"
+								label={t('exports_dashboard.export_name')}
 							/>
 							<HeaderCell
 								flex={2}
