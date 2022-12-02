@@ -256,7 +256,7 @@ const Pagination: FC<Props> = ({
 				<>
 					{totalCount ? (
 						<Flex alignItems="center" justifyContent="center">
-							Celkem záznamů: {totalCount}
+							{t('pagination.total_count')} {totalCount}
 						</Flex>
 					) : (
 						<></>

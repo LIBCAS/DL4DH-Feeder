@@ -14,7 +14,8 @@
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
-      "page_limit": "Záznamů na stránku:"
+      "page_limit": "Záznamů na stránku:",
+      "total_count":"Celkem záznamů: "
     },
     "of": "z",
     "all": "Vše",
@@ -222,13 +223,25 @@
       "page_title":"Exporty",
       "login_request":"Pro přístup k této stránce je nutné se přihlásit.",
       "login":"Přihlásit se",
-      "tooltip_sort_by":"",
+      "tooltip_sort_by":"Řadit dle",
       "download":"Stáhnout",
       "export_name":"Název",
-      "status":"",
-      "created":"",
-      "format":"",
-      "action":""
+      "status":"Status",
+      "created":"Vytvořeno",
+      "format":"Formát",
+      "action":"Akce"
+    },
+    "status_enum": {
+      "CREATED":"Vytvořen",
+      "COMPLETED":"Úspěšně dokončen",
+      "STARTING":"Začíná",
+      "STARTED":"Započatý",
+      "STOPPING":"Zastavuje",
+      "STOPPED":"Zastaven",
+      "FAILED":"Neúspěšně ukončen",
+      "ABANDONED":"Opuštěn",
+      "UNKNOWN":"Neznámý"
+      
     }
   },
   "browse": {

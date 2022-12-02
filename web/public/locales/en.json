@@ -14,7 +14,8 @@
     "pagination": {
       "prev_page":"Previous page",
       "next_page":"Next page",
-      "page_limit": "Page limit:"
+      "page_limit": "Page limit:",
+      "total_count":"Total count: "
     },
     "of": "of",
     "all": "All",
@@ -218,7 +219,31 @@
     "export_mode_switch_on": "Export",
     "export_mode_switch_off": "Cancel export",
     "export_mode_switch_tooltip": "Choose publications for export",
-    "export_dialog_button": "Export publications"
+    "export_dialog_button": "Export publications",
+    "exports_dashboard" : {
+      "page_title":"Exports",
+      "login_request":"To access this page you have to be logged in.",
+      "login":"Log in",
+      "tooltip_sort_by":"Sort by",
+      "download":"Download",
+      "export_name":"Name",
+      "status":"Status",
+      "created":"Created",
+      "format":"Format",
+      "action":"Actions"
+    },
+    "status_enum": {
+      "CREATED":"CREATED",
+      "COMPLETED":"COMPLETED",
+      "STARTING":"STARTING",
+      "STARTED":"STARTED",
+      "STOPPING":"STOPPING",
+      "STOPPED":"STOPPED",
+      "FAILED":"FAILED",
+      "ABANDONED":"ABANDONED",
+      "UNKNOWN":"UNKNOWN"
+      
+    }
   },
   "browse": {
     "category": {
