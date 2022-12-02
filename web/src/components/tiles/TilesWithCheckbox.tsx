@@ -2,6 +2,8 @@
 import { css } from '@emotion/core';
 import { FC, useMemo, useState } from 'react';
 import { MdClose } from 'react-icons/md';
+import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
@@ -280,11 +282,19 @@ export const EditSelectedChildren: FC<Props> = ({
 
 export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 	const { uuidHeap } = useBulkExportContext();
+	const { t } = useTranslation('exports');
 	const { state } = useSearchContext();
-	const data = useMemo(
-		() => Object.keys(uuidHeap).map(k => uuidHeap[k].publication),
-		[uuidHeap],
-	);
+	const [sort, setSort] = useState(false);
+	const data = useMemo(() => {
+		return sort
+			? Object.keys(uuidHeap)
+					.sort(
+						(a, b) =>
+							(uuidHeap[a].selected ? 0 : 1) - (uuidHeap[b].selected ? 0 : 1),
+					)
+					.map(k => uuidHeap[k].publication)
+			: Object.keys(uuidHeap).map(k => uuidHeap[k].publication);
+	}, [uuidHeap, sort]);
 
 	return (
 		<ModalDialog
@@ -319,8 +329,33 @@ export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 						width={'100%'}
 					>
 						<Flex alignItems="center" justifyContent="space-between">
-							<H1>Seznam publikací pro export</H1>
-							<DashboardModeSwither graphViewHidden />
+							<H1>{t('export_dialog_list.title')}</H1>
+							<Flex>
+								<Flex
+									bg="primaryLight"
+									alignItems="center"
+									justifyContent="center"
+									width={40}
+									height={36}
+								>
+									<IconButton
+										color="primary"
+										onClick={() => setSort(p => !p)}
+										tooltip={
+											sort
+												? t('export_dialog_list.tooltip_sort_on')
+												: t('export_dialog_list.tooltip_sort_off')
+										}
+									>
+										{sort ? (
+											<FaSortAmountDown size={22} />
+										) : (
+											<FaSortAmountUp size={22} />
+										)}
+									</IconButton>
+								</Flex>
+								<DashboardModeSwither graphViewHidden />
+							</Flex>
 						</Flex>
 						{state.viewMode === 'list' && (
 							<ListView data={data} isLoading={false} />

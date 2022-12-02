@@ -202,7 +202,10 @@ const Exportslist = () => {
 											);
 											const blob = await file.blob();
 											const url = URL.createObjectURL(blob);
-											downloadFile(url, `${row.id}.zip`);
+											downloadFile(
+												url,
+												`${row.publicationTitle ?? row.id}.zip`,
+											);
 										}}
 									>
 										<Flex alignItems="center" pr={1} py={0} color="black">

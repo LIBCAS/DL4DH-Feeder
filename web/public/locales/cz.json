@@ -15,15 +15,15 @@
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
       "page_limit": "Záznamů na stránku:",
-      "total_count":"Celkem záznamů: "
+      "total_count": "Celkem záznamů: "
     },
     "of": "z",
     "all": "Vše",
     "cancel": "Zrušit",
     "close": "Zavřít",
-    "clear":"Smazat",
-    "back":"Zpět",
-    "confirm":"Potvrdit výběr",
+    "clear": "Smazat",
+    "back": "Zpět",
+    "confirm": "Potvrdit výběr",
     "warning": "Varování",
     "of_pages": "stránek",
     "yes": "Ano",
@@ -163,7 +163,7 @@
     "genres": "Žánr",
     "authors": "Autor",
     "inaccessible_document": "Dokument není veřejně přístupný",
-    "search_in_publication":"Hledat v obsahu stránek",
+    "search_in_publication": "Hledat v obsahu stránek",
     "ordering": {
       "label": "Řazení",
       "relevance": "Podle Relevance",
@@ -214,34 +214,38 @@
       "tab": "Dotaz"
     }
   },
-  "exports":{
+  "exports": {
     "export_mode_switch_on": "Exportovat",
     "export_mode_switch_off": "Zrušit export",
     "export_mode_switch_tooltip": "Označit publikace pro export",
     "export_dialog_button": "Exportovat publikace",
-    "exports_dashboard" : {
-      "page_title":"Exporty",
-      "login_request":"Pro přístup k této stránce je nutné se přihlásit.",
-      "login":"Přihlásit se",
-      "tooltip_sort_by":"Řadit dle",
-      "download":"Stáhnout",
-      "export_name":"Název",
-      "status":"Status",
-      "created":"Vytvořeno",
-      "format":"Formát",
-      "action":"Akce"
+    "export_dialog_list": {
+      "title": "Seznam publikací pro export",
+      "tooltip_sort_on": "Seřadit od zvolených pro export",
+      "tooltip_sort_off": "Zrušit seřazení"
+    },
+    "exports_dashboard": {
+      "page_title": "Exporty",
+      "login_request": "Pro přístup k této stránce je nutné se přihlásit.",
+      "login": "Přihlásit se",
+      "tooltip_sort_by": "Řadit dle",
+      "download": "Stáhnout",
+      "export_name": "Název",
+      "status": "Status",
+      "created": "Vytvořeno",
+      "format": "Formát",
+      "action": "Akce"
     },
     "status_enum": {
-      "CREATED":"Vytvořen",
-      "COMPLETED":"Úspěšně dokončen",
-      "STARTING":"Začíná",
-      "STARTED":"Započatý",
-      "STOPPING":"Zastavuje",
-      "STOPPED":"Zastaven",
-      "FAILED":"Neúspěšně ukončen",
-      "ABANDONED":"Opuštěn",
-      "UNKNOWN":"Neznámý"
-      
+      "CREATED": "Vytvořen",
+      "COMPLETED": "Úspěšně dokončen",
+      "STARTING": "Začíná",
+      "STARTED": "Započatý",
+      "STOPPING": "Zastavuje",
+      "STOPPED": "Zastaven",
+      "FAILED": "Neúspěšně ukončen",
+      "ABANDONED": "Opuštěn",
+      "UNKNOWN": "Neznámý"
     }
   },
   "browse": {
@@ -339,24 +343,24 @@
       "model": "Typ",
       "availability": "Dostupnost",
       "date": "Datum",
-      "enrichment":"Obohacená"
+      "enrichment": "Obohacená"
     }
   },
   "graph_view": {
-    "title":"Záznamy v grafickej podobe",
+    "title": "Záznamy v grafickej podobe",
     "axis_x": {
-      "label":"Os X",
+      "label": "Os X",
       "years": "Léta",
       "authors": "Autor",
       "keywords": "Klíčové slovo",
       "models": "Typ dokumentu",
-      "languages":"Jazyk"
+      "languages": "Jazyk"
     },
-    "sorting":{
-      "key":"Klíč",
-      "count":"Četnost",
-      "label":"Seřadit dle",
-      "direction":"Přepnout směr řazení"
+    "sorting": {
+      "key": "Klíč",
+      "count": "Četnost",
+      "label": "Seřadit dle",
+      "direction": "Přepnout směr řazení"
     }
   },
   "metadata": {
@@ -417,12 +421,11 @@
     }
   },
   "publication_detail": {
-    "search":"Hledat na stránkách",
-    "detail":"Detail záznamu",
-    "search_in_set":"Vybrat položky vpravo",
-    "search_in_set_right":"Vybrat položky vpravo",
-    "search_in_set_left":"Vybrat položky vlevo"
-
+    "search": "Hledat na stránkách",
+    "detail": "Detail záznamu",
+    "search_in_set": "Vybrat položky vpravo",
+    "search_in_set_right": "Vybrat položky vpravo",
+    "search_in_set_left": "Vybrat položky vlevo"
   },
   "periodical": {
     "periodicalvolume": "Ročník {{part}}",
@@ -462,8 +465,8 @@
     "tooltip_show_right": "Zobrazit podrobnosti",
     "tooltip_select_text": "Vybrat text",
     "tooltip_crop_image": "Výřez obrázků",
-    "tooltip_scan_mode":"Zobrazit naskenovanou stránku",
-    "tooltip_ocr_mode":"Zobrazit výsledek OCR",
+    "tooltip_scan_mode": "Zobrazit naskenovanou stránku",
+    "tooltip_ocr_mode": "Zobrazit výsledek OCR",
     "tooltip_rotate_left": "Otočit doleva"
   },
   "book_controls": {

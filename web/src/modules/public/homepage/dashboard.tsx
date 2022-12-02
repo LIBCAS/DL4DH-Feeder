@@ -89,7 +89,7 @@ const Dashboard: FC = () => {
 					mainJsx: (
 						<Flex width={1} justifyContent="space-between">
 							<Flex alignItems="center">
-								{exportModeOn ? (
+								{exportModeOn && state.viewMode !== 'graph' ? (
 									<BulkExportAdditionalButtons />
 								) : (
 									<AdvancedFilter />
