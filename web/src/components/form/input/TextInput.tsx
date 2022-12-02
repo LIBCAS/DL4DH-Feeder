@@ -104,7 +104,7 @@ export const InputCss = (theme: Theme) => css`
 		color: ${theme.colors.darkerGrey};
 	}
 	&::placeholder {
-		color: ${theme.colors.primary};
+		color: ${theme.colors.text};
 		font-weight: normal;
 	}
 
