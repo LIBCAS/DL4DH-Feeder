@@ -21,6 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -54,7 +55,7 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/download/{id}", produces="application/zip")
-    public byte[] download(@PathVariable Long id, Principal user) {
+    public ResponseEntity<byte[]> download(@PathVariable Long id, Principal user) {
         Export export = exportRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         if (!export.getUsername().equals(user.getName())) {
             throw new AccessDeniedException();
@@ -76,8 +77,19 @@ public class ExportApi {
             exportRepository.save(export);
         }
 
-        return krameriusPlus.get()
-                .uri("/files/"+export.getExportId()).retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_DISPOSITION,
+                String.format("attachment; filename=\"%1$s.zip\"", export.getPublicationTitle()));
+
+        return new ResponseEntity<>(
+                krameriusPlus.get()
+                        .uri("/files/"+export.getExportId())
+                        .retrieve()
+                        .bodyToMono(ByteArrayResource.class).block()
+                        .getByteArray(),
+                responseHeaders,
+                HttpStatus.OK
+        );
     }
 
     @PreAuthorize("isAuthenticated()")
