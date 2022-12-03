@@ -73,7 +73,9 @@ public class FiltersDto {
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {
         List<List<String>> list = new ArrayList<>();
-        list.add(base);
+        if (base != null ){
+            list.add(base);
+        }
 
         if (availability != AvailabilityEnum.ALL) {
             list.add(List.of("dostupnost:" + availability.toString().toLowerCase()));

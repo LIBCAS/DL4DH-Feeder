@@ -159,7 +159,7 @@ public class SearchApi {
                             .queryParam("rows",0);
                     if (filters.getNameTagFilters() != null && !filters.getNameTagFilters().isEmpty()) {
                         uriBuilder
-                            .queryParam("fq", filters.toFqQuery(List.of(), true));
+                            .queryParam("fq", filters.toFqQuery(null, true));
                     }
                     if (filters.useEdismax()) {
                         uriBuilder.queryParam("defType", "edismax")
