@@ -151,10 +151,11 @@ public class SearchApi {
                 .uri("/select", uriBuilder -> {
                     uriBuilder
                             .queryParam("q", filters.toQuery())
+                            .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), true))
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
-                            .queryParam("facet.limit", "500")
+                            .queryParam("facet.limit", "-1")
                             .queryParam("rows",0);
                     if (filters.useEdismax()) {
                         uriBuilder.queryParam("defType", "edismax")
@@ -179,7 +180,6 @@ public class SearchApi {
                     }
                     else {
                         uriBuilder.queryParam("q", filters.toQuery())
-                                .queryParam("rows", filters.getPageSize())
                                 .queryParam("start", filters.getStart());
                         if (filters.useEdismax()) {
                             uriBuilder.queryParam("defType", "edismax")
@@ -200,6 +200,7 @@ public class SearchApi {
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort())
+                            .queryParam("rows", filters.getPageSize())
                             .build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
@@ -232,8 +233,8 @@ public class SearchApi {
                 .collect(Collectors.toSet()));
         return new SearchDto(
                 new PublicationsListDto(
-                        result.getResponse().getNumFound(),
-                        result.getResponse().getStart(),
+                        filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound(),
+                        filters.useOnlyEnriched() ? filters.getStart() : result.getResponse().getStart(),
                         result.getResponse().getDocs().stream().map(d ->
                                 new PublicationDto(
                                         (String)d.get("fedora.model"),
