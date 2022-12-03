@@ -238,9 +238,9 @@ public class SearchApi {
         Integer allDocuments = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
         Integer finalEnriched = enriched;
         Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
-        if (filters.useOnlyEnriched()) {
-            facets = resultKPlus.getFacet_counts().transformed(collections);
-        }
+//        if (filters.useOnlyEnriched()) {
+//            facets = resultKPlus.getFacet_counts().transformed(collections);
+//        }
         facets.put("enrichment", new HashMap<>(){{
             put(EnrichmentEnum.ENRICHED.toString(), finalEnriched);
             put(EnrichmentEnum.NOT_ENRICHED.toString(), allDocuments - finalEnriched);
