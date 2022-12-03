@@ -115,7 +115,7 @@ public class ExportApi {
         Export export = new Export();
         export.setJobId(exportRequest.getId());
         export.setPublicationId(publicationId);
-        export.setPublicationTitle(name != null ? name : publication.getTitle());
+        export.setPublicationTitle(name != null && !name.isEmpty() ? name : publication.getTitle());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
         export.setDelimiter(job.getConfig().getParameters().getDelimiter());
