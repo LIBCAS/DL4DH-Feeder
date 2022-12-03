@@ -159,15 +159,6 @@ public class SearchApi {
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
                             .queryParam("facet.root_pid.facet.limit", "-1")
-                            .queryParam("facet.field", "keywords")
-                            .queryParam("facet.field", "language")
-                            .queryParam("facet.field", "facet_autor")
-                            .queryParam("facet.field", "model_path")
-                            .queryParam("facet.field", "dostupnost")
-                            .queryParam("facet.field", "collection")
-                            .queryParam("facet.field", "datum_begin")
-                            .queryParam("f.datum_begin.facet.limit", "-1")
-                            .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort()) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
                             .queryParam("rows",0);
                     if (!filters.toFqQuery(null, true).isEmpty()) {
@@ -193,7 +184,7 @@ public class SearchApi {
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> {
                     if (filters.useOnlyEnriched()) {
-                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize()).collect(Collectors.joining(" OR ")));
+                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize() == 1 ? 100 : filters.getPageSize()).collect(Collectors.joining(" OR ")));
                         // TODO if used this, then the facet are not counted correctly, should be count from Feeder Solr
                     }
                     else {
