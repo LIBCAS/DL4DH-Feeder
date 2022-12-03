@@ -157,7 +157,7 @@ public class SearchApi {
                             .queryParam("facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort()) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
                             .queryParam("rows",0);
-                    if (filters.getNameTagFilters() != null && !filters.getNameTagFilters().isEmpty()) {
+                    if (!filters.toFqQuery(null, true).isEmpty()) {
                         uriBuilder
                             .queryParam("fq", filters.toFqQuery(null, true));
                     }
