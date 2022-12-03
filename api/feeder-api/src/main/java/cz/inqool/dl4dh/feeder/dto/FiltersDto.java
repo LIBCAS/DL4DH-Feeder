@@ -32,10 +32,10 @@ public class FiltersDto {
 
     //Pagination
     private Integer start = 0;
-    private Integer pageSize = 60;
+    private Integer pageSize = 100;
 
     public Integer getPageSize() {
-        return Integer.min(60, Integer.max(1, pageSize));
+        return Integer.min(100, Integer.max(1, pageSize));
     }
 
     public String getQueryEscaped() {
