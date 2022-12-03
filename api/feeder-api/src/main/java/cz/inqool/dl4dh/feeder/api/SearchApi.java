@@ -151,13 +151,16 @@ public class SearchApi {
                 .uri("/select", uriBuilder -> {
                     uriBuilder
                             .queryParam("q", filters.toQuery())
-                            .queryParam("fq", filters.toFqQuery(List.of(), true))
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
                             .queryParam("facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort()) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
                             .queryParam("rows",0);
+                    if (filters.getNameTagFilters() != null && !filters.getNameTagFilters().isEmpty()) {
+                        uriBuilder
+                            .queryParam("fq", filters.toFqQuery(List.of(), true));
+                    }
                     if (filters.useEdismax()) {
                         uriBuilder.queryParam("defType", "edismax")
                                 .queryParam("qf", filters.getEdismaxFields(true));
