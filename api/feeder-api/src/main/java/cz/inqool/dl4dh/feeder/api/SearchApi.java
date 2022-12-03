@@ -151,7 +151,7 @@ public class SearchApi {
                 .uri("/select", uriBuilder -> {
                     uriBuilder
                             .queryParam("q", filters.toQuery())
-                            .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), true))
+                            .queryParam("fq", filters.toFqQuery(List.of(), true))
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
