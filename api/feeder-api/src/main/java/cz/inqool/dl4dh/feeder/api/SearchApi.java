@@ -110,6 +110,10 @@ public class SearchApi {
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
                     }
+                    if (!filters.toFqQuery(null, true).isEmpty()) {
+                        uriBuilder
+                                .queryParam("fq", filters.toFqQuery(null, true));
+                    }
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
                     return uriBuilder.queryParam("rows",0)
                             .build();
