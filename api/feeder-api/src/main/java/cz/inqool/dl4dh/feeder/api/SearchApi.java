@@ -178,7 +178,9 @@ public class SearchApi {
                         uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize()).collect(Collectors.joining(" OR ")));
                     }
                     else {
-                        uriBuilder.queryParam("q", filters.toQuery());
+                        uriBuilder.queryParam("q", filters.toQuery())
+                                .queryParam("rows", filters.getPageSize())
+                                .queryParam("start", filters.getStart());
                         if (filters.useEdismax()) {
                             uriBuilder.queryParam("defType", "edismax")
                                     .queryParam("qf", filters.getEdismaxFields(false));
@@ -198,8 +200,6 @@ public class SearchApi {
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort())
-                            .queryParam("rows", filters.getPageSize())
-                            .queryParam("start", filters.getStart())
                             .build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
