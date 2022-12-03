@@ -180,7 +180,8 @@ public class SearchApi {
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> {
                     if (filters.useOnlyEnriched()) {
-                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize()).collect(Collectors.joining(" OR ")));
+                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize() == 1 ? 500 : filters.getPageSize()).collect(Collectors.joining(" OR ")));
+                        // TODO if used this, then the facet are not counted correctly, should be count from Feeder Solr
                     }
                     else {
                         uriBuilder.queryParam("q", filters.toQuery())
