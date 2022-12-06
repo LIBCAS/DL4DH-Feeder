@@ -29,7 +29,8 @@ type BiblioModsXML = {
 				'mods:partNumber': string[];
 			}[];
 			'mods:name': {
-				'mods:namePart': [string, unknown];
+				'mods:namePart': string[];
+				'mods:nameIdentifier': string[];
 			}[];
 			'mods:genre': (
 				| ModsObject

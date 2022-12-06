@@ -16,6 +16,7 @@ import Text, { H3, H5 } from 'components/styled/Text';
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import ShareDialog from 'modules/share/ShareDialog';
 import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
+import QuotationDialog from 'modules/quote/QuoteDialog';
 
 import { useTheme } from 'theme';
 
@@ -211,6 +212,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						<PrintDialog isSecond={isSecond} />
 					</>
 				)}
+				<QuotationDialog isSecond={isSecond} />
 				<ShareDialog isSecond={isSecond} />
 			</Flex>
 			<Divider />
