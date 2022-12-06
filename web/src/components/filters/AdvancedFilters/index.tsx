@@ -30,24 +30,32 @@ type FieldOption = {
 };
 
 const fieldOptions: FieldOption[] = [
-	{ id: 'NONE', label: 'field.all' },
 	{ id: 'TITLE', label: 'field.title' },
 	{ id: 'AUTHOR', label: 'field.author' },
 	{ id: 'KEYWORDS', label: 'field.keyword' },
-	{ id: 'NUMBERS_IN_ADDRESSES', label: '' },
+	{ id: 'NUMBERS_IN_ADDRESSES', label: 'nametag:labels:NUMBERS_IN_ADDRESSES' },
 	{ id: 'GEOGRAPHICAL_NAMES', label: 'field.geoname' },
-	{ id: 'INSTITUTIONS', label: '' },
-	{ id: 'MEDIA_NAMES', label: '' },
-	{ id: 'NUMBER_EXPRESSIONS', label: '' },
-	{ id: 'ARTIFACT_NAMES', label: '' },
-	{ id: 'PERSONAL_NAMES', label: '' },
-	{ id: 'TIME_EXPRESSIONS', label: '' },
-	{ id: 'COMPLEX_PERSON_NAMES', label: '' },
-	{ id: 'COMPLEX_TIME_EXPRESSION', label: '' },
-	{ id: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
-	{ id: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
-	{ id: 'ALL_BASIC_METADATA', label: '' },
-	{ id: 'ALL_NAMETAG_DATA', label: '' },
+	{ id: 'INSTITUTIONS', label: 'nametag:labels:INSTITUTIONS' },
+	{ id: 'MEDIA_NAMES', label: 'nametag:labels:MEDIA_NAMES' },
+	{ id: 'NUMBER_EXPRESSIONS', label: 'nametag:labels:NUMBER_EXPRESSIONS' },
+	{ id: 'ARTIFACT_NAMES', label: 'nametag:labels:ARTIFACT_NAMES' },
+	{ id: 'PERSONAL_NAMES', label: 'nametag:labels:PERSONAL_NAMES' },
+	{ id: 'TIME_EXPRESSIONS', label: 'nametag:labels:TIME_EXPRESSIONS' },
+	{ id: 'COMPLEX_PERSON_NAMES', label: 'nametag:labels:COMPLEX_PERSON_NAMES' },
+	{
+		id: 'COMPLEX_TIME_EXPRESSION',
+		label: 'nametag:labels:COMPLEX_TIME_EXPRESSION',
+	},
+	{
+		id: 'COMPLEX_ADDRESS_EXPRESSION',
+		label: 'nametag:labels:COMPLEX_ADDRESS_EXPRESSION',
+	},
+	{
+		id: 'COMPLEX_BIBLIO_EXPRESSION',
+		label: 'nametag:labels:COMPLEX_BIBLIO_EXPRESSION',
+	},
+	{ id: 'ALL_BASIC_METADATA', label: 'field.ALL_BASIC_METADATA' },
+	{ id: 'ALL_NAMETAG_DATA', label: 'field.ALL_NAMETAG_DATA' },
 ];
 
 export const AdvancedFilter: React.FC = () => {

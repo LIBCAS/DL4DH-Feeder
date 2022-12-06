@@ -208,7 +208,9 @@
       "ddt": "DDT",
       "mdt": "MDT",
       "geoname": "Geographic name",
-      "search": "Search"
+      "search": "Search",
+      "ALL_BASIC_METADATA":"All basic metadata",
+      "ALL_NAMETAG_DATA":"All nametag data"
     },
     "query": {
       "tab": "Query"
