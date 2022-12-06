@@ -208,7 +208,9 @@
       "ddt": "DDT",
       "mdt": "MDT",
       "geoname": "Geografický název",
-      "search": "Vyhledat"
+      "search": "Vyhledat",
+      "ALL_BASIC_METADATA":"Všechna základní metadata",
+      "ALL_NAMETAG_DATA":"Všechna obohacené data"
     },
     "query": {
       "tab": "Dotaz"
