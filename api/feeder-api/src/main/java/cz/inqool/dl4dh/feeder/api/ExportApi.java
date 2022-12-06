@@ -1,13 +1,10 @@
 package cz.inqool.dl4dh.feeder.api;
 
-import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
-import cz.inqool.dl4dh.feeder.dto.KrameriusPlusExportDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.ScheduledJobEventDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -30,8 +27,8 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -97,11 +94,32 @@ public class ExportApi {
     public Page<Export> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
         Page<Export> exports = exportRepository.findByUsername(user.getName(), p);
         exports.forEach(export -> {
-            if (!export.getStatus().equals(Export.Status.COMPLETED)) {
+            if (!export.getStatus().equals(Export.Status.COMPLETED) && !export.getStatus().equals(Export.Status.FAILED)) {
                 ExportRequestDto exportRequest = krameriusPlus.get()
                         .uri("/exports/"+export.getJobId()).retrieve().bodyToMono(ExportRequestDto.class).block();
-                JobDto job = exportRequest.getJobPlan().getScheduledJobEvents().stream().filter(f -> f.getJobEvent().getPublicationId() != null).findFirst().orElseThrow().getJobEvent();
-                export.setStatus(job.getLastExecutionStatus());
+                Set<Export.Status> statuses = exportRequest.getJobPlan().getScheduledJobEvents().stream()
+                        .filter(f -> f.getJobEvent().getPublicationId() != null)
+                        .map(e -> e.getJobEvent().getLastExecutionStatus())
+                        .collect(Collectors.toSet());
+                if (statuses.size() == 1) {
+                    export.setStatus(statuses.stream().findFirst().orElseThrow());
+                }
+                else {
+                    statuses.removeAll(List.of(Export.Status.COMPLETED, Export.Status.CREATED));
+                    if (statuses.size() == 1) {
+                        export.setStatus(statuses.stream().findFirst().orElseThrow());
+                    }
+                    else {
+                        if (statuses.size() > 1) {
+                            if (statuses.contains(Export.Status.FAILED)) {
+                                export.setStatus(Export.Status.FAILED);
+                            }
+                            else {
+                                export.setStatus(Export.Status.UNKNOWN);
+                            }
+                        }
+                    }
+                }
             }
         });
         exportRepository.saveAll(exports);
