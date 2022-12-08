@@ -221,6 +221,31 @@
     "export_mode_switch_off": "Cancel export",
     "export_mode_switch_tooltip": "Choose publications for export",
     "export_dialog_button": "Export publications",
+    "export_dialog_title": "Export publications",
+    "export_dialog_login_request":"You need to be logged in to export publications.",
+    "export_dialog_select_request":"To export publications at least one has to be selected.",
+    
+    "selected_count":"Count",
+    "add_all_displayed":"Add all currently displayed",
+    "remove_all_displayed":"Remove all currently displayed",
+    "remove_all":"Remove all",
+
+    "dialog":{
+      "all_enriched":"All enriched",
+      "all_alto_available":"ALTO available for all selected publications",
+      "export_name":"Export name",
+      "format":"Format",
+      "parameters":"Parameters",
+      "delimiter":"Delimiter",
+      "comma":"Comma",
+      "tab":"Tab",
+      "choose_field":"Choose field",
+      "include_fields":"Include fields",
+      "exclude_fields":"Exclude fields",
+      "finish_export_button":"Export",
+      "cancel":"Cancel",
+      "publications_count":"publications"
+    },
     "exports_dashboard": {
       "page_title": "Exports",
       "login_request": "To access this page you have to be logged in.",

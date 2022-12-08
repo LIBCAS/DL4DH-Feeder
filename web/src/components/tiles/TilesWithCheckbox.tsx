@@ -280,7 +280,7 @@ export const EditSelectedChildren: FC<Props> = ({
 	);
 };
 
-export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
+export const EditSelectedPublications: FC<Props> = ({ disabled, onEdit }) => {
 	const { uuidHeap } = useBulkExportContext();
 	const { t } = useTranslation('exports');
 	const { state } = useSearchContext();
@@ -311,6 +311,7 @@ export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 					Upravit
 				</Button>
 			)}
+			onClose={() => onEdit?.([])}
 		>
 			{closeModal => (
 				<Flex
@@ -370,6 +371,7 @@ export const EditSelectedPublications: FC<Props> = ({ disabled }) => {
 							<Button
 								variant="primary"
 								onClick={() => {
+									onEdit?.([]);
 									closeModal();
 								}}
 							>

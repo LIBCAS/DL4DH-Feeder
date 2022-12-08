@@ -1,9 +1,10 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { useQueries } from 'react-query';
 
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -18,7 +19,11 @@ import Text, { H1 } from 'components/styled/Text';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
 import TextInput from 'components/form/input/TextInput';
 
+import { Loader } from 'modules/loader';
+
 import { api } from 'api';
+
+import { StreamsRecord } from 'api/publicationsApi';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
@@ -54,12 +59,51 @@ const generateExportName = () => {
 	return `export-${yy}${mm}${dd}-${hh}${mins}${ss}`;
 };
 
+const useCheckAltoStreams = (uuids: string[]) => {
+	const [result, setResult] = useState<{
+		allHaveAlto: boolean;
+		uuidsWithoutAlto: string[];
+	}>({ allHaveAlto: true, uuidsWithoutAlto: [] });
+
+	const [isLoading, setIsLoading] = useState(true);
+
+	const queries = useQueries(
+		uuids.map(uuid => ({
+			queryKey: ['stream-list', uuid],
+			queryFn: async () => {
+				const list = await api()
+					.get(`item/${uuid}/streams`, {
+						headers: { accept: 'application/json' },
+					})
+					.json<StreamsRecord>();
+				if (
+					!Object.keys(list ?? {}).find(key => key === 'ALTO' || key === 'alto')
+				) {
+					setResult(p => ({
+						allHaveAlto: false,
+						uuidsWithoutAlto: [...p.uuidsWithoutAlto, uuid],
+					}));
+				}
+			},
+		})),
+	);
+
+	useEffect(() => {
+		setIsLoading(queries.some(q => q.isLoading));
+	}, [queries]);
+
+	return { result, isLoading };
+};
+
 export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
 	const generatedName = useMemo(() => generateExportName(), []);
+	const { t } = useTranslation();
+	const [allEnriched, setAllEnriched] = useState<boolean>(false);
 
 	const exportCtx = useBulkExportContext();
+
 	const publicationIds = useMemo(
 		() =>
 			Object.keys(exportCtx.uuidHeap).filter(
@@ -68,13 +112,19 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 		[exportCtx],
 	);
 
-	const enriched =
-		Object.keys(exportCtx.uuidHeap).length > 0 &&
-		!Object.keys(exportCtx.uuidHeap).some(
-			uuid => !exportCtx.uuidHeap[uuid].publication.enriched,
-		);
+	const { result: altoResult, isLoading: altoCheckLoading } =
+		useCheckAltoStreams(Object.keys(exportCtx.uuidHeap));
 
-	const formatOptions: ExportFormatOption[] = enriched
+	useEffect(() => {
+		setAllEnriched(
+			Object.keys(exportCtx.uuidHeap).length > 0 &&
+				!Object.keys(exportCtx.uuidHeap)
+					.filter(key => exportCtx.uuidHeap[key].selected)
+					.some(uuid => !exportCtx.uuidHeap[uuid].publication.enriched),
+		);
+	}, [exportCtx.uuidHeap]);
+
+	const formatOptions: ExportFormatOption[] = allEnriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
 
@@ -140,21 +190,21 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 					minWidth={['initial', 500]}
 					overflow="visible"
 				>
-					<Box>
+					<Box mb={3}>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikace</H1>
+							<H1 my={3}>{t('exports:export_dialog_title')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text>Pro export je nutné se přihlásit</Text>
+						<Text>{t('exports:export_dialog_login_request')}</Text>
 						<Button
 							variant="primary"
 							onClick={() => {
 								keycloak.login();
 							}}
 						>
-							Přihlásit se
+							{t('navbar:login')}
 						</Button>
 					</Box>
 				</Paper>
@@ -178,12 +228,12 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikace</H1>
+							<H1 my={3}>{t('exports:export_dialog_title')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text>Pro export je nutné vybrat aspoň jednu publikaci</Text>
+						<Text>{t('exports:export_dialog_select_request')}</Text>
 					</Box>
 				</Paper>
 			</Flex>
@@ -192,6 +242,21 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 	const { handleSubmit, setFieldValue, values, isSubmitting, handleChange } =
 		formik;
+
+	if (altoCheckLoading) {
+		return (
+			<Paper
+				bg="paper"
+				maxWidth={600}
+				minWidth={['initial', 500]}
+				overflow="visible"
+			>
+				{' '}
+				Kontrolujem ALTO stream
+				<Loader />
+			</Paper>
+		);
+	}
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -209,7 +274,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikace</H1>
+							<H1 my={3}>{t('exports:export_dialog_title')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
@@ -222,13 +287,29 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							ID publikace: <b>{pubId}</b>
 						</Text> */}
 						<Text fontSize="sm">
-							Všechny obohacené: <b>{enriched ? 'Áno' : 'Ne'}</b>
+							{t('exports:dialog.all_enriched')}:{' '}
+							<b>{allEnriched ? t('common:yes') : t('common:no')}</b>
 						</Text>
+
+						<Text fontSize="sm">
+							{t('exports:dialog.all_alto_available')}:{' '}
+							<b>{altoResult.allHaveAlto ? t('common:yes') : t('common:no')}</b>
+						</Text>
+						<SimpleSelect
+							options={altoResult.uuidsWithoutAlto}
+							value="Publikace bez ALTO"
+							onChange={() => null}
+							placeholder="Publikace bez ALTO"
+							variant="borderless"
+							nameFromOption={item =>
+								item ? exportCtx.uuidHeap[item]?.publication?.title ?? '' : ''
+							}
+						/>
 
 						<Divider my={2} />
 
 						<Text my={2} mt={4}>
-							Název exportu
+							{t('exports:dialog.export_name')}
 						</Text>
 						<TextInput
 							id="exportName"
@@ -243,7 +324,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						/>
 
 						<Text my={2} mt={4}>
-							Formát
+							{t('exports:dialog.format')}
 						</Text>
 						<SimpleSelect
 							formikId="format"
@@ -261,7 +342,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						{values.format.id !== 'text' && values.format.id !== 'alto' && (
 							<>
 								<Text fontSize="xl" mt={3}>
-									Parametry
+									{t('exports:dialog.parameters')}
 								</Text>
 								<Divider my={3} />
 							</>
@@ -274,10 +355,10 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								justifyContent="space-between"
 								mr={2}
 							>
-								<Text my={2}>Rozdělovač</Text>
+								<Text my={2}>{t('exports:dialog.delimiter')}</Text>
 								<RadioButton
 									//mr={5}
-									label="Čárka"
+									label={t('exports:dialog.comma')}
 									name="divider-radio-grp"
 									id="radio-comma"
 									checked={values.delimiter === delimiterEnum.comma}
@@ -286,7 +367,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 									}}
 								/>
 								<RadioButton
-									label="Tabulátor"
+									label={t('exports:dialog.tab')}
 									name="divider-radio-grp"
 									id="radio-tab"
 									checked={values.delimiter === delimiterEnum.tab}
@@ -300,11 +381,11 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							values.format.id !== 'alto' &&
 							values.format.id !== 'tei' && (
 								<>
-									<Text my={2}>Zahrnout pole</Text>
+									<Text my={2}>{t('exports:dialog.include_fields')}</Text>
 									<SelectInput
 										key="includeFields"
 										id="includeFields"
-										placeholder="Zvolte pole"
+										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
 										nameFromOption={item => item?.label ?? ''}
 										labelFromOption={item => item?.label ?? ''}
@@ -316,13 +397,13 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 									/>
 
 									<Text my={2} mt={4}>
-										Nezahrnout pole
+										{t('exports:dialog.exclude_fields')}
 									</Text>
 
 									<SelectInput
 										key="excludeFields"
 										id="excludeFields"
-										placeholder="Zvolte pole"
+										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
 										nameFromOption={item => item?.label ?? ''}
 										labelFromOption={item => item?.label ?? ''}
@@ -340,7 +421,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<SelectInput
 									key="altoParams"
 									id="altoParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={altoParamsOptions}
 									value={values.altoParams ?? []}
 									onSetValue={setFieldValue}
@@ -353,7 +434,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<SelectInput
 									key="nameTagParams"
 									id="nameTagParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={nameTagParamsOptions}
 									value={values.nameTagParams ?? []}
 									onSetValue={setFieldValue}
@@ -365,7 +446,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<SelectInput
 									key="udPipeParams"
 									id="udPipeParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={udPipeParamsOptions}
 									value={values.udPipeParams ?? []}
 									onSetValue={setFieldValue}
@@ -390,17 +471,29 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 									disabled={isSubmitting || publicationIds.length < 1}
 									loading={isSubmitting}
 								>
-									Exportovat
+									{t('exports:dialog.finish_export_button')}
 								</Button>
 								<Button variant="outlined" ml={3} onClick={closeModal}>
-									Zrušit
+									{t('exports:dialog.cancel')}
 								</Button>
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
-								<Text ml={2}>{publicationIds.length} publikací | </Text>
+								<Text ml={2}>
+									{publicationIds.length}{' '}
+									{t('exports:dialog.publications_count')} |{' '}
+								</Text>
 								<EditSelectedPublications
-									onEdit={() => null}
+									onEdit={() => {
+										if (
+											!allEnriched &&
+											!commonFormatOptions.find(
+												op => op.id === values.format.id,
+											)
+										) {
+											setFieldValue('format', commonFormatOptions[0]);
+										}
+									}}
 									preSelected={[]}
 								/>
 							</Flex>

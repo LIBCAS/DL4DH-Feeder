@@ -11,9 +11,16 @@ type Props = {
 	control: (openModal: () => void) => ReactNode;
 	children: (closeModal: () => void) => ReactNode;
 	customCss?: (theme: Theme) => SerializedStyles;
+	onClose?: () => void;
 };
 
-const ModalDialog: FC<Props> = ({ label, control, children, customCss }) => {
+const ModalDialog: FC<Props> = ({
+	label,
+	control,
+	children,
+	customCss,
+	onClose,
+}) => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(true);
 	const closeModal = () => setShowModal(false);
@@ -23,7 +30,10 @@ const ModalDialog: FC<Props> = ({ label, control, children, customCss }) => {
 			{control(openModal)}
 			<Dialog
 				isOpen={showModal}
-				onDismiss={closeModal}
+				onDismiss={() => {
+					onClose?.();
+					closeModal();
+				}}
 				aria-label={label}
 				css={
 					customCss ??

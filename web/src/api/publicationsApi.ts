@@ -162,45 +162,6 @@ export const useStreamList = (uuid: string): StreamsOptions => {
 		},
 	);
 
-	/* 	useQueries(
-		Object.keys(list ?? {}).map(k => ({
-			queryKey: ['stream', uuid, k],
-			queryFn: () =>
-				api()
-					.get(`item/${uuid}/streams/${k}`, {
-						headers: { accept: list?.[k].mimeType ?? 'application/json' },
-					})
-					.then(async r => {
-						if ((list?.[k].mimeType ?? '').includes('json')) {
-							return await r.json();
-						}
-						if ((list?.[k].mimeType ?? '').includes('text')) {
-							return await r.text();
-						}
-						if ((list?.[k].mimeType ?? '').includes('image')) {
-							return await r.blob();
-						}
-						return await r.text();
-					})
-
-					.then(r =>
-						setList(p => {
-							const newState = p;
-							if (newState?.[k]) {
-								newState[k].response = r;
-								return newState;
-							}
-							return newState;
-						}),
-					),
-			refetchOnWindowFocus: false,
-			retry: 1,
-			refetchInterval: 0,
-			staleTime: 99999,
-		})),
-	); */
-	//{ refetchOnWindowFocus: false, retry: 0, refetchInterval: 0 }
-
 	useEffect(() => {
 		if (!resp.isLoading) {
 			setRecord(resp.data ?? null);
