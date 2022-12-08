@@ -56,9 +56,6 @@ const GenericTileItem: React.FC<Props> = ({
 	const isPeriodical = publication.model.includes('periodical');
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${publication.pid}`;
 	const isSelected = exportModeOn && uuidHeap[publication.pid]?.selected;
-
-	console.log('TILE VIEW');
-	console.log({ exportModeOn });
 	return (
 		<AspectRatio
 			key={publication.pid}
