@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { MdClear, MdPlaylistAddCheck } from 'react-icons/md';
 import { CgPlayListRemove } from 'react-icons/cg';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -14,6 +15,7 @@ import BulkExportDialog from './BulkExportDialog';
 const BulkExportAdditionalButtons: React.FC = () => {
 	const { uuidHeap, setUuidHeap } = useBulkExportContext();
 	const { result: currentPublications } = useSearchResultContext();
+	const { t } = useTranslation('exports');
 
 	const handleAddAll = useCallback(() => {
 		const newUuidHeap = { ...uuidHeap };
@@ -43,7 +45,7 @@ const BulkExportAdditionalButtons: React.FC = () => {
 				<IconButton
 					onClick={handleAddAll}
 					color="primary"
-					tooltip="Přidat všechny zobrazené"
+					tooltip={t('add_all_displayed')}
 				>
 					<MdPlaylistAddCheck size={26} />
 				</IconButton>
@@ -52,7 +54,7 @@ const BulkExportAdditionalButtons: React.FC = () => {
 				<IconButton
 					onClick={handleClearAllVisible}
 					color="primary"
-					tooltip="Odebrat všechny zobrazené"
+					tooltip={t('remove_all_displayed')}
 				>
 					<CgPlayListRemove size={26} />
 				</IconButton>
@@ -61,13 +63,13 @@ const BulkExportAdditionalButtons: React.FC = () => {
 				<IconButton
 					onClick={() => setUuidHeap?.({})}
 					color="primary"
-					tooltip="Odebrat všechny"
+					tooltip={t('remove_all')}
 				>
 					<MdClear size={26} />
 				</IconButton>
 			</Flex>
 			<Text mx={3}>
-				Označených: <b>{count}</b>
+				{t('selected_count')}: <b>{count}</b>
 			</Text>
 			<BulkExportDialog />
 		</Flex>
