@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useState, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdClear } from 'react-icons/md';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import { Flex } from 'components/styled';
@@ -15,7 +14,7 @@ import { useTheme } from 'theme';
 
 import { PublicationDto } from 'api/models';
 
-import { useBulkExportContext, UuidHeap } from 'hooks/useBulkExport';
+import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import { modelToText } from 'utils/enumsMap';
 
@@ -37,7 +36,6 @@ const ListView: FC<{
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const exportCtx = useBulkExportContext();
-	const [selectedAll, setSelectedAll] = useState<boolean>(false);
 
 	const renderCell = useCallback(
 		(row: TColumnsLayout, cellKey: keyof TColumnsLayout) => {
@@ -68,27 +66,37 @@ const ListView: FC<{
 				<Flex
 					pl={[2, 3]}
 					alignItems="center"
-					bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
+					bg={
+						exportCtx.exportModeOn && exportCtx.uuidHeap[row.pid]?.selected
+							? 'enriched'
+							: 'initial'
+					}
 				>
-					<Checkbox
-						label=""
-						checked={exportCtx.uuidHeap[row.pid]?.selected}
-						onChange={e => {
-							exportCtx.setUuidHeap?.(p => ({
-								...p,
-								[row.pid]: {
-									selected: e.target.checked,
-									title: row.title,
-									enriched: row.enriched,
-									publication: row as PublicationDto,
-								},
-							}));
-						}}
-					/>
+					{exportCtx.exportModeOn && (
+						<Checkbox
+							label=""
+							checked={exportCtx.uuidHeap[row.pid]?.selected}
+							onChange={e => {
+								exportCtx.setUuidHeap?.(p => ({
+									...p,
+									[row.pid]: {
+										selected: e.target.checked,
+										title: row.title,
+										enriched: row.enriched,
+										publication: row as PublicationDto,
+									},
+								}));
+							}}
+						/>
+					)}
 				</Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
-						bg={exportCtx.uuidHeap[row.pid]?.selected ? 'enriched' : 'initial'}
+						bg={
+							exportCtx.exportModeOn && exportCtx.uuidHeap[row.pid]?.selected
+								? 'enriched'
+								: 'initial'
+						}
 						key={cellKey}
 						alignItems="center"
 						justifyContent="flex-start"
@@ -109,25 +117,12 @@ const ListView: FC<{
 	const renderHeader = useCallback(
 		() => (
 			<>
-				<Flex pl={[2, 3]} alignItems="center" py={0}>
-					<Checkbox
-						label=""
-						//colorVariant="inverted"
-						CustomCheckedIcon={selectedAll ? MdClear : undefined}
-						checked={selectedAll}
-						onChange={e => {
-							const heap: UuidHeap = {};
-							setSelectedAll(p => !p);
-							(data ?? []).forEach(d => {
-								heap[d.pid] = {
-									selected: e.target.checked,
-									publication: d,
-								};
-							});
-							exportCtx.setUuidHeap?.(heap);
-						}}
-					/>
-				</Flex>
+				<Flex
+					pl={[2, 3]}
+					alignItems="center"
+					py={0}
+					minWidth={exportCtx.exportModeOn ? 20 : 0}
+				></Flex>
 				{colsOrder.map(cellKey => (
 					<Flex
 						key={cellKey}
@@ -147,7 +142,7 @@ const ListView: FC<{
 				))}
 			</>
 		),
-		[t, data, selectedAll, exportCtx],
+		[exportCtx.exportModeOn, t],
 	);
 	const items = data ?? [];
 
