@@ -54,7 +54,7 @@ export const formatForUuidHeap = (
 const BulkExportAdditionalButtons: React.FC<Props> = ({
 	periodicalChildren,
 }) => {
-	const { uuidHeap, setUuidHeap } = useBulkExportContext();
+	const { uuidHeap, updateExportHeap } = useBulkExportContext();
 	const { result: currentPublications } = useSearchResultContext();
 	const { t } = useTranslation('exports');
 
@@ -71,8 +71,8 @@ const BulkExportAdditionalButtons: React.FC<Props> = ({
 					(newUuidHeap[pub.pid] = formatForUuidHeap('publication', pub, true)),
 			);
 		}
-		setUuidHeap?.(newUuidHeap);
-	}, [uuidHeap, currentPublications, setUuidHeap, periodicalChildren]);
+		updateExportHeap?.(newUuidHeap);
+	}, [uuidHeap, currentPublications, updateExportHeap, periodicalChildren]);
 
 	const handleClearAllVisible = useCallback(() => {
 		const newUuidHeap = { ...uuidHeap };
@@ -87,8 +87,8 @@ const BulkExportAdditionalButtons: React.FC<Props> = ({
 					(newUuidHeap[pub.pid] = formatForUuidHeap('publication', pub, false)),
 			);
 		}
-		setUuidHeap?.(newUuidHeap);
-	}, [uuidHeap, periodicalChildren, setUuidHeap, currentPublications]);
+		updateExportHeap?.(newUuidHeap);
+	}, [uuidHeap, periodicalChildren, updateExportHeap, currentPublications]);
 
 	const count = useMemo(
 		() => Object.keys(uuidHeap).filter(key => uuidHeap[key]?.selected).length,
@@ -117,7 +117,7 @@ const BulkExportAdditionalButtons: React.FC<Props> = ({
 			</Flex>
 			<Flex mx={2}>
 				<IconButton
-					onClick={() => setUuidHeap?.({})}
+					onClick={() => updateExportHeap?.({})}
 					color="primary"
 					tooltip={t('remove_all')}
 				>
