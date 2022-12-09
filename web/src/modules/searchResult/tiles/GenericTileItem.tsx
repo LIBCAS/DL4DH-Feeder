@@ -12,7 +12,7 @@ import Text, { H3 } from 'components/styled/Text';
 
 import { updateVisited } from 'modules/public/homepage/homepageFeeds/VisitedHomepageFeed';
 
-import { theme } from 'theme';
+import { SelectedOverlayCss, theme } from 'theme';
 
 import { ModelsEnum, PublicationDto } from 'api/models';
 
@@ -56,6 +56,7 @@ const GenericTileItem: React.FC<Props> = ({
 	const isPeriodical = publication.model.includes('periodical');
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${publication.pid}`;
 	const isSelected = exportModeOn && uuidHeap[publication.pid]?.selected;
+
 	return (
 		<AspectRatio
 			key={publication.pid}
@@ -73,13 +74,15 @@ const GenericTileItem: React.FC<Props> = ({
 						[publication.pid]: {
 							selected,
 							enriched: publication.enriched,
-							publication,
 							title: publication.title,
+							policy: publication.availability,
+							model: publication.model,
 						},
 					}));
 				} else if (onSelect) {
 					onSelect(publication.pid);
 				} else {
+					updateVisited(publication);
 					push(url);
 				}
 			}}
@@ -88,7 +91,6 @@ const GenericTileItem: React.FC<Props> = ({
 				href={url}
 				onClick={e => {
 					e.preventDefault();
-					updateVisited(publication);
 				}}
 				css={css`
 					text-decoration: none;
@@ -103,25 +105,7 @@ const GenericTileItem: React.FC<Props> = ({
 						${isSelected
 							? css`
 									border: 2px solid ${theme.colors.enriched};
-									&::after {
-										content: '';
-										display: block;
-										color: white;
-										padding-bottom: 8px;
-										position: absolute;
-										background-image: url('/assets/checkmark.svg');
-										filter: invert();
-										background-repeat: no-repeat;
-										background-position: center;
-										background-color: #fc7658;
-										border: 1px solid #fc7658;
-										border-radius: 50%;
-										opacity: 0.8;
-										top: 5px;
-										left: 5px;
-										width: 40px;
-										height: 30px;
-									}
+									${SelectedOverlayCss}
 							  `
 							: css`
 									border: 1px solid ${theme.colors.border};

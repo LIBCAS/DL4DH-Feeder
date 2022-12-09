@@ -12,11 +12,15 @@ import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
+import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
+import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
 
 import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
+
+import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 
@@ -31,6 +35,7 @@ const PeriodicalDetail = () => {
 	const [page] = useSearchParams();
 	const pubCtx = usePublicationContext();
 	const nav = useNavigate();
+	const { exportModeOn } = useBulkExportContext();
 
 	const pageId = useMemo(
 		() => page.get('page') ?? pages[0]?.pid ?? undefined,
@@ -91,7 +96,12 @@ const PeriodicalDetail = () => {
 						</Flex>
 					),
 					mainJsx: (
-						<Flex alignItems="center" px={3}>
+						<Flex
+							alignItems="center"
+							px={3}
+							justifyContent="space-between"
+							width={1}
+						>
 							<Text
 								fontSize="md"
 								color="textCommon"
@@ -103,6 +113,18 @@ const PeriodicalDetail = () => {
 							>
 								{detail.data?.title ?? 'Periodikum'}
 							</Text>
+							<Flex>
+								<Flex mr={3} alignItems="center">
+									{/* 	<Sorting /> */}
+									{exportModeOn && (
+										<>
+											<BulkExportAdditionalButtons periodicalChildren={pages} />
+											<Text mx={3}>|</Text>
+										</>
+									)}
+									<BulkExportModeSwitch />
+								</Flex>
+							</Flex>
 						</Flex>
 					),
 				}}

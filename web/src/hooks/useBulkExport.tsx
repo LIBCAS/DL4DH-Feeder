@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 
-import { PublicationDto } from 'api/models';
+export type UuidHeapObject = {
+	selected: boolean;
+	title: string;
+	enriched: boolean;
+	policy: string;
+	model: string;
+};
 
-export type UuidHeap = Record<
-	string,
-	{
-		selected: boolean;
-		publication: PublicationDto;
-	}
->;
+export type UuidHeap = Record<string, UuidHeapObject>;
 
 export type BulkExportContextType = {
 	uuidHeap: UuidHeap;

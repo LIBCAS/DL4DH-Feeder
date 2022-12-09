@@ -44,6 +44,7 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 	SHEETMUSIC: 'sheetmusic',
 	MONOGRAPHUNIT: 'monographunit',
 	MONOGRAPHBUNDLE: 'monographbundle',
+	PERIODICALVOLUME: 'periodicalvolume',
 };
 const ModelsColors: Record<ModelsEnum, string> = {
 	ARCHIVAL: 'primary',
@@ -53,6 +54,7 @@ const ModelsColors: Record<ModelsEnum, string> = {
 	MONOGRAPH: 'modelMonograph',
 	PERIODICAL: 'modelPeriodical',
 	PERIODICALITEM: 'modelPeriodical',
+	PERIODICALVOLUME: 'modelPeriodical',
 	SHEETMUSIC: 'modelMusic',
 	MONOGRAPHUNIT: 'modelMonograph',
 	MONOGRAPHBUNDLE: 'modelMonograph',

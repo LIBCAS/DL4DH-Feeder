@@ -2,13 +2,19 @@
 import { css, SerializedStyles } from '@emotion/core';
 import { MdLock } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 
-import { useTheme } from 'theme';
+import { formatForUuidHeap } from 'modules/export/BulkExportAdditionalButtons';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+
+import { SelectedOverlayCss, useTheme } from 'theme';
 
 import { PublicationChild } from 'api/models';
+
+import { useBulkExportContext } from 'hooks/useBulkExport';
 
 type Props = {
 	child: PublicationChild;
@@ -21,11 +27,25 @@ const PeriodicalTileItem: React.FC<Props> = ({
 	tileWrapperCss,
 }) => {
 	const nav = useNavigate();
+	const { exportModeOn, uuidHeap, setUuidHeap } = useBulkExportContext();
 	const isMonograph = child.model === 'monographunit';
 	const isPeriodical = child.model.includes('periodical'); //TODO:FIXME: check child node
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
-
+	const pubCtx = usePublicationContext();
+	const isSelected = exportModeOn && uuidHeap[child.pid]?.selected;
 	const theme = useTheme();
+	const handleAddToExport = useCallback(() => {
+		const selected = !(uuidHeap[child.pid]?.selected ?? false);
+		const parent = pubCtx?.publicationChildren?.find(
+			ch => ch.pid === child.pid,
+		);
+		const title = parent?.title ? parent?.title : parent?.root_title;
+
+		setUuidHeap?.(p => ({
+			...p,
+			[child.pid]: formatForUuidHeap('child', child, selected, title),
+		}));
+	}, [child, pubCtx?.publicationChildren, setUuidHeap, uuidHeap]);
 
 	return (
 		<a
@@ -33,7 +53,9 @@ const PeriodicalTileItem: React.FC<Props> = ({
 			href={url}
 			onClick={e => {
 				e.preventDefault();
-				if (onSelect) {
+				if (exportModeOn) {
+					handleAddToExport();
+				} else if (onSelect) {
 					onSelect(child.pid);
 				} else {
 					nav(url);
@@ -44,7 +66,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 			`}
 		>
 			<Flex
-				bg={child.enriched ? 'enriched' : 'white'}
+				bg={isSelected ? 'enrichedTransparent' : 'white'}
 				flexDirection="column"
 				alignItems="center"
 				justifyContent="center"
@@ -52,7 +74,14 @@ const PeriodicalTileItem: React.FC<Props> = ({
 				px={1}
 				m={1}
 				css={css`
-					border: 1px solid ${theme.colors.border};
+					${isSelected
+						? css`
+								border: 2px solid ${theme.colors.enriched};
+								${SelectedOverlayCss}
+						  `
+						: css`
+								border: 1px solid ${theme.colors.border};
+						  `}
 					box-sizing: border-box;
 					&:hover {
 						box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.5);

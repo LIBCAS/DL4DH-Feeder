@@ -83,7 +83,8 @@ const ListView: FC<{
 										selected: e.target.checked,
 										title: row.title,
 										enriched: row.enriched,
-										publication: row as PublicationDto,
+										policy: row.availability,
+										model: row.model,
 									},
 								}));
 							}}

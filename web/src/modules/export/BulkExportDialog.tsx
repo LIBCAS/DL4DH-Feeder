@@ -120,7 +120,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			Object.keys(exportCtx.uuidHeap).length > 0 &&
 				!Object.keys(exportCtx.uuidHeap)
 					.filter(key => exportCtx.uuidHeap[key].selected)
-					.some(uuid => !exportCtx.uuidHeap[uuid].publication.enriched),
+					.some(uuid => !exportCtx.uuidHeap[uuid].enriched),
 		);
 	}, [exportCtx.uuidHeap]);
 
@@ -302,7 +302,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							placeholder="Publikace bez ALTO"
 							variant="borderless"
 							nameFromOption={item =>
-								item ? exportCtx.uuidHeap[item]?.publication?.title ?? '' : ''
+								item ? exportCtx.uuidHeap[item]?.title ?? '' : ''
 							}
 						/>
 

@@ -13,7 +13,7 @@ import Text, { H1 } from 'components/styled/Text';
 
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
-import { useTheme } from 'theme';
+import { SelectedOverlayCss, useTheme } from 'theme';
 import { downloadFile } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
@@ -84,25 +84,7 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 							return css`
 								${isActive &&
 								css`
-									&::after {
-										content: '';
-										display: block;
-										color: white;
-										padding-bottom: 8px;
-										position: absolute;
-										background-image: url('/assets/checkmark.svg');
-										filter: invert();
-										background-repeat: no-repeat;
-										background-position: center;
-										background-color: #fc7658;
-										border: 1px solid #fc7658;
-										border-radius: 50%;
-										opacity: 0.8;
-										top: 5px;
-										left: 5px;
-										width: 40px;
-										height: 30px;
-									}
+									${SelectedOverlayCss}
 								`}
 							`;
 						}}

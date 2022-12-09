@@ -90,3 +90,24 @@ export const ThemeProvider: FC = ({ children }) => (
 export * from './GlobalStyles';
 export { default as GlobalStyles } from './GlobalStyles';
 export { default as styled } from './styled';
+export const SelectedOverlayCss = `
+	&::after {
+		content: '';
+		display: block;
+		color: white;
+		padding-bottom: 8px;
+		position: absolute;
+		background-image: url('/assets/checkmark.svg');
+		filter: invert();
+		background-repeat: no-repeat;
+		background-position: center;
+		background-color: #fc7658;
+		border: 1px solid #fc7658;
+		border-radius: 50%;
+		opacity: 0.8;
+		top: 5px;
+		left: 5px;
+		width: 40px;
+		height: 30px;
+	}
+`;
