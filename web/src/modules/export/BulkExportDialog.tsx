@@ -1,11 +1,13 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/core';
 import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
-import { FC, useMemo, useState, useEffect } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import { useQueries } from 'react-query';
 
+import TextInput from 'components/form/input/TextInput';
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import ModalDialog from 'components/modal';
@@ -17,13 +19,10 @@ import Paper from 'components/styled/Paper';
 import RadioButton from 'components/styled/RadioButton';
 import Text, { H1 } from 'components/styled/Text';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
-import TextInput from 'components/form/input/TextInput';
 
 import { Loader } from 'modules/loader';
 
 import { api } from 'api';
-
-import { StreamsRecord } from 'api/publicationsApi';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
@@ -34,6 +33,7 @@ import {
 	nameTagParamsOptions,
 	udPipeParamsOptions,
 } from './exportModels';
+import { generateExportName, useCheckAltoStreams } from './exportUtils';
 import {
 	commonFormatOptions,
 	delimiterEnum,
@@ -45,54 +45,6 @@ import {
 
 type Props = {
 	closeModal: () => void;
-};
-
-const generateExportName = () => {
-	const formatNumber = (x: number): string => (x < 10 ? `0${x}` : x.toString());
-	const date = new Date();
-	const yy = formatNumber(date.getFullYear());
-	const mm = formatNumber(date.getMonth());
-	const dd = formatNumber(date.getDay());
-	const hh = formatNumber(date.getHours());
-	const mins = formatNumber(date.getMinutes());
-	const ss = formatNumber(date.getSeconds());
-	return `export-${yy}${mm}${dd}-${hh}${mins}${ss}`;
-};
-
-const useCheckAltoStreams = (uuids: string[]) => {
-	const [result, setResult] = useState<{
-		allHaveAlto: boolean;
-		uuidsWithoutAlto: string[];
-	}>({ allHaveAlto: true, uuidsWithoutAlto: [] });
-
-	const [isLoading, setIsLoading] = useState(true);
-
-	const queries = useQueries(
-		uuids.map(uuid => ({
-			queryKey: ['stream-list', uuid],
-			queryFn: async () => {
-				const list = await api()
-					.get(`item/${uuid}/streams`, {
-						headers: { accept: 'application/json' },
-					})
-					.json<StreamsRecord>();
-				if (
-					!Object.keys(list ?? {}).find(key => key === 'ALTO' || key === 'alto')
-				) {
-					setResult(p => ({
-						allHaveAlto: false,
-						uuidsWithoutAlto: [...p.uuidsWithoutAlto, uuid],
-					}));
-				}
-			},
-		})),
-	);
-
-	useEffect(() => {
-		setIsLoading(queries.some(q => q.isLoading));
-	}, [queries]);
-
-	return { result, isLoading };
 };
 
 export const ExportForm: FC<Props> = ({ closeModal }) => {
@@ -111,9 +63,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			) ?? [],
 		[exportCtx],
 	);
-
+	console.log({ exportCtx });
 	const { result: altoResult, isLoading: altoCheckLoading } =
-		useCheckAltoStreams(Object.keys(exportCtx.uuidHeap));
+		useCheckAltoStreams({ ...exportCtx.uuidHeap });
 
 	useEffect(() => {
 		setAllEnriched(
@@ -243,20 +195,20 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { handleSubmit, setFieldValue, values, isSubmitting, handleChange } =
 		formik;
 
-	if (altoCheckLoading) {
-		return (
-			<Paper
-				bg="paper"
-				maxWidth={600}
-				minWidth={['initial', 500]}
-				overflow="visible"
-			>
-				{' '}
-				Kontrolujem ALTO stream
-				<Loader />
-			</Paper>
-		);
-	}
+	// if (altoCheckLoading) {
+	// 	return (
+	// 		<Paper
+	// 			bg="paper"
+	// 			maxWidth={600}
+	// 			minWidth={['initial', 500]}
+	// 			overflow="visible"
+	// 		>
+	// 			{' '}
+	// 			Kontrolujem ALTO stream
+	// 			<Loader />
+	// 		</Paper>
+	// 	);
+	// }
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -271,7 +223,30 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 					maxWidth={600}
 					minWidth={['initial', 500]}
 					overflow="visible"
+					position="relative"
 				>
+					{altoCheckLoading && (
+						<Flex
+							opacity={0.6}
+							alignItems="center"
+							justifyContent="center"
+							bg="white"
+							z-index={1}
+							css={css`
+								position: absolute;
+								width: 100%;
+								height: 100%;
+								top: 0;
+								left: 0;
+							`}
+						>
+							<Box>
+								<H1>Kontrolujem ALTO stream</H1>
+
+								<Loader />
+							</Box>
+						</Flex>
+					)}
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
 							<H1 my={3}>{t('exports:export_dialog_title')}</H1>
@@ -295,16 +270,23 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							{t('exports:dialog.all_alto_available')}:{' '}
 							<b>{altoResult.allHaveAlto ? t('common:yes') : t('common:no')}</b>
 						</Text>
-						<SimpleSelect
-							options={altoResult.uuidsWithoutAlto}
-							value="Publikace bez ALTO"
-							onChange={() => null}
-							placeholder="Publikace bez ALTO"
-							variant="borderless"
-							nameFromOption={item =>
-								item ? exportCtx.uuidHeap[item]?.title ?? '' : ''
-							}
-						/>
+
+						{altoResult.uuidsWithoutAlto.length > 0 && (
+							<SimpleSelect
+								options={altoResult.uuidsWithoutAlto}
+								value="Publikace bez ALTO"
+								onChange={() => null}
+								placeholder="Publikace bez ALTO"
+								variant="borderless"
+								nameFromOption={item =>
+									item ? exportCtx.uuidHeap[item]?.title ?? '' : ''
+								}
+								menuWrapperCss={css`
+									max-height: 400px;
+									overflow-y: auto;
+								`}
+							/>
+						)}
 
 						<Divider my={2} />
 
