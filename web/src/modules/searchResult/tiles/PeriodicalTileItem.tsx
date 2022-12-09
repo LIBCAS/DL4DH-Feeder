@@ -27,7 +27,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 	tileWrapperCss,
 }) => {
 	const nav = useNavigate();
-	const { exportModeOn, uuidHeap, setUuidHeap } = useBulkExportContext();
+	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
 	const isMonograph = child.model === 'monographunit';
 	const isPeriodical = child.model.includes('periodical'); //TODO:FIXME: check child node
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
@@ -41,11 +41,11 @@ const PeriodicalTileItem: React.FC<Props> = ({
 		);
 		const title = parent?.title ? parent?.title : parent?.root_title;
 
-		setUuidHeap?.(p => ({
+		updateExportHeap?.(p => ({
 			...p,
 			[child.pid]: formatForUuidHeap('child', child, selected, title),
 		}));
-	}, [child, pubCtx?.publicationChildren, setUuidHeap, uuidHeap]);
+	}, [child, pubCtx?.publicationChildren, updateExportHeap, uuidHeap]);
 
 	return (
 		<a

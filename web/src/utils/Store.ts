@@ -48,6 +48,7 @@ const keys = {
 	PreviousSearchQuery: 'feeder-previous-searchquery',
 	ViewMode: 'feeder-viewmode',
 	VisitedPublications: 'feeder-visited-publications',
+	BulkExport: 'feeder-bulk-export',
 };
 
 export default {

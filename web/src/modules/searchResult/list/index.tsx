@@ -77,7 +77,7 @@ const ListView: FC<{
 							label=""
 							checked={exportCtx.uuidHeap[row.pid]?.selected}
 							onChange={e => {
-								exportCtx.setUuidHeap?.(p => ({
+								exportCtx.updateExportHeap?.(p => ({
 									...p,
 									[row.pid]: {
 										selected: e.target.checked,

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, {
+	createContext,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
+
+import Store from 'utils/Store';
 
 export type UuidHeapObject = {
 	selected: boolean;
@@ -12,27 +20,42 @@ export type UuidHeap = Record<string, UuidHeapObject>;
 
 export type BulkExportContextType = {
 	uuidHeap: UuidHeap;
-	setUuidHeap?: React.Dispatch<React.SetStateAction<UuidHeap>>;
+	updateExportHeap?: React.Dispatch<React.SetStateAction<UuidHeap>>;
 	exportModeOn: boolean;
 	setExportModeOn?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+let savedBulkExport = {};
+
+try {
+	console.log('loading be from ls');
+	savedBulkExport = JSON.parse(Store.get(Store.keys.BulkExport) ?? '{}');
+} catch (error) {
+	console.log('Bulk export LS empty.');
+}
+
 const BulkExportCtx = createContext<BulkExportContextType>({
-	uuidHeap: {},
+	uuidHeap: savedBulkExport ?? {},
 	exportModeOn: false,
 });
 
 export const BulkExportContextProvider: React.FC = ({ children }) => {
-	const [uuidHeap, setUuidHeap] = useState<UuidHeap>({});
+	const [uuidHeap, setUuidHeap] = useState<UuidHeap>(savedBulkExport ?? {});
 	const [exportModeOn, setExportModeOn] = useState<boolean>(false);
+	const updateExportHeap = setUuidHeap;
+
+	useEffect(() => {
+		Store.set(Store.keys.BulkExport, JSON.stringify(uuidHeap));
+	}, [uuidHeap]);
+
 	const ctx = useMemo(
 		() => ({
 			uuidHeap,
-			setUuidHeap,
+			updateExportHeap,
 			exportModeOn,
 			setExportModeOn,
 		}),
-		[uuidHeap, exportModeOn],
+		[uuidHeap, updateExportHeap, exportModeOn],
 	);
 
 	return (

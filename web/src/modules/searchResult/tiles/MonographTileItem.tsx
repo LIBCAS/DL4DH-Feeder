@@ -42,14 +42,14 @@ type Props = {
 const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 	const nav = useNavigate();
 	const isPeriodical = child.model.includes('periodical');
-	const { exportModeOn, uuidHeap, setUuidHeap } = useBulkExportContext();
+	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
 	const pubCtx = usePublicationContext();
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
 	const theme = useTheme();
 	const title = getTitle(child.details);
 	const handleAddToExport = useCallback(() => {
 		const selected = !(uuidHeap[child.pid]?.selected ?? false);
-		setUuidHeap?.(p => ({
+		updateExportHeap?.(p => ({
 			...p,
 			[child.pid]: formatForUuidHeap(
 				'child',
@@ -58,7 +58,7 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 				pubCtx?.publicationChildren?.find(ch => ch.pid === child.pid)?.title,
 			),
 		}));
-	}, [child, setUuidHeap, uuidHeap, pubCtx]);
+	}, [child, updateExportHeap, uuidHeap, pubCtx]);
 
 	const isSelected = exportModeOn && uuidHeap[child.pid]?.selected;
 

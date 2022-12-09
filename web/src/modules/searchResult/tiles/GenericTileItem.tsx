@@ -50,7 +50,7 @@ const GenericTileItem: React.FC<Props> = ({
 	onSelect,
 	tileWrapperCss,
 }) => {
-	const { exportModeOn, uuidHeap, setUuidHeap } = useBulkExportContext();
+	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
 	const push = useNavigate();
 	const { t } = useTranslation('search');
 	const isPeriodical = publication.model.includes('periodical');
@@ -69,7 +69,7 @@ const GenericTileItem: React.FC<Props> = ({
 				if (exportModeOn) {
 					const selected = !(uuidHeap[publication.pid]?.selected ?? false);
 
-					setUuidHeap?.(p => ({
+					updateExportHeap?.(p => ({
 						...p,
 						[publication.pid]: {
 							selected,
