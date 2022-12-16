@@ -285,15 +285,35 @@ export const EditSelectedPublications: FC<Props> = ({ disabled, onEdit }) => {
 	const { t } = useTranslation('exports');
 	const { state } = useSearchContext();
 	const [sort, setSort] = useState(false);
-	const data = useMemo(() => {
+	const data: PublicationDto[] = useMemo(() => {
 		return sort
 			? Object.keys(uuidHeap)
 					.sort(
 						(a, b) =>
 							(uuidHeap[a].selected ? 0 : 1) - (uuidHeap[b].selected ? 0 : 1),
 					)
-					.map(k => uuidHeap[k].publication)
-			: Object.keys(uuidHeap).map(k => uuidHeap[k].publication);
+					.map(
+						k =>
+							({
+								title: uuidHeap[k].title,
+								enriched: uuidHeap[k].enriched,
+								policy: uuidHeap[k].policy,
+								availability: uuidHeap[k].policy,
+								model: uuidHeap[k].model,
+								pid: k,
+							} as PublicationDto),
+					)
+			: Object.keys(uuidHeap).map(
+					k =>
+						({
+							title: uuidHeap[k].title,
+							enriched: uuidHeap[k].enriched,
+							policy: uuidHeap[k].policy,
+							availability: uuidHeap[k].policy,
+							model: uuidHeap[k].model,
+							pid: k,
+						} as PublicationDto),
+			  );
 	}, [uuidHeap, sort]);
 
 	return (

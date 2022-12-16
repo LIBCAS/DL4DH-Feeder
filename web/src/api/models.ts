@@ -175,7 +175,8 @@ export type ModelsEnum =
 	| 'SHEETMUSIC'
 	| 'MONOGRAPHUNIT'
 	| 'MONOGRAPHBUNDLE'
-	| 'PERIODICALITEM';
+	| 'PERIODICALITEM'
+	| 'PERIODICALVOLUME';
 
 export type TagNameEnum =
 	| 'NUMBERS_IN_ADDRESSES'

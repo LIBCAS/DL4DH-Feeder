@@ -41,12 +41,11 @@ const Dashboard: FC = () => {
 		hasMore,
 		availableFilters,
 	} = useSearchPublications({
-		start: state.start,
+		start: ((state?.searchQuery?.page ?? 1) - 1) * state.pageSize,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		..._.omit(state.searchQuery, 'page'),
 	});
-
 	const {
 		data: filtersData,
 		dataUpdatedAt: filtersKey,

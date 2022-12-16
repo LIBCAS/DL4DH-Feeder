@@ -51,6 +51,7 @@ type Props<T extends unknown> = {
 	variant?: 'outlined' | 'underlined' | 'borderless';
 	wrapperCss?: SerializedStyles;
 	menuItemCss?: SerializedStyles;
+	menuWrapperCss?: SerializedStyles;
 	arrowHidden?: boolean;
 	placeholder?: string;
 	isExpanded?: boolean;
@@ -70,6 +71,7 @@ const SimpleSelect = <T extends unknown>({
 	renderMenuItem,
 	wrapperCss,
 	menuItemCss,
+	menuWrapperCss,
 	label,
 	labelMinWidth = 100,
 	variant = 'underlined',
@@ -114,6 +116,7 @@ const SimpleSelect = <T extends unknown>({
 				}
 				animation: animOpacity;
 				animation-duration: 0.08s;
+				${menuWrapperCss}
 			`}
 		>
 			<Box position="relative" bg="white" width={1}>

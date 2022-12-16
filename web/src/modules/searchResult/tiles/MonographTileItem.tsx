@@ -1,14 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdLock } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback } from 'react';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 
-import { useTheme } from 'theme';
+import { formatForUuidHeap } from 'modules/export/BulkExportAdditionalButtons';
+import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+
+import { SelectedOverlayCss, useTheme } from 'theme';
 
 import { ModelsEnum, PublicationChild } from 'api/models';
+
+import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import { PubModelTagBadge } from './GenericTileItem';
 
@@ -36,16 +42,35 @@ type Props = {
 const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 	const nav = useNavigate();
 	const isPeriodical = child.model.includes('periodical');
+	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
+	const pubCtx = usePublicationContext();
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
 	const theme = useTheme();
 	const title = getTitle(child.details);
+	const handleAddToExport = useCallback(() => {
+		const selected = !(uuidHeap[child.pid]?.selected ?? false);
+		updateExportHeap?.(p => ({
+			...p,
+			[child.pid]: formatForUuidHeap(
+				'child',
+				child,
+				selected,
+				pubCtx?.publicationChildren?.find(ch => ch.pid === child.pid)?.title,
+			),
+		}));
+	}, [child, updateExportHeap, uuidHeap, pubCtx]);
+
+	const isSelected = exportModeOn && uuidHeap[child.pid]?.selected;
+
 	return (
 		<a
 			key={child.pid}
 			href={url}
 			onClick={e => {
 				e.preventDefault();
-				if (onSelect) {
+				if (exportModeOn) {
+					handleAddToExport();
+				} else if (onSelect) {
 					onSelect(child.pid);
 				} else {
 					nav(url);
@@ -56,14 +81,21 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 			`}
 		>
 			<Flex
-				bg={child.enriched ? 'enriched' : 'white'}
+				bg={isSelected ? 'enrichedTransparent' : 'white'}
 				flexDirection="row"
 				alignItems="flex-start"
 				justifyContent="flex-start"
 				position="relative"
 				p={2}
 				css={css`
-					border: 1px solid ${theme.colors.border};
+					${isSelected
+						? css`
+								border: 2px solid ${theme.colors.enriched};
+								${SelectedOverlayCss}
+						  `
+						: css`
+								border: 1px solid ${theme.colors.border};
+						  `}
 					box-sizing: border-box;
 					width: 310px;
 					height: 145px;
@@ -74,7 +106,6 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 						cursor: pointer;
 					}
 				`}
-				/* ${tileWrapperCss?.(d.pid) ?? ``} */
 			>
 				<Flex
 					justifyContent="center"
