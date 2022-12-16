@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import XML from 'xml2js';
-import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
 
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import { Box, Flex } from 'components/styled';
@@ -14,14 +14,14 @@ import Divider from 'components/styled/Divider';
 import Text, { H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
-import ShareDialog from 'modules/share/ShareDialog';
-import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 import QuotationDialog from 'modules/quote/QuoteDialog';
+import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
+import ShareDialog from 'modules/share/ShareDialog';
 
 import { useTheme } from 'theme';
 
-import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 import { ModelsEnum } from 'api/models';
+import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 
 import useBibilio from 'hooks/useBiblio';
 
@@ -30,6 +30,7 @@ import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 import { usePublicationContext } from '../ctx/pub-ctx';
 import PrintDialog from '../print/PrintDialog';
 
+import AuthorsDialog from './AuthorsDialog';
 import MetaStreamsDialog from './MetaStreamsDialog';
 
 //biblio periodikum
@@ -151,9 +152,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	const { data: xmlString, isLoading } = useStreams(id ?? '', 'DC');
 	const { biblio: bmods, isLoading: isBiblioLoading } = useBibilio(rootId);
 
-	const { biblio: bmods2, isLoading: isBiblioLoading2 } = useBibilio(
-		id ?? undefined,
-	);
+	const {
+		biblio: bmods2,
+		isLoading: isBiblioLoading2,
+		metadata,
+	} = useBibilio(id ?? undefined);
 
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
@@ -195,6 +198,12 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 		periodical: 'volume_list',
 		periodicalvolume: 'issue_list',
 	};
+
+	//TODO: tu nie je hlavny autor, tak asi povazovat za hlavneho toho prveho? -- overit
+	// http://localhost:3000/view/uuid:bbe1bcd0-550e-11de-b630-000d606f5dc6?page=uuid%3A37af3bf4-2cad-4f09-b871-48370c84908b
+	const authors = metadata?.authors ?? [];
+	const mainAuthors = authors.filter(a => a.roles.indexOf('aut') !== -1);
+	const otherAuthors = authors.filter(a => a.roles.indexOf('aut') === -1);
 
 	return (
 		<Flex width={1} flexDirection="column" position="relative" height="100%">
@@ -251,6 +260,71 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					)}
 				</Box>
 				<Divider />
+				{(mainAuthors.length > 0 || otherAuthors.length > 0) && (
+					<Box mb={3}>
+						{mainAuthors.length > 0 && (
+							<>
+								<>
+									<Text fontSize="13.5px" color="#9e9e9e">
+										{t('metadata:author')}
+									</Text>
+									{mainAuthors.map(a => (
+										<BibLink
+											key={a.name}
+											to={`/search?authors=${a.name}`}
+											label={a.name}
+										/>
+									))}
+								</>
+
+								<Box>
+									<AuthorsDialog metadata={metadata} />
+								</Box>
+							</>
+						)}
+
+						{otherAuthors.length > 0 && (
+							<>
+								<Text fontSize="13.5px" color="#9e9e9e">
+									{t('metadata:author_other')}
+								</Text>
+								{otherAuthors.map(a => (
+									<BibLink
+										key={a.name}
+										to={`/search?authors=${a.name}`}
+										label={a.name}
+									/>
+								))}
+							</>
+						)}
+						<Box>
+							<AuthorsDialog metadata={metadata} />
+						</Box>
+					</Box>
+				)}
+				<Box mb={3}>
+					<Text fontSize="13.5px" color="#9e9e9e">
+						{t('metadata:publisher')}
+					</Text>
+					<H5>
+						{biblio.publisher}, {biblio.year}
+					</H5>
+				</Box>
+				<Box mb={3}>
+					<Text fontSize="13.5px" color="#9e9e9e">
+						{t('metadata:doctype')}
+					</Text>
+					<BibLink
+						to={`/search?model=${pageContext?.[0].model}`}
+						label={t(`model:${pageContext?.[0].model}`)}
+					/>
+				</Box>
+				<Box mb={3}>
+					<Text fontSize="13.5px" color="#9e9e9e">
+						{t('metadata:languages')}
+					</Text>
+					<ParsedLanguages langs={biblio.language ?? []} t={t} />
+				</Box>
 				<Box mb={3}>
 					{details && (
 						<>
@@ -345,35 +419,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					)}
 				</Box>
 
-				{biblio.author && (
-					<Box mb={3}>
-						<Text fontSize="13.5px" color="#9e9e9e">
-							Autor
-						</Text>
-						<BibLink
-							to={`/search?authors=${biblio.author}`}
-							label={biblio.author}
-						/>
-					</Box>
-				)}
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:publisher')}
-					</Text>
-					<H5>
-						{biblio.publisher}, {biblio.year}
-					</H5>
-				</Box>
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:doctype')}
-					</Text>
-					<BibLink
-						to={`/search?model=${pageContext?.[0].model}`}
-						label={t(`model:${pageContext?.[0].model}`)}
-					/>
-				</Box>
-
 				{(bmods?.keywords?.length ?? 0) > 0 && (
 					<Box mb={3}>
 						<Text fontSize="13.5px" color="#9e9e9e">
@@ -387,12 +432,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					</Box>
 				)}
 
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:languages')}
-					</Text>
-					<ParsedLanguages langs={biblio.language ?? []} t={t} />
-				</Box>
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">
 						{t('metadata:notes')}
