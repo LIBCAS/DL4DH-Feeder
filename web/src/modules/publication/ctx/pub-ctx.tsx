@@ -7,12 +7,13 @@ type CurrentPage = {
 	childIndex: number;
 	prevPid: string;
 	nextPid: string;
-	textMode?: boolean;
 };
 
 type OcrMode = {
 	left: 'ocr' | 'zoomify';
 	right: 'ocr' | 'zoomify';
+	leftZoom: number;
+	rightZoom: number;
 };
 
 //TODO: REFACTOR, UNIFY, MAKE READABLE

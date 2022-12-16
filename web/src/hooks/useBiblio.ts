@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import XML from 'xml2js';
 
+import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
+import { Metadata } from 'components/kramerius/model/metadata.model';
+
 import { useStreams } from 'api/publicationsApi';
 
 type BiblioKeyword = {
@@ -114,16 +117,21 @@ const useBibilio = (uuid?: string) => {
 		undefined,
 		uuid === undefined,
 	);
+	//TODO: get rid of biblio, use only mods parser from kramerius
 	const [biblio, setBiblio] = useState<BiblioModsParsed>();
+	const [metadata, setMetadata] = useState<Metadata>();
 	useEffect(() => {
 		if (data) {
 			XML.parseString(data, (err, result) => {
 				setBiblio(convertModsToObj(result));
 			});
+			const pservice = new ModsParserService();
+			const metadata = pservice.parse(data, uuid ?? '');
+			setMetadata(metadata);
 		}
-	}, [data]);
+	}, [data, uuid]);
 
-	return { isLoading, biblio };
+	return { isLoading, biblio, metadata };
 };
 
 export default useBibilio;

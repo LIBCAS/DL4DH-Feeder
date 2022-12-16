@@ -45,7 +45,7 @@ type Props<T extends TableItem> = {
 
 /** Table implementation */
 
-const Table2 = <T extends TableItem>({
+const ClassicTable = <T extends TableItem>({
 	data,
 	renderRow,
 	renderHeader,
@@ -208,4 +208,4 @@ const Table2 = <T extends TableItem>({
 	);
 };
 
-export default Table2;
+export default ClassicTable;

@@ -92,6 +92,8 @@ const ZoomifyToolbar: FC<Props> = ({
 	const pageParamName = isSecond ? 'page2' : 'page';
 	const { isMobile } = useMobileView();
 	const ICON_SIZE = isMobile ? 19 : 24;
+	const isOcrMode = pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr';
+
 	return (
 		<Flex
 			position="absolute"
@@ -129,16 +131,14 @@ const ZoomifyToolbar: FC<Props> = ({
 					}
 				/>
 				<ToolButton
-					tooltip={
-						pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr'
-							? t('tooltip_scan_mode')
-							: t('tooltip_ocr_mode')
-					}
+					tooltip={isOcrMode ? t('tooltip_scan_mode') : t('tooltip_ocr_mode')}
 					onClick={() => {
 						if (currentPage) {
 							const newOcrMode = pbctx.ocrMode ?? {
 								left: 'zoomify',
 								right: 'zoomify',
+								leftZoom: 12,
+								rightZoom: 12,
 							};
 							if (isSecond) {
 								newOcrMode.right =
@@ -148,16 +148,12 @@ const ZoomifyToolbar: FC<Props> = ({
 									newOcrMode.left === 'zoomify' ? 'ocr' : 'zoomify';
 							}
 
-							pbctx.setOcrMode(newOcrMode);
-
-							setCurrentPage({
-								...currentPage,
-								textMode: newOcrMode[isSecond ? 'right' : 'left'] === 'ocr',
-							});
+							pbctx.setOcrMode({ ...newOcrMode });
+							setCurrentPage({ ...currentPage });
 						}
 					}}
 					Icon={
-						pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr' ? (
+						isOcrMode ? (
 							<MdImage size={ICON_SIZE} />
 						) : (
 							<MdTextFields size={ICON_SIZE} />
@@ -165,16 +161,20 @@ const ZoomifyToolbar: FC<Props> = ({
 					}
 				/>
 
-				<ToolButton
-					tooltip={t('tooltip_rotate_left')}
-					onClick={() => onUpdateRotation(r => (r - 90) % 360)}
-					Icon={<MdRotateLeft size={ICON_SIZE} />}
-				/>
-				<ToolButton
-					tooltip={t('tooltip_rotate_right')}
-					onClick={() => onUpdateRotation(r => (r + 90) % 360)}
-					Icon={<MdRotateRight size={ICON_SIZE} />}
-				/>
+				{!isOcrMode && (
+					<ToolButton
+						tooltip={t('tooltip_rotate_left')}
+						onClick={() => onUpdateRotation(r => (r - 90) % 360)}
+						Icon={<MdRotateLeft size={ICON_SIZE} />}
+					/>
+				)}
+				{!isOcrMode && (
+					<ToolButton
+						tooltip={t('tooltip_rotate_right')}
+						onClick={() => onUpdateRotation(r => (r + 90) % 360)}
+						Icon={<MdRotateRight size={ICON_SIZE} />}
+					/>
+				)}
 				<ToolButton
 					tooltip={t('tooltip_zoom_in')}
 					onClick={onZoomIn}
@@ -210,11 +210,13 @@ const ZoomifyToolbar: FC<Props> = ({
 						}
 					/>
 				)}
-				<ToolButton
-					tooltip="Označit oblast a vyhledat text v ALTO"
-					Icon={<BsCursorText size={ICON_SIZE} />}
-					onClick={onDragBoxModeEnabled}
-				/>
+				{!isOcrMode && (
+					<ToolButton
+						tooltip="Označit oblast a vyhledat text v ALTO"
+						Icon={<BsCursorText size={ICON_SIZE} />}
+						onClick={onDragBoxModeEnabled}
+					/>
+				)}
 
 				<ToolButton
 					disabled={!currentPage?.nextPid}

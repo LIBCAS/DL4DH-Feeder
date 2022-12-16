@@ -212,6 +212,21 @@ const ChoosePeriodical: FC<{
 			if (currentIdToBeChanged === newId) {
 				onClose();
 			} else {
+				if (singleId) {
+					pubCtx.setOcrMode(p => {
+						if (p) {
+							return {
+								...p,
+								left: 'zoomify',
+								leftZoom: 12,
+								right: p.left,
+								rightZoom: p.leftZoom,
+							};
+						} else {
+							return null;
+						}
+					});
+				}
 				variant === 'left'
 					? nav(
 							`/multiview/${newId}/${notChangingId}?page2=${notChangingPage}${
