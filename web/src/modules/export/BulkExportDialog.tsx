@@ -63,9 +63,12 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			) ?? [],
 		[exportCtx],
 	);
-	console.log({ exportCtx });
-	const { result: altoResult, isLoading: altoCheckLoading } =
-		useCheckAltoStreams({ ...exportCtx.uuidHeap });
+
+	const {
+		result: altoResult,
+		isLoading: altoCheckLoading,
+		progress,
+	} = useCheckAltoStreams();
 
 	useEffect(() => {
 		setAllEnriched(
@@ -195,20 +198,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { handleSubmit, setFieldValue, values, isSubmitting, handleChange } =
 		formik;
 
-	// if (altoCheckLoading) {
-	// 	return (
-	// 		<Paper
-	// 			bg="paper"
-	// 			maxWidth={600}
-	// 			minWidth={['initial', 500]}
-	// 			overflow="visible"
-	// 		>
-	// 			{' '}
-	// 			Kontrolujem ALTO stream
-	// 			<Loader />
-	// 		</Paper>
-	// 	);
-	// }
+	console.log({ altoResult });
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -231,7 +221,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							alignItems="center"
 							justifyContent="center"
 							bg="white"
-							z-index={1}
+							zIndex={2}
 							css={css`
 								position: absolute;
 								width: 100%;
@@ -241,7 +231,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							`}
 						>
 							<Box>
-								<H1>Kontrolujem ALTO stream</H1>
+								<H1>
+									{progress.msg} ... {progress.current} / {progress.total}
+								</H1>
 
 								<Loader />
 							</Box>
@@ -250,7 +242,13 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
 							<H1 my={3}>{t('exports:export_dialog_title')}</H1>
-							<IconButton color="primary" onClick={closeModal}>
+							<IconButton
+								color="primary"
+								onClick={closeModal}
+								css={css`
+									z-index: 3;
+								`}
+							>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
@@ -271,24 +269,24 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							<b>{altoResult.allHaveAlto ? t('common:yes') : t('common:no')}</b>
 						</Text>
 
-						{altoResult.uuidsWithoutAlto.length > 0 && (
+						{altoResult.uuidsWithoutAlto.length > 0 ? (
 							<SimpleSelect
 								options={altoResult.uuidsWithoutAlto}
-								value="Publikace bez ALTO"
+								value={null}
 								onChange={() => null}
-								placeholder="Publikace bez ALTO"
-								variant="borderless"
+								placeholder="Seznam publikací neobsahující ALTO stream"
+								//variant="borderless"
 								nameFromOption={item =>
-									item ? exportCtx.uuidHeap[item]?.title ?? '' : ''
+									item ? exportCtx.uuidHeap[item]?.title ?? item : '---'
 								}
 								menuWrapperCss={css`
 									max-height: 400px;
 									overflow-y: auto;
 								`}
 							/>
+						) : (
+							<Divider my={2} />
 						)}
-
-						<Divider my={2} />
 
 						<Text my={2} mt={4}>
 							{t('exports:dialog.export_name')}
@@ -311,7 +309,11 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 						<SimpleSelect
 							formikId="format"
 							mb={2}
-							options={formatOptions}
+							options={
+								altoResult.allHaveAlto
+									? formatOptions
+									: formatOptions.filter(fo => fo.id !== 'alto')
+							}
 							nameFromOption={item => item?.label ?? 'unknown'}
 							keyFromOption={item => item?.id ?? 'unknown'}
 							value={values.format}
@@ -455,7 +457,14 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								>
 									{t('exports:dialog.finish_export_button')}
 								</Button>
-								<Button variant="outlined" ml={3} onClick={closeModal}>
+								<Button
+									variant="outlined"
+									ml={3}
+									onClick={closeModal}
+									css={css`
+										z-index: 3;
+									`}
+								>
 									{t('exports:dialog.cancel')}
 								</Button>
 							</Flex>
@@ -477,6 +486,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 										}
 									}}
 									preSelected={[]}
+									disabled={altoCheckLoading}
 								/>
 							</Flex>
 						</Flex>
