@@ -24,6 +24,7 @@ import {
 import { useSearchContext } from 'hooks/useSearchContext';
 import { useSearchResultContext } from 'hooks/useSearchResultContext';
 import { useBulkExportContext } from 'hooks/useBulkExport';
+import { useDashboardFilters } from 'hooks/useDashboardFilters';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 
@@ -53,12 +54,19 @@ const Dashboard: FC = () => {
 	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
 	const { exportModeOn } = useBulkExportContext();
+	const { setDashboardFilters, dashboardFilters } = useDashboardFilters();
 
 	useEffect(() => {
 		if (data) {
 			setResult?.(data);
 		}
 	}, [data, setResult]);
+
+	useEffect(() => {
+		if (state.searchQuery) {
+			setDashboardFilters?.(state.searchQuery);
+		}
+	}, [setDashboardFilters, state.searchQuery]);
 
 	const isLoading = loading || isFetching || isRefetching;
 

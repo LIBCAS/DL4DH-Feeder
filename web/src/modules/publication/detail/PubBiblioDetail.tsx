@@ -295,11 +295,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 										label={a.name}
 									/>
 								))}
+								<Box>
+									<AuthorsDialog metadata={metadata} />
+								</Box>
 							</>
 						)}
-						<Box>
-							<AuthorsDialog metadata={metadata} />
-						</Box>
 					</Box>
 				)}
 				<Box mb={3}>

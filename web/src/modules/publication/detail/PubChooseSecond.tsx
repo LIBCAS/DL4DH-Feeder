@@ -1,18 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { debounce } from 'lodash-es';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { MdRefresh } from 'react-icons/md';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import Checkbox from 'components/form/checkbox/Checkbox';
 import QuerySearchInput from 'components/search/QuerySearchInput';
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
+import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import { H2 } from 'components/styled/Text';
+import Text, { H2 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 import Pagination from 'components/table/Pagination';
 
 import { Loader } from 'modules/loader';
+import ActiveFilters from 'modules/public/homepage/leftPanel/ActiveFilters';
 import SplitScreenView from 'modules/searchResult/list/SplitScreenView';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
@@ -23,33 +28,49 @@ import {
 	useSearchPublications,
 } from 'api/publicationsApi';
 
+import { useDashboardFilters } from 'hooks/useDashboardFilters';
+import { TSearchQuery } from 'hooks/useSearchContext';
+
 import useHeaderHeight from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
-		const [query, setQuery] = useState<string | undefined>('');
+		const { dashboardFilters } = useDashboardFilters();
+		const [query, setQuery] = useState<string | undefined>(
+			dashboardFilters?.query ?? '',
+		);
 		const { t } = useTranslation();
 
 		const [page, setPage] = useState(0);
 		const [pageLimit, setPageLimit] = useState(30);
-		const handleQueryChange = (query: string) => {
-			setPage(0);
-			setQuery(query);
-		};
-		const [publicOnly, setPublicOnly] = useState<boolean>(true);
+		const [showDashboardFilters, setShowDashboardFilters] = useState(false);
+
+		const handleQueryChange = useMemo(
+			() =>
+				debounce((query: string) => {
+					setPage(0);
+					setQuery(query);
+				}, 50),
+			[],
+		);
+		const [publicOnly, setPublicOnly] = useState<boolean>(
+			dashboardFilters?.availability === 'PUBLIC',
+		);
 
 		const [uuid, setUUID] = useState('');
 		const [step, setStep] = useState(0);
+		const [omitDashboardFilters, setOmitDashboardFilters] = useState(false);
 		const headerHeight = useHeaderHeight();
 		const onSelect = (uuid: string) => {
 			setUUID(uuid);
 		};
 
 		const handleSecond = () => setStep(1);
-
+		const dfilters = omitDashboardFilters ? { query } : dashboardFilters;
 		const { data, count, isLoading, hasMore } = useSearchPublications({
+			...dfilters,
 			start: page * pageLimit,
 			pageSize: pageLimit,
 			availability: publicOnly ? 'PUBLIC' : 'ALL',
@@ -95,12 +116,67 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 				>
 					{step === 0 ? (
 						<>
-							<Flex p={2}>
+							<Flex width={1} justifyContent="flex-end">
+								<IconButton
+									px={4}
+									color="text"
+									onClick={() => {
+										setQuery(dashboardFilters?.query ?? '');
+										setOmitDashboardFilters(false);
+										setPublicOnly(dashboardFilters?.availability === 'PUBLIC');
+									}}
+								>
+									<Flex px={3} alignItems="center">
+										<MdRefresh size={20} />
+										<Text ml={2}>Vráit původní filtr</Text>
+									</Flex>
+								</IconButton>
+								{dashboardFilters && (
+									<IconButton
+										color="text"
+										flexShrink={0}
+										onClick={() => setShowDashboardFilters(p => !p)}
+									>
+										<Flex px={3} alignItems="center">
+											Zobrazit původní filtr
+										</Flex>
+									</IconButton>
+								)}
+								{showDashboardFilters && (
+									<Flex
+										position="absolute"
+										zIndex={3}
+										bg="white"
+										top={30}
+										css={css`
+											box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+										`}
+									>
+										<ActiveFilters
+											savedFilters={dashboardFilters as TSearchQuery}
+											readonly
+										/>
+									</Flex>
+								)}
+							</Flex>
+							<Flex p={2} alignItems="center">
 								<QuerySearchInput
+									value={query}
+									initialQuery={query}
 									onQueryUpdate={handleQueryChange}
 									publicOnly={publicOnly}
 									setPublicOnly={setPublicOnly}
+									onQueryClear={() => setQuery('')}
+									externalState
 								/>
+								<Flex pr={1} flexShrink={0}>
+									<Checkbox
+										checked={omitDashboardFilters}
+										onChange={() => setOmitDashboardFilters(p => !p)}
+										aria-label={'Hledat ve všech'}
+										label={'Hledat ve všech'}
+									/>
+								</Flex>
 							</Flex>
 							<Flex height={'70vh'} width={1} position="relative">
 								<SplitScreenView
