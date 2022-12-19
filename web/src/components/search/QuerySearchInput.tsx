@@ -40,6 +40,9 @@ type Props = {
 	placeholder?: string;
 	urlKeyOfValue?: string;
 	AdditionalLeftJSX?: JSX.Element;
+	initialQuery?: string;
+	value?: string;
+	externalState?: boolean;
 };
 
 const QuerySearchInput: FC<Props> = ({
@@ -51,6 +54,9 @@ const QuerySearchInput: FC<Props> = ({
 	urlKeyOfValue,
 	onQueryClear,
 	AdditionalLeftJSX,
+	initialQuery,
+	value,
+	externalState,
 }) => {
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
@@ -64,8 +70,10 @@ const QuerySearchInput: FC<Props> = ({
 	const [sp] = useSearchParams();
 
 	const [localState, setLocalState] = useState(
-		urlKeyOfValue ? sp.get(urlKeyOfValue) ?? '' : '',
+		urlKeyOfValue ? sp.get(urlKeyOfValue) ?? '' : initialQuery ?? '',
 	);
+
+	const query = externalState ? value : localState;
 
 	const [hints, setHints] = useState<string[]>([]);
 
@@ -109,17 +117,20 @@ const QuerySearchInput: FC<Props> = ({
 					label=""
 					labelType="inline"
 					color="primary"
-					value={localState}
+					value={query}
 					ref={mainInputRef}
 					onChange={e => {
 						setLocalState(e.target.value);
 						debouncedHint(e.target.value);
+						if (externalState) {
+							handleUpdateContext(e.target.value);
+						}
 					}}
 					onKeyPress={e => {
-						if (e.key === 'Enter' && localState !== '') {
+						if (e.key === 'Enter' && query !== '') {
 							e.preventDefault();
 							e.stopPropagation();
-							handleUpdateContext(localState);
+							handleUpdateContext(query ?? '');
 						}
 					}}
 					onKeyDown={e => {
@@ -136,7 +147,7 @@ const QuerySearchInput: FC<Props> = ({
 						</Flex>
 					}
 					iconRight={
-						localState !== '' ? (
+						query !== '' ? (
 							<Flex mr={3} color="primary">
 								<MdClear
 									onClick={() => {
@@ -199,7 +210,7 @@ const QuerySearchInput: FC<Props> = ({
 					/>
 				</div>
 
-				{hints.length > 0 && localState !== '' && (
+				{hints.length > 0 && query !== '' && (
 					<ClickAway onClickAway={() => setHints([])}>
 						<Flex
 							position="absolute"
@@ -249,7 +260,7 @@ const QuerySearchInput: FC<Props> = ({
 					</ClickAway>
 				)}
 				{setPublicOnly && (
-					<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
+					<Flex alignItems="center" minWidth={105} ml={[0, 3]} mt={[3, 0]}>
 						<Checkbox
 							checked={publicOnly}
 							onChange={() => setPublicOnly(p => !p)}

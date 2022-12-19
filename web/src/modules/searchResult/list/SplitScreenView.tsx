@@ -13,7 +13,7 @@ import Checkbox from 'components/form/checkbox/Checkbox';
 
 import { PublicationDto } from 'api/models';
 
-import { availabilityToTextTag, modelToText } from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 
 import { colsOrder, headerLabels, rowLayout, TColumnsLayout } from './helpers';
 
@@ -26,23 +26,25 @@ const Cell = styled(Text)`
 	color: black;
 `;
 
-const renderCell = (
-	row: Omit<TColumnsLayout, 'pid'>,
-	cellKey: keyof Omit<TColumnsLayout, 'pid'>,
-) => {
+const RenderCell: FC<{
+	row: Omit<TColumnsLayout, 'pid'>;
+	cellKey: keyof Omit<TColumnsLayout, 'pid'>;
+}> = ({ row, cellKey }) => {
+	const { t } = useTranslation();
 	if (cellKey === 'model') {
-		return <Cell>{modelToText(row[cellKey]) ?? '--'}</Cell>;
+		return <Cell>{t(`model:${modelToText(row[cellKey])}`)}</Cell>;
 	}
 
 	if (cellKey === 'availability') {
-		return (
-			<Cell>{availabilityToTextTag(row[cellKey].toUpperCase()) ?? '--'}</Cell>
-		);
+		return <Cell>{t(`common:${row[cellKey]}`)}</Cell>;
 	}
 	if (cellKey === 'enriched') {
 		return (
 			<Cell>
-				<Checkbox checked={row[cellKey]} />
+				<Checkbox
+					checked={row[cellKey]}
+					label={t(`common:${row[cellKey] ? 'yes' : 'no'}`)}
+				/>
 			</Cell>
 		);
 	}
@@ -121,7 +123,7 @@ const SplitScreenView: FC<{
 						p={2}
 						pl={[2, 3]}
 					>
-						{renderCell(row, cellKey)}
+						<RenderCell row={row} cellKey={cellKey} />
 					</Flex>
 				))}
 			</>
@@ -133,11 +135,11 @@ const SplitScreenView: FC<{
 
 	useEffect(() => {
 		if (selectedRow === undefined) {
-			onSelect(data?.[0].pid ?? 'error:multiview search id undefined');
+			onSelect(data?.[0]?.pid ?? 'error:multiview search id undefined');
 		}
 		setSelectedRow(0);
 		if (data?.length === 1) {
-			onSelect(data?.[0].pid ?? '');
+			onSelect(data?.[0]?.pid ?? '');
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);

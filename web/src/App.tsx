@@ -19,6 +19,7 @@ import keycloak from 'auth/KeycloakService';
 import { SearchContextProvider } from 'hooks/useSearchContext';
 import { BulkExportContextProvider } from 'hooks/useBulkExport';
 import { SearchResultContextProvider } from 'hooks/useSearchResultContext';
+import { DashboardFiltersContextProvider } from 'hooks/useDashboardFilters';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 import Store from 'utils/Store';
@@ -46,28 +47,30 @@ const App = () => {
 						}}
 					>
 						<Router basename={APP_CONTEXT}>
-							<SearchResultContextProvider>
-								<BulkExportContextProvider>
-									<PubDetailCtxProvider>
-										<SearchContextProvider>
-											<GlobalStyles />
-											<ToastifyStyles />
-											<Header />
-											<AppRoutes />
-											<ToastContainer
-												position="bottom-center"
-												newestOnTop={false}
-												closeOnClick
-												draggable
-												pauseOnHover
-												transition={Slide}
-												autoClose={5000}
-											/>
-											<TooltipRender />
-										</SearchContextProvider>
-									</PubDetailCtxProvider>
-								</BulkExportContextProvider>
-							</SearchResultContextProvider>
+							<DashboardFiltersContextProvider>
+								<SearchResultContextProvider>
+									<BulkExportContextProvider>
+										<PubDetailCtxProvider>
+											<SearchContextProvider>
+												<GlobalStyles />
+												<ToastifyStyles />
+												<Header />
+												<AppRoutes />
+												<ToastContainer
+													position="bottom-center"
+													newestOnTop={false}
+													closeOnClick
+													draggable
+													pauseOnHover
+													transition={Slide}
+													autoClose={5000}
+												/>
+												<TooltipRender />
+											</SearchContextProvider>
+										</PubDetailCtxProvider>
+									</BulkExportContextProvider>
+								</SearchResultContextProvider>
+							</DashboardFiltersContextProvider>
 						</Router>
 					</ReactKeycloakProvider>
 				</Flex>
