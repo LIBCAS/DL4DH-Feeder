@@ -13,6 +13,8 @@ import { useTheme } from 'theme';
 
 import { PublicationChild } from 'api/models';
 
+import { useParseUrlIdsAndParams } from '../publicationUtils';
+
 import PubBiblioDetail from './PubBiblioDetail';
 import PubChooseSecond from './PubChooseSecond';
 import PubPagesDetail from './PubPagesDetail';
@@ -36,6 +38,8 @@ const PublicationSidePanel: FC<Props> = ({
 	const theme = useTheme();
 	const [chooseSecondDialogOpen, setChooseSecondDialogOpen] = useState(false);
 	const { t } = useTranslation('publication_detail');
+
+	const urlParams = useParseUrlIdsAndParams();
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'search' : defaultView ?? 'detail',
@@ -79,6 +83,20 @@ const PublicationSidePanel: FC<Props> = ({
 									: 'search_in_set_left',
 							)}
 						</Button>
+						{urlParams.isMultiview && (
+							<Button
+								tooltip="vrati na zobrazenie len jednej publikacie  - treba vymysliet nazov tohto tlacitka"
+								mx={2}
+								variant="primary"
+								onClick={() =>
+									variant === 'left'
+										? urlParams.navLeft()
+										: urlParams.navRight()
+								}
+							>
+								Single view
+							</Button>
+						)}
 						{chooseSecondDialogOpen && (
 							<PubChooseSecond
 								onClose={() => setChooseSecondDialogOpen(false)}

@@ -34,6 +34,7 @@ import { TSearchQuery } from 'hooks/useSearchContext';
 import useHeaderHeight from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
+import { createSearchParamsString } from '../publicationUtils';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
@@ -52,6 +53,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 				debounce((query: string) => {
 					setPage(0);
 					setQuery(query);
+					setPage(0);
 				}, 50),
 			[],
 		);
@@ -285,7 +287,7 @@ const ChoosePeriodical: FC<{
 
 	useEffect(() => {
 		if (children?.[0]?.datanode) {
-			if (currentIdToBeChanged === newId) {
+			if (currentIdToBeChanged === newId && !singleId) {
 				onClose();
 			} else {
 				if (singleId) {
@@ -305,14 +307,16 @@ const ChoosePeriodical: FC<{
 				}
 				variant === 'left'
 					? nav(
-							`/multiview/${newId}/${notChangingId}?page2=${notChangingPage}${
-								notChangingFulltext ? `&fulltext2=${notChangingFulltext}` : ``
-							}`,
+							`/multiview/${newId}/${notChangingId}${createSearchParamsString([
+								{ name: 'page2', value: notChangingPage },
+								{ name: 'fulltext2', value: notChangingFulltext },
+							])}`,
 					  )
 					: nav(
-							`/multiview/${notChangingId}/${newId}?page=${notChangingPage}${
-								notChangingFulltext ? `&fulltext=${notChangingFulltext}` : ``
-							}`,
+							`/multiview/${notChangingId}/${newId}${createSearchParamsString([
+								{ name: 'page', value: notChangingPage },
+								{ name: 'fulltext', value: notChangingFulltext },
+							])}`,
 					  );
 			}
 		}
