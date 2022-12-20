@@ -53,6 +53,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const generatedName = useMemo(() => generateExportName(), []);
 	const { t } = useTranslation();
 	const [allEnriched, setAllEnriched] = useState<boolean>(false);
+	const [checkAltoStream, setCheckAltoStream] = useState<boolean>(false);
 
 	const exportCtx = useBulkExportContext();
 
@@ -68,7 +69,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 		result: altoResult,
 		isLoading: altoCheckLoading,
 		progress,
-	} = useCheckAltoStreams();
+	} = useCheckAltoStreams(checkAltoStream);
 
 	useEffect(() => {
 		setAllEnriched(
@@ -198,8 +199,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { handleSubmit, setFieldValue, values, isSubmitting, handleChange } =
 		formik;
 
-	console.log({ altoResult });
-
 	return (
 		<form onSubmit={handleSubmit}>
 			<Flex
@@ -266,7 +265,20 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 						<Text fontSize="sm">
 							{t('exports:dialog.all_alto_available')}:{' '}
-							<b>{altoResult.allHaveAlto ? t('common:yes') : t('common:no')}</b>
+							{checkAltoStream ? (
+								<b>
+									{altoResult.allHaveAlto ? t('common:yes') : t('common:no')}
+								</b>
+							) : (
+								<Button
+									variant="text"
+									fontSize="md"
+									px={1}
+									onClick={() => setCheckAltoStream(true)}
+								>
+									{t('common:check')}
+								</Button>
+							)}
 						</Text>
 
 						{altoResult.uuidsWithoutAlto.length > 0 ? (
