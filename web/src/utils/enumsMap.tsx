@@ -90,7 +90,7 @@ export const enrichmentToText = (value: string) => {
 		case 'ENRICHED':
 			return 'search:enrichment:enriched_only';
 		case 'NOT_ENRICHED':
-			return 'search:enrichment:enriched_only';
+			return 'search:enrichment:not_enriched_only';
 		case 'ALL':
 			return 'common:all';
 		default:

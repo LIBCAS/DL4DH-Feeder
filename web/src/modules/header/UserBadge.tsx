@@ -48,7 +48,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 				</Flex>
 				<Button
 					onClick={async () => {
-						await api().get('user/logout');
+						api().get('user/logout');
 						keycloak.logout();
 						keycloak.clearToken();
 						Store.remove(Store.keys.Token);
@@ -85,7 +85,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			<MenuList>
 				<MenuItem
 					onSelect={async () => {
-						await api().get('user/logout');
+						api().get('user/logout');
 						keycloak.logout();
 						keycloak.clearToken();
 						Store.remove(Store.keys.Token);

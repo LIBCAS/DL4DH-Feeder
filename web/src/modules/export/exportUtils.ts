@@ -30,21 +30,23 @@ export type AltoCheckProgress = {
 };
 
 //with caching
-export const useCheckAltoStreams = () => {
+export const useCheckAltoStreams = (enabled: boolean) => {
 	// do not check periodicals, always allow ALTO export on periodicals
 	const { uuidHeap } = useBulkExportContext();
 	const uuids = useMemo(() => {
-		return Object.keys(uuidHeap)
-			.filter(k => uuidHeap[k].selected)
-			.filter(k => !uuidHeap[k].model?.includes('periodical'));
-	}, [uuidHeap]);
+		return enabled
+			? Object.keys(uuidHeap)
+					.filter(k => uuidHeap[k].selected)
+					.filter(k => !uuidHeap[k].model?.includes('periodical'))
+			: [];
+	}, [uuidHeap, enabled]);
 
 	const [result, setResult] = useState<{
 		allHaveAlto: boolean;
 		uuidsWithoutAlto: string[];
 	}>({ allHaveAlto: true, uuidsWithoutAlto: [] });
 
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(enabled);
 	const [progress, setProgress] = useState<AltoCheckProgress>({
 		current: 0,
 		msg: 'Načítání potomků',
@@ -53,8 +55,19 @@ export const useCheckAltoStreams = () => {
 	});
 	const [altoCounter, setAltoCounter] = useState(0);
 	const [childrenCounter, setChildrenCounter] = useState(0);
-
 	const [hasResults, setHasResults] = useState(false);
+
+	useEffect(() => {
+		if (enabled && uuids.length > 0) {
+			setIsLoading(true);
+			setProgress({
+				current: 0,
+				msg: 'Načítání potomků',
+				total: uuids.length,
+				mode: 'CHILDREN',
+			});
+		}
+	}, [enabled, uuids]);
 
 	const childrenQueries = useQueries(
 		uuids.map(uuid => ({
