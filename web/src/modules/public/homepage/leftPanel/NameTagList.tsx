@@ -53,12 +53,12 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 
 	return (
 		<>
-			{nameTagItems.map(nti => {
+			{nameTagItems.map((nti, index) => {
 				const formattedKey = NameTagFilterToNameTagEnum[nti.key];
 				const Icon = NameTagIcon[formattedKey as TagNameEnum];
 				return nti.data.length > 0 ? (
 					<Accordion
-						key={nti.key}
+						key={`${nti.key}-${index}`}
 						label={
 							<Flex alignItems="center">
 								<Icon size={14} />
