@@ -6,7 +6,7 @@ import {
 	usePublicationDetail,
 } from 'api/publicationsApi';
 
-const err_msg = 'pparts_parent_out_of_bounds';
+//const err_msg = 'pparts_parent_out_of_bounds';
 
 export const usePeriodicalParts = (uuid: string) => {
 	const [parts, setParts] = useState<{
@@ -17,7 +17,7 @@ export const usePeriodicalParts = (uuid: string) => {
 		usePublicationDetail(uuid);
 
 	const ctx = detail?.context?.flat(1) ?? [];
-	const parentUuid = ctx[ctx?.length - 2]?.pid ?? err_msg;
+	const parentUuid = ctx[ctx?.length - 2]?.pid;
 	const { data: otherChildren, isLoading: isChildrenLoading } =
 		usePublicationChildren(parentUuid);
 
@@ -78,11 +78,6 @@ export const useParseUrlIdsAndParams = () => {
 			}),
 		[fulltext2, mIdRight, nav, page2],
 	);
-	createSearchParamsString([
-		{ name: 'page', value: 56 },
-		{ name: 'fulltext', value: undefined },
-		{ name: 'page2', value: 'eejPage2' },
-	]);
 	return {
 		isMultiview,
 		singleId,

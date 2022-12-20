@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { MdLock } from 'react-icons/md';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
 
 import { Flex } from 'components/styled';
