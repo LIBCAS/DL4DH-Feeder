@@ -6,21 +6,30 @@ import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
+import cz.inqool.dl4dh.feeder.model.Filter;
+import cz.inqool.dl4dh.feeder.repository.FilterRepository;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,13 +47,16 @@ public class SearchApi {
 
     private final HttpSolrClient solr;
 
-    public SearchApi(@Value("${solr.host.query}") String solrHost) {
+    private final FilterRepository filterRepository;
+
+    public SearchApi(@Value("${solr.host.query}") String solrHost, FilterRepository filterRepository) {
         this.solr = new HttpSolrClient.Builder(solrHost.trim()).build();
+        this.filterRepository = filterRepository;
     }
 
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> hint(@RequestParam String q, @RequestParam(required = false) NameTagEntityType nameTagType) throws SolrServerException, IOException {
-        FiltersDto filters = new FiltersDto();
+        Filter filters = new Filter();
         filters.setQuery(q);
         filters.setPageSize(20);
 
@@ -95,7 +107,7 @@ public class SearchApi {
         return result.getResponse().getDocs().stream().map(d -> (String)d.get("dc.title")).collect(Collectors.toList());
     }
 
-    private Map<String, Map<String, Object>> getNameTagFacets(FiltersDto filters) {
+    private Map<String, Map<String, Object>> getNameTagFacets(Filter filters) {
         return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
@@ -148,7 +160,12 @@ public class SearchApi {
     }
 
     @PostMapping(value = "")
-    public SearchDto search(@RequestBody FiltersDto filters) {
+    public SearchDto search(@RequestBody Filter filters, Principal user) {
+        if (user != null) {
+            filters.setUsername(user.getName());
+            filters.getNameTagFilters().forEach(v -> v.setFilter(filters));
+            filterRepository.save(filters);
+        }
         // Search in Kramerius+
         // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
         SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
@@ -274,6 +291,12 @@ public class SearchApi {
                         .queryParam("pagesize", pagesize.orElse("A4"))
                         .queryParam("imgop", imgop.orElse("FULL"))
                         .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/history")
+    public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
+        return filterRepository.findByUsername(user.getName(), p);
     }
 
     @Resource(name = "krameriusWebClient")
