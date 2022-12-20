@@ -29,6 +29,7 @@ import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 import PrintDialog from '../print/PrintDialog';
+import { usePeriodicalParts } from '../publicationUtils';
 
 import AuthorsDialog from './AuthorsDialog';
 import MetaStreamsDialog from './MetaStreamsDialog';
@@ -160,6 +161,8 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
+	const { parts } = usePeriodicalParts(id);
+
 	const { t } = useTranslation();
 
 	useEffect(() => {
@@ -260,71 +263,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					)}
 				</Box>
 				<Divider />
-				{(mainAuthors.length > 0 || otherAuthors.length > 0) && (
-					<Box mb={3}>
-						{mainAuthors.length > 0 && (
-							<>
-								<>
-									<Text fontSize="13.5px" color="#9e9e9e">
-										{t('metadata:author')}
-									</Text>
-									{mainAuthors.map(a => (
-										<BibLink
-											key={a.name}
-											to={`/search?authors=${a.name}`}
-											label={a.name}
-										/>
-									))}
-								</>
-
-								<Box>
-									<AuthorsDialog metadata={metadata} />
-								</Box>
-							</>
-						)}
-
-						{otherAuthors.length > 0 && (
-							<>
-								<Text fontSize="13.5px" color="#9e9e9e">
-									{t('metadata:author_other')}
-								</Text>
-								{otherAuthors.map(a => (
-									<BibLink
-										key={a.name}
-										to={`/search?authors=${a.name}`}
-										label={a.name}
-									/>
-								))}
-								<Box>
-									<AuthorsDialog metadata={metadata} />
-								</Box>
-							</>
-						)}
-					</Box>
-				)}
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:publisher')}
-					</Text>
-					<H5>
-						{biblio.publisher}, {biblio.year}
-					</H5>
-				</Box>
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:doctype')}
-					</Text>
-					<BibLink
-						to={`/search?model=${pageContext?.[0].model}`}
-						label={t(`model:${pageContext?.[0].model}`)}
-					/>
-				</Box>
-				<Box mb={3}>
-					<Text fontSize="13.5px" color="#9e9e9e">
-						{t('metadata:languages')}
-					</Text>
-					<ParsedLanguages langs={biblio.language ?? []} t={t} />
-				</Box>
 				<Box mb={3}>
 					{details && (
 						<>
@@ -348,15 +286,74 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 					}
 				>
 					{isPeriodical && (
-						<>
+						<Box mb={3}>
 							<Text color="#616161" fontSize="16.5px" fontWeight="bold">
 								{bmods2?.title ?? ''}
 							</Text>
 							<Text color="#616161" fontSize="15px">
 								{bmods2?.subTitle ?? ''}
 							</Text>
-						</>
+						</Box>
 					)}
+					{(mainAuthors.length > 0 || otherAuthors.length > 0) && (
+						<Box mb={3}>
+							{mainAuthors.length > 0 && (
+								<>
+									<>
+										<Text fontSize="13.5px" color="#9e9e9e">
+											{t('metadata:author')}
+										</Text>
+										{mainAuthors.map(a => (
+											<BibLink
+												key={a.name}
+												to={`/search?authors=${a.name}`}
+												label={a.name}
+											/>
+										))}
+									</>
+
+									<Box>
+										<AuthorsDialog metadata={metadata} />
+									</Box>
+								</>
+							)}
+
+							{otherAuthors.length > 0 && (
+								<>
+									<Text fontSize="13.5px" color="#9e9e9e">
+										{t('metadata:author_other')}
+									</Text>
+									{otherAuthors.map(a => (
+										<BibLink
+											key={a.name}
+											to={`/search?authors=${a.name}`}
+											label={a.name}
+										/>
+									))}
+									<Box>
+										<AuthorsDialog metadata={metadata} />
+									</Box>
+								</>
+							)}
+						</Box>
+					)}
+					<Box mb={3}>
+						<Text fontSize="13.5px" color="#9e9e9e">
+							{t('metadata:publisher')}
+						</Text>
+						<H5>
+							{biblio.publisher}, {biblio.year}
+						</H5>
+					</Box>
+					<Box mb={3}>
+						<Text fontSize="13.5px" color="#9e9e9e">
+							{t('metadata:doctype')}
+						</Text>
+						<BibLink
+							to={`/search?model=${pageContext?.[0].model}`}
+							label={t(`model:${pageContext?.[0].model}`)}
+						/>
+					</Box>
 					{(bmods2?.keywords?.length ?? 0) > 0 && (
 						<Box mb={3}>
 							<Text fontSize="13.5px" color="#9e9e9e">
@@ -369,6 +366,13 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 							))}
 						</Box>
 					)}
+					<Box mb={3}>
+						<Text fontSize="13.5px" color="#9e9e9e">
+							{t('metadata:languages')}
+						</Text>
+						<ParsedLanguages langs={biblio.language ?? []} t={t} />
+					</Box>
+
 					{(bmods2?.geographic?.length ?? 0) > 0 && (
 						<Box mb={3}>
 							<Text fontSize="13.5px" color="#9e9e9e">
@@ -418,17 +422,21 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						</Box>
 					)}
 				</Box>
-
-				{(bmods?.keywords?.length ?? 0) > 0 && (
+				{parts.prev && (
 					<Box mb={3}>
-						<Text fontSize="13.5px" color="#9e9e9e">
-							{t('metadata:keywords')}
-						</Text>
-						{bmods?.keywords.map((k, i) => (
-							<div key={`${k} - ${i}`}>
-								<BibLink to={`/search?keywords=${k}`} label={k} />
-							</div>
-						))}
+						<BibLink
+							to={`/view/${parts.prev}`}
+							label={t('metadata:previous_unit')}
+						/>
+					</Box>
+				)}
+
+				{parts.next && (
+					<Box mb={3}>
+						<BibLink
+							to={`/view/${parts.next}`}
+							label={t('metadata:next_unit')}
+						/>
 					</Box>
 				)}
 

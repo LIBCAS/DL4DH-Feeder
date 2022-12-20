@@ -54,7 +54,7 @@ const Dashboard: FC = () => {
 	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
 	const { exportModeOn } = useBulkExportContext();
-	const { setDashboardFilters, dashboardFilters } = useDashboardFilters();
+	const { setDashboardFilters } = useDashboardFilters();
 
 	useEffect(() => {
 		if (data) {

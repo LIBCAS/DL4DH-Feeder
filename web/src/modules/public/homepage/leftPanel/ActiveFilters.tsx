@@ -17,7 +17,7 @@ import { Loader } from 'modules/loader';
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';
 
-import { Collection, ModelsEnum, NameTagFilterDto } from 'api/models';
+import { Collection, ModelsEnum } from 'api/models';
 import { useAvailableFilters } from 'api/publicationsApi';
 
 import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';

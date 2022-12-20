@@ -1,7 +1,5 @@
-/** @jsxImportSource @emotion/react */
 import { FC, useEffect, useMemo, useState } from 'react';
-import { MdClose, MdCopyAll, MdFormatQuote, MdShare } from 'react-icons/md';
-import { css } from '@emotion/core';
+import { MdClose, MdFormatQuote } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 
 import ModalDialog from 'components/modal';
@@ -92,8 +90,6 @@ const QuotationDialog: FC<Props> = ({ isSecond }) => {
 	const sources = rootContext?.flat() ?? [];
 
 	const link = `${window.location.origin}/uuid/${source?.pid ?? 'undefined'}`;
-
-	//console.log({ rootDetail, currentTitle });
 
 	return (
 		<ModalDialog

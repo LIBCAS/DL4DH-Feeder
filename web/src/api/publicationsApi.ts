@@ -34,7 +34,12 @@ export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
 				: api()
 						.get('item/' + uuid)
 						.json<PublicationDetail>(),
-		{ retry: 0, staleTime: 300000, refetchOnWindowFocus: false },
+		{
+			retry: 0,
+			staleTime: 300000,
+			refetchOnWindowFocus: false,
+			enabled: !!uuid,
+		},
 	);
 
 export const useAvailableFilters = (searchQuery?: TSearchQuery) => {

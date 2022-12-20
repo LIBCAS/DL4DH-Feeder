@@ -34,6 +34,7 @@ import { TSearchQuery } from 'hooks/useSearchContext';
 import useHeaderHeight from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
+import { createSearchParamsString } from '../publicationUtils';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
@@ -43,15 +44,17 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 		);
 		const { t } = useTranslation();
 
-		const [page, setPage] = useState(0);
+		const [page, setPage] = useState(1);
 		const [pageLimit, setPageLimit] = useState(30);
 		const [showDashboardFilters, setShowDashboardFilters] = useState(false);
+		const [dirty, setDirty] = useState(false);
 
 		const handleQueryChange = useMemo(
 			() =>
 				debounce((query: string) => {
-					setPage(0);
+					setPage(1);
 					setQuery(query);
+					setDirty(true);
 				}, 50),
 			[],
 		);
@@ -71,7 +74,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 		const dfilters = omitDashboardFilters ? { query } : dashboardFilters;
 		const { data, count, isLoading, hasMore } = useSearchPublications({
 			...dfilters,
-			start: page * pageLimit,
+			start: (page - 1) * pageLimit,
 			pageSize: pageLimit,
 			availability: publicOnly ? 'PUBLIC' : 'ALL',
 			query,
@@ -117,20 +120,25 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					{step === 0 ? (
 						<>
 							<Flex width={1} justifyContent="flex-end">
-								<IconButton
-									px={4}
-									color="text"
-									onClick={() => {
-										setQuery(dashboardFilters?.query ?? '');
-										setOmitDashboardFilters(false);
-										setPublicOnly(dashboardFilters?.availability === 'PUBLIC');
-									}}
-								>
-									<Flex px={3} alignItems="center">
-										<MdRefresh size={20} />
-										<Text ml={2}>Vráit původní filtr</Text>
-									</Flex>
-								</IconButton>
+								{dirty && dashboardFilters && (
+									<IconButton
+										px={4}
+										color="text"
+										onClick={() => {
+											setQuery(dashboardFilters?.query ?? '');
+											setOmitDashboardFilters(false);
+											setDirty(false);
+											setPublicOnly(
+												dashboardFilters?.availability === 'PUBLIC',
+											);
+										}}
+									>
+										<Flex px={3} alignItems="center">
+											<MdRefresh size={20} />
+											<Text ml={2}>Vrátit původní filtr</Text>
+										</Flex>
+									</IconButton>
+								)}
 								{dashboardFilters && (
 									<IconButton
 										color="text"
@@ -138,7 +146,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 										onClick={() => setShowDashboardFilters(p => !p)}
 									>
 										<Flex px={3} alignItems="center">
-											Zobrazit původní filtr
+											<Text ml={2}>Zobrazit původní filtr</Text>
 										</Flex>
 									</IconButton>
 								)}
@@ -165,18 +173,30 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 									initialQuery={query}
 									onQueryUpdate={handleQueryChange}
 									publicOnly={publicOnly}
-									setPublicOnly={setPublicOnly}
-									onQueryClear={() => setQuery('')}
+									setPublicOnly={() => {
+										setPublicOnly(p => !p);
+										setDirty(true);
+										setPage(1);
+									}}
+									onQueryClear={() => {
+										setQuery('');
+										setPage(1);
+									}}
 									externalState
 								/>
-								<Flex pr={1} flexShrink={0}>
-									<Checkbox
-										checked={omitDashboardFilters}
-										onChange={() => setOmitDashboardFilters(p => !p)}
-										aria-label={'Hledat ve všech'}
-										label={'Hledat ve všech'}
-									/>
-								</Flex>
+								{dashboardFilters && (
+									<Flex pr={1} flexShrink={0}>
+										<Checkbox
+											checked={omitDashboardFilters}
+											onChange={() => {
+												setOmitDashboardFilters(p => !p);
+												setPage(1);
+											}}
+											aria-label={'Nepoužít filtr'}
+											label={'Nepoužít filtr'}
+										/>
+									</Flex>
+								)}
 							</Flex>
 							<Flex height={'70vh'} width={1} position="relative">
 								<SplitScreenView
@@ -216,14 +236,6 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 							box-shadow: 0px -13px 16px -8px rgb(0 0 0 / 6%);
 						`}
 					>
-						<Button
-							variant="primary"
-							onClick={handleSecond}
-							loading={isLoading}
-							disabled={isLoading || uuid === ''}
-						>
-							{t('common:confirm')}
-						</Button>
 						{step > 0 && (
 							<Button variant="outlined" onClick={() => setStep(0)}>
 								{t('common:back')}
@@ -231,6 +243,14 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						)}
 						<Button variant="outlined" onClick={onClose}>
 							{t('common:close')}
+						</Button>
+						<Button
+							variant="primary"
+							onClick={handleSecond}
+							loading={isLoading}
+							disabled={isLoading || uuid === ''}
+						>
+							{t('common:confirm')}
 						</Button>
 					</Flex>
 				</Paper>
@@ -285,7 +305,7 @@ const ChoosePeriodical: FC<{
 
 	useEffect(() => {
 		if (children?.[0]?.datanode) {
-			if (currentIdToBeChanged === newId) {
+			if (currentIdToBeChanged === newId && !singleId) {
 				onClose();
 			} else {
 				if (singleId) {
@@ -305,14 +325,16 @@ const ChoosePeriodical: FC<{
 				}
 				variant === 'left'
 					? nav(
-							`/multiview/${newId}/${notChangingId}?page2=${notChangingPage}${
-								notChangingFulltext ? `&fulltext2=${notChangingFulltext}` : ``
-							}`,
+							`/multiview/${newId}/${notChangingId}${createSearchParamsString([
+								{ name: 'page2', value: notChangingPage },
+								{ name: 'fulltext2', value: notChangingFulltext },
+							])}`,
 					  )
 					: nav(
-							`/multiview/${notChangingId}/${newId}?page=${notChangingPage}${
-								notChangingFulltext ? `&fulltext=${notChangingFulltext}` : ``
-							}`,
+							`/multiview/${notChangingId}/${newId}${createSearchParamsString([
+								{ name: 'page', value: notChangingPage },
+								{ name: 'fulltext', value: notChangingFulltext },
+							])}`,
 					  );
 			}
 		}
