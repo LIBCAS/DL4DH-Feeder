@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.6.3 (upcoming)
+## v0.7.0
   - exports:
     - items selected for export are saved in local storage
     - nested periodicals exporting added
@@ -13,6 +13,9 @@
   - pub. bibliography info:
     - fixed order (same as it is in Kramerius) of biblio items - for non periodical publications
     - author dialog added (with roles and dates)
+  - search history API with optional save
+  - delete unpublished documents during synchronization
+  - solr schema extended with facet_author and model_path fields 
 
 ## v0.6.2
 

@@ -78,6 +78,7 @@ public class Filter extends AuditModel {
         return Integer.min(100, Integer.max(1, pageSize));
     }
 
+    @JsonIgnore
     public String getQueryEscaped() {
         return query.replaceAll("\"","\\\\\"");
     }
@@ -92,6 +93,7 @@ public class Filter extends AuditModel {
         return advancedFilterField != null && !advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
     }
 
+    @JsonIgnore
     public String getEdismaxFields(boolean includeNameTag) {
         if (advancedFilterField == null) {
             return "";

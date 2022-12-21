@@ -160,10 +160,12 @@ public class SearchApi {
     }
 
     @PostMapping(value = "")
-    public SearchDto search(@RequestBody Filter filters, Principal user) {
-        if (user != null) {
+    public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") boolean save, Principal user) {
+        if (user != null && save) {
             filters.setUsername(user.getName());
-            filters.getNameTagFilters().forEach(v -> v.setFilter(filters));
+            if (filters.getNameTagFilters() != null) {
+                filters.getNameTagFilters().forEach(v -> v.setFilter(filters));
+            }
             filterRepository.save(filters);
         }
         // Search in Kramerius+
@@ -295,7 +297,7 @@ public class SearchApi {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/history")
-    public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
+    public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable p) {
         return filterRepository.findByUsername(user.getName(), p);
     }
 

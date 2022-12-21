@@ -1,5 +1,6 @@
 package cz.inqool.dl4dh.feeder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,7 @@ public class NameTagFilter extends AuditModel {
 
     @ManyToOne
     @JoinColumn(name = "filter_id", nullable = false)
+    @JsonIgnore
     private Filter filter;
 
     public String toFilter() {
