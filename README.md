@@ -9,6 +9,6 @@ Na projektu spolupracují Knihovna AV ČR, v. v. i., Národní knihovna ČR, Mor
 
 Koordinátorem vývoje je Knihovna AV ČR, v. v. i., zastoupená Ing. Martinem Lhotákem, lhotak@knav.cz.
 
-Další informace a dokumentace k nástroji DL4DH jsou dispozici na https://github.com/LIBCAS/DL4DH-Feeder/wiki.
+Další informace a dokumentace k nástroji DL4DH Feeder jsou dispozici na https://github.com/LIBCAS/DL4DH-Feeder/wiki.
 
 Souhrnná informace k projektu DL4DH je umístěna na https://github.com/LIBCAS/DL4DH
