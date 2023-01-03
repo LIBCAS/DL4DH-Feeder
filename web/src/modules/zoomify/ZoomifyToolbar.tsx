@@ -20,8 +20,11 @@ import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { Loader } from 'modules/loader';
 
 import { useTheme } from 'theme';
+
+import { useStreamList } from 'api/publicationsApi';
 
 import { useMobileView } from 'hooks/useViewport';
 
@@ -30,9 +33,12 @@ const ToolButton: FC<{
 	Icon: ReactNode;
 	tooltip?: string;
 	disabled?: boolean;
-}> = ({ onClick, Icon, tooltip, disabled }) => {
+	loading?: boolean;
+}> = ({ onClick, Icon, tooltip, disabled, loading }) => {
 	const theme = useTheme();
-	return (
+	return loading ? (
+		<Loader size={19} />
+	) : (
 		<Button
 			tooltip={tooltip}
 			variant="text"
@@ -94,6 +100,8 @@ const ZoomifyToolbar: FC<Props> = ({
 	const ICON_SIZE = isMobile ? 19 : 24;
 	const isOcrMode = pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr';
 
+	const streams = useStreamList(currentPage?.uuid);
+	const doesntHaveAlto = streams.record?.ALTO === undefined;
 	return (
 		<Flex
 			position="absolute"
@@ -210,11 +218,15 @@ const ZoomifyToolbar: FC<Props> = ({
 						}
 					/>
 				)}
-				{!isOcrMode && (
+				{!isOcrMode && ( // publikacia bez ALTA : http://localhost:3000/view/uuid:7e05cb70-50e7-11de-aafb-000d606f5dc6?page=uuid%3A15b3a380-fe72-11e6-bff9-005056825209
 					<ToolButton
-						tooltip="Označit oblast a vyhledat text v ALTO"
+						tooltip={`${t('tooltip_select_text')} ${
+							doesntHaveAlto ? t('tooltip_select_not_available') : ''
+						}`}
 						Icon={<BsCursorText size={ICON_SIZE} />}
 						onClick={onDragBoxModeEnabled}
+						loading={streams.isLoading}
+						disabled={doesntHaveAlto}
 					/>
 				)}
 

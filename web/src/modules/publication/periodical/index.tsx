@@ -51,6 +51,11 @@ const PeriodicalDetail = () => {
 			nextPid: pages[childIndex + 1]?.pid,
 		});
 		pubCtx.setPublicationChildren(pages);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pages, pageId]);
+
+	useEffect(() => {
 		if (detail?.data) {
 			const context = detail.data?.context?.flat() ?? [];
 			pubCtx.setPublication({
@@ -59,16 +64,18 @@ const PeriodicalDetail = () => {
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId]);
-	//TODO:
+	}, [detail.data]);
+
 	useEffect(() => {
 		if (pubChildren.data?.[0]?.model === 'page') {
 			nav('/view/' + id + '?page=' + pubChildren.data?.[0].pid, {
 				replace: true,
 			});
-		} /*  else {
-			nav('/periodical/' + pubChildren.data?.[0].pid, { replace: true });
-		} */
+		}
+		// auto navigate to children when there is only one
+		// if (pubChildren.data?.length === 1) {
+		// 	nav('/periodical/' + pubChildren.data?.[0].pid);
+		// }
 	}, [pubChildren.data, detail.data, nav, id]);
 
 	if (pubChildren.isLoading || detail.isLoading) {

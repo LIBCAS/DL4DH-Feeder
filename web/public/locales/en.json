@@ -490,7 +490,8 @@
     "tooltip_crop_image": "Crop image",
     "tooltip_scan_mode": "Show scanned page",
     "tooltip_ocr_mode": "Show OCR result",
-    "tooltip_rotate_left": "Rotate left"
+    "tooltip_rotate_left": "Rotate left",
+    "tooltip_select_not_available": "(unavailable)"
   },
   "book_controls": {
     "tooltip_print": "Prepare to print",
