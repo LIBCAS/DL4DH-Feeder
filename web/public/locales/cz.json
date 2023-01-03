@@ -493,7 +493,8 @@
     "tooltip_crop_image": "Výřez obrázků",
     "tooltip_scan_mode": "Zobrazit naskenovanou stránku",
     "tooltip_ocr_mode": "Zobrazit výsledek OCR",
-    "tooltip_rotate_left": "Otočit doleva"
+    "tooltip_rotate_left": "Otočit doleva",
+    "tooltip_select_not_available": "(nedostupné)"
   },
   "book_controls": {
     "tooltip_print": "Příprava k tisku",

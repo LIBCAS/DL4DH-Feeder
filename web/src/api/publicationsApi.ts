@@ -147,7 +147,7 @@ export type StreamsOptions = {
 	isLoading: boolean;
 	list: StreamsList;
 };
-export const useStreamList = (uuid: string): StreamsOptions => {
+export const useStreamList = (uuid?: string): StreamsOptions => {
 	const [record, setRecord] = useState<StreamsRecord | null>(null);
 
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -164,6 +164,7 @@ export const useStreamList = (uuid: string): StreamsOptions => {
 			retry: 0,
 			refetchOnWindowFocus: false,
 			staleTime: Infinity,
+			enabled: !!uuid,
 		},
 	);
 
