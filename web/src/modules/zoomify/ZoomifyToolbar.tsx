@@ -199,8 +199,8 @@ const ZoomifyToolbar: FC<Props> = ({
 					tooltip={t(`tooltip_${fullscreen ? 'exit' : 'enter'}_fullscreen`)}
 					onClick={() => {
 						if (fullscreen) {
-							document?.exitFullscreen?.();
 							setFullscreen?.(false);
+							document?.exitFullscreen?.();
 						}
 						if (!fullscreen) {
 							setFullscreen?.(true);
