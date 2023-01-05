@@ -26,7 +26,7 @@ type Props = {
 	isSecond?: boolean;
 };
 
-const ShowQuotation: FC<{ uuid: string; pageId: string }> = ({
+const ShowCitation: FC<{ uuid: string; pageId: string }> = ({
 	uuid,
 	pageId,
 }) => {
@@ -56,7 +56,7 @@ const ShowQuotation: FC<{ uuid: string; pageId: string }> = ({
 	);
 };
 
-const QuotationDialog: FC<Props> = ({ isSecond }) => {
+const CitationDialog: FC<Props> = ({ isSecond }) => {
 	const pctx = usePublicationContext();
 	const { t } = useTranslation();
 	const currentPagePid = isSecond
@@ -155,7 +155,7 @@ const QuotationDialog: FC<Props> = ({ isSecond }) => {
 						</IconButton>
 					</Flex>
 					<Text color="black">
-						<ShowQuotation
+						<ShowCitation
 							uuid={pctx.publication?.root_pid ?? ''}
 							pageId={currentPagePid ?? ''}
 						/>
@@ -175,4 +175,4 @@ const QuotationDialog: FC<Props> = ({ isSecond }) => {
 	);
 };
 
-export default QuotationDialog;
+export default CitationDialog;
