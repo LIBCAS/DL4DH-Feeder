@@ -150,7 +150,9 @@ const MapWrapper: FC<{
 		}
 	}, [highlightPolygons]);
 
-	map.current
+	const MR = isSecond ? mapRefOfSecond : mapRef;
+
+	MR.current
 		?.getView()
 		.animate({ rotation: (rotation * Math.PI) / 180, duration: 150 });
 
@@ -181,7 +183,8 @@ const MapWrapper: FC<{
 					onClose={() => {
 						setDragBoxMode(false);
 						setAltoDialogOpen({ open: false, box: [] });
-						mapRef.current?.getInteractions()?.pop?.();
+
+						MR.current?.getInteractions()?.pop?.();
 					}}
 				/>
 			)}
@@ -192,19 +195,19 @@ const MapWrapper: FC<{
 				isMultiView={isMultiView}
 				onUpdateRotation={setRotation}
 				onZoomIn={() => {
-					const currentZoom = map.current?.getView().getResolution() ?? 1;
+					const currentZoom = MR.current?.getView().getResolution() ?? 1;
 
 					const newZoom = currentZoom / 1.5;
-					map.current?.getView().animate({
+					MR.current?.getView().animate({
 						resolution: newZoom,
 						duration: 300,
 					});
 				}}
 				onZoomOut={() => {
-					const currentZoom = map.current?.getView().getResolution() ?? 1;
+					const currentZoom = MR.current?.getView().getResolution() ?? 1;
 
 					const newZoom = currentZoom * 1.5;
-					map.current?.getView().animate({
+					MR.current?.getView().animate({
 						resolution: newZoom,
 						duration: 300,
 					});
@@ -214,15 +217,12 @@ const MapWrapper: FC<{
 
 					dragBox.on('boxend', () => {
 						const extent = dragBox.getGeometry().getExtent();
-						map.current?.removeInteraction(dragBox);
+						MR.current?.removeInteraction(dragBox);
 						setAltoDialogOpen({ open: true, box: extent });
 					});
 					//dragBoxRef.current = dragBox;
-					if (isSecond) {
-						mapRefOfSecond.current?.addInteraction(dragBox);
-					} else {
-						mapRef.current?.addInteraction(dragBox);
-					}
+
+					MR.current?.addInteraction(dragBox);
 
 					setDragBoxMode(true);
 				}}
