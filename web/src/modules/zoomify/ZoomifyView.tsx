@@ -163,7 +163,6 @@ const MapWrapper: FC<{
 			mapRef.current = map.current;
 		}
 	}, [map, isSecond]);
-
 	return (
 		<Box
 			key={imgId}
@@ -183,8 +182,6 @@ const MapWrapper: FC<{
 					onClose={() => {
 						setDragBoxMode(false);
 						setAltoDialogOpen({ open: false, box: [] });
-
-						MR.current?.getInteractions()?.pop?.();
 					}}
 				/>
 			)}
@@ -214,16 +211,12 @@ const MapWrapper: FC<{
 				}}
 				onDragBoxModeEnabled={() => {
 					const dragBox = new DragBox({});
-
 					dragBox.on('boxend', () => {
 						const extent = dragBox.getGeometry().getExtent();
 						MR.current?.removeInteraction(dragBox);
 						setAltoDialogOpen({ open: true, box: extent });
 					});
-					//dragBoxRef.current = dragBox;
-
 					MR.current?.addInteraction(dragBox);
-
 					setDragBoxMode(true);
 				}}
 			/>

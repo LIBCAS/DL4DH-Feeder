@@ -20,6 +20,7 @@ import { SearchContextProvider } from 'hooks/useSearchContext';
 import { BulkExportContextProvider } from 'hooks/useBulkExport';
 import { SearchResultContextProvider } from 'hooks/useSearchResultContext';
 import { DashboardFiltersContextProvider } from 'hooks/useDashboardFilters';
+import { FullscreenContextProvider } from 'hooks/useFullscreenContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 import Store from 'utils/Store';
@@ -47,30 +48,32 @@ const App = () => {
 						}}
 					>
 						<Router basename={APP_CONTEXT}>
-							<DashboardFiltersContextProvider>
-								<SearchResultContextProvider>
-									<BulkExportContextProvider>
-										<PubDetailCtxProvider>
-											<SearchContextProvider>
-												<GlobalStyles />
-												<ToastifyStyles />
-												<Header />
-												<AppRoutes />
-												<ToastContainer
-													position="bottom-center"
-													newestOnTop={false}
-													closeOnClick
-													draggable
-													pauseOnHover
-													transition={Slide}
-													autoClose={5000}
-												/>
-												<TooltipRender />
-											</SearchContextProvider>
-										</PubDetailCtxProvider>
-									</BulkExportContextProvider>
-								</SearchResultContextProvider>
-							</DashboardFiltersContextProvider>
+							<FullscreenContextProvider>
+								<DashboardFiltersContextProvider>
+									<SearchResultContextProvider>
+										<BulkExportContextProvider>
+											<PubDetailCtxProvider>
+												<SearchContextProvider>
+													<GlobalStyles />
+													<ToastifyStyles />
+													<Header />
+													<AppRoutes />
+													<ToastContainer
+														position="bottom-center"
+														newestOnTop={false}
+														closeOnClick
+														draggable
+														pauseOnHover
+														transition={Slide}
+														autoClose={5000}
+													/>
+													<TooltipRender />
+												</SearchContextProvider>
+											</PubDetailCtxProvider>
+										</BulkExportContextProvider>
+									</SearchResultContextProvider>
+								</DashboardFiltersContextProvider>
+							</FullscreenContextProvider>
 						</Router>
 					</ReactKeycloakProvider>
 				</Flex>
