@@ -115,7 +115,7 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 					border: none;
 				`}
 			>
-				<Button minWidth={25} variant="primary" px={2} height={32} mr={1}>
+				<Button minWidth={20} variant="primary" px={1} height={32} mr={1}>
 					<MdPerson size={18} />
 					<Text ml={2}>
 						{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}

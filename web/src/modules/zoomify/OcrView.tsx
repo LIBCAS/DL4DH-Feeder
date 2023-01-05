@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback } from 'react';
 
 import { Flex } from 'components/styled';
 
@@ -15,7 +15,6 @@ const OcrView: FC<{ uuid: string; isSecond?: boolean }> = ({
 }) => {
 	const response = useStreams(uuid, 'TEXT_OCR', 'text/plain');
 	const pctx = usePublicationContext();
-	//const [fontSize, setFontSize] = useState(12);
 	const onZoomIn = useCallback(() => {
 		if (isSecond) {
 			//pctx.setOcrMode(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));

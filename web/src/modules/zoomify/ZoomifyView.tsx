@@ -64,7 +64,6 @@ const MapWrapper: FC<{
 }> = ({ imgId, imgWidth, imgHeight, isSecond, isMultiView }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
-	const dragBoxRef = useRef<DragBox | null>(null);
 	const [dragBoxMode, setDragBoxMode] = useState(false);
 	const vectorLayerRef = useRef<VectorLayer<VectorSource<Geometry>> | null>(
 		null,
@@ -118,14 +117,6 @@ const MapWrapper: FC<{
 
 		map.current?.addLayer(vectorLayer);
 
-		const dragBox = new DragBox();
-
-		dragBox.on('boxend', () => {
-			const extent = dragBox.getGeometry().getExtent();
-			map.current?.removeInteraction(dragBox);
-			setAltoDialogOpen({ open: true, box: extent });
-		});
-		dragBoxRef.current = dragBox;
 		map.current = new Map({
 			layers: [staticLayer, layer, vectorLayer],
 			target: mapElement.current as HTMLDivElement,
@@ -190,6 +181,7 @@ const MapWrapper: FC<{
 					onClose={() => {
 						setDragBoxMode(false);
 						setAltoDialogOpen({ open: false, box: [] });
+						mapRef.current?.getInteractions()?.pop?.();
 					}}
 				/>
 			)}
@@ -218,24 +210,32 @@ const MapWrapper: FC<{
 					});
 				}}
 				onDragBoxModeEnabled={() => {
-					if (dragBoxRef.current) {
-						map.current?.addInteraction(dragBoxRef.current);
-						setDragBoxMode(true);
+					const dragBox = new DragBox({});
+
+					dragBox.on('boxend', () => {
+						const extent = dragBox.getGeometry().getExtent();
+						map.current?.removeInteraction(dragBox);
+						setAltoDialogOpen({ open: true, box: extent });
+					});
+					//dragBoxRef.current = dragBox;
+					if (isSecond) {
+						mapRefOfSecond.current?.addInteraction(dragBox);
+					} else {
+						mapRef.current?.addInteraction(dragBox);
 					}
+
+					setDragBoxMode(true);
 				}}
 			/>
 		</Box>
 	);
 };
-const ZoomifyView = React.forwardRef<
-	HTMLDivElement,
-	{
-		id?: string;
-		isLoading?: boolean;
-		isSecond?: boolean;
-		isMultiView?: boolean;
-	}
->(({ id, isSecond, isMultiView }, fullscreenRef) => {
+const ZoomifyView: FC<{
+	id?: string;
+	isLoading?: boolean;
+	isSecond?: boolean;
+	isMultiView?: boolean;
+}> = ({ id, isSecond, isMultiView }) => {
 	const imgProps = useImageProperties(id ?? '');
 
 	const theme = useTheme();
@@ -286,8 +286,6 @@ const ZoomifyView = React.forwardRef<
 			)}
 		</Wrapper>
 	);
-});
-
-ZoomifyView.displayName = ZoomifyView.name;
+};
 
 export default ZoomifyView;
