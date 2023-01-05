@@ -98,20 +98,15 @@ const GlobalStyles = () => (
 			}
 			[data-reach-menu-list],
 			[data-reach-menu-items] {
-				padding: 0;
-				box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+				padding: 2px;
+				box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.2);
 			}
 			[data-reach-menu-item] {
-				padding: 16px;
-				padding-top: 14px;
-				padding-bottom: 14px;
+				padding: 12px 32px;
 			}
 			[data-reach-menu-item][data-selected] {
-				background-color: ${theme.colors.enriched};
+				background-color: ${theme.colors.primary};
 				color: white;
-				padding: 16px;
-				padding-top: 14px;
-				padding-bottom: 14px;
 				box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
 			}
 

@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { MdArrowBack } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import MainSearchInput from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
@@ -19,7 +20,6 @@ import { useInfoApi } from 'api/infoApi';
 import { useSearchContext } from 'hooks/useSearchContext';
 import { useMobileView } from 'hooks/useViewport';
 
-import Store from 'utils/Store';
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { HeaderMenu } from './menuItems';
@@ -34,6 +34,7 @@ const Header = () => {
 	const ctx = usePublicationContext();
 	const searchCtx = useSearchContext();
 	const { isMobile } = useMobileView();
+	const { t } = useTranslation('navbar');
 
 	return (
 		<ResponsiveWrapper
@@ -71,17 +72,14 @@ const Header = () => {
 								onClick={() => nav(-1)}
 								p={1}
 								color="headerColor"
-								tooltip="Krok zpět"
+								tooltip={t('back')}
 							>
 								<MdArrowBack size={22} />
 							</IconButton>
 							<Button
-								tooltip="Zpět na vyledávání"
-								onClick={() =>
-									nav(
-										`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,
-									)
-								}
+								tooltip={t('home')}
+								//`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,
+								onClick={() => nav(`/`)}
 								variant="text"
 								color="headerColor"
 								pr={2}

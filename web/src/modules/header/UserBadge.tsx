@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { MdPerson } from 'react-icons/md';
+import { MdArrowDropDown, MdPerson } from 'react-icons/md';
 import { Menu, MenuButton, MenuList, MenuItem } from '@reach/menu-button';
 import { useKeycloak } from '@react-keycloak/web';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
@@ -18,6 +19,7 @@ import '@reach/menu-button/styles.css';
 const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 	const { keycloak } = useKeycloak();
 	const { t } = useTranslation('navbar');
+	const nav = useNavigate();
 
 	if (!keycloak.authenticated) {
 		return (
@@ -39,6 +41,44 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 
 	return variant === 'tablet' ? (
 		<>
+			<Button
+				onClick={() => nav('/exports')}
+				variant="text"
+				color="primary"
+				minWidth={50}
+				px={1}
+				my={2}
+				fontSize="inherit"
+				mr={4}
+			>
+				<Text>{t('exports')}</Text>
+			</Button>
+			<Button
+				disabled
+				onClick={() => nav('/history')}
+				variant="text"
+				color="primary"
+				minWidth={50}
+				px={1}
+				my={2}
+				fontSize="inherit"
+				mr={4}
+			>
+				<Text>{t('history')}</Text>
+			</Button>
+			<Button
+				disabled
+				onClick={() => nav('/account')}
+				variant="text"
+				color="primary"
+				minWidth={50}
+				px={1}
+				my={2}
+				fontSize="inherit"
+				mr={4}
+			>
+				<Text>{t('account')}</Text>
+			</Button>
 			<Flex alignItems="center" justifyContent="space-between" width={1} px={2}>
 				<Flex alignItems="center">
 					<MdPerson size={22} />
@@ -53,8 +93,8 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 						keycloak.clearToken();
 						Store.remove(Store.keys.Token);
 					}}
-					variant={variant === 'tablet' ? 'text' : 'primary'}
-					color={variant === 'tablet' ? 'primary' : 'white'}
+					variant="text"
+					color="primary"
 					minWidth={50}
 					px={1}
 					my={2}
@@ -80,9 +120,17 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 					<Text ml={2}>
 						{keycloak?.idTokenParsed?.preferred_username ?? 'neznamy'}
 					</Text>
+					<MdArrowDropDown size={18} />
 				</Button>
 			</MenuButton>
 			<MenuList>
+				<MenuItem onSelect={() => nav('/exports')}>{t('exports')}</MenuItem>
+				<MenuItem disabled={true} onSelect={() => nav('/history')}>
+					{t('history')}
+				</MenuItem>
+				<MenuItem disabled={true} onSelect={() => nav('/account')}>
+					{t('account')}
+				</MenuItem>
 				<MenuItem
 					onSelect={async () => {
 						api().get('user/logout');
