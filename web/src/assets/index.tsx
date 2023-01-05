@@ -15,6 +15,8 @@ import { ReactComponent as MobileMenu } from './svg/menu-lines.svg';
 import { ReactComponent as Cross } from './svg/cross.svg';
 import { ReactComponent as Capture } from './svg/capture.svg';
 import { ReactComponent as Calendar } from './svg/calendar.svg';
+import { ReactComponent as CZFlag } from './svg/czech-flag.svg';
+import { ReactComponent as ENFlag } from './svg/english-flag.svg';
 
 const Icon = styled(Box, { shouldForwardProp: isPropValid })``;
 
@@ -30,6 +32,8 @@ export const MobileMenuIcon = Icon.withComponent(MobileMenu);
 export const CrossIcon = Icon.withComponent(Cross);
 export const CaptureIcon = Icon.withComponent(Capture);
 export const CalendarIcon = Icon.withComponent(Calendar);
+export const CZFlagIcon = Icon.withComponent(CZFlag);
+export const ENFlagIcon = Icon.withComponent(ENFlag);
 
 export const ArrowDownIcon = styled(Box, {
 	shouldForwardProp: isPropValid,
