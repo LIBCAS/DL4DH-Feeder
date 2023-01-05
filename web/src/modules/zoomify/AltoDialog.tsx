@@ -16,6 +16,8 @@ import Divider from 'components/styled/Divider';
 
 import { useStreams } from 'api/publicationsApi';
 
+import { useFullscreenContext } from 'hooks/useFullscreenContext';
+
 import { deepSearchByKey } from './altoUtils';
 
 type Props = {
@@ -29,10 +31,18 @@ type Props = {
 const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	const [parsedAlto, setParsedAlto] = useState<Record<string, unknown>>({});
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
+	const { fullscreen, setFullscreen } = useFullscreenContext();
 	let msg = '';
 	useEffect(() => {
 		XML.parseString(altoStream.data, (err, result) => setParsedAlto(result));
 	}, [altoStream.data]);
+
+	useEffect(() => {
+		if (fullscreen) {
+			document?.exitFullscreen?.();
+			setFullscreen?.(false);
+		}
+	}, [fullscreen, setFullscreen]);
 
 	if (altoStream.isLoading) {
 		return (

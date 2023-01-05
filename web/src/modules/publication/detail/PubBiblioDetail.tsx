@@ -14,7 +14,7 @@ import Divider from 'components/styled/Divider';
 import Text, { H3, H5 } from 'components/styled/Text';
 
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
-import QuotationDialog from 'modules/quote/QuoteDialog';
+import CitationDialog from 'modules/quote/CitationDialog';
 import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 import ShareDialog from 'modules/share/ShareDialog';
 
@@ -204,6 +204,8 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	//TODO: tu nie je hlavny autor, tak asi povazovat za hlavneho toho prveho? -- overit
 	// http://localhost:3000/view/uuid:bbe1bcd0-550e-11de-b630-000d606f5dc6?page=uuid%3A37af3bf4-2cad-4f09-b871-48370c84908b
+	// tu je tvurce, ale nie autor
+	// http://localhost:3000/view/uuid:7e05cb70-50e7-11de-aafb-000d606f5dc6?page=uuid%3A15b3a380-fe72-11e6-bff9-005056825209
 	const authors = metadata?.authors ?? [];
 	const mainAuthors = authors.filter(a => a.roles.indexOf('aut') !== -1);
 	const otherAuthors = authors.filter(a => a.roles.indexOf('aut') === -1);
@@ -224,7 +226,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						<PrintDialog isSecond={isSecond} />
 					</>
 				)}
-				<QuotationDialog isSecond={isSecond} />
+				<CitationDialog isSecond={isSecond} />
 				<ShareDialog isSecond={isSecond} />
 			</Flex>
 			<Divider />
@@ -324,11 +326,12 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 										{t('metadata:author_other')}
 									</Text>
 									{otherAuthors.map(a => (
-										<BibLink
-											key={a.name}
-											to={`/search?authors=${a.name}`}
-											label={a.name}
-										/>
+										<div key={a.name}>
+											<BibLink
+												to={`/search?authors=${a.name}`}
+												label={a.name}
+											/>
+										</div>
 									))}
 									<Box>
 										<AuthorsDialog metadata={metadata} />

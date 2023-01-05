@@ -117,6 +117,8 @@
     "login": "Log in",
     "logout": "Log out",
     "exports": "Exports",
+    "history": "Request history",
+    "account": " Account settings",
     "go_to_kramerius": "Go to Kramerius"
   },
   "searchbar": {

@@ -34,7 +34,7 @@ export const formatForUuidHeap = (
 		return {
 			title: data.title,
 			enriched: data.enriched,
-			policy: data.policy,
+			policy: data.policy ?? (data as PublicationDto)?.availability,
 			model: data.model,
 			selected,
 		};

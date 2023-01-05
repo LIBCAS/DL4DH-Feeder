@@ -39,15 +39,6 @@ const AvailabilityFilter: FC<Props> = ({
 				value: withoutCount ? undefined : data?.availability.private ?? 0,
 				bold: activeItem && activeItem === 'PRIVATE' ? true : false,
 			},
-			{
-				key: 'ALL',
-				label: t('accessibility.all'),
-				bold: activeItem && activeItem === 'ALL' ? true : false,
-				value: withoutCount
-					? undefined
-					: (data?.availability.private ?? 0) +
-					  (data?.availability.public ?? 0),
-			},
 		],
 		[data, withoutCount, activeItem, t],
 	);

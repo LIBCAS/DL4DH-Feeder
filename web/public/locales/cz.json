@@ -117,6 +117,8 @@
     "login": "Přihlásit",
     "logout": "Odhlásit",
     "exports": "Exporty",
+    "history": "Historie dotazů",
+    "account": " Správa účtu",
     "go_to_kramerius": "Přejít do Kraméria"
   },
   "searchbar": {

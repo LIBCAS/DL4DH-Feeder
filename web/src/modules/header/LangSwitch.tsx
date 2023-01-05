@@ -3,6 +3,8 @@ import { FC } from 'react';
 
 import Button from 'components/styled/Button';
 
+import { CZFlagIcon, ENFlagIcon } from 'assets';
+
 type Props = {
 	variant: string;
 };
@@ -15,6 +17,7 @@ const LangSwitch: FC<Props> = ({ variant }) => {
 			color={variant === 'desktop' ? 'white' : 'primary'}
 			variant={variant === 'desktop' ? 'primary' : 'text'}
 			fontSize={variant === 'desktop' ? 12 : 18}
+			tooltip={i18n.language === 'en' ? t('cs') : t('en')}
 			minWidth={30}
 			px={1}
 			mr={variant === 'desktop' ? 1 : 'initial'}
@@ -25,7 +28,18 @@ const LangSwitch: FC<Props> = ({ variant }) => {
 					: i18n.changeLanguage('en')
 			}
 		>
-			{i18n.language === 'en' ? t('cs') : t('en')}
+			{variant === 'desktop' ? (
+				<>
+					{i18n.language === 'en' ? (
+						<CZFlagIcon size={24} />
+					) : (
+						<ENFlagIcon size={24} />
+					)}
+				</>
+			) : (
+				<>{i18n.language === 'en' ? t('cs') : t('en')}</>
+			)}
+			{/* <ENFlagIcon size={180} /> */}
 		</Button>
 	);
 };

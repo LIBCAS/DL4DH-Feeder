@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { Dispatch, FC, ReactNode, SetStateAction, useState } from 'react';
+import { Dispatch, FC, ReactNode, SetStateAction } from 'react';
 import { BsCursorText } from 'react-icons/bs';
 import {
 	MdExpandMore,
@@ -27,6 +27,7 @@ import { useTheme } from 'theme';
 import { useStreamList } from 'api/publicationsApi';
 
 import { useMobileView } from 'hooks/useViewport';
+import { useFullscreenContext } from 'hooks/useFullscreenContext';
 
 const ToolButton: FC<{
 	onClick: () => void;
@@ -88,7 +89,7 @@ const ZoomifyToolbar: FC<Props> = ({
 	isMultiView,
 }) => {
 	const { t } = useTranslation('view_controls');
-	const [fullscreen, setFullscreen] = useState<boolean>(false);
+	const { fullscreen, setFullscreen } = useFullscreenContext();
 	const pbctx = usePublicationContext();
 	const [pageUrl, setPageUrl] = useSearchParams();
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
@@ -194,30 +195,29 @@ const ZoomifyToolbar: FC<Props> = ({
 					Icon={<MdZoomOut size={ICON_SIZE} />}
 				/>
 
-				{!isSecond && (
-					<ToolButton
-						tooltip={t(`tooltip_${fullscreen ? 'exit' : 'enter'}_fullscreen`)}
-						onClick={() => {
-							if (fullscreen) {
-								document?.exitFullscreen();
-								setFullscreen(false);
-							}
-							if (!fullscreen) {
-								setFullscreen(true);
-								const fullscreenEl =
-									document.getElementById('ZOOMIFY_PARRENT_EL');
-								fullscreenEl?.requestFullscreen();
-							}
-						}}
-						Icon={
-							fullscreen ? (
-								<MdFullscreenExit size={ICON_SIZE} />
-							) : (
-								<MdFullscreen size={ICON_SIZE} />
-							)
+				<ToolButton
+					tooltip={t(`tooltip_${fullscreen ? 'exit' : 'enter'}_fullscreen`)}
+					onClick={() => {
+						if (fullscreen) {
+							document?.exitFullscreen?.();
+							setFullscreen?.(false);
 						}
-					/>
-				)}
+						if (!fullscreen) {
+							setFullscreen?.(true);
+							const fullscreenEl =
+								document.getElementById('ZOOMIFY_PARRENT_EL');
+							fullscreenEl?.requestFullscreen();
+						}
+					}}
+					Icon={
+						fullscreen ? (
+							<MdFullscreenExit size={ICON_SIZE} />
+						) : (
+							<MdFullscreen size={ICON_SIZE} />
+						)
+					}
+				/>
+
 				{!isOcrMode && ( // publikacia bez ALTA : http://localhost:3000/view/uuid:7e05cb70-50e7-11de-aafb-000d606f5dc6?page=uuid%3A15b3a380-fe72-11e6-bff9-005056825209
 					<ToolButton
 						tooltip={`${t('tooltip_select_text')} ${
