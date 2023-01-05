@@ -44,6 +44,11 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	const uuid = isSecond
 		? pctx.secondPublication?.pid ?? ''
 		: pctx.publication?.pid ?? '';
+
+	const isEnriched = isSecond
+		? pctx.secondPublication?.enriched
+		: pctx.publication?.enriched;
+
 	const response = useChildrenSearch(uuid, query, query !== '');
 
 	const results = useMemo(() => response?.data ?? {}, [response.data]);
@@ -109,20 +114,22 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 		<Flex flexDirection="column" width={1}>
 			<QuerySearchInput
 				AdditionalLeftJSX={
-					<TagNameDropDown
-						onTagNameSelected={tag => {
-							setNameTag(tag);
-							if (tag) {
-								sp.set(NT_KEY, tag);
-							} else {
-								sp.delete(NT_KEY);
-							}
+					isEnriched ? (
+						<TagNameDropDown
+							onTagNameSelected={tag => {
+								setNameTag(tag);
+								if (tag) {
+									sp.set(NT_KEY, tag);
+								} else {
+									sp.delete(NT_KEY);
+								}
 
-							setSp(sp);
-						}}
-						selectedItemView="ICON"
-						selectedNameTag={nameTag}
-					/>
+								setSp(sp);
+							}}
+							selectedItemView="ICON"
+							selectedNameTag={nameTag}
+						/>
+					) : undefined
 				}
 				hintApi={async q =>
 					api()
