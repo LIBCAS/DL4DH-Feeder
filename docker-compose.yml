@@ -51,8 +51,8 @@ services:
         limits:
           memory: 500m
     environment:
-      KEYCLOAK_AUTH-SERVER-URL: http://feeder.dev.inqool.cz
-      KEYCLOAK_SSL-REQUIRED: none
+      KEYCLOAK_AUTH-SERVER-URL: https://feeder.dev.inqool.cz
+#     KEYCLOAK_SSL-REQUIRED: none
     labels:
       kompose.volume.size: "2Gi"
       app.gitlab.com/app: "${CI_PROJECT_PATH_SLUG}"

@@ -47,7 +47,12 @@ public class SolrFacetDto {
                         }
                         //For collection return translations
                         if (e.getKey().equals("collection")) {
-                            map.put(key, collections.containsKey(key) ? collections.get(key) : e.getValue().get(i+1));
+                            if (collections.containsKey(key)) {
+                                CollectionDto collectionDto = collections.get(key);
+                                collectionDto.setNumberOfDocs(((Integer) e.getValue().get(i+1)));
+                                map.put(key, collectionDto);
+                            }
+//                            map.put(key, collections.containsKey(key) ? collections.get(key) : e.getValue().get(i+1));
                             continue;
                         }
                         map.put(key, e.getValue().get(i+1));

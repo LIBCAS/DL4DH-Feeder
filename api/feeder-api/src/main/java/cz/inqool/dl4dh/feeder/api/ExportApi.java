@@ -1,13 +1,10 @@
 package cz.inqool.dl4dh.feeder.api;
 
-import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
-import cz.inqool.dl4dh.feeder.dto.KrameriusPlusExportDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.ScheduledJobEventDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -21,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,8 +27,8 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +52,7 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/download/{id}", produces="application/zip")
-    public byte[] download(@PathVariable Long id, Principal user) {
+    public ResponseEntity<byte[]> download(@PathVariable Long id, Principal user) {
         Export export = exportRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         if (!export.getUsername().equals(user.getName())) {
             throw new AccessDeniedException();
@@ -76,8 +74,19 @@ public class ExportApi {
             exportRepository.save(export);
         }
 
-        return krameriusPlus.get()
-                .uri("/files/"+export.getExportId()).retrieve().bodyToMono(ByteArrayResource.class).block().getByteArray();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_DISPOSITION,
+                String.format("attachment; filename=\"%1$s.zip\"", export.getPublicationTitle()));
+
+        return new ResponseEntity<>(
+                krameriusPlus.get()
+                        .uri("/files/"+export.getExportId())
+                        .retrieve()
+                        .bodyToMono(ByteArrayResource.class).block()
+                        .getByteArray(),
+                responseHeaders,
+                HttpStatus.OK
+        );
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -85,11 +94,32 @@ public class ExportApi {
     public Page<Export> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
         Page<Export> exports = exportRepository.findByUsername(user.getName(), p);
         exports.forEach(export -> {
-            if (!export.getStatus().equals(Export.Status.COMPLETED)) {
+            if (!export.getStatus().equals(Export.Status.COMPLETED) && !export.getStatus().equals(Export.Status.FAILED)) {
                 ExportRequestDto exportRequest = krameriusPlus.get()
                         .uri("/exports/"+export.getJobId()).retrieve().bodyToMono(ExportRequestDto.class).block();
-                JobDto job = exportRequest.getJobPlan().getScheduledJobEvents().stream().filter(f -> f.getJobEvent().getPublicationId() != null).findFirst().orElseThrow().getJobEvent();
-                export.setStatus(job.getLastExecutionStatus());
+                Set<Export.Status> statuses = exportRequest.getJobPlan().getScheduledJobEvents().stream()
+                        .filter(f -> f.getJobEvent().getPublicationId() != null)
+                        .map(e -> e.getJobEvent().getLastExecutionStatus())
+                        .collect(Collectors.toSet());
+                if (statuses.size() == 1) {
+                    export.setStatus(statuses.stream().findFirst().orElseThrow());
+                }
+                else {
+                    statuses.removeAll(List.of(Export.Status.COMPLETED, Export.Status.CREATED));
+                    if (statuses.size() == 1) {
+                        export.setStatus(statuses.stream().findFirst().orElseThrow());
+                    }
+                    else {
+                        if (statuses.size() > 1) {
+                            if (statuses.contains(Export.Status.FAILED)) {
+                                export.setStatus(Export.Status.FAILED);
+                            }
+                            else {
+                                export.setStatus(Export.Status.UNKNOWN);
+                            }
+                        }
+                    }
+                }
             }
         });
         exportRepository.saveAll(exports);
@@ -115,7 +145,7 @@ public class ExportApi {
         Export export = new Export();
         export.setJobId(exportRequest.getId());
         export.setPublicationId(publicationId);
-        export.setPublicationTitle(name != null ? name : publication.getTitle());
+        export.setPublicationTitle(name != null && !name.isEmpty() ? name : publication.getTitle());
         export.setCreated(job.getCreated());
         export.setStatus(job.getLastExecutionStatus());
         export.setDelimiter(job.getConfig().getParameters().getDelimiter());

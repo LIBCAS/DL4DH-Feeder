@@ -1,33 +1,73 @@
-package cz.inqool.dl4dh.feeder.dto;
+package cz.inqool.dl4dh.feeder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.inqool.dl4dh.feeder.enums.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Entity
 @Getter
 @Setter
-public class FiltersDto {
-    //Title
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "filters")
+public class Filter extends AuditModel {
+
+    @Id
+    @GeneratedValue(generator = "filter_generator")
+    @SequenceGenerator(
+            name = "filter_generator",
+            sequenceName = "filter_sequence"
+    )
+    private Long id;
+
+    @JsonIgnore
+    private String username;
+
+    @Column(columnDefinition = "text")
     private String query = "";
 
     //K5 filters
     private AvailabilityEnum availability = AvailabilityEnum.ALL;
+
+    @ElementCollection
     private Set<DocumentModelEnum> models = new HashSet<>();
+
+    @ElementCollection
     private Set<String> keywords = new HashSet<>();
+
+    @ElementCollection
     private Set<String> authors = new HashSet<>();
+
+    @ElementCollection
     private Set<String> languages = new HashSet<>();
+
+    @ElementCollection
     private Set<String> collections = new HashSet<>();
+
+    @Column(name = "date_from")
     private Integer from;
+
+    @Column(name = "date_to")
     private Integer to;
+
+    @Column(columnDefinition = "text")
     private FiltersSortEnum sort = FiltersSortEnum.TITLE_ASC;
 
     //K+ filters
+    @Column(columnDefinition = "text")
     private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
     private AdvancedFilterFieldEnum advancedFilterField = AdvancedFilterFieldEnum.NONE;
-    private List<NameTagFilterDto> nameTagFilters;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="filter")
+
+    private List<NameTagFilter> nameTagFilters;
     private String nameTagFacet = "";
 
     //Pagination
@@ -38,6 +78,7 @@ public class FiltersDto {
         return Integer.min(100, Integer.max(1, pageSize));
     }
 
+    @JsonIgnore
     public String getQueryEscaped() {
         return query.replaceAll("\"","\\\\\"");
     }
@@ -52,6 +93,7 @@ public class FiltersDto {
         return advancedFilterField != null && !advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
     }
 
+    @JsonIgnore
     public String getEdismaxFields(boolean includeNameTag) {
         if (advancedFilterField == null) {
             return "";
@@ -122,7 +164,7 @@ public class FiltersDto {
         }
 
         if (nameTagFilters != null && includeNameTag) {
-            for (NameTagFilterDto nameTagFilter : nameTagFilters) {
+            for (NameTagFilter nameTagFilter : nameTagFilters) {
                 list.add(List.of(nameTagFilter.toFilter()));
             }
         }

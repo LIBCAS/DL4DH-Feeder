@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.7.0
+  - exports:
+    - items selected for export are saved in local storage
+    - nested periodicals exporting added
+    - button for checking ALTO streams availability of all selected publications in bulk export dialog
+  - publication detail: 
+    - main filter (from "homepage") can be turned on/off when searching another publication in detail view/multiview
+    - FIXED - https://github.com/LIBCAS/DL4DH-Feeder/issues/33
+    - OCR mode now remembers fontsize (zoom factor) when navigating to other page
+    - toolbar shows only relevant buttons in each mode (OCR / zoomify mode)
+  - pub. bibliography info:
+    - fixed order (same as it is in Kramerius) of biblio items - for non periodical publications
+    - author dialog added (with roles and dates)
+  - search history API with optional save
+  - delete unpublished documents during synchronization
+  - solr schema extended with facet_author and model_path fields 
+
 ## v0.6.2
 
 - enrichment checkbox added in list view (https://github.com/LIBCAS/DL4DH-Feeder/issues/16)

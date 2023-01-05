@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 0.6.2
+  version: 0.7.0
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url
@@ -12,11 +12,18 @@ paths:
       tags:
       - search-api
       operationId: search
+      parameters:
+      - name: save
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FiltersDto'
+              $ref: '#/components/schemas/Filter'
         required: true
       responses:
         "200":
@@ -73,6 +80,11 @@ paths:
       - name: format
         in: path
         required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        required: false
         schema:
           type: string
       requestBody:
@@ -185,6 +197,46 @@ paths:
               schema:
                 type: string
                 format: binary
+  /api/search/history:
+    get:
+      tags:
+      - search-api
+      operationId: getAll
+      parameters:
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          minimum: 0
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          minimum: 1
+          type: integer
+          default: 10
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          default:
+          - "id,DESC"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageFilter'
   /api/search/collections:
     get:
       tags:
@@ -420,7 +472,7 @@ paths:
     get:
       tags:
       - export-api
-      operationId: getAll
+      operationId: getAll_1
       parameters:
       - name: page
         in: query
@@ -480,9 +532,12 @@ paths:
                   format: byte
 components:
   schemas:
-    FiltersDto:
+    Filter:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
         query:
           type: string
         availability:
@@ -567,7 +622,7 @@ components:
         nameTagFilters:
           type: array
           items:
-            $ref: '#/components/schemas/NameTagFilterDto'
+            $ref: '#/components/schemas/NameTagFilter'
         nameTagFacet:
           type: string
         start:
@@ -576,11 +631,12 @@ components:
         pageSize:
           type: integer
           format: int32
-        queryEscaped:
-          type: string
-    NameTagFilterDto:
+    NameTagFilter:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
         type:
           type: string
           enum:
@@ -720,6 +776,65 @@ components:
           type: array
           items:
             type: string
+    PageFilter:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
     CollectionDto:
       required:
       - canLeave
@@ -803,17 +918,6 @@ components:
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/Sort'
         size:
           type: integer
           format: int32
@@ -824,32 +928,16 @@ components:
         number:
           type: integer
           format: int32
-        empty:
-          type: boolean
-    PageableObject:
-      type: object
-      properties:
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
-        pageNumber:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
         sort:
           $ref: '#/components/schemas/Sort'
-        offset:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
           type: integer
-          format: int64
-    Sort:
-      type: object
-      properties:
-        unsorted:
-          type: boolean
-        sorted:
-          type: boolean
+          format: int32
         empty:
           type: boolean

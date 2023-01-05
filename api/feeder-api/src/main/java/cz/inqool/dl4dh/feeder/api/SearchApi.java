@@ -6,21 +6,30 @@ import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
+import cz.inqool.dl4dh.feeder.model.Filter;
+import cz.inqool.dl4dh.feeder.repository.FilterRepository;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,13 +47,16 @@ public class SearchApi {
 
     private final HttpSolrClient solr;
 
-    public SearchApi(@Value("${solr.host.query}") String solrHost) {
+    private final FilterRepository filterRepository;
+
+    public SearchApi(@Value("${solr.host.query}") String solrHost, FilterRepository filterRepository) {
         this.solr = new HttpSolrClient.Builder(solrHost.trim()).build();
+        this.filterRepository = filterRepository;
     }
 
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> hint(@RequestParam String q, @RequestParam(required = false) NameTagEntityType nameTagType) throws SolrServerException, IOException {
-        FiltersDto filters = new FiltersDto();
+        Filter filters = new Filter();
         filters.setQuery(q);
         filters.setPageSize(20);
 
@@ -95,7 +107,7 @@ public class SearchApi {
         return result.getResponse().getDocs().stream().map(d -> (String)d.get("dc.title")).collect(Collectors.toList());
     }
 
-    private Map<String, Map<String, Object>> getNameTagFacets(FiltersDto filters) {
+    private Map<String, Map<String, Object>> getNameTagFacets(Filter filters) {
         return solrWebClient.get()
                 .uri("/select", uriBuilder -> {
                     uriBuilder
@@ -109,6 +121,10 @@ public class SearchApi {
                     }
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
+                    }
+                    if (!filters.toFqQuery(null, true).isEmpty()) {
+                        uriBuilder
+                                .queryParam("fq", filters.toFqQuery(null, true));
                     }
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
                     return uriBuilder.queryParam("rows",0)
@@ -144,7 +160,14 @@ public class SearchApi {
     }
 
     @PostMapping(value = "")
-    public SearchDto search(@RequestBody FiltersDto filters) {
+    public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") boolean save, Principal user) {
+        if (user != null && save) {
+            filters.setUsername(user.getName());
+            if (filters.getNameTagFilters() != null) {
+                filters.getNameTagFilters().forEach(v -> v.setFilter(filters));
+            }
+            filterRepository.save(filters);
+        }
         // Search in Kramerius+
         // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
         SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()
@@ -154,8 +177,13 @@ public class SearchApi {
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
-                            .queryParam("facet.limit", "500")
+                            .queryParam("facet.limit", "-1")
+                            .queryParam("sort", filters.getSort().toSolrSort()) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
                             .queryParam("rows",0);
+                    if (!filters.toFqQuery(null, true).isEmpty()) {
+                        uriBuilder
+                            .queryParam("fq", filters.toFqQuery(null, true));
+                    }
                     if (filters.useEdismax()) {
                         uriBuilder.queryParam("defType", "edismax")
                                 .queryParam("qf", filters.getEdismaxFields(true));
@@ -175,10 +203,12 @@ public class SearchApi {
         SolrQueryWithFacetResponseDto result = kramerius.get()
                 .uri("/search", uriBuilder -> {
                     if (filters.useOnlyEnriched()) {
-                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize()).collect(Collectors.joining(" OR ")));
+                        uriBuilder.queryParam("q", kPlusRootPids.keySet().stream().map(v -> "PID:\"" + v + "\"").skip(filters.getStart()).limit(filters.getPageSize() == 1 ? 100 : filters.getPageSize()).collect(Collectors.joining(" OR ")));
+                        // TODO if used this, then the facet are not counted correctly, should be count from Feeder Solr
                     }
                     else {
-                        uriBuilder.queryParam("q", filters.toQuery());
+                        uriBuilder.queryParam("q", filters.toQuery())
+                                .queryParam("start", filters.getStart());
                         if (filters.useEdismax()) {
                             uriBuilder.queryParam("defType", "edismax")
                                     .queryParam("qf", filters.getEdismaxFields(false));
@@ -199,7 +229,6 @@ public class SearchApi {
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("sort", filters.getSort().toSolrSort())
                             .queryParam("rows", filters.getPageSize())
-                            .queryParam("start", filters.getStart())
                             .build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
@@ -219,6 +248,9 @@ public class SearchApi {
         Integer allDocuments = filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound().intValue();
         Integer finalEnriched = enriched;
         Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(collections);
+//        if (filters.useOnlyEnriched()) {
+//            facets = resultKPlus.getFacet_counts().transformed(collections);
+//        }
         facets.put("enrichment", new HashMap<>(){{
             put(EnrichmentEnum.ENRICHED.toString(), finalEnriched);
             put(EnrichmentEnum.NOT_ENRICHED.toString(), allDocuments - finalEnriched);
@@ -232,8 +264,8 @@ public class SearchApi {
                 .collect(Collectors.toSet()));
         return new SearchDto(
                 new PublicationsListDto(
-                        result.getResponse().getNumFound(),
-                        result.getResponse().getStart(),
+                        filters.useOnlyEnriched() ? enriched : result.getResponse().getNumFound(),
+                        filters.useOnlyEnriched() ? filters.getStart() : result.getResponse().getStart(),
                         result.getResponse().getDocs().stream().map(d ->
                                 new PublicationDto(
                                         (String)d.get("fedora.model"),
@@ -261,6 +293,12 @@ public class SearchApi {
                         .queryParam("pagesize", pagesize.orElse("A4"))
                         .queryParam("imgop", imgop.orElse("FULL"))
                         .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/history")
+    public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable p) {
+        return filterRepository.findByUsername(user.getName(), p);
     }
 
     @Resource(name = "krameriusWebClient")
