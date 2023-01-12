@@ -46,7 +46,8 @@
     <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
     <field name="title_sort" type="string" indexed="true" stored="true" docValues="true"/>
     <field name="created_date" type="date" indexed="true" stored="true" docValues="true"/>
-
+    <field name="facet_autor" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <field name="model_path" type="text_path" indexed="true" stored="true" multiValued="true"/>
 
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
@@ -147,6 +148,12 @@
         <analyzer>
             <tokenizer class="solr.StandardTokenizerFactory"/>
             <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
+    <fieldType name="text_path" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
         </analyzer>
     </fieldType>
 

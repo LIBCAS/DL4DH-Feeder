@@ -15,7 +15,7 @@
     - author dialog added (with roles and dates)
   - search history API with optional save
   - delete unpublished documents during synchronization
-  - solr schema extended with facet_author and model_path fields 
+  - solr schema extended with `facet_author` and `model_path` fields 
 
 ## v0.6.2
 

@@ -16,7 +16,7 @@ public class Scheduler {
         this.importService = importService;
     }
 
-    @Scheduled(fixedDelay = 60000, initialDelay = 3000)
+    @Scheduled(fixedDelay = 10000, initialDelay = 3000)
     public void scheduleHarvestsSync() {
         log.info("SCHEDULER STARTS");
         importService.sync();

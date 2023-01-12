@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.Resource;
@@ -47,27 +46,32 @@ public class ImportServiceImpl implements ImportService {
         Setting lastSync = settingRepository.findById(LAST_SYNC_DATE_KEY).orElse(new Setting(LAST_SYNC_DATE_KEY, "2022-01-01T00:00:00.000"));
 
         ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
-        List<KrameriusPlusDocumentDto> publications = krameriusPlus.get()
-                .uri("/publications/list/published?modifiedAfter="+lastSync.getValue().replace("Z", ""))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<KrameriusPlusDocumentDto>>() {})
-                .block();
 
-        log.info("Syncing from "+lastSync.getValue()+" to "+currentDate+", found "+publications.size() + " publications.");
+        int processed = 0;
+        int page = 0;
+        KrameriusPlusPaging<KrameriusPlusDocumentDto> publications;
+        do  {
+            publications = krameriusPlus.get()
+                    .uri("/publications/list/published?pageSize=10&page="+page+"&modifiedAfter="+lastSync.getValue().replace("Z", ""))
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<KrameriusPlusPaging<KrameriusPlusDocumentDto>>() {})
+                    .block();
 
-        int imported = 0;
-        for (KrameriusPlusDocumentDto publication : publications) {
-            try {
-                if (publication.getPublishInfo().getIsPublished()) {
-                    imported += importDocument(publication);
+            assert publications != null;
+            log.info("Syncing from "+lastSync.getValue()+" to "+currentDate+", found "+publications.getTotal() + " publications on page "+ page +".");
+
+            for (KrameriusPlusDocumentDto publication : publications.getItems()) {
+                try {
+                    processed += importDocument(publication);
+                }
+                catch (Exception ex) {
+                    log.error("Cannot import publication "+publication.getId(), ex);
+                    return;
                 }
             }
-            catch (Exception ex) {
-                log.error("Cannot import publication "+publication.getId(), ex);
-                return;
-            }
-        }
-        log.info("Imported "+imported+" pages");
+            page += 1;
+        } while ((10*page <= publications.getTotal()));
+        log.info("Processed "+processed+" elements");
 
         lastSync.setValue(currentDate.toString());
 
@@ -75,11 +79,22 @@ public class ImportServiceImpl implements ImportService {
     }
 
     private int importDocument(KrameriusPlusDocumentDto document) throws SolrServerException, IOException {
-        List<SolrObjectDto> newObjects = new ArrayList<>();
-        newObjects.add(new SolrObjectDto(document.getId(), document.getId()));
-
         int pageCounter = 0;
+        int imported = 0;
+        int removed = 0;
         int all = 0;
+
+        List<SolrObjectDto> newObjects = new ArrayList<>();
+        if (document.getPublishInfo().getIsPublished() == null || !document.getPublishInfo().getIsPublished()) {
+            solr.deleteById(document.getId());
+            removed += 1;
+            all += 1;
+        }
+        else {
+            newObjects.add(new SolrObjectDto(document.getId(), document.getId()));
+        }
+
+
         while (true) {
             KrameriusPlusDocumentPagesGetDto pages = krameriusPlus.get()
                     .uri("/publications/" + document.getId() + "/pages?page=" + pageCounter)
@@ -92,8 +107,18 @@ public class ImportServiceImpl implements ImportService {
             }
 
             for (KrameriusPlusDocumentPageDto pageBase : pages.getResults()) {
+                if (document.getPublishInfo().getIsPublished() == null || !document.getPublishInfo().getIsPublished()) {
+                    solr.deleteById(pageBase.getId());
+                    removed += 1;
+                    all += 1;
+                    if (all % 10 == 0) {
+                        solr.commit();
+                    }
+                    continue;
+                }
+
                 KrameriusPlusDocumentPageDto page = krameriusPlus.get()
-                        .uri("/publications/" + document.getId() + "/pages/" + pageBase.getId())
+                        .uri("/publications/pages/" + pageBase.getId())
                         .retrieve()
                         .bodyToMono(new ParameterizedTypeReference<KrameriusPlusDocumentPageDto>() {
                         })
@@ -158,7 +183,7 @@ public class ImportServiceImpl implements ImportService {
             for (SolrObjectDto solrObjectDto : newObjects) {
                 SolrQueryResponseDto result = kramerius.get()
                         .uri("/search", uriBuilder -> uriBuilder
-                                .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,keywords,language,collection,created_date,title_sort")
+                                .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,keywords,language,collection,created_date,title_sort,facet_autor,model_path")
                                 .queryParam("q", "PID:" + solrObjectDto.getPID().replace(":", "\\:"))
                                 .queryParam("rows", "1")
                                 .build())
@@ -177,6 +202,8 @@ public class ImportServiceImpl implements ImportService {
                     solrObjectDto.setDatum_end((Integer) values.getOrDefault("datum_end", null));
                     solrObjectDto.setCreated_date(created_date);
                     solrObjectDto.setImport_date(LocalDateTime.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX")));
+                    solrObjectDto.setFacet_autor((ArrayList<String>) values.getOrDefault("facet_autor", new ArrayList<>()));
+                    solrObjectDto.setModel_path((ArrayList<String>) values.getOrDefault("model_path", new ArrayList<>()));
                     solrObjectDto.setKeywords((ArrayList<String>) values.getOrDefault("keywords", new ArrayList<>()));
                     solrObjectDto.setLanguage((ArrayList<String>) values.getOrDefault("language", new ArrayList<>()));
                     solrObjectDto.setCollection((ArrayList<String>) values.getOrDefault("collection", new ArrayList<>()));
@@ -184,6 +211,7 @@ public class ImportServiceImpl implements ImportService {
                 }
 
                 solr.addBean(solrObjectDto);
+                imported += 1;
                 all += 1;
                 if (all % 10 == 0) {
                     solr.commit();
@@ -196,6 +224,8 @@ public class ImportServiceImpl implements ImportService {
             pageCounter += 1;
         }
         solr.commit();
+
+        log.info("Synced `"+document.getTitle()+"` ["+document.getId()+"] with "+imported+" elements imported and "+removed+" elements removed.");
         return all;
     }
 

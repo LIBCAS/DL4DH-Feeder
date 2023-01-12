@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,12 +19,14 @@ public class Export extends AuditModel {
 
     public enum Status {
         CREATED,
+        RUNNING,
         COMPLETED,
+        FAILED,
+        PARTIAL,
         STARTING,
         STARTED,
         STOPPING,
         STOPPED,
-        FAILED,
         ABANDONED,
         UNKNOWN
     }
@@ -46,7 +49,8 @@ public class Export extends AuditModel {
 
     private String username;
 
-    private String publicationId;
+    @ElementCollection
+    private Set<String> publicationIds;
 
     private String publicationTitle;
 
@@ -74,4 +78,9 @@ public class Export extends AuditModel {
     @Column(columnDefinition = "text")
     private String exportId;
 
+    public boolean isFinished() {
+        return status.equals(Status.COMPLETED) ||
+                status.equals(Status.FAILED) ||
+                status.equals(Status.PARTIAL);
+    }
 }

@@ -1,10 +1,10 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.JobDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -27,9 +27,6 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.security.Principal;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Peter Sekan
@@ -40,14 +37,15 @@ public class ExportApi {
 
     private static final Logger log = LoggerFactory.getLogger(ExportApi.class);
 
-    private WebClient kramerius;
-
     private WebClient krameriusPlus;
 
     private final ExportRepository exportRepository;
 
-    public ExportApi(ExportRepository exportRepository) {
+    private final ObjectMapper objectMapper;
+
+    public ExportApi(ExportRepository exportRepository, ObjectMapper objectMapper) {
         this.exportRepository = exportRepository;
+        this.objectMapper = objectMapper;
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -60,7 +58,7 @@ public class ExportApi {
         // TODO check other roles
 
         if (export.getExportId() == null) {
-            if (!export.getStatus().equals(Export.Status.COMPLETED)) {
+            if (!export.isFinished()) {
                 throw new ResourceNotFoundException();
             }
             ExportRequestDto exportDto = krameriusPlus.get()
@@ -97,29 +95,7 @@ public class ExportApi {
             if (!export.getStatus().equals(Export.Status.COMPLETED) && !export.getStatus().equals(Export.Status.FAILED)) {
                 ExportRequestDto exportRequest = krameriusPlus.get()
                         .uri("/exports/"+export.getJobId()).retrieve().bodyToMono(ExportRequestDto.class).block();
-                Set<Export.Status> statuses = exportRequest.getJobPlan().getScheduledJobEvents().stream()
-                        .filter(f -> f.getJobEvent().getPublicationId() != null)
-                        .map(e -> e.getJobEvent().getLastExecutionStatus())
-                        .collect(Collectors.toSet());
-                if (statuses.size() == 1) {
-                    export.setStatus(statuses.stream().findFirst().orElseThrow());
-                }
-                else {
-                    statuses.removeAll(List.of(Export.Status.COMPLETED, Export.Status.CREATED));
-                    if (statuses.size() == 1) {
-                        export.setStatus(statuses.stream().findFirst().orElseThrow());
-                    }
-                    else {
-                        if (statuses.size() > 1) {
-                            if (statuses.contains(Export.Status.FAILED)) {
-                                export.setStatus(Export.Status.FAILED);
-                            }
-                            else {
-                                export.setStatus(Export.Status.UNKNOWN);
-                            }
-                        }
-                    }
-                }
+                export.setStatus(exportRequest.getState());
             }
         });
         exportRepository.saveAll(exports);
@@ -128,7 +104,7 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/generate/{format}")
-    public Export create(@PathVariable(value="format") String format, @RequestBody String body, @RequestParam(required = false) String name, Principal user) {
+    public Export create(@PathVariable(value="format") String format, @RequestBody String body, @RequestParam(required = false) String name, Principal user) throws JsonProcessingException {
         ExportRequestDto exportRequest = krameriusPlus.post()
                 .uri("/exports/"+format).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
@@ -137,29 +113,24 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(ExportRequestDto.class).block();
 
-        JobDto job = exportRequest.getJobPlan().getScheduledJobEvents().stream().filter(f -> f.getJobEvent().getPublicationId() != null).findFirst().orElseThrow().getJobEvent();
-        String publicationId = job.getPublicationId();
-        KrameriusItemDto publication = kramerius.get()
-                .uri("/item/"+publicationId).retrieve().bodyToMono(KrameriusItemDto.class).block();
-
         Export export = new Export();
         export.setJobId(exportRequest.getId());
-        export.setPublicationId(publicationId);
-        export.setPublicationTitle(name != null && !name.isEmpty() ? name : publication.getTitle());
-        export.setCreated(job.getCreated());
-        export.setStatus(job.getLastExecutionStatus());
-        export.setDelimiter(job.getConfig().getParameters().getDelimiter());
+        export.setPublicationIds(exportRequest.getPublicationIds());
+        export.setPublicationTitle(name != null && !name.isEmpty() ? name : "?"); // TODO do not allow empty name
+        export.setCreated(exportRequest.getCreated());
+        export.setStatus(exportRequest.getState());
+        export.setDelimiter(exportRequest.getConfig().getDelimiter());
         export.setFormat(Export.Format.valueOf(format.toUpperCase()));
-        export.setParameters(job.getConfig().getParameters().getParams());
-        export.setTeiParameters(job.getConfig().getParameters().getTeiExportParams());
+        if (exportRequest.getConfig().getParams() != null) {
+            export.setParameters(objectMapper.writeValueAsString(exportRequest.getConfig().getParams()));
+        }
+        if (exportRequest.getConfig().getTeiParams() != null) {
+            export.setTeiParameters(objectMapper.writeValueAsString(exportRequest.getConfig().getTeiParams()));
+        }
         export.setUsername(user.getName());
         exportRepository.save(export);
 
         return export;
-    }
-    @Resource(name = "krameriusWebClient")
-    public void setKrameriusWebClient(WebClient webClient) {
-        this.kramerius = webClient;
     }
 
     @Resource(name = "krameriusPlusWebClient")

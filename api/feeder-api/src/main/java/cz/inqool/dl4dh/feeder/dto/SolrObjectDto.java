@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.apache.solr.client.solrj.beans.Field;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +52,12 @@ public class SolrObjectDto {
 
     @Field("fedora.model")
     private String model;
+
+    @Field
+    private List<String> facet_autor;
+
+    @Field
+    private List<String> model_path;
 
     @Field
     private List<String> keywords;
