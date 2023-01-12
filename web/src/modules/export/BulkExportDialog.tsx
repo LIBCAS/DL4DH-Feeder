@@ -108,7 +108,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 			try {
 				const response = await api().post(
-					`exports/generate/${values.format.id}?name=${exportName}`,
+					`exports/generate?name=${exportName}`,
 					{ json },
 				);
 

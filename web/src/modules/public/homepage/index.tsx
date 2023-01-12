@@ -206,12 +206,12 @@ const Homepage: FC = () => {
 						</Text>
 					</Flex>
 					<Text textAlign="center" fontSize="sm" px={[3, 5]}>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam
-						ad animi quod illum enim? Ex, accusamus ad ipsa explicabo incidunt
-						voluptatem dolorum architecto unde officiis at quia! Explicabo
-						reprehenderit incidunt culpa sint soluta tempore sunt porro natus
-						accusamus. Repellendus ut ullam quasi ratione cum ipsum eius sequi,
-						omnis inventore eos.
+						DL4DH Feeder nabízí výzkumným pracovníkům přehledné grafické 
+						rozhraní pro práci s daty uloženými v modulu Kramerius+ i 
+						digitální knihovně Kramerius. Umožňuje vyhledání, selekci a 
+						následný export digitálních dat (opticky rozpoznaný text a 
+						metadata) jak v původní podobě, tak v některém z dalších formátů, 
+						umožňujících mimo jiné také efektivní strojové zpracování.
 					</Text>
 				</Flex>
 			</Flex>
