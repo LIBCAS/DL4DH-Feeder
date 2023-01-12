@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  feeder:
+    environment:
+      KEYCLOAK_AUTH-SERVER-URL: https://keycloak.sekan.eu
+      KEYCLOAK_SSL-REQUIRED: none
+  feederfe:
+    build:
+      args:
+        REACT_APP_KEYCLOAK_URL: https://keycloak.sekan.eu

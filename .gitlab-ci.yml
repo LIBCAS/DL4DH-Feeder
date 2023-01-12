@@ -32,7 +32,7 @@ build:
     # reads environment variables from .env file
     - export $(cat .env | xargs)
     # converts compose configuration to kubernetes configuration
-    - kompose convert -f docker-compose.yml --out $KUBERNETES_CONFIG
+    - kompose convert -f docker-compose.yml -f docker-compose.override.dev.yml --out $KUBERNETES_CONFIG
     # deploys application
     - kubectl apply -f $KUBERNETES_CONFIG
     
