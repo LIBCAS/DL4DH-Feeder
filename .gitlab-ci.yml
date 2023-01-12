@@ -12,7 +12,9 @@ stages:
     - eas
   script:
     - ./git_tags.sh > .env
+    - cp docker-compose.override.dev.yml docker-compose.override.yml
     - DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
+    - rm docker-compose.override.yml
     - DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose push
 
 build:
