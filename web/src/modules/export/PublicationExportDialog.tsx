@@ -122,7 +122,7 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 
 	const format = values.format.id;
 	if (format === 'alto' || format === 'text') {
-		return { params: { ...common }, jobType: "EXPORT_"+values.format.id };
+		return { params: { ...common }, jobType: "EXPORT_"+values.format.id.toUpperCase() };
 	}
 	if (format === 'json') {
 		return {
@@ -131,7 +131,7 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 				includeFields: values.includeFields.map(f => f.id),
 				excludeFields: values.excludeFields.map(f => f.id),
 			},
-			jobType: "EXPORT_"+values.format.id,
+			jobType: "EXPORT_"+values.format.id.toUpperCase(),
 		};
 	}
 
@@ -143,7 +143,7 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 				excludeFields: values.excludeFields.map(f => f.id),
 				delimiter: values.delimiter,
 			},
-			jobType: "EXPORT_"+values.format.id,
+			jobType: "EXPORT_"+values.format.id.toUpperCase(),
 		};
 	}
 
@@ -157,11 +157,11 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 				nameTagParams: values.nameTagParams,
 				udPipeParams: values.udPipeParams,
 			},
-			jobType: "EXPORT_"+values.format.id,
+			jobType: "EXPORT_"+values.format.id.toUpperCase(),
 		};
 	}
 
-	return { params: { ...common }, jobType: "EXPORT_"+values.format.id };
+	return { params: { ...common }, jobType: "EXPORT_"+values.format.id.toUpperCase() };
 };
 
 export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {

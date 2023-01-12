@@ -6,6 +6,7 @@ import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestItemDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Peter Sekan
@@ -37,6 +42,8 @@ import java.security.Principal;
 public class ExportApi {
 
     private static final Logger log = LoggerFactory.getLogger(ExportApi.class);
+
+    private WebClient kramerius;
 
     private WebClient krameriusPlus;
 
@@ -114,11 +121,25 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(ExportRequestDto.class).block();
 
+        if (name == null || name.isEmpty()) {
+            if (exportRequest.getPublicationIds().size() == 1) {
+                String publicationId = exportRequest.getPublicationIds().stream().findFirst().get();
+                KrameriusItemDto publication = kramerius.get()
+                        .uri("/item/"+publicationId).retrieve().bodyToMono(KrameriusItemDto.class).block();
+                name = publication.getTitle();
+            }
+            else {
+                Date date = Calendar.getInstance().getTime();
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-hhmmss");
+                name = "export-"+dateFormat.format(date);
+            }
+        }
+
         Export export = new Export();
         export.setJobId(exportRequest.getId());
         export.setPublicationIds(exportRequest.getPublicationIds());
-        export.setPublicationTitle(name != null && !name.isEmpty() ? name : exportRequest.getItems().stream().findFirst().map(ExportRequestItemDto::getPublicationTitle).orElse("?")); // TODO do not allow empty name
-        export.setCreated(exportRequest.getCreated());
+        export.setPublicationTitle(name);
+        export.setCreated(java.time.Clock.systemUTC().instant().toString());
         export.setStatus(exportRequest.getState());
         export.setDelimiter(exportRequest.getConfig().getDelimiter());
         export.setFormat(exportRequest.getConfig().getExportFormat());
@@ -132,6 +153,11 @@ public class ExportApi {
         exportRepository.save(export);
 
         return export;
+    }
+
+    @Resource(name = "krameriusWebClient")
+    public void setKrameriusWebClient(WebClient webClient) {
+        this.kramerius = webClient;
     }
 
     @Resource(name = "krameriusPlusWebClient")
