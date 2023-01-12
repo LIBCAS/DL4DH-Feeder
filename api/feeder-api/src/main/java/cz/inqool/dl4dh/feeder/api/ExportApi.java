@@ -103,10 +103,10 @@ public class ExportApi {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/generate/{format}")
-    public Export create(@PathVariable(value="format") String format, @RequestBody String body, @RequestParam(required = false) String name, Principal user) throws JsonProcessingException {
+    @PostMapping("/generate")
+    public Export create(@RequestBody String body, @RequestParam(required = false) String name, Principal user) throws JsonProcessingException {
         ExportRequestDto exportRequest = krameriusPlus.post()
-                .uri("/exports/"+format).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
+                .uri("/exports/export").header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
                             entity -> log.warn("Client error {}", entity)
                     );
@@ -120,7 +120,7 @@ public class ExportApi {
         export.setCreated(exportRequest.getCreated());
         export.setStatus(exportRequest.getState());
         export.setDelimiter(exportRequest.getConfig().getDelimiter());
-        export.setFormat(Export.Format.valueOf(format.toUpperCase()));
+        export.setFormat(exportRequest.getConfig().getExportFormat());
         if (exportRequest.getConfig().getParams() != null) {
             export.setParameters(objectMapper.writeValueAsString(exportRequest.getConfig().getParams()));
         }
