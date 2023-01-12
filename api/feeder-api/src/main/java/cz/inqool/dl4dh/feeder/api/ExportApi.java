@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -116,7 +117,7 @@ public class ExportApi {
         Export export = new Export();
         export.setJobId(exportRequest.getId());
         export.setPublicationIds(exportRequest.getPublicationIds());
-        export.setPublicationTitle(name != null && !name.isEmpty() ? name : "?"); // TODO do not allow empty name
+        export.setPublicationTitle(name != null && !name.isEmpty() ? name : exportRequest.getItems().stream().findFirst().map(ExportRequestItemDto::getPublicationTitle).orElse("?")); // TODO do not allow empty name
         export.setCreated(exportRequest.getCreated());
         export.setStatus(exportRequest.getState());
         export.setDelimiter(exportRequest.getConfig().getDelimiter());

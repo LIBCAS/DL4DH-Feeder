@@ -4,6 +4,7 @@ import cz.inqool.dl4dh.feeder.model.Export;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -14,6 +15,7 @@ public class ExportRequestDto {
     private String name;
     private Export.Status state;
     private BulkExportDto bulkExport;
+    private List<ExportRequestItemDto> items;
     private Set<String> publicationIds;
     private ExportJobConfigDto config;
 }
