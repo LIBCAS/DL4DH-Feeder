@@ -79,7 +79,7 @@ public class ImportServiceImpl implements ImportService {
     }
 
     private int importDocument(KrameriusPlusDocumentDto document) throws SolrServerException, IOException {
-        int pageCounter = 0;
+//        int pageCounter = 0;
         int imported = 0;
         int removed = 0;
         int all = 0;
@@ -95,18 +95,18 @@ public class ImportServiceImpl implements ImportService {
         }
 
 
-        while (true) {
-            KrameriusPlusDocumentPagesGetDto pages = krameriusPlus.get()
-                    .uri("/publications/" + document.getId() + "/pages?page=" + pageCounter)
+//        while (true) {
+            List<KrameriusPlusDocumentPageDto> pages = krameriusPlus.get()
+                    .uri("/publications/" + document.getId() + "/pages")
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<KrameriusPlusDocumentPagesGetDto>() {
+                    .bodyToMono(new ParameterizedTypeReference<List<KrameriusPlusDocumentPageDto>>() {
                     })
                     .block();
             if (pages == null) {
                 throw new RuntimeException("Cannot load pages for publication " + document.getId());
             }
 
-            for (KrameriusPlusDocumentPageDto pageBase : pages.getResults()) {
+            for (KrameriusPlusDocumentPageDto pageBase : pages) {
                 if (document.getPublishInfo().getIsPublished() == null || !document.getPublishInfo().getIsPublished()) {
                     solr.deleteById(pageBase.getId());
                     removed += 1;
@@ -218,11 +218,11 @@ public class ImportServiceImpl implements ImportService {
                 }
             }
 
-            if (pages.getOffset()+pages.getLimit() >= pages.getTotal()) {
-                break;
-            }
-            pageCounter += 1;
-        }
+//            if (pages.getOffset()+pages.getLimit() >= pages.getTotal()) {
+//                break;
+//            }
+//            pageCounter += 1;
+//        }
         solr.commit();
 
         log.info("Synced `"+document.getTitle()+"` ["+document.getId()+"] with "+imported+" elements imported and "+removed+" elements removed.");
