@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestItemDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
@@ -76,7 +75,7 @@ public class ExportApi {
                         );
                         return Mono.error(new HttpClientErrorException(res.statusCode()));
                     }).bodyToMono(ExportRequestDto.class).block();
-            export.setExportId(exportDto.getBulkExport().getFileRef().getId());
+            export.setExportId(exportDto.getBulkExport().getFile().getId());
             exportRepository.save(export);
         }
 
