@@ -100,10 +100,10 @@ public class ExportApi {
     public Page<Export> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
         Page<Export> exports = exportRepository.findByUsername(user.getName(), p);
         exports.forEach(export -> {
-            if (!export.getStatus().equals(Export.Status.COMPLETED) && !export.getStatus().equals(Export.Status.FAILED)) {
+            if (!export.isFinished()) {
                 ExportRequestDto exportRequest = krameriusPlus.get()
                         .uri("/exports/"+export.getJobId()).retrieve().bodyToMono(ExportRequestDto.class).block();
-                export.setStatus(exportRequest.getState());
+                export.setStatus(exportRequest.getBulkExport().getState());
             }
         });
         exportRepository.saveAll(exports);
@@ -140,7 +140,7 @@ public class ExportApi {
         export.setPublicationIds(exportRequest.getPublicationIds());
         export.setPublicationTitle(name);
         export.setCreated(java.time.Clock.systemUTC().instant().toString());
-        export.setStatus(exportRequest.getState());
+        export.setStatus(exportRequest.getBulkExport().getState());
         export.setDelimiter(exportRequest.getConfig().getDelimiter());
         export.setFormat(exportRequest.getConfig().getExportFormat());
         if (exportRequest.getConfig().getParams() != null) {

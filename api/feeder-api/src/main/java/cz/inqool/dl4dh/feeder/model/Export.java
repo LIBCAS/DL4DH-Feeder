@@ -21,6 +21,7 @@ public class Export extends AuditModel {
         CREATED,
         RUNNING,
         COMPLETED,
+        SUCCESSFUL,
         FAILED,
         PARTIAL,
         STARTING,
@@ -80,6 +81,7 @@ public class Export extends AuditModel {
 
     public boolean isFinished() {
         return status.equals(Status.COMPLETED) ||
+                status.equals(Status.SUCCESSFUL) ||
                 status.equals(Status.FAILED) ||
                 status.equals(Status.PARTIAL);
     }
