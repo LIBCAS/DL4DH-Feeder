@@ -205,6 +205,7 @@ export const ModelToText = {
 
 export const ExportJobStatusToText: Record<JobStatusEnum, string> = {
 	COMPLETED: 'Úspěšně dokončen',
+	SUCCESSFUL: 'Úspěšně dokončen',
 	CREATED: 'Vytvořen',
 	ABANDONED: 'Opuštěn',
 	FAILED: 'Neúspěšně ukončen',

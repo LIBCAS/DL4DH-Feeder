@@ -14,6 +14,7 @@ export type ExportApiResponse = {
 export type JobStatusEnum =
 	| 'CREATED'
 	| 'COMPLETED'
+	| 'SUCCESSFUL'
 	| 'STARTING'
 	| 'STARTED'
 	| 'STOPPING'

@@ -193,7 +193,7 @@ const Exportslist = () => {
 								<Cell>{row.format}</Cell>
 							</Box>
 							<Box flex={1} maxWidth={100}>
-								{row.status === 'COMPLETED' && (
+								{(row.status === 'COMPLETED' || row.status == 'SUCCESSFUL') && (
 									<IconButton
 										onClick={async e => {
 											e.stopPropagation();

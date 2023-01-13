@@ -267,6 +267,7 @@
     "status_enum": {
       "CREATED": "Vytvořen",
       "COMPLETED": "Úspěšně dokončen",
+			"SUCCESSFUL": "Úspěšně dokončen",
       "STARTING": "Začíná",
       "STARTED": "Započatý",
       "STOPPING": "Zastavuje",

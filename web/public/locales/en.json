@@ -264,6 +264,7 @@
     "status_enum": {
       "CREATED": "CREATED",
       "COMPLETED": "COMPLETED",
+			"SUCCESSFUL": "SUCCESSFUL",
       "STARTING": "STARTING",
       "STARTED": "STARTED",
       "STOPPING": "STOPPING",
