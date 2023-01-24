@@ -53,32 +53,32 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			>
 				<Text>{t('exports')}</Text>
 			</Button>
-			<Button
-				disabled
-				onClick={() => nav('/history')}
-				variant="text"
-				color="primary"
-				minWidth={50}
-				px={1}
-				my={2}
-				fontSize="inherit"
-				mr={4}
-			>
-				<Text>{t('history')}</Text>
-			</Button>
-			<Button
-				disabled
-				onClick={() => nav('/account')}
-				variant="text"
-				color="primary"
-				minWidth={50}
-				px={1}
-				my={2}
-				fontSize="inherit"
-				mr={4}
-			>
-				<Text>{t('account')}</Text>
-			</Button>
+			{/*<Button*/}
+			{/*	disabled*/}
+			{/*	onClick={() => nav('/history')}*/}
+			{/*	variant="text"*/}
+			{/*	color="primary"*/}
+			{/*	minWidth={50}*/}
+			{/*	px={1}*/}
+			{/*	my={2}*/}
+			{/*	fontSize="inherit"*/}
+			{/*	mr={4}*/}
+			{/*>*/}
+			{/*	<Text>{t('history')}</Text>*/}
+			{/*</Button>*/}
+			{/*<Button*/}
+			{/*	disabled*/}
+			{/*	onClick={() => nav('/account')}*/}
+			{/*	variant="text"*/}
+			{/*	color="primary"*/}
+			{/*	minWidth={50}*/}
+			{/*	px={1}*/}
+			{/*	my={2}*/}
+			{/*	fontSize="inherit"*/}
+			{/*	mr={4}*/}
+			{/*>*/}
+			{/*	<Text>{t('account')}</Text>*/}
+			{/*</Button>*/}
 			<Flex alignItems="center" justifyContent="space-between" width={1} px={2}>
 				<Flex alignItems="center">
 					<MdPerson size={22} />

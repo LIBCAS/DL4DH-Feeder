@@ -206,12 +206,12 @@ const Homepage: FC = () => {
 						</Text>
 					</Flex>
 					<Text textAlign="center" fontSize="sm" px={[3, 5]}>
-						DL4DH Feeder nabízí výzkumným pracovníkům přehledné grafické 
-						rozhraní pro práci s daty uloženými v modulu Kramerius+ i 
-						digitální knihovně Kramerius. Umožňuje vyhledání, selekci a 
-						následný export digitálních dat (opticky rozpoznaný text a 
-						metadata) jak v původní podobě, tak v některém z dalších formátů, 
-						umožňujících mimo jiné také efektivní strojové zpracování.
+						DL4DH Feeder nabízí výzkumným pracovníkům přehledné grafické
+						rozhraní pro práci s daty uloženými v modulu Kramerius+ i digitální
+						knihovně Kramerius. Umožňuje vyhledání, selekci a následný export
+						digitálních dat (opticky rozpoznaný text a metadata) jak v původní
+						podobě, tak v některém z dalších formátů, umožňujících mimo jiné
+						také efektivní strojové zpracování.
 					</Text>
 				</Flex>
 			</Flex>

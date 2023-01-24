@@ -143,7 +143,8 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								: '--'}
 						</b>
 					</Text>
-					{(exportDto.status === 'COMPLETED' || exportDto.status == 'SUCCESSFUL') && (
+					{(exportDto.status === 'COMPLETED' ||
+						exportDto.status == 'SUCCESSFUL') && (
 						<Text fontSize="sm">
 							Výsledek:
 							<IconButton
