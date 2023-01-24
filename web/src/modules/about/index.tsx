@@ -77,7 +77,7 @@ const About = () => {
 
 						<Text></Text>
 						<Text>
-							<HrefLink href="ttps://github.com/LIBCAS/DL4DH">
+							<HrefLink href="https://github.com/LIBCAS/DL4DH">
 								Informace o projektu DL4DH
 							</HrefLink>
 						</Text>

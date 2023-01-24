@@ -125,12 +125,12 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			</MenuButton>
 			<MenuList>
 				<MenuItem onSelect={() => nav('/exports')}>{t('exports')}</MenuItem>
-				<MenuItem disabled={true} onSelect={() => nav('/history')}>
-					{t('history')}
-				</MenuItem>
-				<MenuItem disabled={true} onSelect={() => nav('/account')}>
-					{t('account')}
-				</MenuItem>
+				{/*<MenuItem disabled={true} onSelect={() => nav('/history')}>*/}
+				{/*	{t('history')}*/}
+				{/*</MenuItem>*/}
+				{/*<MenuItem disabled={true} onSelect={() => nav('/account')}>*/}
+				{/*	{t('account')}*/}
+				{/*</MenuItem>*/}
 				<MenuItem
 					onSelect={async () => {
 						api().get('user/logout');
