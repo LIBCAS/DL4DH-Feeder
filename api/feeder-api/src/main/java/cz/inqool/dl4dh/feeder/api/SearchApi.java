@@ -2,6 +2,7 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
+import cz.inqool.dl4dh.feeder.enums.FiltersSortEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
@@ -178,7 +179,7 @@ public class SearchApi {
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.field", "root_pid")
                             .queryParam("facet.limit", "-1")
-                            .queryParam("sort", filters.getSort().toSolrSort()) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
+                            .queryParam("sort", filters.getSort().toSolrSort(true)) // TODO sort is no apply to facet, change to normal query + limit, so enriched will be number of docs and keys get from documents root_pid
                             .queryParam("rows",0);
                     if (!filters.toFqQuery(null, true).isEmpty()) {
                         uriBuilder
@@ -227,7 +228,7 @@ public class SearchApi {
                             .queryParam("facet.field", "datum_begin")
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
-                            .queryParam("sort", filters.getSort().toSolrSort())
+                            .queryParam("sort", filters.getSort().toSolrSort(false))
                             .queryParam("rows", filters.getPageSize())
                             .build();
                 })
