@@ -218,7 +218,9 @@ public class ImportServiceImpl implements ImportService {
                 }
             }
 
-            if ((pages.getPage()+1)*pages.getPageSize() >= pages.getTotal()) {
+            // Stop if pages were processed or more than 10 000 pages were processed
+            // (hard break if there is a bug on K+)
+            if ((pages.getPage()+1)*pages.getPageSize() >= Integer.min(pages.getTotal(), 10000)) {
                 break;
             }
             pageCounter += 1;
