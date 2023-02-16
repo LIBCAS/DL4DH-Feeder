@@ -98,7 +98,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 					top={-8}
 					width="50vw"
 					height={`calc(100vh - ${headerHeight}px)`}
-					zIndex={4}
+					zIndex={50}
 					overflow="auto"
 					css={css`
 						box-sizing: border-box;
@@ -277,6 +277,7 @@ const ChoosePeriodical: FC<{
 	let notChangingId: string | undefined = undefined;
 	let notChangingPage: string | undefined = undefined;
 	let notChangingFulltext: string | undefined = undefined;
+	console.log({ singleId, mIdLeft, mIdRight });
 
 	if (!singleId) {
 		//is multiview variant

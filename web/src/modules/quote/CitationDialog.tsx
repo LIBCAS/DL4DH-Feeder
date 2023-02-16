@@ -1,6 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { MdClose, MdFormatQuote } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import { useQueries } from 'react-query';
 
 import ModalDialog from 'components/modal';
 import IconButton from 'components/styled/IconButton';
@@ -13,27 +14,186 @@ import LoaderSpin from 'components/loaders/LoaderSpin';
 import Divider from 'components/styled/Divider';
 import { Metadata } from 'components/kramerius/model/metadata.model';
 import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
-import { KRAMERIUS_ENUMS } from 'components/kramerius/enums/kenums';
+//import { KRAMERIUS_ENUMS } from 'components/kramerius/enums/kenums';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { Loader } from 'modules/loader';
 
-import { PublicationContext } from 'api/models';
+import { api } from 'api';
+
+import { ModelsEnum, PublicationContext } from 'api/models';
 import { usePublicationDetail, useStreams } from 'api/publicationsApi';
 
-import { ModelToText } from 'utils/enumsMap';
+import { modelToText, ModelToText } from 'utils/enumsMap';
 
 type Props = {
 	isSecond?: boolean;
 };
 
-const ShowCitation: FC<{ uuid: string; pageId: string }> = ({
-	uuid,
-	pageId,
-}) => {
+const useFullContextMetadata = (context: PublicationContext[]) => {
+	const [metadata, setMetadata] = useState<Record<string, Metadata>>({});
+	const [parsed, setParsed] = useState(false);
+	const mqueries = useQueries(
+		context.map(ctx => ({
+			queryKey: ['stream-with-parse', ctx.pid, 'BIBLIO_MODS'],
+			queryFn: async () => {
+				const mod = await api()
+					.get(`item/${ctx.pid}/streams/BIBLIO_MODS`, {
+						headers: { accept: 'application/json' },
+					})
+					.then(async r => await r.text());
+
+				return { pid: ctx.pid, model: ctx.model, mods: mod };
+			},
+		})),
+	);
+
+	const isLoading = useMemo(() => mqueries.some(q => q.isLoading), [mqueries]);
+
+	useEffect(() => {
+		if (!isLoading && !parsed) {
+			const metadata: Record<string, Metadata> = {};
+			console.log('parsing');
+			mqueries.forEach(({ data }) => {
+				if (data) {
+					const pservice = new ModsParserService();
+					const parsed = pservice.parse(data.mods, data.pid);
+					metadata[data.model] = parsed;
+				}
+			});
+			setMetadata(metadata);
+			setParsed(true);
+		}
+	}, [isLoading, mqueries, parsed]);
+
+	// useEffect(() => {
+	// 	if (!isLoading && !parsed) {
+	// 		const metadata: Record<string, Metadata> = {};
+	// 		console.log('parsing');
+	// 		Object.keys(rawMetadata).forEach(key => {
+	// 			console.log(rawMetadata[key].mods);
+	// 			const pservice = new ModsParserService();
+	// 			const parsed = pservice.parse(
+	// 				rawMetadata[key].mods,
+	// 				rawMetadata[key].pid,
+	// 			);
+	// 			metadata[key] = parsed;
+	// 		});
+	// 		setMetadata(metadata);
+	// 		setParsed(true);
+	// 	}
+	// }, [rawMetadata, isLoading, parsed]);
+
+	/* useEffect(() => {
+		(async () => {
+			setIsLoading(true);
+			const flatContext = context.flat();
+			for (const ctx of flatContext) {
+				const mod = await api()
+					.get(`item/${ctx.pid}/streams/BIBLIO_MODS`, {
+						headers: { accept: 'application/json' },
+					})
+					.then(async r => await r.text());
+				const pservice = new ModsParserService();
+				const metadata = pservice.parse(mod, ctx.pid);
+				setMetadata(p => ({ ...p, [ctx.model]: metadata }));
+			}
+			setIsLoading(false);
+		})();
+	}, [context]); */
+
+	return { metadata, isLoading };
+};
+
+const getPartsInfoText = (
+	currentSource: string,
+	metadata: Record<string, Metadata>,
+	pubContext: PublicationContext[],
+) => {
+	const result: (string | JSX.Element)[] = [];
+	const sourceIndex = pubContext.findIndex(pc => pc.model === currentSource);
+
+	console.log(metadata);
+
+	const volumeNumber = metadata['periodicalvolume']?.titles[0].partNumber ?? '';
+	const issueNumber = metadata['periodicalitem']?.titles[0].partNumber ?? '';
+	const monographUnitName =
+		metadata['monographunit']?.titles[1].partNumber ?? '';
+
+	let index = sourceIndex;
+	while (index < pubContext.length) {
+		const parrentMetadata = metadata[pubContext[index].model];
+		const author = parrentMetadata?.authors?.[0]?.name ?? '';
+
+		if (author) {
+			result.push(`${author.toUpperCase()}. `);
+			break;
+		}
+		index++;
+	}
+
+	index = 0;
+	while (index < pubContext.length) {
+		const parrentMetadata = metadata[pubContext[index].model];
+		const title =
+			parrentMetadata?.getTitle?.() ??
+			parrentMetadata?.titles?.[0]?.title() ??
+			undefined;
+
+		if (
+			title &&
+			pubContext[index].model !== 'internalpart' &&
+			pubContext[index].model !== 'supplement'
+		) {
+			result.push(<i>{title}. </i>);
+			break;
+		}
+		index++;
+	}
+
+	index = sourceIndex;
+	while (index < pubContext.length) {
+		const parrentMetadata = metadata[pubContext[index].model];
+		const detail = parrentMetadata?.publishers?.[0]?.fullDetail?.();
+
+		if (detail) {
+			result.push(detail);
+			break;
+		}
+		index++;
+	}
+
+	if (
+		currentSource === 'page' ||
+		currentSource === 'periodicalitem' ||
+		currentSource === 'monographunit'
+	) {
+		if (metadata['periodical']) {
+			result.push(`, ${volumeNumber} (${issueNumber})`);
+		}
+		if (metadata['monographunit']) {
+			result.push(`, ${monographUnitName}`);
+		}
+	}
+
+	if (currentSource === 'periodicalvolume') {
+		result.push(`, ${volumeNumber}`);
+	}
+
+	return result;
+};
+
+const ShowCitation: FC<{
+	uuid: string;
+	pageId: string;
+	pubContext: PublicationContext[];
+	currentSource: string;
+}> = ({ uuid, pageId, currentSource, pubContext }) => {
 	const { data, isLoading } = useStreams(uuid, 'BIBLIO_MODS');
 	const [metadata, setMetadata] = useState<Metadata | undefined>();
 	const { data: pageTitle } = usePublicationDetail(pageId);
-
+	const fullMetadata = useFullContextMetadata(pubContext.flat());
+	//TODO: remove redundant things
 	useEffect(() => {
 		if (!isLoading && data) {
 			const pservice = new ModsParserService();
@@ -41,17 +201,17 @@ const ShowCitation: FC<{ uuid: string; pageId: string }> = ({
 			setMetadata(metadata);
 		}
 	}, [data, isLoading, uuid]);
-	// const x = metadata?.getPrimaryAuthors();
-	// console.log(metadata?.getTitle());
-	// console.log(metadata?.getCollectionTitle('cs'));
 
+	const pageInfo =
+		currentSource === 'page' ? `. s ${pageTitle?.title ?? '?'}.` : '. ';
+
+	if (fullMetadata.isLoading) {
+		return <Loader />;
+	}
 	return (
-		<Text as="span" fontSize="14px">
-			{metadata?.authors.map(a => a.name)}.{' '}
-			<Text as="span" fontStyle="italic">
-				{metadata?.getTitle()}
-			</Text>
-			.{metadata?.publishers[0].fullDetail()} s. {pageTitle?.title}.{' '}
+		<Text as="span" fontSize="14px" p={1}>
+			{getPartsInfoText(currentSource, fullMetadata.metadata, pubContext)}
+			{pageInfo}{' '}
 		</Text>
 	);
 };
@@ -69,18 +229,28 @@ const CitationDialog: FC<Props> = ({ isSecond }) => {
 	const rootDetail = rootDetailResponse.data ?? null;
 
 	const [source, setSource] = useState<PublicationContext | undefined>();
-	const { data: currentTitle } = usePublicationDetail(
-		source?.pid ?? 'sourceId_undefined',
-		!source?.pid,
-	);
+	const [isMonographBundle, setIsMonohraphBundle] = useState(false);
 
-	const rootContext = useMemo(
-		() => (rootDetail?.context?.flat() ?? []).reverse(),
-		[rootDetail],
-	);
+	const rootContext = useMemo(() => {
+		const ctx = rootDetail?.context?.flat(10) ?? [];
+		const filtered: PublicationContext[] = [];
+
+		ctx.forEach(c => {
+			if (filtered.findIndex(f => f.model === c.model) === -1) {
+				filtered.push(c);
+			}
+		});
+
+		return filtered.reverse();
+	}, [rootDetail]);
 
 	useEffect(() => {
 		setSource(rootContext[0]);
+	}, [rootContext]);
+	useEffect(() => {
+		if (rootContext.find(rc => rc.model === 'monographunit')) {
+			setIsMonohraphBundle(true);
+		}
 	}, [rootContext]);
 
 	if (rootDetailResponse.isLoading || !rootDetail) {
@@ -131,7 +301,27 @@ const CitationDialog: FC<Props> = ({ isSecond }) => {
 												my={0}
 												py={0}
 											>
-												{ModelToText[c.model]}
+												{isMonographBundle ? (
+													<>
+														{c.model === 'monograph' ? (
+															<>{t(`model_2p:monographbundle`)}</>
+														) : (
+															<>
+																{t(
+																	`model_2p:${modelToText(
+																		c.model as ModelsEnum,
+																	)}`,
+																)}
+															</>
+														)}
+													</>
+												) : (
+													<>
+														{t(
+															`model_2p:${modelToText(c.model as ModelsEnum)}`,
+														)}
+													</>
+												)}
 											</Button>
 										),
 									})),
@@ -158,6 +348,8 @@ const CitationDialog: FC<Props> = ({ isSecond }) => {
 						<ShowCitation
 							uuid={pctx.publication?.root_pid ?? ''}
 							pageId={currentPagePid ?? ''}
+							pubContext={sources}
+							currentSource={source?.model ?? ''}
 						/>
 						<Text as="span">
 							{t('share:available_from')}: {link}

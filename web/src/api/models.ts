@@ -82,6 +82,7 @@ export type SearchDto = {
 	availableNameTagFilters: AvailableNameTagFilters;
 };
 export type FiltersDto = {
+	id?: string;
 	query: string;
 	queryEscaped: string;
 	availability: AvailabilityEnum;
@@ -99,6 +100,10 @@ export type FiltersDto = {
 	nameTagFacet: string;
 	collections: string[];
 	advancedFilterField: AdvancedFilterFieldEnum;
+};
+
+export type PageFilter = {
+	content: FiltersDto[];
 };
 
 export type PublicationChild = {
@@ -163,7 +168,8 @@ export type FiltersSortEnum =
 	| 'TITLE_ASC'
 	| 'CREATED_DESC'
 	| 'DATE_ASC'
-	| 'DATE_DESC';
+	| 'DATE_DESC'
+	| 'LAST_ENRICHED';
 export type AvailabilityEnum = 'PUBLIC' | 'PRIVATE' | 'ALL';
 export type ModelsEnum =
 	| 'MONOGRAPH'
