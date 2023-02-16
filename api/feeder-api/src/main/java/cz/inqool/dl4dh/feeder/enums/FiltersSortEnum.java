@@ -4,7 +4,8 @@ public enum FiltersSortEnum {
     TITLE_ASC,
     CREATED_DESC,
     DATE_ASC,
-    DATE_DESC;
+    DATE_DESC,
+    LAST_ENRICHED;
 
     public String toSolrSort() {
         switch (this) {
@@ -19,6 +20,9 @@ public enum FiltersSortEnum {
 
             case DATE_DESC:
                 return "datum_end desc, datum_begin desc";
+
+            case LAST_ENRICHED:
+                return "import_date desc, title_sort asc";
 
             default:
                 return null;

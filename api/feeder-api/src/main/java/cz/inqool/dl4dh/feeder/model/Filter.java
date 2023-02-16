@@ -86,7 +86,8 @@ public class Filter extends AuditModel {
     public boolean useOnlyEnriched() {
         return (nameTagFilters != null && !nameTagFilters.isEmpty()) ||
                 (enrichment != null && enrichment.equals(EnrichmentEnum.ENRICHED)) ||
-                (advancedFilterField != null && advancedFilterField.getSolrField().contains("nameTag."));
+                (advancedFilterField != null && advancedFilterField.getSolrField().contains("nameTag.")) ||
+                FiltersSortEnum.LAST_ENRICHED.equals(sort);
     }
 
     public boolean useEdismax() {
