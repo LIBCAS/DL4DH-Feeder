@@ -73,35 +73,38 @@ const PublicationSidePanel: FC<Props> = ({
 			>
 				<>
 					<Flex alignItems="center" justifyContent="center" p={2} width={1}>
-						<Button
-							variant="primary"
-							onClick={() => setChooseSecondDialogOpen(p => !p)}
-						>
-							{t(
-								variant === 'right'
-									? 'search_in_set_right'
-									: 'search_in_set_left',
-							)}
-						</Button>
-						{urlParams.isMultiview && (
-							<Button
-								tooltip="vrati na zobrazenie len jednej publikacie  - treba vymysliet nazov tohto tlacitka"
-								mx={2}
-								variant="primary"
-								onClick={() =>
-									variant === 'left'
-										? urlParams.navLeft()
-										: urlParams.navRight()
-								}
-							>
-								Single view
-							</Button>
-						)}
-						{chooseSecondDialogOpen && (
+						{chooseSecondDialogOpen ? (
 							<PubChooseSecond
 								onClose={() => setChooseSecondDialogOpen(false)}
 								variant={variant}
 							/>
+						) : (
+							<>
+								<Button
+									variant="primary"
+									onClick={() => setChooseSecondDialogOpen(p => !p)}
+								>
+									{t(
+										variant === 'right'
+											? 'search_in_set_right'
+											: 'search_in_set_left',
+									)}
+								</Button>
+								{urlParams.isMultiview && (
+									<Button
+										tooltip="vrati na zobrazenie len jednej publikacie  - treba vymysliet nazov tohto tlacitka"
+										mx={2}
+										variant="primary"
+										onClick={() =>
+											variant === 'left'
+												? urlParams.navLeft()
+												: urlParams.navRight()
+										}
+									>
+										Jedna publikace
+									</Button>
+								)}
+							</>
 						)}
 					</Flex>
 					<Divider />

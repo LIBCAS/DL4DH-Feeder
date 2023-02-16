@@ -110,6 +110,18 @@ const MultiView = () => {
 		pubCtx.publicationChildrenFilteredOfSecond,
 	]);
 
+	useEffect(() => {
+		if (!sp.get('page') || !sp.get('page2')) {
+			if (!sp.get('page')) {
+				sp.append('page', pages1[0]?.pid ?? 'undefined');
+			}
+			if (!sp.get('page2')) {
+				sp.append('page2', pages2[0]?.pid ?? 'undefined');
+			}
+			setSp(sp, { replace: true });
+		}
+	}, [pages1, pages2, setSp, sp]);
+
 	if (
 		pubChildren1.isLoading ||
 		detail1.isLoading ||
@@ -117,15 +129,6 @@ const MultiView = () => {
 		detail2.isLoading
 	) {
 		return <Loader />;
-	}
-	if (!sp.get('page') || !sp.get('page2')) {
-		if (!sp.get('page')) {
-			sp.append('page', pages1[0]?.pid ?? 'undefined');
-		}
-		if (!sp.get('page2')) {
-			sp.append('page2', pages2[0]?.pid ?? 'undefined');
-		}
-		setSp(sp, { replace: true });
 	}
 
 	//FIXME: isPubliuc musi byt pre obe publikacie zvlast

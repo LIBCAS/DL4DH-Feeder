@@ -53,19 +53,18 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			>
 				<Text>{t('exports')}</Text>
 			</Button>
-			{/*<Button*/}
-			{/*	disabled*/}
-			{/*	onClick={() => nav('/history')}*/}
-			{/*	variant="text"*/}
-			{/*	color="primary"*/}
-			{/*	minWidth={50}*/}
-			{/*	px={1}*/}
-			{/*	my={2}*/}
-			{/*	fontSize="inherit"*/}
-			{/*	mr={4}*/}
-			{/*>*/}
-			{/*	<Text>{t('history')}</Text>*/}
-			{/*</Button>*/}
+			<Button
+				onClick={() => nav('/search-history')}
+				variant="text"
+				color="primary"
+				minWidth={50}
+				px={1}
+				my={2}
+				fontSize="inherit"
+				mr={4}
+			>
+				<Text>{t('history')}</Text>
+			</Button>
 			{/*<Button*/}
 			{/*	disabled*/}
 			{/*	onClick={() => nav('/account')}*/}
@@ -125,9 +124,9 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			</MenuButton>
 			<MenuList>
 				<MenuItem onSelect={() => nav('/exports')}>{t('exports')}</MenuItem>
-				{/*<MenuItem disabled={true} onSelect={() => nav('/history')}>*/}
-				{/*	{t('history')}*/}
-				{/*</MenuItem>*/}
+				<MenuItem onSelect={() => nav('/search-history')}>
+					{t('history')}
+				</MenuItem>
 				{/*<MenuItem disabled={true} onSelect={() => nav('/account')}>*/}
 				{/*	{t('account')}*/}
 				{/*</MenuItem>*/}

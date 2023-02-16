@@ -1,1 +1,4 @@
 desc.d.ts
+src/components/kramerius/model/*.ts
+src/components/kramerius/modsParser/*.ts
+src/components/kramerius/enums/*.ts

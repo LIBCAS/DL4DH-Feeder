@@ -4,6 +4,7 @@ import { isEqual, omit } from 'lodash';
 
 import { Loader } from 'modules/loader';
 import RouteUuid from 'modules/uuidRouting/RouteUuid';
+import SearchHistory from 'modules/searchHistory';
 
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 import { useSearchContext } from 'hooks/useSearchContext';
@@ -84,6 +85,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<About />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/search-history"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<SearchHistory />
 					</React.Suspense>
 				}
 			/>

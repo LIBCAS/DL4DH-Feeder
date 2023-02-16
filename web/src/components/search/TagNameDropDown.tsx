@@ -31,7 +31,6 @@ const TagNameDropDown: React.FC<Props> = ({
 	selectedItemView = 'ICON',
 	selectedNameTag,
 }) => {
-	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -42,92 +41,90 @@ const TagNameDropDown: React.FC<Props> = ({
 
 	return (
 		<Flex width={1}>
-			<ClickAway onClickAway={() => setShowTagNameMenu(false)}>
-				<SimpleSelect
-					value={selectedNameTag}
-					options={[null, ...fieldsTuple]}
-					onChange={field => {
-						setShowTagNameMenu(false);
-						setShowTagOpMenu(true);
+			<SimpleSelect
+				value={selectedNameTag}
+				options={[null, ...fieldsTuple]}
+				onChange={field => {
+					setShowTagOpMenu(true);
 
-						onTagNameSelected(field);
-					}}
-					keyFromOption={item => (item ? item : '')}
-					nameFromOption={item => (item ? NameTagToText[item] : '')}
-					renderSelectedItem={
-						selectedItemView === 'ICON'
-							? item => {
-									if (item) {
-										const Icon = NameTagIcon[item];
-										return (
-											<IconButton
-												tooltip={t(`nametag:labels:${item}`)}
-												css={css`
-													color: ${theme.colors.primary};
-													&:hover {
-														background-color: initial;
-													}
-												`}
-											>
-												<Icon size={18} />
-											</IconButton>
-										);
-									} else {
-										return <></>;
-									}
-							  }
-							: undefined
-					}
-					renderMenuItem={(item, currentValue) => {
-						if (!item) {
-							return currentValue ? (
-								<Flex px={1} py={1} alignItems="center">
-									<MdClose size={22} />
-									<Text
-										fontWeight={item === currentValue ? 'bold' : 'normal'}
-										ml={2}
-									>
-										{t('common:clear')}
-									</Text>
-								</Flex>
-							) : (
-								<></>
-							);
-						}
-						const Icon = NameTagIcon[item];
-						return (
-							<Flex
-								px={1}
-								py={1}
-								alignItems="center"
-								color={item === currentValue ? 'primary' : 'unset'}
-							>
-								<Icon size={22} />
+					onTagNameSelected(field);
+				}}
+				keyFromOption={item => (item ? item : '')}
+				nameFromOption={item => (item ? NameTagToText[item] : '')}
+				renderSelectedItem={
+					selectedItemView === 'ICON'
+						? item => {
+								if (item) {
+									const Icon = NameTagIcon[item];
+									return (
+										<IconButton
+											tooltip={t(`nametag:labels:${item}`)}
+											css={css`
+												color: ${theme.colors.primary};
+												&:hover {
+													background-color: initial;
+												}
+											`}
+										>
+											<Icon size={18} />
+										</IconButton>
+									);
+								} else {
+									return <></>;
+								}
+						  }
+						: undefined
+				}
+				renderMenuItem={(item, currentValue) => {
+					if (!item) {
+						return currentValue ? (
+							<Flex px={1} py={1} alignItems="center">
+								<MdClose size={22} />
 								<Text
 									fontWeight={item === currentValue ? 'bold' : 'normal'}
 									ml={2}
 								>
-									{t(`nametag:labels:${item}`)}
+									{t('common:clear')}
 								</Text>
 							</Flex>
+						) : (
+							<></>
 						);
-					}}
-					placeholder="--"
-					zIndex={5}
-					menuFixedSize
-					wrapperCss={css`
-						width: 50px;
-						color: ${theme.colors.primary};
-						border: none;
-						flex-shrink: 0;
-					`}
-					menuItemCss={css`
-						padding-left: 16px;
-						padding-right: 16px;
-						min-width: 200px;
-					`}
-				/>
-			</ClickAway>
+					}
+					const Icon = NameTagIcon[item];
+					return (
+						<Flex
+							px={1}
+							py={1}
+							alignItems="center"
+							color={item === currentValue ? 'primary' : 'unset'}
+						>
+							<Icon size={22} />
+							<Text
+								fontWeight={item === currentValue ? 'bold' : 'normal'}
+								ml={2}
+							>
+								{t(`nametag:labels:${item}`)}
+							</Text>
+						</Flex>
+					);
+				}}
+				placeholder="--"
+				zIndex={5}
+				menuFixedSize
+				wrapperCss={css`
+					width: 50px;
+					color: ${theme.colors.primary};
+					border: none;
+					flex-shrink: 0;
+				`}
+				menuItemCss={css`
+					padding-left: 16px;
+					padding-right: 16px;
+					min-width: 200px;
+				`}
+			/>
+
 			{withOperation && selectedNameTag && (
 				<ClickAway onClickAway={() => setShowTagOpMenu(false)}>
 					<SimpleSelect
@@ -137,8 +134,6 @@ const TagNameDropDown: React.FC<Props> = ({
 						onChange={operation => {
 							setShowTagOpMenu(false);
 							setSelectedTagOp(operation);
-
-							//mainInputRef.current?.focus();
 						}}
 						keyFromOption={item => (item ? OperationToTextLabel[item] : '')}
 						width={70}
@@ -166,7 +161,6 @@ const TagNameDropDown: React.FC<Props> = ({
 						}}
 						wrapperCss={css`
 							width: 70px;
-							/* font-size: ${theme.fontSizes.xl}px; */
 							font-size: 22px !important;
 							border: none;
 							background: ${theme.colors.primaryLight};

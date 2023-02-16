@@ -18,7 +18,7 @@ const NewestHomepageFeed = () => {
 		availability: 'PUBLIC',
 		query: '',
 		enrichment: 'ENRICHED',
-		sort: 'CREATED_DESC',
+		sort: 'LAST_ENRICHED',
 	});
 
 	if (isLoading) {
