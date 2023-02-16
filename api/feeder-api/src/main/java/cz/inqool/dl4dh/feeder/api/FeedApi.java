@@ -4,8 +4,6 @@ import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.dto.PublicationsListDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.FeedResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,12 +22,6 @@ public class FeedApi {
 
     private WebClient kramerius;
     private WebClient solrWebClient;
-
-    private final HttpSolrClient solr;
-
-    public FeedApi(@Value("${solr.host.query}") String solrHost) {
-        this.solr = new HttpSolrClient.Builder(solrHost.trim()).build();
-    }
 
     @GetMapping(value = "/mostdesirable")
     public PublicationsListDto mostDesirable() {
@@ -70,10 +62,33 @@ public class FeedApi {
         return getPublicationsListDto(result);
     }
 
+    private Set<String> reduceToEnrichedPIDs(Set<String> PIDs) {
+        return solrWebClient.get()
+                .uri("/select", uriBuilder -> uriBuilder
+                        .queryParam("q", PIDs.stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")))
+                        .queryParam("rows", "0")
+                        .queryParam("facet", "true")
+                        .queryParam("facet.mincount", "1")
+                        .queryParam("facet.field", "root_pid")
+                        .queryParam("facet.limit", "500")
+                        .build())
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SolrQueryWithFacetResponseDto.class)
+                .blockOptional()
+                .orElseThrow()
+                .getFacet_counts().transformed().get("root_pid").keySet();
+    }
+
     private PublicationsListDto getPublicationsListDto(FeedResponseDto result) {
         if (result == null) {
             return new PublicationsListDto(0L, 0L, new ArrayList<>());
         }
+        Set<String> enrichedPIDs = reduceToEnrichedPIDs(result
+                .getData().stream()
+                .map(d -> (String)d.get("pid"))
+                .collect(Collectors.toSet()));
         return new PublicationsListDto(
                 (long) result.getData().size(),
                 0L,
@@ -86,17 +101,7 @@ public class FeedApi {
                                 (String)d.get("title"),
                                 (String)d.get("pid"),
                                 (String)d.get("root_title"),
-                                solrWebClient.get()     // TODO do it only in one request for all publications
-                                        .uri("/select", uriBuilder -> uriBuilder
-                                                .queryParam("fl", "root_pid")
-                                                .queryParam("q", "PID:\""+d.get("pid")+"\"")
-                                                .queryParam("rows","0")
-                                                .build())
-                                        .acceptCharset(StandardCharsets.UTF_8)
-                                        .accept(MediaType.APPLICATION_JSON)
-                                        .retrieve()
-                                        .bodyToMono(SolrQueryWithFacetResponseDto.class)
-                                        .block().getResponse().getNumFound() > 0
+                                enrichedPIDs.contains((String)d.get("pid"))
                         )
                 ).collect(Collectors.toList()));
     }
