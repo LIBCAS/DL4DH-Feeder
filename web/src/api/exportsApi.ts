@@ -4,6 +4,8 @@ import { ExportSort } from 'modules/export/exportModels';
 
 import { api } from 'api';
 
+import { PagableResponse } from './models';
+
 export type ExportApiResponse = {
 	limit: number;
 	offset: number;
@@ -62,23 +64,7 @@ export type ExportDto = {
 	delimiter: string;
 };
 
-export type PageExportDto = {
-	totalPages: number;
-	totalElements: number;
-	first: boolean;
-	last: boolean;
-
-	numberOfElements: number;
-	sort: unknown;
-	size: number;
-	content: ExportDto[];
-	number: number;
-	empty: boolean;
-	pageable: {
-		offset: number;
-		page: number;
-	};
-};
+export type PageExportDto = PagableResponse<ExportDto>;
 
 export type ExportListParams = { sort: ExportSort; size: number; page: number };
 

@@ -68,7 +68,7 @@ export const useActiveFilterLabel = () => {
 				case 'availability':
 					return t(availabilityToText(value));
 				case 'enrichment':
-					return t(enrichmentToText(value));
+					return value === 'ALL' ? '' : t(enrichmentToText(value));
 				case 'query':
 					return `Řetězec: "${value}"`;
 				case 'yearsInterval':
@@ -346,6 +346,7 @@ const ActiveFilters: React.FC<{
 						</Button>
 					</Box>
 				))}
+
 				{!readonly && (
 					<Flex
 						width={1}
@@ -353,12 +354,12 @@ const ActiveFilters: React.FC<{
 						alignItems="center"
 						mb={2}
 					>
-						<Text>Uložit filtry</Text>
+						<Text fontWeight="bold">Uložit filtry</Text>
 						{savingFilter && <Loader size={22} />}
 						<IconButton
-							tooltip={t('filters:tooltip_remove_filter_all')}
-							width={30}
-							height={30}
+							tooltip="Uložit filtry"
+							width={22}
+							height={22}
 							color="white"
 							disabled={savingFilter}
 							css={css`
@@ -392,7 +393,7 @@ const ActiveFilters: React.FC<{
 							}}
 						>
 							<Flex alignItems="center" justifyContent="center">
-								{savingFilter ? <Loader size={22} /> : <MdSave size={22} />}
+								{savingFilter ? <Loader size={18} /> : <MdSave size={18} />}
 							</Flex>
 						</IconButton>
 					</Flex>
