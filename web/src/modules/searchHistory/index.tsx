@@ -192,7 +192,7 @@ const SearchHistory = () => {
 					),
 				}}
 			>
-				<Box width={1} zIndex={0}>
+				<Box width={1} zIndex={0} overflow="auto">
 					<ClassicTable
 						borderless
 						minWidth={400}
@@ -270,7 +270,7 @@ const SearchHistory = () => {
 							</Flex>
 						)}
 					/>
-					<Box px={4} pt={3}>
+					<Box px={4} py={3}>
 						<Pagination
 							page={(response.data?.pageable.page ?? 0) + 1}
 							changePage={page => setPage(page - 1)}
