@@ -1,5 +1,21 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 export type PipeParam = 'n' | 'lemma' | 'pos' | 'msd' | 'join' | '?';
-export type TagParam = 'a' | 'g' | 'i' | 'm' | 'n' | 'o' | 'p' | 't' | '?';
+export type TagParam =
+	| 'a'
+	| 'g'
+	| 'i'
+	| 'm'
+	| 'n'
+	| 'o'
+	| 'p'
+	| 't'
+	| 'P'
+	| 'T'
+	| 'A'
+	| 'C';
+//| '?';
 export type AltoParam = 'width' | 'height' | 'vpos' | 'hpos' | '?';
 
 export type ExportFormatOption = { label: string; id: string };
@@ -81,16 +97,42 @@ export const udPipeParamsOptions: PipeParam[] = [
 	'?',
 ];
 
-export const nameTagParamsOptions: TagParam[] = [
-	'a',
-	'g',
-	'i',
-	'm',
-	'n',
-	'o',
-	'p',
-	't',
+export type NameTagExportOption = {
+	id: TagParam;
+	labelCode: string;
+	label: string;
+};
+
+export const nameTagParamsExportOptions: NameTagExportOption[] = [
+	{ id: 'a', labelCode: 'NUMBERS_IN_ADDRESSES', label: '' },
+	{ id: 'g', labelCode: 'GEOGRAPHICAL_NAMES', label: '' },
+	{ id: 'i', labelCode: 'INSTITUTIONS', label: '' },
+	{ id: 'm', labelCode: 'MEDIA_NAMES', label: '' },
+	{ id: 'n', labelCode: 'NUMBER_EXPRESSIONS', label: '' },
+	{ id: 'o', labelCode: 'ARTIFACT_NAMES', label: '' },
+	{ id: 'p', labelCode: 'PERSONAL_NAMES', label: '' },
+	{ id: 't', labelCode: 'TIME_EXPRESSIONS', label: '' },
+	{ id: 'P', labelCode: 'COMPLEX_PERSON_NAMES', label: '' },
+	{ id: 'T', labelCode: 'COMPLEX_TIME_EXPRESSION', label: '' },
+	{ id: 'A', labelCode: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
+	{ id: 'C', labelCode: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
 ];
+
+export const useNameTagParamExportOptions = () => {
+	const { t } = useTranslation();
+	return useMemo(
+		() => ({
+			nameTagParamsExportOptions: nameTagParamsExportOptions.map(ntp => ({
+				...ntp,
+				label: t(`nametag:labels.${ntp.labelCode}`) ?? '',
+			})),
+			labelFromOption: (item: NameTagExportOption | null) =>
+				item ? item.label : '',
+		}),
+
+		[t],
+	);
+};
 
 export const altoParamsOptions: AltoParam[] = [
 	'height',
