@@ -89,7 +89,8 @@ export const usePublicationChildren = (uuid: string | undefined) =>
 		() =>
 			api()
 				.get('item/' + uuid + '/children')
-				.json<PublicationChild[]>(),
+				.json<PublicationChild[]>()
+				.then(r => r.filter(c => c.model !== 'internalpart')), //TODO:FIXME:
 		{
 			staleTime: Infinity,
 			refetchOnWindowFocus: false,
