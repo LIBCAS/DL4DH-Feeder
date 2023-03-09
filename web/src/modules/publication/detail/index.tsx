@@ -19,6 +19,7 @@ import {
 } from 'api/publicationsApi';
 
 import { useMobileView } from 'hooks/useViewport';
+import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 
@@ -91,82 +92,84 @@ const PublicationDetail = () => {
 	const datanode = pubChildren.data?.[0]?.datanode ?? false;
 
 	return (
-		<ResponsiveWrapper
-			bg="primaryLight"
-			px={0}
-			mx={0}
-			alignItems="flex-start"
-			width={1}
-			height="100vh"
-		>
-			<Flex
-				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
-				css={css`
-					transition: width 200ms;
-				`}
-				onTransitionEnd={() => {
-					mapRef.current?.updateSize();
-				}}
+		<WordHighlightContextProvider>
+			<ResponsiveWrapper
+				bg="primaryLight"
+				px={0}
+				mx={0}
+				alignItems="flex-start"
+				width={1}
+				height="100vh"
 			>
 				<Flex
-					overflow="visible"
-					width={leftCollapsed ? 0 : 300}
-					minWidth={0}
-					maxWidth={300}
-					zIndex={3}
+					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
 					css={css`
-						transition-duration: 200ms;
-						transition-property: width transform;
-						transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+						transition: width 200ms;
 					`}
+					onTransitionEnd={() => {
+						mapRef.current?.updateSize();
+					}}
 				>
+					<Flex
+						overflow="visible"
+						width={leftCollapsed ? 0 : 300}
+						minWidth={0}
+						maxWidth={300}
+						zIndex={3}
+						css={css`
+							transition-duration: 200ms;
+							transition-property: width transform;
+							transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+						`}
+					>
+						<PublicationSidePanel
+							variant="left"
+							defaultView="search"
+							pages={pages}
+							onCollapse={() => setLeftCollapsed(p => !p)}
+							isCollapsed={leftCollapsed}
+						/>
+					</Flex>
+
+					{!datanode ? (
+						<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
+							<PeriodicalTiles data={pubChildren.data} />
+							<Text>Dlasie info</Text>
+							<Flex flexWrap="wrap">
+								{(pubChildren.data ?? []).map(ch => (
+									<Flex
+										key={ch.pid}
+										p={3}
+										m={2}
+										flexWrap="wrap"
+										css={css`
+											border: 1px solid ${theme.colors.primary};
+										`}
+									>
+										{Object.keys(ch.details).map(k => (
+											<Text key={k} m={2}>
+												{k} : {ch.details[k]}
+											</Text>
+										))}
+									</Flex>
+								))}
+							</Flex>
+						</Wrapper>
+					) : (
+						<Flex height="100vh" width="100%">
+							<PubMainDetail page={pageId} leftPublic={isPublic} />
+						</Flex>
+					)}
+
 					<PublicationSidePanel
-						variant="left"
-						defaultView="search"
+						variant="right"
 						pages={pages}
-						onCollapse={() => setLeftCollapsed(p => !p)}
-						isCollapsed={leftCollapsed}
+						onCollapse={() => setRightCollapsed(p => !p)}
+						isCollapsed={rightCollapsed}
 					/>
 				</Flex>
-
-				{!datanode ? (
-					<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
-						<PeriodicalTiles data={pubChildren.data} />
-						<Text>Dlasie info</Text>
-						<Flex flexWrap="wrap">
-							{(pubChildren.data ?? []).map(ch => (
-								<Flex
-									key={ch.pid}
-									p={3}
-									m={2}
-									flexWrap="wrap"
-									css={css`
-										border: 1px solid ${theme.colors.primary};
-									`}
-								>
-									{Object.keys(ch.details).map(k => (
-										<Text key={k} m={2}>
-											{k} : {ch.details[k]}
-										</Text>
-									))}
-								</Flex>
-							))}
-						</Flex>
-					</Wrapper>
-				) : (
-					<Flex height="100vh" width="100%">
-						<PubMainDetail page={pageId} leftPublic={isPublic} />
-					</Flex>
-				)}
-
-				<PublicationSidePanel
-					variant="right"
-					pages={pages}
-					onCollapse={() => setRightCollapsed(p => !p)}
-					isCollapsed={rightCollapsed}
-				/>
-			</Flex>
-		</ResponsiveWrapper>
+			</ResponsiveWrapper>
+		</WordHighlightContextProvider>
 	);
 };
 export default PublicationDetail;

@@ -14,6 +14,8 @@ import {
 	usePublicationDetail,
 } from 'api/publicationsApi';
 
+import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
@@ -136,63 +138,65 @@ const MultiView = () => {
 	const isPublicRight = detail2.data?.policy === 'public';
 
 	return (
-		<ResponsiveWrapper
-			bg="primaryLight"
-			px={0}
-			mx={0}
-			alignItems="flex-start"
-			width={1}
-			height="100vh"
-		>
-			<Flex
-				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
-				css={css`
-					transition: width 200ms;
-				`}
-				onTransitionEnd={() => {
-					mapRef.current?.updateSize();
-					mapRefOfSecond.current?.updateSize();
-				}}
+		<WordHighlightContextProvider>
+			<ResponsiveWrapper
+				bg="primaryLight"
+				px={0}
+				mx={0}
+				alignItems="flex-start"
+				width={1}
+				height="100vh"
 			>
 				<Flex
-					overflow="visible"
-					width={leftCollapsed ? 0 : 300}
-					minWidth={leftCollapsed ? 0 : 300}
-					maxWidth={300}
-					zIndex={3}
+					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
 					css={css`
-						transition-duration: 200ms;
-						transition-property: width transform;
-						transform: translateX(${leftCollapsed ? '-305px' : '0px'});
+						transition: width 200ms;
 					`}
+					onTransitionEnd={() => {
+						mapRef.current?.updateSize();
+						mapRefOfSecond.current?.updateSize();
+					}}
 				>
+					<Flex
+						overflow="visible"
+						width={leftCollapsed ? 0 : 300}
+						minWidth={leftCollapsed ? 0 : 300}
+						maxWidth={300}
+						zIndex={3}
+						css={css`
+							transition-duration: 200ms;
+							transition-property: width transform;
+							transform: translateX(${leftCollapsed ? '-305px' : '0px'});
+						`}
+					>
+						<PublicationSidePanel
+							variant="left"
+							defaultView="search"
+							pages={pages1}
+							onCollapse={() => setLeftCollapsed(p => !p)}
+							isCollapsed={leftCollapsed}
+						/>
+					</Flex>
+
+					<Flex height="100vh" width="100%">
+						<PubMainDetail
+							page={pageId1}
+							pageOfSecond={pageId2}
+							leftPublic={isPublicLeft}
+							rightPublic={isPublicRight}
+						/>
+					</Flex>
+
 					<PublicationSidePanel
-						variant="left"
-						defaultView="search"
-						pages={pages1}
-						onCollapse={() => setLeftCollapsed(p => !p)}
-						isCollapsed={leftCollapsed}
+						variant="right"
+						pages={pages2}
+						onCollapse={() => setRightCollapsed(p => !p)}
+						isCollapsed={rightCollapsed}
+						isSecond
 					/>
 				</Flex>
-
-				<Flex height="100vh" width="100%">
-					<PubMainDetail
-						page={pageId1}
-						pageOfSecond={pageId2}
-						leftPublic={isPublicLeft}
-						rightPublic={isPublicRight}
-					/>
-				</Flex>
-
-				<PublicationSidePanel
-					variant="right"
-					pages={pages2}
-					onCollapse={() => setRightCollapsed(p => !p)}
-					isCollapsed={rightCollapsed}
-					isSecond
-				/>
-			</Flex>
-		</ResponsiveWrapper>
+			</ResponsiveWrapper>
+		</WordHighlightContextProvider>
 	);
 };
 export default MultiView;

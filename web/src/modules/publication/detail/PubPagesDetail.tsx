@@ -14,6 +14,8 @@ import { api } from 'api';
 import { useChildrenSearch } from 'api/childrenSearchApi';
 import { TagNameEnum } from 'api/models';
 
+import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PubThumbnails from './PubThumbnails';
@@ -50,6 +52,17 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 		: pctx.publication?.enriched;
 
 	const response = useChildrenSearch(uuid, query, query !== '');
+	const wordHighlightCtx = useWordHighlightContext();
+
+	useEffect(() => {
+		if (!response.isLoading && response.data) {
+			if (isSecond) {
+				wordHighlightCtx?.setResult2?.(response.data);
+			} else {
+				wordHighlightCtx?.setResult1?.(response.data);
+			}
+		}
+	}, [response, wordHighlightCtx, isSecond]);
 
 	const results = useMemo(() => response?.data ?? {}, [response.data]);
 
@@ -164,7 +177,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 
 			<PubThumbnails
 				isSecond={isSecond}
-				marginTop={120}
+				marginTop={150}
 				pagesSearchResult={filtered}
 				searchMode={query !== ''}
 			/>
