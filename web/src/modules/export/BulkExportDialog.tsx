@@ -30,8 +30,8 @@ import {
 	altoParamsOptions,
 	exportFieldOptions,
 	ExportFormatOption,
-	nameTagParamsOptions,
 	udPipeParamsOptions,
+	useNameTagParamExportOptions,
 } from './exportModels';
 import { generateExportName, useCheckAltoStreams } from './exportUtils';
 import {
@@ -54,6 +54,8 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { t } = useTranslation();
 	const [allEnriched, setAllEnriched] = useState<boolean>(false);
 	const [checkAltoStream, setCheckAltoStream] = useState<boolean>(false);
+	const { labelFromOption, nameTagParamsExportOptions } =
+		useNameTagParamExportOptions();
 
 	const exportCtx = useBulkExportContext();
 
@@ -251,13 +253,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						{/**TODO: */}
-						{/* <Text fontSize="sm">
-							Název publikace: <b>{pubTitle}</b>
-						</Text>
-						<Text fontSize="sm">
-							ID publikace: <b>{pubId}</b>
-						</Text> */}
 						<Text fontSize="sm">
 							{t('exports:dialog.all_enriched')}:{' '}
 							<b>{allEnriched ? t('common:yes') : t('common:no')}</b>
@@ -431,10 +426,13 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 									key="nameTagParams"
 									id="nameTagParams"
 									placeholder={t('exports:dialog.choose_field')}
-									options={nameTagParamsOptions}
+									options={nameTagParamsExportOptions}
 									value={values.nameTagParams ?? []}
 									onSetValue={setFieldValue}
+									labelFromOption={labelFromOption}
+									searchKeys={['label', 'labelCode']}
 									multiselect
+									keyFromOption={item => item?.id ?? ''}
 								/>
 								<Text my={2} mt={4}>
 									udPipe Params

@@ -32,10 +32,11 @@ import {
 	ExportFilterEQ,
 	ExportFormatOption,
 	ExportSort,
-	nameTagParamsOptions,
+	NameTagExportOption,
 	PipeParam,
 	TagParam,
 	udPipeParamsOptions,
+	useNameTagParamExportOptions,
 } from './exportModels';
 
 export type ExportFormType = {
@@ -46,7 +47,7 @@ export type ExportFormType = {
 	exportAll: boolean;
 	isSecond?: boolean;
 	altoParams?: AltoParam[];
-	nameTagParams?: TagParam[];
+	nameTagParams?: NameTagExportOption[];
 	udPipeParams?: PipeParam[];
 	pagesFilter: string[];
 	exportName: string;
@@ -157,7 +158,7 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 			},
 			teiExportParams: {
 				altoParams: values.altoParams,
-				nameTagParams: values.nameTagParams,
+				nameTagParams: values.nameTagParams?.map(nt => nt.id),
 				udPipeParams: values.udPipeParams,
 			},
 			jobType: 'EXPORT_' + values.format.id.toUpperCase(),
@@ -174,6 +175,8 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	const { keycloak } = useKeycloak();
 
 	const { id: paramId } = useParams<{ id: string }>();
+	const { labelFromOption, nameTagParamsExportOptions } =
+		useNameTagParamExportOptions();
 
 	const pubCtx = usePublicationContext();
 	const pubId = isSecond
@@ -452,10 +455,13 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									key="nameTagParams"
 									id="nameTagParams"
 									placeholder="Zvolte pole"
-									options={nameTagParamsOptions}
+									options={nameTagParamsExportOptions}
 									value={values.nameTagParams ?? []}
 									onSetValue={setFieldValue}
 									multiselect
+									labelFromOption={labelFromOption}
+									keyFromOption={item => item?.id ?? ''}
+									searchKeys={['label', 'labelCode']}
 								/>
 								<Text my={2} mt={4}>
 									udPipe Params

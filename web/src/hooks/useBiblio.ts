@@ -76,8 +76,9 @@ const convertModsToObj = (parsedXML: BiblioModsXML): BiblioModsParsed => {
 		.filter(t => t);
 
 	const genre =
-		base?.['mods:genre'].find(g => g?.['$']?.authority === 'czenas')?.['_'] ??
-		undefined;
+		base?.['mods:genre']?.find?.(g => g?.['$']?.authority === 'czenas')?.[
+			'_'
+		] ?? undefined;
 
 	const locationRaw =
 		base?.['mods:location']?.[0]?.['mods:physicalLocation']?.[0];
