@@ -71,7 +71,9 @@ public class ImportServiceImpl implements ImportService {
             }
             page += 1;
         } while ((10*page <= publications.getTotal()));
-        log.info("Processed "+processed+" elements");
+        if (processed > 0) {
+            log.info("Processed "+processed+" elements");
+        }
 
         lastSync.setValue(currentDate.toString());
 

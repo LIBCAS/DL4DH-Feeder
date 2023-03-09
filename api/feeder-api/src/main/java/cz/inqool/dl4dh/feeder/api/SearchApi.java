@@ -162,6 +162,7 @@ public class SearchApi {
 
     @PostMapping(value = "")
     public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") boolean save, Principal user) {
+        // Save a query if it is requested
         if (user != null && save) {
             filters.setUsername(user.getName());
             if (filters.getNameTagFilters() != null) {
@@ -169,6 +170,7 @@ public class SearchApi {
             }
             filterRepository.save(filters);
         }
+
         // Search in Kramerius+
         // TODO change getting ids from facet to only one call on K+ solr (because of wrong get of ids from K solr and limit of facet)
         SolrQueryWithFacetResponseDto resultKPlus = solrWebClient.get()

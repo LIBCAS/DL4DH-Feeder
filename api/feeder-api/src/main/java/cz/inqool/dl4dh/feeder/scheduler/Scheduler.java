@@ -18,8 +18,8 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 10000, initialDelay = 3000)
     public void scheduleHarvestsSync() {
-        log.info("SCHEDULER STARTS");
+        log.debug("SCHEDULER STARTS");
         importService.sync();
-        log.info("SCHEDULER ENDS");
+        log.debug("SCHEDULER ENDS");
     }
 }
