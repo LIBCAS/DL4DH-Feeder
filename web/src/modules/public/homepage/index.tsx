@@ -11,6 +11,7 @@ import {
 } from 'react-icons/md';
 import useMeasure from 'react-use-measure';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import TextInput from 'components/form/input/TextInput';
@@ -34,6 +35,7 @@ const Homepage: FC = () => {
 	const [wrapperRef, { width }] = useMeasure({
 		debounce: 100,
 	});
+	const nav = useNavigate();
 	const { t } = useTranslation('homepage');
 	const query = `${toSearch ? `query=${toSearch}` : ''}${
 		publicOnly ? `${toSearch ? '&' : ''}availability=PUBLIC` : ''
@@ -54,6 +56,7 @@ const Homepage: FC = () => {
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 	const logo = info.data?.kramerius.logo ?? undefined;
+
 	return (
 		<ResponsiveWrapper bg="white" px={1} mx={0}>
 			<Flex
@@ -96,6 +99,11 @@ const Homepage: FC = () => {
 								label=""
 								labelType="inline"
 								color="primary"
+								onKeyPress={e => {
+									if (e.key === 'Enter') {
+										nav(`/search${query ? `?${query}` : ''}`);
+									}
+								}}
 								value={toSearch}
 								iconLeft={
 									<Flex color="primary" ml={2}>
@@ -117,7 +125,9 @@ const Homepage: FC = () => {
 									)
 								}
 								onChange={e => {
-									setToSearch(e.currentTarget.value);
+									console.log('e.currentTarget.value');
+									console.log(e.target.value);
+									setToSearch(e.target.value);
 									debouncedHint(e.target.value);
 								}}
 							/>
