@@ -332,10 +332,10 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 						{values.format.id !== 'text' && values.format.id !== 'alto' && (
 							<>
-								<Text fontSize="xl" mt={3}>
+								<Divider my={3} />
+								<Text fontSize="xl" my={3} fontWeight="bold">
 									{t('exports:dialog.parameters')}
 								</Text>
-								<Divider my={3} />
 							</>
 						)}
 
@@ -348,7 +348,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							>
 								<Text my={2}>{t('exports:dialog.delimiter')}</Text>
 								<RadioButton
-									//mr={5}
 									label={t('exports:dialog.comma')}
 									name="divider-radio-grp"
 									id="radio-comma"
@@ -408,7 +407,10 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 							)}
 						{values.format.id === 'tei' && (
 							<>
-								<Text my={2}>Alto Params</Text>
+								<Text fontSize="lg" my={3} fontWeight="bold">
+									{t('exports:dialog.limit_enrichment_parameters')}
+								</Text>
+								<Text my={2}>{t('exports:dialog.altoParams')}</Text>
 								<SelectInput
 									key="altoParams"
 									id="altoParams"
@@ -420,7 +422,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								/>
 
 								<Text my={2} mt={4}>
-									NameTag Params
+									{t('exports:dialog.nameTagParams')}
 								</Text>
 								<SelectInput
 									key="nameTagParams"
@@ -435,7 +437,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 									keyFromOption={item => item?.id ?? ''}
 								/>
 								<Text my={2} mt={4}>
-									udPipe Params
+									{t('exports:dialog.udPipeParams')}
 								</Text>
 								<SelectInput
 									key="udPipeParams"
