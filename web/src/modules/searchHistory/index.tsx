@@ -52,7 +52,7 @@ const SearchHistory = () => {
 	const response = useSearchHistory({
 		page,
 		size: pageSize,
-		sort: { direction: sorting, field: 'id' },
+		sort: { direction: sorting, field: 'createdAt' },
 	});
 
 	const constructQuery = useCallback((filter: FiltersDto) => {
@@ -111,6 +111,9 @@ const SearchHistory = () => {
 	const hist = (response.data?.content ?? []).map(h => ({
 		formatted: formatActiveFilters(h),
 		link: constructQuery(h),
+		created: h.createdAt
+			? new Date(h.createdAt)?.toLocaleDateString?.('cs') ?? h.id
+			: h.id,
 		query: h,
 		id: h.id,
 	}));
@@ -209,7 +212,7 @@ const SearchHistory = () => {
 								px={3}
 							>
 								<Flex alignItems="center">
-									<Text mr={2}>{row.id}.</Text>
+									<Text mr={2}>{row.created}</Text>
 									<Flex color="text" flexWrap="wrap" py={2}>
 										{Object.keys(row.formatted.arrayFilters).map(key =>
 											row.formatted.arrayFilters[key].map(value => {

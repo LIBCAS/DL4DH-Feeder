@@ -100,6 +100,7 @@ export type FiltersDto = {
 	nameTagFacet: string;
 	collections: string[];
 	advancedFilterField: AdvancedFilterFieldEnum;
+	createdAt?: string;
 };
 
 export type PagableResponse<T> = {

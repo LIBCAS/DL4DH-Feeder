@@ -11,6 +11,8 @@ import { useSearchContext } from 'hooks/useSearchContext';
 
 import Store from 'utils/Store';
 
+import ProtectedRoute from './ProtectedRoute';
+
 const NotFound = React.lazy(() => import('modules/notFound'));
 
 // Public
@@ -92,7 +94,9 @@ const AppRoutes: React.FC = () => {
 				path="/search-history"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<SearchHistory />
+						<ProtectedRoute>
+							<SearchHistory />
+						</ProtectedRoute>
 					</React.Suspense>
 				}
 			/>
@@ -108,7 +112,9 @@ const AppRoutes: React.FC = () => {
 				path="/exports"
 				element={
 					<React.Suspense fallback={<Loader />}>
-						<ExportsDashboard />
+						<ProtectedRoute>
+							<ExportsDashboard />
+						</ProtectedRoute>
 					</React.Suspense>
 				}
 			/>
