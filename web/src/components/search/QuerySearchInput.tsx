@@ -99,7 +99,7 @@ const QuerySearchInput: FC<Props> = ({
 		[publicOnly, hintApi],
 	);
 
-	const debouncedHint = useMemo(() => debounce(getHint, 100), [getHint]);
+	const debouncedHint = useMemo(() => debounce(getHint, 50), [getHint]);
 
 	return (
 		<>
