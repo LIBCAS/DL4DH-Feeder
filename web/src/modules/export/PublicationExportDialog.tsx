@@ -4,6 +4,7 @@ import { FC, useCallback } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import SelectInput from 'components/form/select/SelectInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -174,6 +175,8 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	const { keycloak } = useKeycloak();
 
+	const { t } = useTranslation();
+
 	const { id: paramId } = useParams<{ id: string }>();
 	const { labelFromOption, nameTagParamsExportOptions } =
 		useNameTagParamExportOptions();
@@ -329,7 +332,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 						</Text>
 
 						<Text my={2} mt={4}>
-							Název exportu
+							{t('exports:dialog.export_name')}
 						</Text>
 						<TextInput
 							id="exportName"
@@ -344,7 +347,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 						/>
 
 						<Text my={2} mt={4}>
-							Formát
+							{t('exports:dialog.format')}
 						</Text>
 						<SimpleSelect
 							formikId="format"
@@ -361,10 +364,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 
 						{values.format.id !== 'text' && values.format.id !== 'alto' && (
 							<>
-								<Text fontSize="xl" mt={3}>
-									Parametry
-								</Text>
 								<Divider my={3} />
+								<Text fontSize="xl" my={3} fontWeight="bold">
+									{t('exports:dialog.parameters')}
+								</Text>
 							</>
 						)}
 
@@ -375,10 +378,10 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								justifyContent="space-between"
 								mr={2}
 							>
-								<Text my={2}>Rozdělovač</Text>
+								<Text my={2}>{t('exports:dialog.delimiter')}</Text>
 								<RadioButton
 									//mr={5}
-									label="Čárka"
+									label={t('exports:dialog.comma')}
 									name="divider-radio-grp"
 									id="radio-comma"
 									checked={values.delimiter === delimiterEnum.comma}
@@ -387,7 +390,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									}}
 								/>
 								<RadioButton
-									label="Tabulátor"
+									label={t('exports:dialog.tab')}
 									name="divider-radio-grp"
 									id="radio-tab"
 									checked={values.delimiter === delimiterEnum.tab}
@@ -401,11 +404,11 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							values.format.id !== 'alto' &&
 							values.format.id !== 'tei' && (
 								<>
-									<Text my={2}>Zahrnout pole</Text>
+									<Text my={2}>{t('exports:dialog.include_fields')}</Text>
 									<SelectInput
 										key="includeFields"
 										id="includeFields"
-										placeholder="Zvolte pole"
+										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
 										nameFromOption={item => item?.label ?? ''}
 										labelFromOption={item => item?.label ?? ''}
@@ -417,13 +420,12 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									/>
 
 									<Text my={2} mt={4}>
-										Nezahrnout pole
+										{t('exports:dialog.exclude_fields')}
 									</Text>
-
 									<SelectInput
 										key="excludeFields"
 										id="excludeFields"
-										placeholder="Zvolte pole"
+										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
 										nameFromOption={item => item?.label ?? ''}
 										labelFromOption={item => item?.label ?? ''}
@@ -437,11 +439,14 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 							)}
 						{values.format.id === 'tei' && (
 							<>
-								<Text my={2}>Alto Params</Text>
+								<Text fontSize="lg" my={3} fontWeight="bold">
+									{t('exports:dialog.limit_enrichment_parameters')}
+								</Text>
+								<Text my={2}>{t('exports:dialog.altoParams')}</Text>
 								<SelectInput
 									key="altoParams"
 									id="altoParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={altoParamsOptions}
 									value={values.altoParams ?? []}
 									onSetValue={setFieldValue}
@@ -449,12 +454,12 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 								/>
 
 								<Text my={2} mt={4}>
-									NameTag Params
+									{t('exports:dialog.nameTagParams')}
 								</Text>
 								<SelectInput
 									key="nameTagParams"
 									id="nameTagParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={nameTagParamsExportOptions}
 									value={values.nameTagParams ?? []}
 									onSetValue={setFieldValue}
@@ -464,12 +469,12 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									searchKeys={['label', 'labelCode']}
 								/>
 								<Text my={2} mt={4}>
-									udPipe Params
+									{t('exports:dialog.udPipeParams')}
 								</Text>
 								<SelectInput
 									key="udPipeParams"
 									id="udPipeParams"
-									placeholder="Zvolte pole"
+									placeholder={t('exports:dialog.choose_field')}
 									options={udPipeParamsOptions}
 									value={values.udPipeParams ?? []}
 									onSetValue={setFieldValue}
@@ -494,16 +499,17 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 									loading={isSubmitting}
 									disabled={isSubmitting}
 								>
-									Exportovat
+									{t('exports:dialog.finish_export_button')}
 								</Button>
 								<Button variant="outlined" ml={3} onClick={closeModal}>
-									Zrušit
+									{t('exports:dialog.cancel')}
 								</Button>
 							</Flex>
 							<Flex alignItems="center">
 								<MdInfo size={20} />
 								<Text ml={2}>
-									{getPreselectedChildren(values.pagesFilter).length} Stránek |
+									{getPreselectedChildren(values.pagesFilter).length}{' '}
+									{t('exports:dialog.publications_count')} |
 								</Text>
 
 								<EditSelectedChildren

@@ -119,7 +119,8 @@
     "exports": "Exports",
     "history": "Request history",
     "account": " Account settings",
-    "go_to_kramerius": "Go to Kramerius"
+    "go_to_kramerius": "Go to Kramerius",
+    "login_request": "To access this page you have to be logged in."
   },
   "searchbar": {
     "main": {
@@ -239,6 +240,10 @@
       "export_name":"Export name",
       "format":"Format",
       "parameters":"Parameters",
+      "limit_enrichment_parameters":"Limit enrichment to:",
+      "altoParams":"ALTO attributes",
+      "nameTagParams":"NameTag recognized entities",
+      "udPipeParams":"udPipe attributes",
       "delimiter":"Delimiter",
       "comma":"Comma",
       "tab":"Tab",

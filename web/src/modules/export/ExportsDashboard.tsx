@@ -31,41 +31,7 @@ const Cell = styled(Text)`
 `;
 
 const ExportsDashboard = () => {
-	const { keycloak } = useKeycloak();
 	const { t } = useTranslation('exports');
-
-	if (!keycloak.authenticated) {
-		return (
-			<Wrapper
-				height="100vh"
-				alignItems="flex-start"
-				p={[4, 0]}
-				width={1}
-				bg="paper"
-			>
-				<Paper color="#444444!important" width="90%">
-					<Box mt={3}>
-						<H1
-							my={3}
-							textAlign="left"
-							color="#444444!important"
-							fontWeight="normal"
-						>
-							{t('exports_dashboard.login_request')}
-						</H1>
-						<Button
-							variant="primary"
-							onClick={() => {
-								keycloak.login();
-							}}
-						>
-							{t('exports_dashboard.login')}
-						</Button>
-					</Box>
-				</Paper>
-			</Wrapper>
-		);
-	}
 
 	return (
 		<Wrapper

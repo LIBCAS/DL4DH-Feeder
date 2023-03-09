@@ -94,7 +94,7 @@ export const udPipeParamsOptions: PipeParam[] = [
 	'pos',
 	'msd',
 	'join',
-	'?',
+	//	'?',
 ];
 
 export type NameTagExportOption = {
@@ -139,7 +139,7 @@ export const altoParamsOptions: AltoParam[] = [
 	'width',
 	'vpos',
 	'hpos',
-	'?',
+	//'?',
 ];
 
 export const parseFieldOptions = (
