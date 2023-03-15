@@ -278,8 +278,8 @@ export class Author {
 }
 
 export class Location {
-	public shelfLocator;
-	public physicalLocation;
+	public shelfLocator: string | undefined;
+	public physicalLocation: string | undefined;
 
 	empty() {
 		return !(this.shelfLocator || this.physicalLocation);
