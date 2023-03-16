@@ -74,7 +74,10 @@ const PublicationDetail = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId, detail.data, pubCtx.publicationChildrenFiltered]);
 	useEffect(() => {
-		if (pubChildren.isSuccess && !pubChildren.data?.[0]?.datanode) {
+		if (
+			pubChildren.isSuccess &&
+			pubChildren.data.filter(d => d.datanode)?.length === 0
+		) {
 			nav(`/periodical/${id}`, { replace: true });
 		}
 	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);
@@ -89,7 +92,11 @@ const PublicationDetail = () => {
 
 	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail.data?.policy === 'public';
-	const datanode = pubChildren.data?.[0]?.datanode ?? false;
+	//TODO: memoize
+	const datanode =
+		((pubChildren.isSuccess &&
+			pubChildren.data.filter(d => d.datanode)?.length) ??
+			0) > 0;
 
 	return (
 		<WordHighlightContextProvider>

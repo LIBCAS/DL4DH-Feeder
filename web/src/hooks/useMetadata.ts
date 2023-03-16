@@ -1,14 +1,16 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useQueries } from 'react-query';
 import { useTranslation } from 'react-i18next';
+import { uniqWith } from 'lodash-es';
 
-import { Metadata, Publisher } from 'components/kramerius/model/metadata.model';
+import { Author, Metadata } from 'components/kramerius/model/metadata.model';
 import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
 
 import { api } from 'api';
 
 import { PublicationContext } from 'api/models';
-const pids = 'uuid:26895750-1c70-11e8-a0cf-005056827e52';
+import { usePublicationDetail } from 'api/publicationsApi';
+
 const bibApi = async (pid: string) =>
 	await api()
 		.get(`item/${pid}/streams/BIBLIO_MODS`, {
@@ -80,6 +82,32 @@ type FormattedMetadata = {
 	))[];
 }[];
 
+export type FormattedBibliohraphy = {
+	model: string;
+	pid: string;
+	data: FormattedMetadata;
+	titles: {
+		mainTitle: string;
+		mainSubTitle: string;
+		otherTitles: {
+			mainTitle: string;
+			subTitle: string;
+		}[];
+	} | null;
+	authors: { primaryAuthors: Author[]; otherAutors: Author[] };
+	parts: {
+		mainPartNumber: string;
+		mainPartName: string;
+		otherTitles: {
+			partNumber: string;
+			partName: string;
+		}[];
+		label: string;
+	} | null;
+	year?: number[];
+	metadata: Metadata;
+};
+
 export const useMetadataFormatter = () => {
 	const { t } = useTranslation();
 
@@ -95,118 +123,134 @@ export const useMetadataFormatter = () => {
 				physicalDescriptions,
 				contents,
 				notes,
-				titles,
-				mainTitle,
+				extent,
 			} = m;
 
-			console.log({ model: m.model, titles, mainTitle });
-			result.push({
-				id: 'publishers',
-				data: [
-					{
-						value: publishers.map(p => p.fullDetail()),
-						label: t('metadata:publisher'),
-						empty: publishers && publishers.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'keywords',
-				data: [
-					{
-						value: keywords,
-						label: t('metadata:keywords'),
-						link: true,
-						empty: keywords && keywords.length === 0,
-						getLink: (itemIndex: number) =>
-							`/search?keywords=${keywords[itemIndex]}`,
-					},
-				],
-			});
-
-			result.push({
-				id: 'geonames',
-				data: [
-					{
-						value: geonames,
-						label: t('metadata:geonames'),
-						empty: geonames && geonames.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'languages',
-				data: [
-					{
-						value: languages.map(item => t(`language:${item}`)),
-						label: t('metadata:languages'),
-						link: true,
-						getLink: (itemIndex: number) =>
-							`/search?languages=${languages[itemIndex]}`,
-						empty: languages && languages.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'locations',
-				data: [
-					{
-						label: t('metadata:location'),
-						value: [
-							...locations.map(l => t(`sigla:${l.physicalLocation}`)),
-							...locations.map(l =>
-								t('metadata:shelf_locator', {
-									shelf_locator: l.shelfLocator,
-								}),
-							),
-						],
-						empty: locations && locations.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'physicalDescriptions',
-				data: [
-					{
-						value: [
-							...physicalDescriptions.map(p =>
-								p.extent ? `${t('metadata:extent')}}: ${p.extent}` : '',
-							),
-							...physicalDescriptions.map(p =>
-								p.note ? `${t('metadata:note')}: ${p.note}` : '',
-							),
-						],
-						label: t('metadata:physical_description'),
-						empty: physicalDescriptions && physicalDescriptions.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'contents',
-				data: [
-					{
-						value: contents,
-						label: t('metadata:content'),
-						empty: contents && contents.length === 0,
-					},
-				],
-			});
-
-			result.push({
-				id: 'notes',
-				data: [
-					{
-						value: notes,
-						label: t('metadata:notes'),
-						empty: notes && notes.length === 0,
-					},
-				],
-			});
+			if (publishers && publishers.length > 0) {
+				result.push({
+					id: 'publishers',
+					data: [
+						{
+							value: publishers.map(p => p.fullDetail()),
+							label: t('metadata:publisher'),
+							empty: publishers && publishers.length === 0,
+						},
+					],
+				});
+			}
+			if (publishers && publishers.length > 0) {
+				result.push({
+					id: 'keywords',
+					data: [
+						{
+							value: keywords,
+							label: t('metadata:keywords'),
+							link: true,
+							empty: keywords && keywords.length === 0,
+							getLink: (itemIndex: number) =>
+								`/search?keywords=${keywords[itemIndex]}`,
+						},
+					],
+				});
+			}
+			if (geonames && geonames.length > 0) {
+				result.push({
+					id: 'geonames',
+					data: [
+						{
+							value: geonames,
+							label: t('metadata:geonames'),
+							empty: geonames && geonames.length === 0,
+						},
+					],
+				});
+			}
+			if (languages && languages.length > 0) {
+				result.push({
+					id: 'languages',
+					data: [
+						{
+							value: languages.map(item => t(`language:${item}`)),
+							label: t('metadata:languages'),
+							link: true,
+							getLink: (itemIndex: number) =>
+								`/search?languages=${languages[itemIndex]}`,
+							empty: languages && languages.length === 0,
+						},
+					],
+				});
+			}
+			if (extent) {
+				result.push({
+					id: 'extent',
+					data: [
+						{
+							value: [extent],
+							label: t('metadata:extent'),
+						},
+					],
+				});
+			}
+			if (locations && locations.length > 0) {
+				result.push({
+					id: 'locations',
+					data: [
+						{
+							label: t('metadata:location'),
+							value: [
+								...locations.map(l => t(`sigla:${l.physicalLocation}`)),
+								...locations.map(l =>
+									t('metadata:shelf_locator', {
+										shelf_locator: l.shelfLocator,
+									}),
+								),
+							],
+							empty: locations && locations.length === 0,
+						},
+					],
+				});
+			}
+			if (physicalDescriptions && physicalDescriptions.length > 0) {
+				result.push({
+					id: 'physicalDescriptions',
+					data: [
+						{
+							value: [
+								...physicalDescriptions.map(p =>
+									p.extent ? `${t('metadata:extent')}: ${p.extent}` : '',
+								),
+								...physicalDescriptions.map(p => (p.note ? p.note : '')),
+							],
+							label: t('metadata:physical_description'),
+							empty: physicalDescriptions && physicalDescriptions.length === 0,
+						},
+					],
+				});
+			}
+			if (contents && contents.length > 0) {
+				result.push({
+					id: 'contents',
+					data: [
+						{
+							value: contents,
+							label: t('metadata:content'),
+							empty: contents && contents.length === 0,
+						},
+					],
+				});
+			}
+			if (notes && notes.length > 0) {
+				result.push({
+					id: 'notes',
+					data: [
+						{
+							value: notes,
+							label: t('metadata:notes'),
+							empty: notes && notes.length === 0,
+						},
+					],
+				});
+			}
 
 			return result;
 		},
@@ -234,17 +278,41 @@ export const useMetadataFormatter = () => {
 				return null;
 			}
 			const label = `${t(`metadata:${mapPartInfo[model]}`)}`;
-			const mainPartNumber = titles[0]?.partNumber ?? '';
-			const mainPartName = titles[0]?.partName ?? '';
-			const otherTitles = titles
-				.slice(1)
-				.map(t => ({ partNumber: t.partNumber, partName: t.partName }));
+			const mainPartNumber = (titles[0]?.partNumber ?? '') as string;
+			const mainPartName = (titles[0]?.partName ?? '') as string;
+			const otherTitles = titles.slice(1).map(t => ({
+				partNumber: t.partNumber as string,
+				partName: t.partName as string,
+			}));
 			return { mainPartNumber, mainPartName, otherTitles, label };
 		},
 		[t],
 	);
 
-	return { formatMetadata, getTitles, getPartsInfo };
+	const getAuthors = useCallback((m: Metadata) => {
+		const primaryAuthors = m.getPrimaryAuthors();
+		const otherAutors = m.getOtherAuthors();
+		return { primaryAuthors, otherAutors };
+	}, []);
+
+	const format = useCallback(
+		(fcm: FullContextMetadata): FormattedBibliohraphy[] => {
+			// uniqWith - filter out duplicates which may be in context (when there are internal parts)
+			return uniqWith(fcm ?? [], (a, b) => a.pid === b.pid).map(m => ({
+				model: m.model,
+				pid: m.pid,
+				data: formatMetadata(m.metadata),
+				titles: getTitles(m.metadata),
+				parts: getPartsInfo(m.metadata, m.model),
+				year: m.metadata.getYearRange(),
+				authors: getAuthors(m.metadata),
+				metadata: m.metadata,
+			}));
+		},
+		[formatMetadata, getAuthors, getPartsInfo, getTitles],
+	);
+
+	return { formatMetadata, getTitles, getPartsInfo, getAuthors, format };
 };
 
 export type FullContextMetadata = {
@@ -254,11 +322,12 @@ export type FullContextMetadata = {
 	xml: string;
 }[];
 
-const useMetadata = (context?: PublicationContext[]) => {
-	const [fcm, setFcm] = useState<FullContextMetadata>([]);
-	const [parsed, setParsed] = useState(false);
+const useMetadata = (uuid: string) => {
+	const publication = usePublicationDetail(uuid);
+	const pageTitle =
+		publication.data?.model === 'page' ? publication.data?.title : undefined;
 	const mqueries = useQueries(
-		(context ?? []).flat().map((ctx, index) => ({
+		(publication?.data?.context ?? []).flat().map((ctx, index) => ({
 			queryKey: ['stream-with-parse', ctx.pid, 'BIBLIO_MODS'],
 			queryFn: async () => {
 				const mod = await bibApi(ctx.pid);
@@ -266,9 +335,12 @@ const useMetadata = (context?: PublicationContext[]) => {
 			},
 		})),
 	);
-	const isLoading = useMemo(() => mqueries.some(q => q.isLoading), [mqueries]);
-	useEffect(() => {
-		if (!isLoading && !parsed) {
+	const isLoading = useMemo(
+		() => mqueries.some(q => q.isLoading) || publication.isLoading,
+		[mqueries, publication],
+	);
+	const fcm = useMemo(() => {
+		if (!isLoading) {
 			const metadata: FullContextMetadata = [];
 			mqueries.forEach(({ data }) => {
 				if (data) {
@@ -282,12 +354,13 @@ const useMetadata = (context?: PublicationContext[]) => {
 					});
 				}
 			});
-			setFcm(metadata);
-			setParsed(context ? true : false);
+			return metadata;
+		} else {
+			return [];
 		}
-	}, [isLoading, mqueries, parsed, context]);
+	}, [isLoading, mqueries]);
 
-	return { isLoading, fcm };
+	return { isLoading, fcm, pageTitle };
 };
 
 export default useMetadata;

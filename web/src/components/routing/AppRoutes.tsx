@@ -6,6 +6,8 @@ import { Loader } from 'modules/loader';
 import RouteUuid from 'modules/uuidRouting/RouteUuid';
 import SearchHistory from 'modules/searchHistory';
 
+import TestApp from 'TestApp';
+
 import useSanitizeSearchQuery from 'hooks/useSanitizeSearchQuery';
 import { useSearchContext } from 'hooks/useSearchContext';
 
@@ -147,6 +149,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<RouteUuid />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/test/:id"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<TestApp />
 					</React.Suspense>
 				}
 			/>

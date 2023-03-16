@@ -86,7 +86,7 @@ export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
 				? pageResult
 						.map(ocr =>
 							words
-								.filter(w => w.$.CONTENT.includes(ocr))
+								.filter(w => w?.$?.CONTENT?.includes?.(ocr))
 								.map(f => ({
 									hpos: parseInt(f.$.HPOS),
 									vpos: parseInt(f.$.VPOS),
@@ -101,6 +101,8 @@ export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
 
 	return filtered;
 };
+
+//TODO: remove
 
 // .map(f => ({
 // 	hpos: parseInt(f.$.VPOS),
