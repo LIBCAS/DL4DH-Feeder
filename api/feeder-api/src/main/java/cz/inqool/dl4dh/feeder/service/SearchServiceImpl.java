@@ -31,11 +31,10 @@ import java.util.stream.Collectors;
 @Service
 public class SearchServiceImpl implements SearchService {
     private static final Logger log = LoggerFactory.getLogger(SearchService.class);
-
+    private final HttpSolrClient feederSolr;
     private WebClient krameriusSolr;
     private WebClient feederSolrWebClient;
     private FilterRepository filterRepository;
-    private final HttpSolrClient feederSolr;
 
     public SearchServiceImpl(@Value("${solr.host.query}") String solrHost) {
         this.feederSolr = new HttpSolrClient.Builder(solrHost.trim()).build();
@@ -60,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
             solrQuery.setParam("facet.contains", filters.getQuery())
                     .setParam("facet.contains.ignoreCase", "true")
                     .setQuery(filters.toQuery())
-                    .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit","fedora.model:page","fedora.model:article"), true));
+                    .addFilterQuery(filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit", "fedora.model:page", "fedora.model:article"), true));
             if (filters.useEdismax()) {
                 solrQuery.setParam("defType", "edismax")
                         .setParam("qf", filters.getEdismaxFields(true));
@@ -78,8 +77,7 @@ public class SearchServiceImpl implements SearchService {
                         .sorted()
                         .limit(filters.getPageSize())
                         .collect(Collectors.toList());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 log.error("An error occurred during hinting.", ex);
                 return List.of();
             }
@@ -89,8 +87,8 @@ public class SearchServiceImpl implements SearchService {
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("defType", "edismax")
                         .queryParam("fl", "PID,dc.title")
-                        .queryParam("q", "dc.title:"+query.replaceAll(":","\\\\:")+"*")
-                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph","fedora.model:periodical","fedora.model:map","fedora.model:sheetmusic","fedora.model:monographunit"), false))
+                        .queryParam("q", "dc.title:" + query.replaceAll(":", "\\\\:") + "*")
+                        .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), false))
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")
                         .queryParam("bq", "dostupnost:public^5")
@@ -102,12 +100,13 @@ public class SearchServiceImpl implements SearchService {
                 .bodyToMono(SolrQueryResponseDto.class)
                 .blockOptional()
                 .orElseThrow();
-        return result.getResponse().getDocs().stream().map(d -> (String)d.get("dc.title")).collect(Collectors.toList());
+        return result.getResponse().getDocs().stream().map(d -> (String) d.get("dc.title")).collect(Collectors.toList());
     }
 
     public List<CollectionDto> getCollections() {
         return krameriusSolr.get().uri("/vc").retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
+                })
                 .blockOptional()
                 .orElse(List.of());
     }
@@ -127,8 +126,8 @@ public class SearchServiceImpl implements SearchService {
     private Set<String> reduceToEnrichedPIDs(Set<String> PIDs) {
         return feederSolrWebClient.get()
                 .uri("/select", uriBuilder -> uriBuilder
-                        .queryParam("q", PIDs.stream().map(v -> "PID:\""+v+"\"").collect(Collectors.joining(" OR ")))
-                        .queryParam("rows","0")
+                        .queryParam("q", PIDs.stream().map(v -> "PID:\"" + v + "\"").collect(Collectors.joining(" OR ")))
+                        .queryParam("rows", "0")
                         .queryParam("facet", "true")
                         .queryParam("facet.mincount", "1")
                         .queryParam("facet.field", "root_pid")
@@ -147,21 +146,26 @@ public class SearchServiceImpl implements SearchService {
     public SearchDto search(Filter filters) {
         boolean useEnriched = filters.useOnlyEnriched();
 
+        List<String> filterBase = List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
+        List<String> facetBase = List.of("keywords", "language", "facet_autor", "model_path", "dostupnost", "collection", "datum_begin");
+
         // Get documents from Feeder
         SolrQueryWithFacetResponseDto feederDocuments = feederSolrWebClient.get()
                 .uri("/select", uriBuilder -> {
-                    List<String> fqBase =  List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
-                    filters.applyFqQueryToUriBuilder(uriBuilder, fqBase, true)
+                    filters.applyFqQueryToUriBuilder(uriBuilder, filterBase, true)
                             .applyEdismaxToUriBuilder(uriBuilder, true);
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
                         uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
                     }
-                    Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field",f));
+                    facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
+                    Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field", f));
                     return uriBuilder.queryParam("q", filters.toQuery())
                             .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true")
+                            .queryParam("f.datum_begin.facet.limit", "-1")
+                            .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("start", filters.getStart())
                             .queryParam("rows", useEnriched ? filters.getPageSize() : 0)
                             .queryParam("sort", filters.getSort().toSolrSort(true))
@@ -173,25 +177,17 @@ public class SearchServiceImpl implements SearchService {
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .blockOptional()
                 .orElseThrow();
-        Map<String, Map<String, Object>> nametagFacets = feederDocuments.getFacet_counts().transformed();
 
         // Get documents from Kramerius
         SolrQueryWithFacetResponseDto krameriusDocuments = krameriusSolr.get()
                 .uri("/search", uriBuilder -> {
-                    List<String> fqBase =  List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
-                    filters.applyFqQueryToUriBuilder(uriBuilder, fqBase, false)
+                    filters.applyFqQueryToUriBuilder(uriBuilder, filterBase, false)
                             .applyEdismaxToUriBuilder(uriBuilder, false);
+                    facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     return uriBuilder.queryParam("q", filters.toQuery())
                             .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
-                            .queryParam("facet.field", "keywords")
-                            .queryParam("facet.field", "language")
-                            .queryParam("facet.field", "facet_autor")
-                            .queryParam("facet.field", "model_path")
-                            .queryParam("facet.field", "dostupnost")
-                            .queryParam("facet.field", "collection")
-                            .queryParam("facet.field", "datum_begin")
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("start", filters.getStart())
@@ -211,42 +207,47 @@ public class SearchServiceImpl implements SearchService {
 
         // Get PIDs of showing documents and check, if they are already enriched
         Set<String> documentsPIDs = result.getResponse().getDocs().stream()
-                .map(d -> (String)d.get("PID"))
+                .map(d -> (String) d.get("PID"))
                 .collect(Collectors.toSet());
         Set<String> enrichedPIDs = useEnriched ? documentsPIDs : reduceToEnrichedPIDs(documentsPIDs);
 
-        // Facets
+        // Nametag facets
+        Map<String, Map<String, Object>> nametagFacets = feederDocuments.getFacet_counts().transformed();
+        nametagFacets.keySet().removeAll(facetBase);
+
+        // Base facets
+        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(getCollections()
+                .stream()
+                .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()))
+        );
+        facets.keySet().retainAll(facetBase);
         Integer allDocuments = result.getResponse().getNumFound().intValue();
         Integer finalEnriched = feederDocuments.getResponse().getNumFound().intValue();
-        Map<String, Map<String, Object>> facets = krameriusDocuments.getFacet_counts()
-                .transformed(getCollections()
-                        .stream()
-                        .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()))
-                );
-        facets.put("enrichment", new HashMap<>(){{
+        facets.put("enrichment", new HashMap<>() {{
             put(EnrichmentEnum.ENRICHED.toString(), finalEnriched);
             put(EnrichmentEnum.NOT_ENRICHED.toString(), allDocuments - finalEnriched);
             put(EnrichmentEnum.ALL.toString(), allDocuments);
         }});
+
         return new SearchDto(
                 new PublicationsListDto(
                         result.getResponse().getNumFound(),
                         result.getResponse().getStart(),
                         result.getResponse().getDocs().stream().map(d ->
                                 new PublicationDto(
-                                        (String)d.get("fedora.model"),
-                                        (String)d.get("dostupnost"),
-                                        (String)d.get("datum_str"),
-                                        (List<String>)d.get("dc.creator"),
-                                        (String)d.get("dc.title"),
-                                        (String)d.get("PID"),
-                                        (String)d.get("root_title"),
+                                        (String) d.get("fedora.model"),
+                                        (String) d.get("dostupnost"),
+                                        (String) d.get("datum_str"),
+                                        (List<String>) d.get("dc.creator"),
+                                        (String) d.get("dc.title"),
+                                        (String) d.get("PID"),
+                                        (String) d.get("root_title"),
                                         enrichedPIDs.contains((String) d.get("PID"))
                                 )
                         ).collect(Collectors.toList())),
                 facets,
                 nametagFacets
-            );
+        );
     }
 
     @Resource
