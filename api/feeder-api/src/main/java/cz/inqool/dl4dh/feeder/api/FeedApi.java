@@ -78,7 +78,7 @@ public class FeedApi {
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .blockOptional()
                 .orElseThrow()
-                .getFacet_counts().transformed().get("root_pid").keySet();
+                .getFacet_counts().transformed(false).get("root_pid").keySet();
     }
 
     private PublicationsListDto getPublicationsListDto(FeedResponseDto result) {

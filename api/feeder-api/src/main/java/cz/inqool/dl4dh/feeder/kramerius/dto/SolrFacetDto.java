@@ -28,13 +28,14 @@ public class SolrFacetDto {
         }
     }
 
-    public Map<String, Map<String, Object>> transformed() {
-        return transformed(new HashMap<>());
+    public Map<String, Map<String, Object>> transformed(boolean onlyNametag) {
+        return transformed(onlyNametag, new HashMap<>());
     }
 
-    public Map<String, Map<String, Object>> transformed(Map<String, CollectionDto> collections) {
+    public Map<String, Map<String, Object>> transformed(boolean onlyNametag, Map<String, CollectionDto> collections) {
         return facet_fields.entrySet()
                 .stream()
+                .filter(e -> e.getKey().startsWith("nameTag.") == onlyNametag)
                 .collect(Collectors.toMap(e -> keyTransform(e.getKey()), e -> {
                     Map<String, Object> map = new TreeMap<>(Collator.getInstance(Locale.forLanguageTag("cs")));
                     for (int i = 0; i < e.getValue().size(); i+=2) {

@@ -139,7 +139,7 @@ public class SearchServiceImpl implements SearchService {
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .blockOptional()
                 .orElseThrow()
-                .getFacet_counts().transformed().get("root_pid").keySet();
+                .getFacet_counts().transformed(false).get("root_pid").keySet();
     }
 
     @Override
@@ -212,15 +212,13 @@ public class SearchServiceImpl implements SearchService {
         Set<String> enrichedPIDs = useEnriched ? documentsPIDs : reduceToEnrichedPIDs(documentsPIDs);
 
         // Nametag facets
-        Map<String, Map<String, Object>> nametagFacets = feederDocuments.getFacet_counts().transformed();
-        nametagFacets.keySet().removeAll(facetBase);
+        Map<String, Map<String, Object>> nametagFacets = feederDocuments.getFacet_counts().transformed(true);
 
         // Base facets
-        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(getCollections()
+        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(false, getCollections()
                 .stream()
                 .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()))
         );
-        facets.keySet().retainAll(facetBase);
         Integer allDocuments = result.getResponse().getNumFound().intValue();
         Integer finalEnriched = feederDocuments.getResponse().getNumFound().intValue();
         facets.put("enrichment", new HashMap<>() {{
