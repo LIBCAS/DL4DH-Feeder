@@ -218,7 +218,7 @@ public class SearchServiceImpl implements SearchService {
         // Facets
         Integer allDocuments = result.getResponse().getNumFound().intValue();
         Integer finalEnriched = feederDocuments.getResponse().getNumFound().intValue();
-        Map<String, Map<String, Object>> facets = result.getFacet_counts()
+        Map<String, Map<String, Object>> facets = krameriusDocuments.getFacet_counts()
                 .transformed(getCollections()
                         .stream()
                         .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()))
