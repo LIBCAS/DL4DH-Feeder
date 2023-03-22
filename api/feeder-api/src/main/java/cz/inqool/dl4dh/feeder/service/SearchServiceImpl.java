@@ -17,9 +17,12 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
@@ -147,7 +150,7 @@ public class SearchServiceImpl implements SearchService {
                     filters.applyFqQueryToUriBuilder(uriBuilder, filterBase, true)
                             .applyEdismaxToUriBuilder(uriBuilder, true);
                     if (filters.getNameTagFacet() != null && !filters.getNameTagFacet().isEmpty()) {
-                        uriBuilder.queryParam("facet.contains", filters.getNameTagFacet());
+                        Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("f."+f+".facet.contains", filters.getNameTagFacet()));
                     }
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field", f));
@@ -166,6 +169,10 @@ public class SearchServiceImpl implements SearchService {
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(HttpStatus::isError, res -> {
+                    res.toEntity(String.class).subscribe(entity -> log.error("Client error {}", entity));
+                    return Mono.error(new HttpClientErrorException(res.statusCode()));
+                })
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .blockOptional()
                 .orElseThrow();
@@ -190,6 +197,10 @@ public class SearchServiceImpl implements SearchService {
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(HttpStatus::isError, res -> {
+                    res.toEntity(String.class).subscribe(entity -> log.error("Client error {}", entity));
+                    return Mono.error(new HttpClientErrorException(res.statusCode()));
+                })
                 .bodyToMono(SolrQueryWithFacetResponseDto.class)
                 .blockOptional()
                 .orElseThrow();
