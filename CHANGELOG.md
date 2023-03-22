@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.2.0
+
+- refactoring search api with new search service
+- add old fields to solr scheme for backward compatibility
+- index root document with all enriched data
+- FIX search with a lot of enriched publications
+
+## v1.1.0
+
+- export endpoint with format inside request payload
+- homepage info with basic text
+- disable menu link to a user account
+- documents import from Kramerius+ with pagination
+- feed api performance improvement
+- hardbreak if there is a loop while importing new publications
+- filter sort option LAST_ENRICHED
+- search history, pagination, sorting, nametags parsing
+- fill export name with first name of publication
+- TEI export nametag attributes
+- audit model with createdAt and updatedAt fields
+- FIX typos and nullables
+- FIX generate export button
+- FIX export format style
+- FIX download of enriched pages from Kramerius+
+
+## v1.0.0
+
 ## v0.7.0
   - exports:
     - items selected for export are saved in local storage

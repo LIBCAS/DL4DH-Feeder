@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.util.UriBuilder;
 
 import javax.persistence.*;
 import java.util.*;
@@ -92,6 +93,22 @@ public class Filter extends AuditModel {
 
     public boolean useEdismax() {
         return advancedFilterField != null && !advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
+    }
+
+    public Filter applyEdismaxToUriBuilder(UriBuilder uriBuilder, boolean includeNameTag) {
+        if (this.useEdismax()) {
+            uriBuilder.queryParam("defType", "edismax")
+                    .queryParam("qf", this.getEdismaxFields(includeNameTag));
+        }
+        return this;
+    }
+
+    public Filter applyFqQueryToUriBuilder(UriBuilder uriBuilder, List<String> base, boolean includeNameTag) {
+        if (!this.toFqQuery(base, includeNameTag).isEmpty()) {
+            uriBuilder
+                    .queryParam("fq", this.toFqQuery(base, includeNameTag));
+        }
+        return this;
     }
 
     @JsonIgnore

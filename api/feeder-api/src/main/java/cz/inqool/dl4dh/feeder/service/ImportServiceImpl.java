@@ -87,13 +87,15 @@ public class ImportServiceImpl implements ImportService {
         int all = 0;
 
         List<SolrObjectDto> newObjects = new ArrayList<>();
+        SolrObjectDto rootDocument = null;
         if (document.getPublishInfo().getIsPublished() == null || !document.getPublishInfo().getIsPublished()) {
             solr.deleteById(document.getId());
             removed += 1;
             all += 1;
         }
         else {
-            newObjects.add(new SolrObjectDto(document.getId(), document.getId()));
+            rootDocument = new SolrObjectDto(document.getId(), document.getId());
+            newObjects.add(rootDocument);
         }
 
 
@@ -141,39 +143,75 @@ public class ImportServiceImpl implements ImportService {
                             switch (NameTagEntityType.fromString(entity.getEntityType())) {
                                 case NUMBERS_IN_ADDRESSES:
                                     newObject.getNumbersInAddresses().add(text);
+                                    if (rootDocument != null && !rootDocument.getNumbersInAddresses().contains(text)) {
+                                        rootDocument.getNumbersInAddresses().add(text);
+                                    }
                                     break;
                                 case GEOGRAPHICAL_NAMES:
                                     newObject.getGeographicalNames().add(text);
+                                    if (rootDocument != null && !rootDocument.getGeographicalNames().contains(text)) {
+                                        rootDocument.getGeographicalNames().add(text);
+                                    }
                                     break;
                                 case INSTITUTIONS:
                                     newObject.getInstitutions().add(text);
+                                    if (rootDocument != null && !rootDocument.getInstitutions().contains(text)) {
+                                        rootDocument.getInstitutions().add(text);
+                                    }
                                     break;
                                 case MEDIA_NAMES:
                                     newObject.getMediaNames().add(text);
+                                    if (rootDocument != null && !rootDocument.getMediaNames().contains(text)) {
+                                        rootDocument.getMediaNames().add(text);
+                                    }
                                     break;
                                 case NUMBER_EXPRESSIONS:
                                     newObject.getNumberExpressions().add(text);
+                                    if (rootDocument != null && !rootDocument.getNumberExpressions().contains(text)) {
+                                        rootDocument.getNumberExpressions().add(text);
+                                    }
                                     break;
                                 case ARTIFACT_NAMES:
                                     newObject.getArtifactNames().add(text);
+                                    if (rootDocument != null && !rootDocument.getArtifactNames().contains(text)) {
+                                        rootDocument.getArtifactNames().add(text);
+                                    }
                                     break;
                                 case PERSONAL_NAMES:
                                     newObject.getPersonalNames().add(text);
+                                    if (rootDocument != null && !rootDocument.getPersonalNames().contains(text)) {
+                                        rootDocument.getPersonalNames().add(text);
+                                    }
                                     break;
                                 case TIME_EXPRESSIONS:
                                     newObject.getTimeExpression().add(text);
+                                    if (rootDocument != null && !rootDocument.getTimeExpression().contains(text)) {
+                                        rootDocument.getTimeExpression().add(text);
+                                    }
                                     break;
                                 case COMPLEX_PERSON_NAMES:
                                     newObject.getComplexPersonNames().add(text);
+                                    if (rootDocument != null && !rootDocument.getComplexPersonNames().contains(text)) {
+                                        rootDocument.getComplexPersonNames().add(text);
+                                    }
                                     break;
                                 case COMPLEX_TIME_EXPRESSION:
                                     newObject.getComplexTimeExpression().add(text);
+                                    if (rootDocument != null && !rootDocument.getComplexTimeExpression().contains(text)) {
+                                        rootDocument.getComplexTimeExpression().add(text);
+                                    }
                                     break;
                                 case COMPLEX_ADDRESS_EXPRESSION:
                                     newObject.getComplexAddressExpression().add(text);
+                                    if (rootDocument != null && !rootDocument.getComplexAddressExpression().contains(text)) {
+                                        rootDocument.getComplexAddressExpression().add(text);
+                                    }
                                     break;
                                 case COMPLEX_BIBLIO_EXPRESSION:
                                     newObject.getComplexBiblioExpression().add(text);
+                                    if (rootDocument != null && !rootDocument.getComplexBiblioExpression().contains(text)) {
+                                        rootDocument.getComplexBiblioExpression().add(text);
+                                    }
                                     break;
                             }
                         }
@@ -182,10 +220,11 @@ public class ImportServiceImpl implements ImportService {
                 newObjects.add(newObject);
             }
 
+
             for (SolrObjectDto solrObjectDto : newObjects) {
                 SolrQueryResponseDto result = kramerius.get()
                         .uri("/search", uriBuilder -> uriBuilder
-                                .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,keywords,language,collection,created_date,title_sort,facet_autor,model_path")
+                                .queryParam("fl", "PID,root_title,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,datum_str,keywords,language,collection,created_date,title_sort,facet_autor,model_path")
                                 .queryParam("q", "PID:" + solrObjectDto.getPID().replace(":", "\\:"))
                                 .queryParam("rows", "1")
                                 .build())
@@ -197,11 +236,14 @@ public class ImportServiceImpl implements ImportService {
                 if (result.getResponse().getDocs().stream().findFirst().isPresent()) {
                     Map<String, Object> values = result.getResponse().getDocs().stream().findFirst().get();
                     String created_date = (String) values.getOrDefault("created_date", null);
+                    solrObjectDto.setRootTitle((String) values.get("root_title"));
                     solrObjectDto.setModel((String) values.get("fedora.model"));
                     solrObjectDto.setDostupnost((String) values.get("dostupnost"));
                     solrObjectDto.setTitle((String) values.get("dc.title"));
+                    solrObjectDto.setTitleSort((String) values.get("title_sort"));
                     solrObjectDto.setDatum_begin((Integer) values.getOrDefault("datum_begin", null));
                     solrObjectDto.setDatum_end((Integer) values.getOrDefault("datum_end", null));
+                    solrObjectDto.setDatum_str((String) values.get("datum_str"));
                     solrObjectDto.setCreated_date(created_date);
                     solrObjectDto.setImport_date(LocalDateTime.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX")));
                     solrObjectDto.setFacet_autor((ArrayList<String>) values.getOrDefault("facet_autor", new ArrayList<>()));

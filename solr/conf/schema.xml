@@ -7,7 +7,6 @@
 
     <uniqueKey>PID</uniqueKey>
 
-<!--	<field name="root_title" type="string" indexed="true" stored="true"/>-->
 <!--	<field name="title" type="text_cz" indexed="true" stored="true"/>-->
 <!--	<field name="lemma" type="tokenized" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true"/>-->
 <!--	<field name="nameTag.personalNames.search" type="tokenized" indexed="true" stored="true" multiValued="true"/>-->
@@ -35,9 +34,11 @@
 
     <!-- K5 fields -->
     <field name="root_pid" type="string" indexed="true" stored="true"/>
+    <field name="root_title" type="text_general_not_lemmatized" indexed="true" stored="true"/>
     <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="datum_begin" type="int" default="0" indexed="true" stored="true"/>
     <field name="datum_end" type="int" default="0" indexed="true" stored="true"/>
+    <field name="datum_str" type="string" indexed="true" stored="true"/>
     <field name="dc.creator" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
     <field name="dc.title" type="text_fgs" indexed="true" stored="true"/>
     <field name="dostupnost" type="string" indexed="true" stored="true"/>
@@ -155,6 +156,24 @@
         <analyzer>
             <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
         </analyzer>
+    </fieldType>
+
+    <!-- general not lemmatized text with czech stop words  -->
+    <fieldType name="text_general_not_lemmatized" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        </analyzer>
+
     </fieldType>
 
 </schema>

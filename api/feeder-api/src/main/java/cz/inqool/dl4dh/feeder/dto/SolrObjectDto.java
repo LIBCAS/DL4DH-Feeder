@@ -23,6 +23,9 @@ public class SolrObjectDto {
     @NotNull
     private final String root_pid;
 
+    @Field("root_title")
+    private String rootTitle;
+
     @Field
     private List<String> collection;
 
@@ -31,6 +34,9 @@ public class SolrObjectDto {
 
     @Field
     private Integer datum_end;
+
+    @Field
+    private String datum_str;
 
     @Field
     private String import_date;
@@ -44,8 +50,8 @@ public class SolrObjectDto {
     @Field("dc.title")
     private String title;
 
-    @Field
-    private String title_sort;
+    @Field("title_sort")
+    private String titleSort;
 
     @Field
     private String dostupnost;
