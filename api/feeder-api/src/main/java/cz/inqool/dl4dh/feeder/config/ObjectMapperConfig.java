@@ -1,4 +1,4 @@
-package cz.inqool.dl4dh.feeder.cfg;
+package cz.inqool.dl4dh.feeder.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;

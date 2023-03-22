@@ -17,7 +17,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,6 +34,7 @@ public class SearchServiceImpl implements SearchService {
     private WebClient krameriusSolr;
     private WebClient feederSolrWebClient;
     private FilterRepository filterRepository;
+    private CollectionService collectionService;
 
     public SearchServiceImpl(@Value("${solr.host.query}") String solrHost) {
         this.feederSolr = new HttpSolrClient.Builder(solrHost.trim()).build();
@@ -101,14 +101,6 @@ public class SearchServiceImpl implements SearchService {
                 .blockOptional()
                 .orElseThrow();
         return result.getResponse().getDocs().stream().map(d -> (String) d.get("dc.title")).collect(Collectors.toList());
-    }
-
-    public List<CollectionDto> getCollections() {
-        return krameriusSolr.get().uri("/vc").retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
-                })
-                .blockOptional()
-                .orElse(List.of());
     }
 
     @Override
@@ -215,10 +207,12 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Map<String, Object>> nametagFacets = feederDocuments.getFacet_counts().transformed(true);
 
         // Base facets
-        Map<String, Map<String, Object>> facets = result.getFacet_counts().transformed(false, getCollections()
-                .stream()
-                .collect(Collectors.toMap(CollectionDto::getPid, Function.identity()))
-        );
+        Map<String, Map<String, Object>> facets = result.getFacet_counts()
+                .transformed(false, collectionService.getCollections()
+                        .stream()
+                        .collect(Collectors.toMap(CollectionDto::getPid, Function.identity())
+                        )
+                );
         Integer allDocuments = result.getResponse().getNumFound().intValue();
         Integer finalEnriched = feederDocuments.getResponse().getNumFound().intValue();
         facets.put("enrichment", new HashMap<>() {{
@@ -251,6 +245,11 @@ public class SearchServiceImpl implements SearchService {
     @Resource
     public void setFilterRepository(FilterRepository filterRepository) {
         this.filterRepository = filterRepository;
+    }
+
+    @Resource
+    public void setCollectionService(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Resource(name = "krameriusWebClient")

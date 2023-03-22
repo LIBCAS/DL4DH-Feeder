@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 1.2.0
+  version: 1.2.1
 servers:
 - url: https://feeder.nkp.cz
   description: Generated server url

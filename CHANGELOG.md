@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.1
+
+- upgrade spring dependencies 
+- cache configuration
+- optimization of Kramerius collections loading through cache 
+
 ## v1.2.0
 
 - refactoring search api with new search service
