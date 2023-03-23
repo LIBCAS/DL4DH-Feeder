@@ -58,7 +58,8 @@ public class ImportServiceImpl implements ImportService {
                     .block();
 
             assert publications != null;
-            log.info("Syncing from "+lastSync.getValue()+" to "+currentDate+", found "+publications.getTotal() + " publications on page "+ page +".");
+            int publicationsOnPage = publications.getItems().size();
+            log.info("Syncing from "+lastSync.getValue()+" to "+currentDate+", found "+publicationsOnPage+" of "+publications.getTotal() + " publications on page "+ page +".");
 
             for (KrameriusPlusDocumentDto publication : publications.getItems()) {
                 try {

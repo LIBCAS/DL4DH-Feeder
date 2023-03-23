@@ -32,6 +32,7 @@
 - FIX download of enriched pages from Kramerius+
 
 ## v1.0.0
+- released first official public version for reviewers
 
 ## v0.7.0
   - exports:
