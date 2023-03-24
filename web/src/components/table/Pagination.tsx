@@ -43,12 +43,11 @@ const CircleButton: FC<{
 }> = ({ page, active, changePage }) => {
 	const theme = useTheme();
 	return (
-		<Flex
+		<Button
 			width={PAG_BOX_SIZE}
 			height={PAG_BOX_SIZE}
-			alignItems="center"
+			minWidth={0}
 			px={1}
-			justifyContent="center"
 			onClick={() => changePage(page)}
 			css={css`
 				background-color: ${active ? theme.colors.primary : 'transparent'};
@@ -58,13 +57,13 @@ const CircleButton: FC<{
 				&:hover {
 					background-color: ${active
 						? theme.colors.primary
-						: theme.colors.lightGrey};
+						: 'rgba(0,0,0,0.1)'};
 					transition: background-color 200ms;
 				}
 			`}
 		>
 			{page}
-		</Flex>
+		</Button>
 	);
 };
 
@@ -87,7 +86,6 @@ const Pagination: FC<Props> = ({
 		polyfill: ResizeObserver,
 		debounce: 100,
 	});
-	const theme = useTheme();
 	const isMobile = useMemo(
 		() => viewportWidth < collapseWidth,
 		[viewportWidth],
@@ -172,19 +170,19 @@ const Pagination: FC<Props> = ({
 					<Button
 						p={2}
 						m={0}
+						minWidth={0}
 						tooltip={t('pagination.prev_page')}
 						disabled={page === 1 || loading}
 						variant="text"
+						color="text"
 						onClick={() => changePage(page - 1)}
 						css={css`
-							border-radius: 0px;
-
 							cursor: ${page === 1 ? 'initial' : 'pointer'};
 							filter: ${page === 1 ? 'opacity(0.5)' : 'none'};
 							&:hover {
 								background-color: ${page === 1
 									? 'transparent'
-									: theme.colors.lightGrey};
+									: 'rgba(0,0,0,0.1)'};
 							}
 						`}
 					>
@@ -235,17 +233,19 @@ const Pagination: FC<Props> = ({
 					)}
 					<Button
 						disabled={!hasMore || loading}
-						style={{}}
 						variant="text"
 						tooltip={t('pagination.next_page')}
 						onClick={() => changePage(page + 1)}
+						color="text"
 						p={2}
 						m={0}
 						css={css`
 							cursor: ${!hasMore ? 'not-allowed' : 'pointer'};
 							filter: ${!hasMore ? 'opacity(0.5)' : 'none'};
 							&:hover {
-								background-color: ${theme.colors.lightGrey};
+								background-color: ${page === pagesCount
+									? 'transparent'
+									: 'rgba(0, 0, 0, 0.1)'};
 							}
 						`}
 					>

@@ -14,9 +14,12 @@ import { api } from 'api';
 import { useChildrenSearch } from 'api/childrenSearchApi';
 import { TagNameEnum } from 'api/models';
 
+import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PubThumbnails from './PubThumbnails';
+import BibInternalParts from './biblio/bib-internalparts';
 
 type Props = {
 	isSecond?: boolean;
@@ -33,9 +36,15 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	const SP_KEY = isSecond ? 'fulltext2' : 'fulltext';
 	const NT_KEY = isSecond ? 'nameTag2' : 'nameTag';
 	const PAGE_KEY = isSecond ? 'page2' : 'page';
+	//TODO: refactor using  useParseUrlIdsAndParams()
+	// const { getApropriateIds } = useParseUrlIdsAndParams();
+	// const {} = getApropriateIds(isSecond);
+
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
 	const { t } = useTranslation();
+	//TODO: tabs ako na krameriovi
+	//const [tab, setTab] = useState<'pages' | 'internalparts'>('pages');
 
 	const [nameTag, setNameTag] = useState<TagNameEnum | null>(
 		(sp.get(NT_KEY) as TagNameEnum) ?? null,
@@ -50,6 +59,17 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 		: pctx.publication?.enriched;
 
 	const response = useChildrenSearch(uuid, query, query !== '');
+	const { setResult2, setResult1 } = useWordHighlightContext();
+
+	useEffect(() => {
+		if (!response.isLoading && response.data) {
+			if (isSecond) {
+				setResult2?.(response.data);
+			} else {
+				setResult1?.(response.data);
+			}
+		}
+	}, [response, setResult1, setResult2, isSecond]);
 
 	const results = useMemo(() => response?.data ?? {}, [response.data]);
 
@@ -94,7 +114,11 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	useEffect(() => {
 		const cp = sp.get(PAGE_KEY);
 		const fltx = sp.get(SP_KEY);
-		if (!filteredChildren.some(fc => fc?.pid === cp) && fltx) {
+		if (
+			!response.isLoading &&
+			!filteredChildren.some(fc => fc?.pid === cp) &&
+			fltx
+		) {
 			if (!filteredChildren[0]?.pid) {
 				sp.delete(PAGE_KEY);
 				setSp(sp);
@@ -104,14 +128,14 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 				setSp(sp);
 			}
 		}
-	}, [filteredChildren, sp, setSp, SP_KEY, PAGE_KEY]);
+	}, [filteredChildren, sp, setSp, SP_KEY, PAGE_KEY, response.isLoading]);
 
 	if (response.isLoading) {
 		return <Loader />;
 	}
 
 	return (
-		<Flex flexDirection="column" width={1}>
+		<Flex flexDirection="column" width={1} height="100%">
 			<QuerySearchInput
 				AdditionalLeftJSX={
 					isEnriched ? (
@@ -161,10 +185,10 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					}
 				}}
 			/>
-
+			<BibInternalParts isSecond={isSecond} />
 			<PubThumbnails
 				isSecond={isSecond}
-				marginTop={120}
+				marginTop={150}
 				pagesSearchResult={filtered}
 				searchMode={query !== ''}
 			/>

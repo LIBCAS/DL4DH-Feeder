@@ -25,7 +25,7 @@ export const useSearchRecommended = infiniteMainSearchEndpoint<
 	api.post('feed/custom', { json }),
 );
 
-export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
+export const usePublicationDetail = (uuid?: string, disabled?: boolean) =>
 	useQuery(
 		['publication-detail', uuid],
 		() =>
@@ -89,8 +89,8 @@ export const usePublicationChildren = (uuid: string | undefined) =>
 		() =>
 			api()
 				.get('item/' + uuid + '/children')
-				.json<PublicationChild[]>()
-				.then(r => r.filter(c => c.model !== 'internalpart')), //TODO:FIXME:
+				.json<PublicationChild[]>(),
+		//		.then(r => r.filter(c => c.model !== 'internalpart')), //TODO:FIXME:
 		{
 			staleTime: Infinity,
 			refetchOnWindowFocus: false,
@@ -203,6 +203,7 @@ export const useStreams = (
 			api()
 				.get(`item/${uuid}/streams/${stream}`, {
 					headers: { accept: mime ?? 'application/json' },
+					retry: { statusCodes: [408, 413, 429, 502, 503, 504] },
 				})
 				.then(r => r.text()),
 		{

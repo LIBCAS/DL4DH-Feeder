@@ -28,6 +28,8 @@ import { useImageProperties } from 'api/publicationsApi';
 
 import useViewport from 'hooks/useViewport';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 import { getBestFitResolution } from './zoomifyUtils';
 import ZoomifyToolbar from './ZoomifyToolbar';
 import AltoDialog from './AltoDialog';
@@ -260,7 +262,7 @@ const ZoomifyView: FC<{
 	return (
 		<Wrapper
 			width="100%"
-			height="100vh"
+			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 			css={css`
 				border-left: ${isSecond ? 2 : 0}px solid ${theme.colors.primary};
 			`}

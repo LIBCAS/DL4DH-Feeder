@@ -341,7 +341,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	);
 };
 
-const MetaStreamsDialog: FC<{ rootId: string; pageId: string }> = ({
+const MetaStreamsDialog: FC<{ rootId?: string; pageId?: string }> = ({
 	rootId,
 	pageId,
 }) => {
@@ -351,7 +351,7 @@ const MetaStreamsDialog: FC<{ rootId: string; pageId: string }> = ({
 	const rootDetail = rootDetailResponse.data ?? null;
 
 	if (rootDetailResponse.isLoading || !rootDetail) {
-		return <LoaderSpin />;
+		return <LoaderSpin size={20} />;
 	}
 
 	const rootContext = rootDetail?.context?.flat() ?? [];

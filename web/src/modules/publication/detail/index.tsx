@@ -19,6 +19,9 @@ import {
 } from 'api/publicationsApi';
 
 import { useMobileView } from 'hooks/useViewport';
+import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
+
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 
@@ -31,7 +34,7 @@ const PublicationDetail = () => {
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
-	const [page, setPageUrlParam] = useSearchParams();
+	const [sp, setSp] = useSearchParams();
 	const pubCtx = usePublicationContext();
 	const nav = useNavigate();
 	const { isMobile } = useMobileView();
@@ -39,8 +42,8 @@ const PublicationDetail = () => {
 	const [leftCollapsed, setLeftCollapsed] = useState(isMobile);
 
 	const pageId = useMemo(
-		() => page.get('page') ?? pages[0]?.pid ?? undefined,
-		[page, pages],
+		() => sp.get('page') ?? pages[0]?.pid ?? undefined,
+		[sp, pages],
 	);
 
 	useEffect(() => {
@@ -73,100 +76,113 @@ const PublicationDetail = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pages, pageId, detail.data, pubCtx.publicationChildrenFiltered]);
 	useEffect(() => {
-		if (pubChildren.isSuccess && !pubChildren.data?.[0]?.datanode) {
+		if (
+			pubChildren.isSuccess &&
+			pubChildren.data.filter(d => d.datanode)?.length === 0
+		) {
 			nav(`/periodical/${id}`, { replace: true });
 		}
 	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);
 
+	const datanode = useMemo(
+		() =>
+			((pubChildren.isSuccess &&
+				pubChildren.data.filter(d => d.datanode)?.length) ??
+				0) > 0,
+		[pubChildren.data, pubChildren.isSuccess],
+	);
+
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
 	}
-	if (!page.get('page')) {
-		page.append('page', pages[0]?.pid ?? 'index-detail-undefined');
-		setPageUrlParam(page, { replace: true });
+	if (!sp.get('page') && pages[0]?.pid) {
+		sp.append('page', pages[0]?.pid ?? 'index-detail-undefined');
+		setSp(sp, { replace: true });
 	}
 
 	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail.data?.policy === 'public';
-	const datanode = pubChildren.data?.[0]?.datanode ?? false;
 
 	return (
-		<ResponsiveWrapper
-			bg="primaryLight"
-			px={0}
-			mx={0}
-			alignItems="flex-start"
-			width={1}
-			height="100vh"
-		>
-			<Flex
-				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
-				css={css`
-					transition: width 200ms;
-				`}
-				onTransitionEnd={() => {
-					mapRef.current?.updateSize();
-				}}
+		<WordHighlightContextProvider>
+			<ResponsiveWrapper
+				bg="primaryLight"
+				px={0}
+				mx={0}
+				alignItems="flex-start"
+				width={1}
+				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 			>
 				<Flex
-					overflow="visible"
-					width={leftCollapsed ? 0 : 300}
-					minWidth={0}
-					maxWidth={300}
-					zIndex={3}
+					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
 					css={css`
-						transition-duration: 200ms;
-						transition-property: width transform;
-						transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+						transition: width 200ms;
 					`}
+					onTransitionEnd={() => {
+						mapRef.current?.updateSize();
+					}}
 				>
+					<Flex
+						overflow="visible"
+						width={leftCollapsed ? 0 : 300}
+						minWidth={0}
+						maxWidth={300}
+						zIndex={3}
+						css={css`
+							transition-duration: 200ms;
+							transition-property: width transform;
+							transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+						`}
+					>
+						<PublicationSidePanel
+							variant="left"
+							pages={pages}
+							onCollapse={() => setLeftCollapsed(p => !p)}
+							isCollapsed={leftCollapsed}
+							defaultView="search"
+						/>
+					</Flex>
+
+					{!datanode ? (
+						<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
+							<PeriodicalTiles data={pubChildren.data} />
+							<Text>Dlasie info</Text>
+							<Flex flexWrap="wrap">
+								{(pubChildren.data ?? []).map(ch => (
+									<Flex
+										key={ch.pid}
+										p={3}
+										m={2}
+										flexWrap="wrap"
+										css={css`
+											border: 1px solid ${theme.colors.primary};
+										`}
+									>
+										{Object.keys(ch.details).map(k => (
+											<Text key={k} m={2}>
+												{k} : {ch.details[k]}
+											</Text>
+										))}
+									</Flex>
+								))}
+							</Flex>
+						</Wrapper>
+					) : (
+						<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
+							<PubMainDetail page={pageId} leftPublic={isPublic} />
+						</Flex>
+					)}
+
 					<PublicationSidePanel
-						variant="left"
-						defaultView="search"
+						variant="right"
+						defaultView="detail"
 						pages={pages}
-						onCollapse={() => setLeftCollapsed(p => !p)}
-						isCollapsed={leftCollapsed}
+						onCollapse={() => setRightCollapsed(p => !p)}
+						isCollapsed={rightCollapsed}
 					/>
 				</Flex>
-
-				{!datanode ? (
-					<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
-						<PeriodicalTiles data={pubChildren.data} />
-						<Text>Dlasie info</Text>
-						<Flex flexWrap="wrap">
-							{(pubChildren.data ?? []).map(ch => (
-								<Flex
-									key={ch.pid}
-									p={3}
-									m={2}
-									flexWrap="wrap"
-									css={css`
-										border: 1px solid ${theme.colors.primary};
-									`}
-								>
-									{Object.keys(ch.details).map(k => (
-										<Text key={k} m={2}>
-											{k} : {ch.details[k]}
-										</Text>
-									))}
-								</Flex>
-							))}
-						</Flex>
-					</Wrapper>
-				) : (
-					<Flex height="100vh" width="100%">
-						<PubMainDetail page={pageId} leftPublic={isPublic} />
-					</Flex>
-				)}
-
-				<PublicationSidePanel
-					variant="right"
-					pages={pages}
-					onCollapse={() => setRightCollapsed(p => !p)}
-					isCollapsed={rightCollapsed}
-				/>
-			</Flex>
-		</ResponsiveWrapper>
+			</ResponsiveWrapper>
+		</WordHighlightContextProvider>
 	);
 };
 export default PublicationDetail;

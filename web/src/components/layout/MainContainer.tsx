@@ -62,7 +62,7 @@ export const MainContainer: FC<Props> = ({ subHeader, body, children }) => {
 						mobileOverride={isMobile && mobileOverride}
 						variant="right"
 					>
-						<Box pt={1} width={1}>
+						<Box pt={1} width={1} height="100%">
 							{body.rightJsx}
 						</Box>
 					</SideMenuContainer>

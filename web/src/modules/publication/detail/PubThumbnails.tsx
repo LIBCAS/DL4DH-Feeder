@@ -15,8 +15,6 @@ import Text from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
-import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
-
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import { PagesSearchResult } from './PubPagesDetail';
@@ -30,7 +28,6 @@ type Props = {
 //TODO: refactor!!
 
 const PubThumbnails: FC<Props> = ({
-	marginTop = 0,
 	isSecond,
 	pagesSearchResult,
 	searchMode,
@@ -102,7 +99,7 @@ const PubThumbnails: FC<Props> = ({
 	}
 
 	return (
-		<Box width={1}>
+		<Box width={1} height="100%" position="relative">
 			<div ref={ref}>
 				<Flex py={2} px={2} justifyContent="space-between" alignItems="center">
 					<IconButton
@@ -180,162 +177,170 @@ const PubThumbnails: FC<Props> = ({
 				</Flex>
 				<Divider />
 			</div>
-			<Box
-				ref={wrapperRef}
-				width={300}
-				maxWidth={300}
-				//bg="border"
-				height={`calc(100vh - ${
-					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 1
-				}px)`}
-				maxHeight={`calc(100vh - ${
-					INIT_HEADER_HEIGHT + marginTop + resultsMargin + 1
-				}px)`}
-				overflow="hidden"
-				id="ejciboha"
-			>
-				<FixedSizeGrid
-					rowCount={Math.ceil(pages.length / COLUMNS_COUNT)}
-					rowHeight={126}
-					height={wrapperHeight}
-					columnCount={COLUMNS_COUNT}
-					columnWidth={COLUMNS_COUNT === 3 ? 90 : 300}
+			<Box height="100%" position="relative">
+				<Box
+					position="absolute"
+					height="100%"
+					ref={wrapperRef}
 					width={300}
-					ref={gridRef}
-					css={css`
-						overflow-x: hidden !important;
-					`}
+					maxWidth={300}
+					overflow="hidden"
 				>
-					{({ style, rowIndex, columnIndex }) => {
-						const index = COLUMNS_COUNT * rowIndex + columnIndex;
-						const url = `/api/item/${pages[index]?.pid ?? ''}/thumb`;
-						if (index >= pages.length) {
-							return <></>;
-						}
-						return (
-							<Flex
-								style={style}
-								width={300}
-								css={css`
-									${searchMode &&
-									css`
-										width: fill-available !important;
-										cursor: pointer;
-										box-sizing: border-box;
-										background-color: ${selectedPage?.pid === pages[index].pid
-											? 'white'
-											: 'unset'};
-										${isSecond
-											? css`
-													border-left: ${selectedPage?.pid === pages[index].pid
-															? 3
-															: 0}px
-														solid ${theme.colors.primary};
-											  `
-											: css`
-													border-right: ${selectedPage?.pid === pages[index].pid
-															? 3
-															: 0}px
-														solid ${theme.colors.primary};
-											  `}
-
-										&:hover {
-											background-color: white;
-										}
-									`}
-								`}
-								onClick={() => {
-									if (searchMode) {
-										sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
-										setSp(sp);
-										setSelectedPage({ pid: pages[index].pid, rowIndex, index });
-									}
-								}}
-							>
+					<FixedSizeGrid
+						rowCount={Math.ceil(pages.length / COLUMNS_COUNT)}
+						rowHeight={126}
+						height={wrapperHeight - resultsMargin * 1.1}
+						columnCount={COLUMNS_COUNT}
+						columnWidth={COLUMNS_COUNT === 3 ? 90 : 300}
+						width={300}
+						ref={gridRef}
+						css={css`
+							overflow-x: hidden !important;
+						`}
+					>
+						{({ style, rowIndex, columnIndex }) => {
+							const index = COLUMNS_COUNT * rowIndex + columnIndex;
+							const url = `/api/item/${pages[index]?.pid ?? ''}/thumb`;
+							if (index >= pages.length) {
+								return <></>;
+							}
+							return (
 								<Flex
-									alignItems="center"
-									width={80}
-									maxWidth={80}
-									flexShrink={0}
-									height={120}
-									maxHeight={120}
-									m={1}
-									ml={2}
+									style={style}
+									width={300}
 									css={css`
-										border: ${selectedPage?.pid === pages[index].pid ? 5 : 1}px
-											solid ${theme.colors.primary};
-										box-sizing: border-box;
-										cursor: pointer;
-										background-image: url(${url});
-										background-size: cover;
-										background-repeat: no-repeat;
-										&:hover {
-											box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
-										}
+										${searchMode &&
+										css`
+											width: fill-available !important;
+											cursor: pointer;
+											box-sizing: border-box;
+											background-color: ${selectedPage?.pid === pages[index].pid
+												? 'white'
+												: 'unset'};
+											${isSecond
+												? css`
+														border-left: ${selectedPage?.pid ===
+															pages[index].pid
+																? 3
+																: 0}px
+															solid ${theme.colors.primary};
+												  `
+												: css`
+														border-right: ${selectedPage?.pid ===
+															pages[index].pid
+																? 3
+																: 0}px
+															solid ${theme.colors.primary};
+												  `}
+
+											&:hover {
+												background-color: white;
+											}
+										`}
 									`}
 									onClick={() => {
-										sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
-										setSp(sp);
-										setSelectedPage({ pid: pages[index].pid, rowIndex, index });
+										if (searchMode) {
+											sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+											setSp(sp);
+											setSelectedPage({
+												pid: pages[index].pid,
+												rowIndex,
+												index,
+											});
+										}
 									}}
 								>
-									<Box
-										position="absolute"
-										right={0}
-										top={0}
-										bg="white"
-										color="text"
-										opacity={0.7}
-										p={1}
+									<Flex
+										alignItems="center"
+										width={80}
+										maxWidth={80}
+										flexShrink={0}
+										height={120}
+										maxHeight={120}
+										m={1}
+										ml={2}
+										css={css`
+											border: ${selectedPage?.pid === pages[index].pid
+													? 5
+													: 1}px
+												solid ${theme.colors.primary};
+											box-sizing: border-box;
+											cursor: pointer;
+											background-image: url(${url});
+											background-size: cover;
+											background-repeat: no-repeat;
+											&:hover {
+												box-shadow: 0 0px 3px 3px rgba(0, 0, 0, 0.2);
+											}
+										`}
+										onClick={() => {
+											sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+											setSp(sp);
+											setSelectedPage({
+												pid: pages[index].pid,
+												rowIndex,
+												index,
+											});
+										}}
 									>
-										<Text my={0} fontSize="sm">
-											{pages[index].title}
-										</Text>
-									</Box>
-								</Flex>
-								<Flex fontSize="sm" width="auto" flexGrow={1}>
-									{pagesSearchResult
-										?.filter(p => p.pid === pages[index].pid)
-										.map((k, i) => (
-											<Flex
-												flexDirection="column"
-												key={k.title + i}
-												my={2}
-												justifyContent="flex-start"
-												alignItems="flex-start"
-												width="100%"
-											>
+										<Box
+											position="absolute"
+											right={0}
+											top={0}
+											bg="white"
+											color="text"
+											opacity={0.7}
+											p={1}
+										>
+											<Text my={0} fontSize="sm">
+												{pages[index].title}
+											</Text>
+										</Box>
+									</Flex>
+									<Flex fontSize="sm" width="auto" flexGrow={1}>
+										{pagesSearchResult
+											?.filter(p => p.pid === pages[index].pid)
+											.map((k, i) => (
 												<Flex
 													flexDirection="column"
-													key={k?.pid}
-													my={0}
-													width="100%"
+													key={k.title + i}
+													my={2}
 													justifyContent="flex-start"
 													alignItems="flex-start"
-													css={css`
-														> p > strong {
-															color: ${theme.colors.primary};
-														}
-													`}
+													width="100%"
 												>
-													<Text
-														dangerouslySetInnerHTML={{
-															__html: k?.ocr?.[0] ?? '',
-														}}
-													/>
-													<Text>
-														{Object.keys(k?.nameTag ?? {}).map(
-															key => k?.nameTag?.[key]?.[0],
-														)}
-													</Text>
+													<Flex
+														flexDirection="column"
+														key={k?.pid}
+														my={0}
+														width="100%"
+														justifyContent="flex-start"
+														alignItems="flex-start"
+														css={css`
+															> p > strong {
+																color: ${theme.colors.primary};
+															}
+														`}
+													>
+														<Text
+															dangerouslySetInnerHTML={{
+																__html: k?.ocr?.[0] ?? '',
+															}}
+														/>
+														<Text>
+															{Object.keys(k?.nameTag ?? {}).map(
+																key => k?.nameTag?.[key]?.[0],
+															)}
+														</Text>
+													</Flex>
 												</Flex>
-											</Flex>
-										))}
+											))}
+									</Flex>
 								</Flex>
-							</Flex>
-						);
-					}}
-				</FixedSizeGrid>
+							);
+						}}
+					</FixedSizeGrid>
+				</Box>
 			</Box>
 		</Box>
 	);

@@ -39,7 +39,7 @@ const RouteUuid: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const pub = usePublicationDetail(id ?? '');
 	const nav = useNavigate();
-	console.log({ pub });
+
 	if (pub.isLoading) {
 		return <Loader />;
 	}

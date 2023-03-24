@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import XML from 'xml2js';
 import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
@@ -11,6 +10,8 @@ import Geometry from 'ol/geom/Geometry';
 import VectorLayer from 'ol/layer/Vector';
 
 import { useStreams } from 'api/publicationsApi';
+
+import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
 
 import { deepSearchByKey } from './altoUtils';
 
@@ -62,42 +63,79 @@ export const wordHighlightStyle = new Style({
 	}),
 });
 
+//TODO: memoize
 export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
-	const [parsedAlto, setParsedAlto] = useState<Record<string, unknown>>({});
-	const [sp] = useSearchParams();
-	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
+	const { result1, result2, parsePageResult } = useWordHighlightContext();
+	const [words, setWords] = useState<WordAltoObj[]>([]);
+	const pageResult = useMemo(
+		() =>
+			parsePageResult((isSecond ? result2 : result1)?.[uuid]?.textOcr ?? []),
+		[isSecond, parsePageResult, result1, result2, uuid],
+	);
+
 	useEffect(() => {
-		XML.parseString(altoStream.data, (err, result) => setParsedAlto(result));
+		XML.parseString(altoStream.data, (err, result) =>
+			setWords(deepSearchByKey(result, 'String').flat() as WordAltoObj[]),
+		);
 	}, [altoStream.data]);
 
-	const words = deepSearchByKey(parsedAlto, 'String').flat() as WordAltoObj[];
-	const filtered: WordCoords[] = fulltext
-		? words
-				.filter(
-					w =>
-						w.$.CONTENT.replace(
-							/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g,
-							'',
-						).toUpperCase() ===
-						fulltext
-							.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '')
-							.toUpperCase(),
-				)
-				.map(f => ({
-					hpos: parseInt(f.$.HPOS),
-					vpos: parseInt(f.$.VPOS),
-					swidth: parseInt(f.$.WIDTH),
-					sheight: parseInt(f.$.HEIGHT),
-				}))
-		: // .map(f => ({
-		  // 	hpos: parseInt(f.$.VPOS),
-		  // 	vpos: 2524 - 1.8 * parseInt(f.$.HPOS),
-		  // 	swidth: parseInt(f.$.HEIGHT),
-		  // 	sheight: parseInt(f.$.WIDTH),
-		  // 	what: 1.8 * parseInt(f.$.HPOS),
-		  // }))
-		  [];
+	const filtered: WordCoords[] = useMemo(
+		() =>
+			pageResult
+				? pageResult
+						.map(ocr =>
+							words
+								.filter(w => w?.$?.CONTENT?.includes?.(ocr))
+								.map(f => ({
+									hpos: parseInt(f.$.HPOS),
+									vpos: parseInt(f.$.VPOS),
+									swidth: parseInt(f.$.WIDTH),
+									sheight: parseInt(f.$.HEIGHT),
+								})),
+						)
+						.flat()
+				: [],
+		[pageResult, words],
+	);
 
 	return filtered;
 };
+
+//TODO: remove
+
+// .map(f => ({
+// 	hpos: parseInt(f.$.VPOS),
+// 	vpos: 2524 - 1.8 * parseInt(f.$.HPOS),
+// 	swidth: parseInt(f.$.HEIGHT),
+// 	sheight: parseInt(f.$.WIDTH),
+// 	what: 1.8 * parseInt(f.$.HPOS),
+// }))
+
+/*
+
+const filtered: WordCoords[] = (
+		pageResult
+			? pageResult.map(ocr =>
+					words
+						.filter(
+							w =>
+								w.$.CONTENT.replace(
+									/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g,
+									'',
+								).toUpperCase() ===
+								ocr
+									.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '')
+									.toUpperCase(),
+						)
+						.map(f => ({
+							hpos: parseInt(f.$.HPOS),
+							vpos: parseInt(f.$.VPOS),
+							swidth: parseInt(f.$.WIDTH),
+							sheight: parseInt(f.$.HEIGHT),
+						})),
+			  )
+			: []
+	).flat();
+
+	*/
