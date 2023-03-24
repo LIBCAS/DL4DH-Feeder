@@ -87,9 +87,14 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 					px={3}
 					width="calc(100% - 32px)"
 				>
-					<BibRootInfo formatted={formatted} level={0}>
+					<BibRootInfo formatted={formatted} level={0} currentId={id}>
 						{formatted.slice(1).map(f => (
-							<BibRootInfo key={f.pid} formatted={[f]} level={1}></BibRootInfo>
+							<BibRootInfo
+								currentId={id}
+								key={f.pid}
+								formatted={[f]}
+								level={1}
+							></BibRootInfo>
 						))}
 						{parts?.prev?.uuid && (
 							<Box>
