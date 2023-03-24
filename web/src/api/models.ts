@@ -209,6 +209,7 @@ export type ModelsEnum =
 	| 'MONOGRAPHUNIT'
 	| 'MONOGRAPHBUNDLE'
 	| 'PERIODICALITEM'
+	| 'INTERNALPART'
 	| 'PERIODICALVOLUME';
 
 export type TagNameEnum =

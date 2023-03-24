@@ -2,6 +2,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { MdClose, MdCopyAll, MdShare } from 'react-icons/md';
 import { css } from '@emotion/core';
+import { uniqWith } from 'lodash-es';
 
 import ModalDialog from 'components/modal';
 import IconButton from 'components/styled/IconButton';
@@ -42,7 +43,11 @@ const ShareDialog: FC<Props> = ({ isSecond }) => {
 
 	const [source, setSource] = useState<PublicationContext | undefined>();
 	const rootContext = useMemo(
-		() => (rootDetail?.context?.flat() ?? []).reverse(),
+		() =>
+			uniqWith(
+				rootDetail?.context?.flat() ?? [],
+				(a, b) => a.pid === b.pid,
+			).reverse(),
 		[rootDetail],
 	);
 
