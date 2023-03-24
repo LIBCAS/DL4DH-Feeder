@@ -188,7 +188,7 @@ const CitationDialog: FC<Props> = ({ isSecond }) => {
 	const [isMonographBundle, setIsMonohraphBundle] = useState(false);
 
 	const rootContext = useMemo(() => {
-		const ctx = rootDetail?.context?.flat(10) ?? [];
+		const ctx = rootDetail?.context?.flat() ?? [];
 		const filtered: PublicationContext[] = [];
 
 		ctx.forEach(c => {

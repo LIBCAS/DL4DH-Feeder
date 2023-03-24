@@ -353,7 +353,6 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 	const [parts, setParts] = useState<PeriodicalPartLink>();
 	const uuid = fcm?.[fcm.length - 1]?.pid;
 	const parentUuid = fcm?.[fcm.length - 2]?.pid;
-
 	const { data: otherChildren, isLoading: isChildrenLoading } =
 		usePublicationChildren(parentUuid);
 	useEffect(() => {
@@ -367,10 +366,8 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 					const next = otherChildren?.[currentIndex + 1];
 					const uuidPrev = prev?.pid;
 					const uuidNext = next?.pid;
-					console.log({ next, prev });
 					const detailPrev = prev?.details;
 					const detailNext = next?.details;
-
 					const labelPrev = detailPrev
 						? `${detailPrev?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
 								detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]
@@ -386,7 +383,6 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 						  }`
 						: undefined;
 
-					console.log({ labelNext });
 					setParts({
 						prev: {
 							uuid: uuidPrev,
@@ -398,7 +394,11 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 						},
 					});
 				}
+			} else {
+				setParts(undefined);
 			}
+		} else {
+			setParts(undefined);
 		}
 	}, [isChildrenLoading, otherChildren, uuid]);
 

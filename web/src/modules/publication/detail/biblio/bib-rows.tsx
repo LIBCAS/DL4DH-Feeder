@@ -90,7 +90,9 @@ const mapContextToUnitType = {
 export const BibRootInfo: FC<{
 	formatted: FormattedBibliohraphy[];
 	level: number;
-}> = ({ formatted, level, children }) => {
+
+	currentId?: string;
+}> = ({ formatted, level, children, currentId }) => {
 	const root = formatted?.[0];
 
 	const isPeriodical =
@@ -102,7 +104,6 @@ export const BibRootInfo: FC<{
 	if (!root) {
 		return <></>;
 	}
-
 	return (
 		<>
 			{level > 0 && (
@@ -124,7 +125,7 @@ export const BibRootInfo: FC<{
 						{root?.titles?.mainSubTitle ?? ''}
 					</Text>
 					<PartsInfo parts={root.parts} />
-					{isPeriodical && (
+					{isPeriodical && currentId !== root.pid && (
 						<Box>
 							<NavLinkButton
 								to={`/periodical/${root.pid}`}
