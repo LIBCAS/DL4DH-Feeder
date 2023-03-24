@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +24,7 @@ export const BibAuthors: FC<{
 	}
 
 	return (
-		<Box mb={3}>
+		<Box mb={3} textAlign="left">
 			{mainAuthors.length > 0 && (
 				<>
 					<>
@@ -68,7 +70,7 @@ const PartsInfo: FC<Pick<FormattedBibliohraphy, 'parts'>> = ({ parts }) => {
 		return <></>;
 	}
 	return (
-		<Text color="#616161" fontSize="15px">
+		<Text color="#616161" fontSize="15px" fontWeight="bold">
 			{parts?.label ?? ''} {parts?.mainPartNumber ?? ''}
 			{'. '}
 			{parts?.mainPartName ?? ''}
@@ -81,10 +83,10 @@ const mapContextToUnitType = {
 	periodical: 'volume_list',
 	periodicalvolume: 'issue_list',
 };
-export const BibRootInfo: FC<{ formatted: FormattedBibliohraphy[] }> = ({
-	formatted,
-	children,
-}) => {
+export const BibRootInfo: FC<{
+	formatted: FormattedBibliohraphy[];
+	level: number;
+}> = ({ formatted, level, children }) => {
 	const root = formatted?.[0];
 
 	const isPeriodical =
@@ -96,13 +98,14 @@ export const BibRootInfo: FC<{ formatted: FormattedBibliohraphy[] }> = ({
 	if (!root) {
 		return <></>;
 	}
-	const bg = `rgba(${Math.random() * 20 + 235}, ${Math.random() * 20 + 235}, ${
-		Math.random() * 20 + 235
-	})`;
 
 	return (
-		<Box pl={4} bg={bg}>
-			{root.model}
+		<Box
+			pl={level > 0 ? 3 : 'unset'}
+			css={css`
+				border-left: ${level && level > 0 ? '5px solid #e0e0e0' : 'none'};
+			`}
+		>
 			<Box mb={3}>
 				<Text color="#616161" fontSize="16.5px" fontWeight="bold">
 					{root?.titles?.mainTitle ?? ''}
@@ -116,9 +119,10 @@ export const BibRootInfo: FC<{ formatted: FormattedBibliohraphy[] }> = ({
 						<NavLinkButton
 							to={`/periodical/${root.pid}`}
 							variant="text"
-							color="textCommon"
+							color="primary"
 							fontWeight="bold"
-							px={0}
+							p={0}
+							m={0}
 						>
 							{t(`metadata:${mapContextToUnitType[root.model]}`)}
 						</NavLinkButton>
@@ -145,15 +149,18 @@ export const BibRootInfo: FC<{ formatted: FormattedBibliohraphy[] }> = ({
 												{d.label}
 											</Text>
 											{d.link ? (
-												<>
+												<Box>
 													{d.value.map((linkLabel, itemIndex) => (
-														<BibLink
-															key={linkLabel}
-															to={d.getLink(itemIndex)}
-															label={linkLabel}
-														/>
+														<>
+															<BibLink
+																key={linkLabel}
+																to={d.getLink(itemIndex)}
+																label={linkLabel}
+															/>
+															<br />
+														</>
 													))}
-												</>
+												</Box>
 											) : (
 												<Box>
 													{d.value.map((label, itemIndex) => (

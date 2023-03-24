@@ -1,49 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
 
 //const err_msg = 'pparts_parent_out_of_bounds';
 
-export const usePeriodicalParts = (uuid: string) => {
-	const [parts, setParts] = useState<{
-		next: string | undefined;
-		prev: string | undefined;
-	}>({ next: undefined, prev: undefined });
-	const { data: detail, isLoading: isDetailLoading } =
-		usePublicationDetail(uuid);
-
-	const ctx = detail?.context?.flat(1) ?? [];
-	const parentUuid = ctx[ctx?.length - 2]?.pid;
-	const { data: otherChildren, isLoading: isChildrenLoading } =
-		usePublicationChildren(parentUuid);
-
-	useEffect(() => {
-		if (!isDetailLoading && !isChildrenLoading) {
-			if (otherChildren && otherChildren.length > 0) {
-				const currentIndex = otherChildren?.findIndex(ch => ch.pid === uuid);
-				setParts({
-					next:
-						currentIndex !== undefined
-							? otherChildren?.[currentIndex + 1]?.pid
-							: undefined,
-					prev:
-						currentIndex !== undefined
-							? otherChildren?.[currentIndex - 1]?.pid
-							: undefined,
-				});
-			}
-		}
-	}, [isChildrenLoading, isDetailLoading, otherChildren, uuid]);
-
-	return { isLoading: isDetailLoading || isChildrenLoading, parts };
-};
-
 export const useParseUrlIdsAndParams = () => {
-	const isMultiview = window.location.pathname.includes('/multiview/');
+	const isMultiview = useMemo(
+		() => window.location.pathname.includes('/multiview/'),
+		[],
+	);
+
+	const isSingleView = useMemo(
+		() => window.location.pathname.includes('/view/'),
+		[],
+	);
+
+	const isDetailView = useMemo(
+		() => isMultiview || isSingleView,
+		[isMultiview, isSingleView],
+	);
 	const nav = useNavigate();
 	const {
 		id: singleId,
@@ -51,10 +25,10 @@ export const useParseUrlIdsAndParams = () => {
 		id2: mIdRight,
 	} = useParams<{ id: string; id1: string; id2: string }>();
 	const [sp] = useSearchParams();
-	const page = sp.get('page') ?? '';
-	const page2 = sp.get('page2') ?? '';
-	const fulltext = sp.get('fulltext') ?? '';
-	const fulltext2 = sp.get('fulltext2') ?? '';
+	const page = sp.get('page');
+	const page2 = sp.get('page2');
+	const fulltext = sp.get('fulltext');
+	const fulltext2 = sp.get('fulltext2');
 	const navLeft = useCallback(
 		() =>
 			nav({
@@ -78,17 +52,45 @@ export const useParseUrlIdsAndParams = () => {
 			}),
 		[fulltext2, mIdRight, nav, page2],
 	);
+
+	const getApropriateIds = useCallback(
+		(isSecond?: boolean) => {
+			if (isMultiview) {
+				if (isSecond) {
+					return { id: mIdRight, pageId: page2, fulltext: fulltext2 };
+				} else {
+					return { id: mIdLeft, pageId: page, fulltext };
+				}
+			} else {
+				return { id: singleId, pageId: page, fulltext };
+			}
+		},
+		[
+			fulltext,
+			fulltext2,
+			isMultiview,
+			mIdLeft,
+			mIdRight,
+			page,
+			page2,
+			singleId,
+		],
+	);
+
 	return {
+		isSingleView,
 		isMultiview,
+		isDetailView,
 		singleId,
-		mIdLeft,
-		mIdRight,
+		multiviewIdLeft: mIdLeft,
+		multiviewIdRight: mIdRight,
 		page,
 		page2,
 		fulltext,
 		fulltext2,
 		navLeft,
 		navRight,
+		getApropriateIds,
 	};
 };
 

@@ -51,7 +51,7 @@ const ShareDialog: FC<Props> = ({ isSecond }) => {
 	}, [rootContext]);
 
 	if (rootDetailResponse.isLoading || !rootDetail) {
-		return <LoaderSpin />;
+		return <LoaderSpin size={20} />;
 	}
 
 	const sources = rootContext?.flat() ?? [];

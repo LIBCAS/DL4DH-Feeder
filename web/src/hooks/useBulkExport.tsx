@@ -28,7 +28,6 @@ export type BulkExportContextType = {
 let savedBulkExport = {};
 
 try {
-	console.log('loading be from ls');
 	savedBulkExport = JSON.parse(Store.get(Store.keys.BulkExport) ?? '{}');
 } catch (error) {
 	console.log('Bulk export LS empty.');

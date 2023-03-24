@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 import { MdArrowBack } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 
 import MainSearchInput from 'components/search/MainSearchInput';
 import { Flex } from 'components/styled';
@@ -11,13 +11,10 @@ import IconButton from 'components/styled/IconButton';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
-
 import { theme } from 'theme';
 
 import { useInfoApi } from 'api/infoApi';
 
-import { useSearchContext } from 'hooks/useSearchContext';
 import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
@@ -31,8 +28,6 @@ const Header = () => {
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 
-	const ctx = usePublicationContext();
-	const searchCtx = useSearchContext();
 	const { isMobile } = useMobileView();
 	const { t } = useTranslation('navbar');
 
@@ -104,19 +99,6 @@ const Header = () => {
 					)}
 
 					<MainSearchInput />
-					{window.origin === 'http://localhost:3000000' ? (
-						<button
-							onClick={() => {
-								console.log(searchCtx);
-								console.log(ctx);
-							}}
-						>
-							ctx
-						</button>
-					) : (
-						<></>
-					)}
-
 					<HeaderMenu />
 				</Flex>
 			) : (

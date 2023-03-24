@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import AppRoutes from 'components/routing/AppRoutes';
-import { Flex } from 'components/styled';
+import { Box } from 'components/styled';
 import TooltipRender from 'components/tooltip/Tooltip';
 
 import Header from 'modules/header';
@@ -32,7 +32,7 @@ const App = () => {
 	return (
 		<ThemeProvider>
 			<ErrorBoundary>
-				<Flex as="main" flexDirection="column" minHeight="100vh">
+				<Box as="main" minHeight="100vh" maxHeight="100vh">
 					<ReactKeycloakProvider
 						authClient={keycloak}
 						LoadingComponent={
@@ -76,7 +76,7 @@ const App = () => {
 							</FullscreenContextProvider>
 						</Router>
 					</ReactKeycloakProvider>
-				</Flex>
+				</Box>
 			</ErrorBoundary>
 		</ThemeProvider>
 	);

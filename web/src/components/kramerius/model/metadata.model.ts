@@ -203,8 +203,12 @@ export class Metadata {
 
 	public getPrimaryAuthors() {
 		const result: Author[] = [];
+		
+		if (!this?.authors) {
+			return [];
+		}
 		for (const author of this.authors) {
-			if (author.primary) {
+			if (author?.primary) {
 				result.push(author);
 			}
 		}
@@ -213,6 +217,9 @@ export class Metadata {
 
 	public getOtherAuthors() {
 		const result: Author[] = [];
+		if (!this?.authors) {
+			return [];
+		}
 		for (const author of this.authors) {
 			if (!author.primary) {
 				result.push(author);

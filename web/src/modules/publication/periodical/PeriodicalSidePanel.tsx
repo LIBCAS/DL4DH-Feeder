@@ -8,7 +8,7 @@ import PublishDateFilterForm from 'components/filters/Accordions/publishDateFilt
 
 import { PublicationChild } from 'api/models';
 
-import PubBiblioDetail from '../detail/PubBiblioDetail';
+import BibMain from '../detail/biblio/bib-main';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -18,8 +18,18 @@ type Props = {
 const PeriodicalSidePanel: FC<Props> = ({ variant }) => {
 	const { t } = useTranslation('search');
 	return (
-		<Flex position="relative" flexShrink={0}>
-			{variant === 'right' && <PubBiblioDetail variant="right" />}
+		<Flex position="relative" flexShrink={0} height="100%">
+			{variant === 'right' && (
+				<Flex
+					position="absolute"
+					height="100%"
+					width={1}
+					alignItems="flex-start"
+					flexDirection="column"
+				>
+					<BibMain variant="right" />
+				</Flex>
+			)}
 			{variant === 'left' && (
 				<Accordion label={t('year-range.label')} isExpanded isLoading={false}>
 					<PublishDateFilterForm />

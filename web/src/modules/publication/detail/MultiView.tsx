@@ -16,6 +16,8 @@ import {
 
 import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
@@ -171,14 +173,14 @@ const MultiView = () => {
 					>
 						<PublicationSidePanel
 							variant="left"
-							defaultView="search"
+							defaultView="detail"
 							pages={pages1}
 							onCollapse={() => setLeftCollapsed(p => !p)}
 							isCollapsed={leftCollapsed}
 						/>
 					</Flex>
 
-					<Flex height="100vh" width="100%">
+					<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
 						<PubMainDetail
 							page={pageId1}
 							pageOfSecond={pageId2}

@@ -125,6 +125,7 @@ const GlobalStyles = () => (
 					'Helvetica Neue', sans-serif;
 			}
 			button {
+				border-radius: 4px;
 				font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
 					'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
 					'Helvetica Neue', sans-serif;

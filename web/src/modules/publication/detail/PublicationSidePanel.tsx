@@ -15,9 +15,9 @@ import { PublicationChild } from 'api/models';
 
 import { useParseUrlIdsAndParams } from '../publicationUtils';
 
-import PubBiblioDetail from './PubBiblioDetail';
 import PubChooseSecond from './PubChooseSecond';
 import PubPagesDetail from './PubPagesDetail';
+import BibMain from './biblio/bib-main';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -38,16 +38,16 @@ const PublicationSidePanel: FC<Props> = ({
 	const theme = useTheme();
 	const [chooseSecondDialogOpen, setChooseSecondDialogOpen] = useState(false);
 	const { t } = useTranslation('publication_detail');
-
 	const urlParams = useParseUrlIdsAndParams();
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
-		isSecond ? 'search' : defaultView ?? 'detail',
+		isSecond ? 'detail' : defaultView ?? 'detail',
 	);
 
 	return (
 		<Flex
 			position="relative"
+			height="100%"
 			width={300}
 			flexShrink={0}
 			bg="primaryLight"
@@ -66,7 +66,8 @@ const PublicationSidePanel: FC<Props> = ({
 			`}
 		>
 			<Flex
-				position="relative"
+				position="absolute"
+				height="100%"
 				alignItems="flex-start"
 				width={1}
 				flexDirection="column"
@@ -110,46 +111,48 @@ const PublicationSidePanel: FC<Props> = ({
 					<Divider />
 				</>
 
-				<Flex
-					height={50}
-					bg="primaryLight"
-					width={1}
-					alignItems="center"
-					justifyContent="center"
-					flexShrink={0}
-				>
-					<Tabs
-						tabs={[
-							{
-								key: 'search',
-								jsx: (
-									<Button
-										height={30}
-										hoverDisable
-										variant={viewMode === 'search' ? 'primary' : 'outlined'}
-									>
-										{t('search')}
-									</Button>
-								),
-							},
-							{
-								key: 'detail',
-								jsx: (
-									<Button
-										height={30}
-										hoverDisable
-										ml={2}
-										variant={viewMode === 'detail' ? 'primary' : 'outlined'}
-									>
-										{t('detail')}
-									</Button>
-								),
-							},
-						]}
-						setActiveTab={k => setViewMode(k as 'detail' | 'search')}
-						activeTab={viewMode}
-					/>
-				</Flex>
+				{urlParams.isMultiview && (
+					<Flex
+						height={50}
+						bg="primaryLight"
+						width={1}
+						alignItems="center"
+						justifyContent="center"
+						flexShrink={0}
+					>
+						<Tabs
+							tabs={[
+								{
+									key: 'search',
+									jsx: (
+										<Button
+											height={30}
+											hoverDisable
+											variant={viewMode === 'search' ? 'primary' : 'outlined'}
+										>
+											{t('search')}
+										</Button>
+									),
+								},
+								{
+									key: 'detail',
+									jsx: (
+										<Button
+											height={30}
+											hoverDisable
+											ml={2}
+											variant={viewMode === 'detail' ? 'primary' : 'outlined'}
+										>
+											{t('detail')}
+										</Button>
+									),
+								},
+							]}
+							setActiveTab={k => setViewMode(k as 'detail' | 'search')}
+							activeTab={viewMode}
+						/>
+					</Flex>
+				)}
 				<Divider />
 				{!chooseSecondDialogOpen && (
 					<>
@@ -157,7 +160,7 @@ const PublicationSidePanel: FC<Props> = ({
 						{viewMode === 'search' ? (
 							<PubPagesDetail isSecond={isSecond} />
 						) : (
-							<PubBiblioDetail variant={variant} isSecond={isSecond} />
+							<BibMain variant={variant} isSecond={isSecond} />
 						)}
 					</>
 				)}

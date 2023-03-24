@@ -8,13 +8,15 @@ import Paper from 'components/styled/Paper';
 import { H1 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 const ProtectedRoute: FC = ({ children }) => {
 	const { keycloak } = useKeycloak();
 	const { t } = useTranslation();
 	if (!keycloak.authenticated) {
 		return (
 			<Wrapper
-				height="100vh"
+				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 				alignItems="flex-start"
 				p={[4, 0]}
 				width={1}

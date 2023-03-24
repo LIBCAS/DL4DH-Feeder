@@ -25,7 +25,7 @@ export const useSearchRecommended = infiniteMainSearchEndpoint<
 	api.post('feed/custom', { json }),
 );
 
-export const usePublicationDetail = (uuid: string, disabled?: boolean) =>
+export const usePublicationDetail = (uuid?: string, disabled?: boolean) =>
 	useQuery(
 		['publication-detail', uuid],
 		() =>

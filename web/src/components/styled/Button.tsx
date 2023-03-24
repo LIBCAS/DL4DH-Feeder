@@ -208,11 +208,13 @@ Button.displayName = Button.name;
 
 export const NavButton = styled(StyledButton)`
 	cursor: pointer;
+	border-radius: 4px;
 `;
 
 export const NavLinkButton = NavButton.withComponent(Link);
 export const NavHrefButton = styled(NavButton)`
 	text-decoration: none;
+
 	&:hover {
 		text-decoration: none;
 	}

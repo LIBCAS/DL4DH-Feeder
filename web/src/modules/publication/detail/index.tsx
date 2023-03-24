@@ -21,6 +21,8 @@ import {
 import { useMobileView } from 'hooks/useViewport';
 import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PublicationSidePanel from './PublicationSidePanel';
@@ -32,7 +34,7 @@ const PublicationDetail = () => {
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
 	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
-	const [page, setPageUrlParam] = useSearchParams();
+	const [sp, setSp] = useSearchParams();
 	const pubCtx = usePublicationContext();
 	const nav = useNavigate();
 	const { isMobile } = useMobileView();
@@ -40,8 +42,8 @@ const PublicationDetail = () => {
 	const [leftCollapsed, setLeftCollapsed] = useState(isMobile);
 
 	const pageId = useMemo(
-		() => page.get('page') ?? pages[0]?.pid ?? undefined,
-		[page, pages],
+		() => sp.get('page') ?? pages[0]?.pid ?? undefined,
+		[sp, pages],
 	);
 
 	useEffect(() => {
@@ -82,21 +84,24 @@ const PublicationDetail = () => {
 		}
 	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);
 
+	const datanode = useMemo(
+		() =>
+			((pubChildren.isSuccess &&
+				pubChildren.data.filter(d => d.datanode)?.length) ??
+				0) > 0,
+		[pubChildren.data, pubChildren.isSuccess],
+	);
+
 	if (pubChildren.isLoading || detail.isLoading) {
 		return <Loader />;
 	}
-	if (!page.get('page')) {
-		page.append('page', pages[0]?.pid ?? 'index-detail-undefined');
-		setPageUrlParam(page, { replace: true });
+	if (!sp.get('page') && pages[0]?.pid) {
+		sp.append('page', pages[0]?.pid ?? 'index-detail-undefined');
+		setSp(sp, { replace: true });
 	}
 
 	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
 	const isPublic = detail.data?.policy === 'public';
-	//TODO: memoize
-	const datanode =
-		((pubChildren.isSuccess &&
-			pubChildren.data.filter(d => d.datanode)?.length) ??
-			0) > 0;
 
 	return (
 		<WordHighlightContextProvider>
@@ -106,7 +111,7 @@ const PublicationDetail = () => {
 				mx={0}
 				alignItems="flex-start"
 				width={1}
-				height="100vh"
+				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 			>
 				<Flex
 					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
@@ -131,10 +136,10 @@ const PublicationDetail = () => {
 					>
 						<PublicationSidePanel
 							variant="left"
-							defaultView="search"
 							pages={pages}
 							onCollapse={() => setLeftCollapsed(p => !p)}
 							isCollapsed={leftCollapsed}
+							defaultView="search"
 						/>
 					</Flex>
 
@@ -163,13 +168,14 @@ const PublicationDetail = () => {
 							</Flex>
 						</Wrapper>
 					) : (
-						<Flex height="100vh" width="100%">
+						<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
 							<PubMainDetail page={pageId} leftPublic={isPublic} />
 						</Flex>
 					)}
 
 					<PublicationSidePanel
 						variant="right"
+						defaultView="detail"
 						pages={pages}
 						onCollapse={() => setRightCollapsed(p => !p)}
 						isCollapsed={rightCollapsed}

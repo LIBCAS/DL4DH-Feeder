@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useQueries } from 'react-query';
 import { useTranslation } from 'react-i18next';
-import { uniqWith } from 'lodash-es';
+import _, { uniqWith } from 'lodash-es';
 
 import { Author, Metadata } from 'components/kramerius/model/metadata.model';
 import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
@@ -9,7 +9,10 @@ import { ModsParserService } from 'components/kramerius/modsParser/modsParserSer
 import { api } from 'api';
 
 import { PublicationContext } from 'api/models';
-import { usePublicationDetail } from 'api/publicationsApi';
+import {
+	usePublicationChildren,
+	usePublicationDetail,
+} from 'api/publicationsApi';
 
 const bibApi = async (pid: string) =>
 	await api()
@@ -36,7 +39,6 @@ export const useFullContextMetadata = (context: PublicationContext[]) => {
 	useEffect(() => {
 		if (!isLoading && !parsed) {
 			const metadata: Record<string, Metadata> = {};
-			console.log('parsing');
 			mqueries.forEach(({ data }) => {
 				if (data) {
 					const pservice = new ModsParserService();
@@ -50,15 +52,6 @@ export const useFullContextMetadata = (context: PublicationContext[]) => {
 	}, [isLoading, mqueries, parsed]);
 
 	return { metadata, isLoading };
-};
-
-const mapTitle = {
-	monograph: { label: 'kniha', key: 'title' },
-	monographunit: { label: 'kniha zo zvazku', key: 'title' }, // tu treba cekovat aj partName a partNumber a potom dalsie titles v poli
-	periodical: { label: 'periodikum', key: 'title' },
-	periodicalvolume: { label: 'rocnik', key: 'partNumber' },
-	periodicalitem: { label: 'cislo', key: 'partNumber' },
-	page: { label: 'strana', key: 'partNumber' },
 };
 
 const mapPartInfo = {
@@ -86,6 +79,9 @@ export type FormattedBibliohraphy = {
 	model: string;
 	pid: string;
 	data: FormattedMetadata;
+	identifiers: {
+		issn: string;
+	};
 	titles: {
 		mainTitle: string;
 		mainSubTitle: string;
@@ -307,12 +303,105 @@ export const useMetadataFormatter = () => {
 				year: m.metadata.getYearRange(),
 				authors: getAuthors(m.metadata),
 				metadata: m.metadata,
+				identifiers: { issn: _.get(m.metadata.identifiers, 'issn') },
 			}));
 		},
 		[formatMetadata, getAuthors, getPartsInfo, getTitles],
 	);
 
-	return { formatMetadata, getTitles, getPartsInfo, getAuthors, format };
+	return {
+		formatMetadata,
+		getTitles,
+		getPartsInfo,
+		getAuthors,
+		format,
+	};
+};
+
+type PeriodicalPartLink = {
+	next: {
+		uuid: string | undefined;
+		label: string | undefined;
+	};
+	prev: {
+		uuid: string | undefined;
+		label: string | undefined;
+	};
+};
+
+const MapDetailInfo = {
+	periodicalvolume: {
+		key1: 'volumeNumber',
+		key2: 'year',
+	},
+	periodicalitem: {
+		key1: 'partNumber',
+		key2: 'date',
+	},
+	monographunit: {
+		key1: 'partNumber',
+		key2: 'date',
+	},
+
+	internalpart: {
+		key1: 'pagenumber',
+		key2: 'type',
+	},
+};
+
+export const usePeriodicalParts = (fcm: FullContextMetadata) => {
+	const [parts, setParts] = useState<PeriodicalPartLink>();
+	const uuid = fcm?.[fcm.length - 1]?.pid;
+	const parentUuid = fcm?.[fcm.length - 2]?.pid;
+
+	const { data: otherChildren, isLoading: isChildrenLoading } =
+		usePublicationChildren(parentUuid);
+	useEffect(() => {
+		if (!isChildrenLoading) {
+			if (otherChildren && otherChildren.length > 0) {
+				const currentIndex = otherChildren?.findIndex(ch => ch.pid === uuid);
+				if (currentIndex === undefined) {
+					setParts(undefined);
+				} else {
+					const prev = otherChildren?.[currentIndex - 1];
+					const next = otherChildren?.[currentIndex + 1];
+					const uuidPrev = prev?.pid;
+					const uuidNext = next?.pid;
+
+					const detailPrev = prev?.details;
+					const detailNext = next?.details;
+
+					const labelPrev = detailPrev
+						? `${detailPrev?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
+								detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]
+									? `(${detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]})`
+									: ''
+						  }`
+						: undefined;
+					const labelNext = detailNext
+						? `${detailNext?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
+								detailNext?.[MapDetailInfo?.[prev?.model]?.key2]
+									? `(${detailNext?.[MapDetailInfo?.[prev?.model]?.key2]})`
+									: ''
+						  }`
+						: undefined;
+
+					setParts({
+						prev: {
+							uuid: uuidPrev,
+							label: labelPrev,
+						},
+						next: {
+							uuid: uuidNext,
+							label: labelNext,
+						},
+					});
+				}
+			}
+		}
+	}, [isChildrenLoading, otherChildren, uuid]);
+
+	return { isLoading: isChildrenLoading, parts };
 };
 
 export type FullContextMetadata = {
@@ -327,7 +416,7 @@ const useMetadata = (uuid: string) => {
 	const pageTitle =
 		publication.data?.model === 'page' ? publication.data?.title : undefined;
 	const mqueries = useQueries(
-		(publication?.data?.context ?? []).flat().map((ctx, index) => ({
+		(publication?.data?.context ?? []).flat().map(ctx => ({
 			queryKey: ['stream-with-parse', ctx.pid, 'BIBLIO_MODS'],
 			queryFn: async () => {
 				const mod = await bibApi(ctx.pid);

@@ -8,6 +8,8 @@ import Text from 'components/styled/Text';
 
 import ZoomifyView from 'modules/zoomify/ZoomifyView';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PubPageNotFound from './PubPageNotFound';
@@ -32,7 +34,7 @@ const PriavatePublicationInfo: FC<{ isMultiView?: boolean }> = ({
 			justifyContent="center"
 			fontWeight="bold"
 			fontSize="xl"
-			height="100vh"
+			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 		>
 			<Flex
 				justifyContent="center"

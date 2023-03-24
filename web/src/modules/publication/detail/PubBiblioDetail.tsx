@@ -29,7 +29,6 @@ import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
 import PrintDialog from '../print/PrintDialog';
-import { usePeriodicalParts } from '../publicationUtils';
 
 import AuthorsDialog from './AuthorsDialog';
 import MetaStreamsDialog from './MetaStreamsDialog';
@@ -65,11 +64,20 @@ import MetaStreamsDialog from './MetaStreamsDialog';
 export const BibLink: FC<{ to: string; label?: string | string[] }> = ({
 	to,
 	label,
-}) => (
-	<NavLinkButton variant="text" m={0} p={0} to={to}>
-		<H5 m={0}>{label ?? ''}</H5>
-	</NavLinkButton>
-);
+}) => {
+	const theme = useTheme();
+	return (
+		<NavLinkButton variant="text" m={0} p={0} to={to} textAlign="left">
+			<H5
+				color="primary"
+				m={0}
+				style={{ color: theme.colors.primary, fontWeight: 'normal' }}
+			>
+				{label ?? ''}
+			</H5>
+		</NavLinkButton>
+	);
+};
 
 const ParsedLanguages: FC<{
 	langs: string | string[];
@@ -161,8 +169,6 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 
 	const [parsedXML, setParsedXML] = useState<unknown>();
 
-	const { parts } = usePeriodicalParts(id);
-
 	const { t } = useTranslation();
 
 	useEffect(() => {
@@ -192,6 +198,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 			({ model }) =>
 				model !== 'periodicalitem' &&
 				model !== 'supplement' &&
+				model !== 'internalpart' &&
 				model !== 'monographunit',
 		);
 	// console.log({ bmods, bmods2 });
@@ -206,9 +213,15 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 	// http://localhost:3000/view/uuid:bbe1bcd0-550e-11de-b630-000d606f5dc6?page=uuid%3A37af3bf4-2cad-4f09-b871-48370c84908b
 	// tu je tvurce, ale nie autor
 	// http://localhost:3000/view/uuid:7e05cb70-50e7-11de-aafb-000d606f5dc6?page=uuid%3A15b3a380-fe72-11e6-bff9-005056825209
+	// publikacia ktora ma internalpart - zacykli sa nachvilu
+	// http://localhost:3000/view/uuid:21426150-9e46-11dc-a259-000d606f5dc6?page=uuid:a9759e30-42d6-4a91-846f-4b636b4066ed
+	// internal part je vraci childrenov
+	//http://localhost:3000/search?query=D%C4%9Bjepis%20pro%20ml%C3%A1de%C5%BE%20%C4%8Deskoslovanskou%20na%20%C5%A1kol%C3%A1ch%20n%C3%A1rodn%C3%ADch&availability=PUBLIC
 	const authors = metadata?.authors ?? [];
 	const mainAuthors = authors.filter(a => a.roles.indexOf('aut') !== -1);
 	const otherAuthors = authors.filter(a => a.roles.indexOf('aut') === -1);
+
+	//console.log({ pageContext, fullMetadata, metadata });
 
 	return (
 		<Flex width={1} flexDirection="column" position="relative" height="100%">
@@ -425,7 +438,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 						</Box>
 					)}
 				</Box>
-				{parts.prev && (
+				{/* {parts.prev && (
 					<Box mb={3}>
 						<BibLink
 							to={`/view/${parts.prev}`}
@@ -441,7 +454,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 							label={t('metadata:next_unit')}
 						/>
 					</Box>
-				)}
+				)} */}
 
 				<Box mb={3}>
 					<Text fontSize="13.5px" color="#9e9e9e">

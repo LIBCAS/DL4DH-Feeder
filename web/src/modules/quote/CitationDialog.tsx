@@ -22,13 +22,15 @@ import { Loader } from 'modules/loader';
 import { api } from 'api';
 
 import { ModelsEnum, PublicationContext } from 'api/models';
-import { usePublicationDetail, useStreams } from 'api/publicationsApi';
+import { usePublicationDetail } from 'api/publicationsApi';
 
-import { modelToText, ModelToText } from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 
 type Props = {
 	isSecond?: boolean;
 };
+// TODO: use useFullContextMetadata from hook
+// fix http://localhost:3000/view/uuid:21426150-9e46-11dc-a259-000d606f5dc6?page=uuid%3Abdc7b117-1078-4a27-b7e4-abd12e788142
 
 const useFullContextMetadata = (context: PublicationContext[]) => {
 	const [metadata, setMetadata] = useState<Record<string, Metadata>>({});
@@ -53,7 +55,7 @@ const useFullContextMetadata = (context: PublicationContext[]) => {
 	useEffect(() => {
 		if (!isLoading && !parsed) {
 			const metadata: Record<string, Metadata> = {};
-			console.log('parsing');
+			//console.log('parsing');
 			mqueries.forEach(({ data }) => {
 				if (data) {
 					const pservice = new ModsParserService();
@@ -66,42 +68,6 @@ const useFullContextMetadata = (context: PublicationContext[]) => {
 		}
 	}, [isLoading, mqueries, parsed]);
 
-	// useEffect(() => {
-	// 	if (!isLoading && !parsed) {
-	// 		const metadata: Record<string, Metadata> = {};
-	// 		console.log('parsing');
-	// 		Object.keys(rawMetadata).forEach(key => {
-	// 			console.log(rawMetadata[key].mods);
-	// 			const pservice = new ModsParserService();
-	// 			const parsed = pservice.parse(
-	// 				rawMetadata[key].mods,
-	// 				rawMetadata[key].pid,
-	// 			);
-	// 			metadata[key] = parsed;
-	// 		});
-	// 		setMetadata(metadata);
-	// 		setParsed(true);
-	// 	}
-	// }, [rawMetadata, isLoading, parsed]);
-
-	/* useEffect(() => {
-		(async () => {
-			setIsLoading(true);
-			const flatContext = context.flat();
-			for (const ctx of flatContext) {
-				const mod = await api()
-					.get(`item/${ctx.pid}/streams/BIBLIO_MODS`, {
-						headers: { accept: 'application/json' },
-					})
-					.then(async r => await r.text());
-				const pservice = new ModsParserService();
-				const metadata = pservice.parse(mod, ctx.pid);
-				setMetadata(p => ({ ...p, [ctx.model]: metadata }));
-			}
-			setIsLoading(false);
-		})();
-	}, [context]); */
-
 	return { metadata, isLoading };
 };
 
@@ -113,7 +79,7 @@ const getPartsInfoText = (
 	const result: (string | JSX.Element)[] = [];
 	const sourceIndex = pubContext.findIndex(pc => pc.model === currentSource);
 
-	console.log(metadata);
+	//console.log(metadata);
 
 	const volumeNumber = metadata['periodicalvolume']?.titles[0].partNumber ?? '';
 	const issueNumber = metadata['periodicalitem']?.titles[0].partNumber ?? '';
@@ -137,7 +103,7 @@ const getPartsInfoText = (
 		const parrentMetadata = metadata[pubContext[index].model];
 		const title =
 			parrentMetadata?.getTitle?.() ??
-			parrentMetadata?.titles?.[0]?.title() ??
+			//parrentMetadata?.titles?.[0]?.title() ??
 			undefined;
 
 		if (
@@ -188,19 +154,9 @@ const ShowCitation: FC<{
 	pageId: string;
 	pubContext: PublicationContext[];
 	currentSource: string;
-}> = ({ uuid, pageId, currentSource, pubContext }) => {
-	const { data, isLoading } = useStreams(uuid, 'BIBLIO_MODS');
-	const [metadata, setMetadata] = useState<Metadata | undefined>();
+}> = ({ pageId, currentSource, pubContext }) => {
 	const { data: pageTitle } = usePublicationDetail(pageId);
 	const fullMetadata = useFullContextMetadata(pubContext.flat());
-	//TODO: remove redundant things
-	useEffect(() => {
-		if (!isLoading && data) {
-			const pservice = new ModsParserService();
-			const metadata = pservice.parse(data, uuid);
-			setMetadata(metadata);
-		}
-	}, [data, isLoading, uuid]);
 
 	const pageInfo =
 		currentSource === 'page' ? `. s ${pageTitle?.title ?? '?'}.` : '. ';
@@ -254,7 +210,7 @@ const CitationDialog: FC<Props> = ({ isSecond }) => {
 	}, [rootContext]);
 
 	if (rootDetailResponse.isLoading || !rootDetail) {
-		return <LoaderSpin />;
+		return <LoaderSpin size={20} />;
 	}
 
 	const sources = rootContext?.flat() ?? [];

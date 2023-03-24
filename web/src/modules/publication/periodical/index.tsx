@@ -22,6 +22,8 @@ import {
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
+import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
 import { usePublicationContext } from '../ctx/pub-ctx';
 
 import PeriodicalSidePanel from './PeriodicalSidePanel';
@@ -91,7 +93,7 @@ const PeriodicalDetail = () => {
 			mx={0}
 			alignItems="flex-start"
 			width={1}
-			height="100vh"
+			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px`}
 		>
 			<MainContainer
 				subHeader={{
