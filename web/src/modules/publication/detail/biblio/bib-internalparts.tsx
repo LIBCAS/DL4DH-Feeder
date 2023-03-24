@@ -13,6 +13,18 @@ import {
 	usePublicationChildren,
 	usePublicationDetail,
 } from 'api/publicationsApi';
+import { PublicationContext } from 'api/models';
+
+const getParentPid = (context: PublicationContext[], pid?: string) => {
+	if (!pid || pid === '') {
+		return undefined;
+	}
+	const currentIndex = context.flat().findIndex(c => c.pid === pid);
+	if (currentIndex < 0 || currentIndex - 1 < 0) {
+		return undefined;
+	}
+	return context.flat()?.[currentIndex - 1]?.pid ?? undefined;
+};
 
 type Props = {
 	isSecond?: boolean;
@@ -20,9 +32,9 @@ type Props = {
 
 const BibInternalParts: FC<Props> = ({ isSecond }) => {
 	const { getApropriateIds } = useParseUrlIdsAndParams();
-	const ids = getApropriateIds(isSecond);
-	const currentDetail = usePublicationDetail(ids.id);
-	const response = usePublicationChildren(ids.id);
+	const { id } = getApropriateIds(isSecond);
+	const currentDetail = usePublicationDetail(id);
+	const response = usePublicationChildren(id);
 	const [open, setOpen] = useState(false);
 	const children = useMemo(
 		() => response?.data?.filter(ch => ch.model === 'internalpart'),
@@ -40,7 +52,7 @@ const BibInternalParts: FC<Props> = ({ isSecond }) => {
 					fontWeight="bold"
 					variant="text"
 					textAlign="left"
-					to={`/view/${currentDetail.data.root_pid}`}
+					to={`/view/${getParentPid(currentDetail.data.context, id)}`}
 				>
 					Přejít na celou publikaci
 				</NavLinkButton>
@@ -48,7 +60,7 @@ const BibInternalParts: FC<Props> = ({ isSecond }) => {
 		);
 	}
 
-	if (!children ?? children?.length === 0) {
+	if (!children || children?.length === 0) {
 		return <></>;
 	}
 

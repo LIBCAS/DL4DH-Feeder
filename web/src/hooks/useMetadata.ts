@@ -367,7 +367,7 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 					const next = otherChildren?.[currentIndex + 1];
 					const uuidPrev = prev?.pid;
 					const uuidNext = next?.pid;
-
+					console.log({ next, prev });
 					const detailPrev = prev?.details;
 					const detailNext = next?.details;
 
@@ -379,13 +379,14 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 						  }`
 						: undefined;
 					const labelNext = detailNext
-						? `${detailNext?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
-								detailNext?.[MapDetailInfo?.[prev?.model]?.key2]
-									? `(${detailNext?.[MapDetailInfo?.[prev?.model]?.key2]})`
+						? `${detailNext?.[MapDetailInfo?.[next?.model]?.key1] ?? ''} ${
+								detailNext?.[MapDetailInfo?.[next?.model]?.key2]
+									? `(${detailNext?.[MapDetailInfo?.[next?.model]?.key2]})`
 									: ''
 						  }`
 						: undefined;
 
+					console.log({ labelNext });
 					setParts({
 						prev: {
 							uuid: uuidPrev,

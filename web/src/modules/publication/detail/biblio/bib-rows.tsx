@@ -8,7 +8,11 @@ import { Box } from 'components/styled';
 import Text from 'components/styled/Text';
 import { NavLinkButton } from 'components/styled/Button';
 
+import { ModelsEnum } from 'api/models';
+
 import { FormattedBibliohraphy } from 'hooks/useMetadata';
+
+import { modelToText } from 'utils/enumsMap';
 
 import AuthorsDialog from '../AuthorsDialog';
 import { BibLink } from '../PubBiblioDetail';
@@ -100,83 +104,90 @@ export const BibRootInfo: FC<{
 	}
 
 	return (
-		<Box
-			pl={level > 0 ? 3 : 'unset'}
-			css={css`
-				border-left: ${level && level > 0 ? '5px solid #e0e0e0' : 'none'};
-			`}
-		>
-			<Box mb={3}>
-				<Text color="#616161" fontSize="16.5px" fontWeight="bold">
-					{root?.titles?.mainTitle ?? ''}
+		<>
+			{level > 0 && (
+				<Text mb={0} pb={0} fontWeight="bold">
+					{t(`model:${modelToText(root.model as ModelsEnum)}`)}
 				</Text>
-				<Text color="#616161" fontSize="15px">
-					{root?.titles?.mainSubTitle ?? ''}
-				</Text>
-				<PartsInfo parts={root.parts} />
-				{isPeriodical && (
-					<Box>
-						<NavLinkButton
-							to={`/periodical/${root.pid}`}
-							variant="text"
-							color="primary"
-							fontWeight="bold"
-							p={0}
-							m={0}
-						>
-							{t(`metadata:${mapContextToUnitType[root.model]}`)}
-						</NavLinkButton>
-					</Box>
-				)}
-			</Box>
-			<BibAuthors
-				mainAuthors={root.authors.primaryAuthors}
-				otherAuthors={root.authors.otherAutors}
-				metadata={root.metadata}
-			/>
-			{children}
-
-			<Box mb={3}>
-				{root.data.map((field, index) => {
-					return (
-						<Box mb={3} key={`${field.id}-${index}`}>
-							{field.data
-								.filter(d => d.value.length > 0)
-								.map(d => {
-									return (
-										<Box key={`${field.id}-${index}-${d.label}-${d.value}`}>
-											<Text fontSize="13.5px" color="#9e9e9e">
-												{d.label}
-											</Text>
-											{d.link ? (
-												<Box>
-													{d.value.map((linkLabel, itemIndex) => (
-														<>
-															<BibLink
-																key={linkLabel}
-																to={d.getLink(itemIndex)}
-																label={linkLabel}
-															/>
-															<br />
-														</>
-													))}
-												</Box>
-											) : (
-												<Box>
-													{d.value.map((label, itemIndex) => (
-														<Box key={`not-link-${label}-${itemIndex}`}>
-															<b>{label}</b>
-														</Box>
-													))}
-												</Box>
-											)}
-										</Box>
-									);
-								})}
+			)}
+			<Box
+				pl={level > 0 ? 3 : 'unset'}
+				css={css`
+					border-left: ${level && level > 0 ? '5px solid #e0e0e0' : 'none'};
+				`}
+			>
+				<Box mb={3}>
+					<Text color="#616161" fontSize="16.5px" fontWeight="bold">
+						{root?.titles?.mainTitle ?? ''}
+					</Text>
+					<Text color="#616161" fontSize="15px">
+						{root?.titles?.mainSubTitle ?? ''}
+					</Text>
+					<PartsInfo parts={root.parts} />
+					{isPeriodical && (
+						<Box>
+							<NavLinkButton
+								to={`/periodical/${root.pid}`}
+								variant="text"
+								color="primary"
+								fontWeight="bold"
+								p={0}
+								m={0}
+							>
+								{t(`metadata:${mapContextToUnitType[root.model]}`)}
+							</NavLinkButton>
 						</Box>
-					);
-				})}
+					)}
+				</Box>
+				<BibAuthors
+					mainAuthors={root.authors.primaryAuthors}
+					otherAuthors={root.authors.otherAutors}
+					metadata={root.metadata}
+				/>
+				{children}
+
+				<Box mb={3}>
+					{root.data.map((field, index) => {
+						return (
+							<Box mb={3} key={`${field.id}-${index}`}>
+								{field.data
+									.filter(d => d.value.length > 0)
+									.map(d => {
+										return (
+											<Box key={`${field.id}-${index}-${d.label}-${d.value}`}>
+												<Text fontSize="13.5px" color="#9e9e9e">
+													{d.label}
+												</Text>
+												{d.link ? (
+													<Box>
+														{d.value.map((linkLabel, itemIndex) => (
+															<>
+																<BibLink
+																	key={linkLabel}
+																	to={d.getLink(itemIndex)}
+																	label={linkLabel}
+																/>
+																<br />
+															</>
+														))}
+													</Box>
+												) : (
+													<Box>
+														{d.value.map((label, itemIndex) => (
+															<Box key={`not-link-${label}-${itemIndex}`}>
+																<b>{label}</b>
+															</Box>
+														))}
+													</Box>
+												)}
+											</Box>
+										);
+									})}
+							</Box>
+						);
+					})}
+				</Box>
 			</Box>
-		</Box>
+		</>
 	);
 };
