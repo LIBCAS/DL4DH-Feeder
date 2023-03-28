@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Author, Metadata } from 'components/kramerius/model/metadata.model';
 import { Box } from 'components/styled';
-import Text from 'components/styled/Text';
 import { NavLinkButton } from 'components/styled/Button';
+import Text from 'components/styled/Text';
 
 import { ModelsEnum } from 'api/models';
 
@@ -16,6 +16,8 @@ import { modelToText } from 'utils/enumsMap';
 
 import AuthorsDialog from '../AuthorsDialog';
 import { BibLink } from '../PubBiblioDetail';
+
+import { BibInternalPartsDialog } from './bib-internalparts';
 
 export const BibAuthors: FC<{
 	mainAuthors: Author[];
@@ -90,7 +92,6 @@ const mapContextToUnitType = {
 export const BibRootInfo: FC<{
 	formatted: FormattedBibliohraphy[];
 	level: number;
-
 	currentId?: string;
 }> = ({ formatted, level, children, currentId }) => {
 	const root = formatted?.[0];
@@ -107,10 +108,14 @@ export const BibRootInfo: FC<{
 	return (
 		<>
 			{level > 0 && (
-				<Text mb={0} pb={0} fontWeight="bold">
-					{t(`model:${modelToText(root.model as ModelsEnum)}`)}
-				</Text>
+				<>
+					<Text mb={0} pb={0} fontWeight="bold">
+						{t(`model:${modelToText(root.model as ModelsEnum)}`)}
+					</Text>
+					{root.model === 'internalpart' && <BibInternalPartsDialog />}
+				</>
 			)}
+
 			<Box
 				pl={level > 0 ? 3 : 'unset'}
 				css={css`

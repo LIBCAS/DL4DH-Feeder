@@ -96,19 +96,19 @@ const PeriodicalTileItem: React.FC<Props> = ({
 					flexDirection="column"
 					alignItems="center"
 				>
-					{child.details.year && (
+					{child.details?.year && (
 						<Text mb={2} color="primary" fontWeight="bold">
 							{child.details.year}
 						</Text>
 					)}
 
-					{child.details.date && (
+					{child.details?.date && (
 						<Text mb={2} color="primary" fontWeight="bold">
 							{child.details.date}
 						</Text>
 					)}
 
-					{child.details.title && (
+					{child.details?.title && (
 						<Text mb={2} color="primary" fontWeight="bold">
 							{child.details.title}
 						</Text>
@@ -161,7 +161,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 					alignItems="center"
 					color={child.enriched ? 'black' : 'textCommon'}
 				>
-					{child.details.pagenumber !== null && (
+					{child.details?.pagenumber !== null && (
 						<Text
 							css={css`
 								text-overflow: ellipsis;
@@ -169,10 +169,10 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								white-space: nowrap;
 							`}
 						>
-							{child.details.pagenumber}
+							{child.details?.pagenumber}
 						</Text>
 					)}
-					{child.details.volumeNumber && (
+					{child.details?.volumeNumber && (
 						<Text
 							css={css`
 								text-overflow: ellipsis;
@@ -180,10 +180,10 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								white-space: nowrap;
 							`}
 						>
-							Ročník {child.details.volumeNumber}
+							Ročník {child.details?.volumeNumber}
 						</Text>
 					)}
-					{child.details.partNumber && (
+					{child.details?.partNumber && (
 						<Text
 							css={css`
 								text-overflow: ellipsis;
@@ -191,7 +191,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								white-space: nowrap;
 							`}
 						>
-							Číslo {child.details.partNumber}
+							Číslo {child.details?.partNumber}
 						</Text>
 					)}
 				</Flex>

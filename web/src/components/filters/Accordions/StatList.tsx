@@ -62,13 +62,13 @@ export const StatList: FC<{
 					}}
 					lineHeight={1}
 					px={2}
-					py={2}
+					py={1}
 					css={css`
 						cursor: pointer;
 						text-decoration: ${item.bold ? 'underline' : 'unset'};
 						&:hover {
-							background-color: ${theme.colors.primary};
-							color: white;
+							background-color: rgba(0, 0, 0, 0.06);
+							color: black;
 						}
 					`}
 				>

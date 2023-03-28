@@ -353,10 +353,13 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 	const [parts, setParts] = useState<PeriodicalPartLink>();
 	const uuid = fcm?.[fcm.length - 1]?.pid;
 	const parentUuid = fcm?.[fcm.length - 2]?.pid;
-	const { data: otherChildren, isLoading: isChildrenLoading } =
-		usePublicationChildren(parentUuid);
+	const { data, isLoading } = usePublicationChildren(parentUuid);
+	const otherChildren = useMemo(
+		() => (data ?? []).filter(d => d.model !== 'page'),
+		[data],
+	);
 	useEffect(() => {
-		if (!isChildrenLoading) {
+		if (!isLoading) {
 			if (otherChildren && otherChildren.length > 0) {
 				const currentIndex = otherChildren?.findIndex(ch => ch.pid === uuid);
 				if (currentIndex === undefined) {
@@ -364,6 +367,7 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 				} else {
 					const prev = otherChildren?.[currentIndex - 1];
 					const next = otherChildren?.[currentIndex + 1];
+					console.log({ prev, next });
 					const uuidPrev = prev?.pid;
 					const uuidNext = next?.pid;
 					const detailPrev = prev?.details;
@@ -400,9 +404,9 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 		} else {
 			setParts(undefined);
 		}
-	}, [isChildrenLoading, otherChildren, uuid]);
+	}, [isLoading, otherChildren, uuid]);
 
-	return { isLoading: isChildrenLoading, parts };
+	return { isLoading, parts };
 };
 
 export type FullContextMetadata = {

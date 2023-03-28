@@ -29,6 +29,8 @@ export const useParseUrlIdsAndParams = () => {
 	const page2 = sp.get('page2');
 	const fulltext = sp.get('fulltext');
 	const fulltext2 = sp.get('fulltext2');
+	const nameTag = sp.get('nameTag');
+	const nameTag2 = sp.get('nameTag2');
 	const navLeft = useCallback(
 		() =>
 			nav({
@@ -76,6 +78,37 @@ export const useParseUrlIdsAndParams = () => {
 			singleId,
 		],
 	);
+	const formatViewLink = useCallback(
+		(uuid: string, isSecond?: boolean) => {
+			if (!isMultiview) {
+				return `/view/${uuid}`;
+			} else {
+				if (isSecond) {
+					return `/multiview/${mIdLeft}/${uuid}${createSearchParamsString([
+						{ name: 'page', value: page },
+						{ name: 'fulltext', value: fulltext },
+						{ name: 'nameTag', value: nameTag },
+					])}`;
+				}
+				return `/multiview/${uuid}/${mIdRight}${createSearchParamsString([
+					{ name: 'page2', value: page2 },
+					{ name: 'fulltext2', value: fulltext2 },
+					{ name: 'nameTag2', value: nameTag2 },
+				])}`;
+			}
+		},
+		[
+			fulltext,
+			fulltext2,
+			isMultiview,
+			mIdLeft,
+			mIdRight,
+			nameTag,
+			nameTag2,
+			page,
+			page2,
+		],
+	);
 
 	return {
 		isSingleView,
@@ -91,6 +124,7 @@ export const useParseUrlIdsAndParams = () => {
 		navLeft,
 		navRight,
 		getApropriateIds,
+		formatViewLink,
 	};
 };
 

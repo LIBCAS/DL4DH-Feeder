@@ -28,12 +28,16 @@ import { usePublicationContext } from '../ctx/pub-ctx';
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
 
+//TODO: refactor
 const PublicationDetail = () => {
 	const { id } = useParams<{ id: string }>();
 	const theme = useTheme();
 	const pubChildren = usePublicationChildren(id ?? '');
 	const detail = usePublicationDetail(id ?? '');
-	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
+	const pages = useMemo(
+		() => (pubChildren.data ?? []).filter(c => c.model !== 'internalpart'),
+		[pubChildren.data],
+	);
 	const [sp, setSp] = useSearchParams();
 	const pubCtx = usePublicationContext();
 	const nav = useNavigate();

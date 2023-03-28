@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import { DEV_ENV } from 'utils/enumsMap';
 
 const TOOLTIP_DEBUG_MODE_ON = DEV_ENV ? false : false;
-const TOOLTIP_DELAY_TIME = 400; // ms
+const TOOLTIP_DELAY_TIME = 200; // ms
 
 type TooltipContextType = {
 	isDisplayed: boolean;

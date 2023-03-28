@@ -8,10 +8,10 @@ import Divider from 'components/styled/Divider';
 import Text from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import { Loader } from 'modules/loader';
 import PrintDialog from 'modules/publication/print/PrintDialog';
-import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 import CitationDialog from 'modules/quote/CitationDialog';
 import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 import ShareDialog from 'modules/share/ShareDialog';
@@ -38,7 +38,8 @@ type Props = {
 
 const BibMain: React.FC<Props> = ({ isSecond }) => {
 	const { t } = useTranslation();
-	const { getApropriateIds, isDetailView } = useParseUrlIdsAndParams();
+	const { getApropriateIds, isDetailView, formatViewLink } =
+		useParseUrlIdsAndParams();
 	const { id, pageId } = getApropriateIds(isSecond);
 	const pubDetail = usePublicationDetail(id ?? '');
 	const pageDetail = usePublicationDetail(pageId ?? '');
@@ -55,6 +56,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 			</Wrapper>
 		);
 	}
+
 	return (
 		<Wrapper m={0} width={1} overflow="hidden" position="relative">
 			<Flex
@@ -99,7 +101,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.prev?.uuid && (
 							<Box>
 								<BibLink
-									to={`/view/${parts.prev.uuid}`}
+									to={formatViewLink(parts.prev.uuid, isSecond)}
 									label={`${t('metadata:previous_unit')} ${parts.prev.label}`}
 								/>
 							</Box>
@@ -108,7 +110,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.next?.uuid && (
 							<Box>
 								<BibLink
-									to={`/view/${parts.next.uuid}`}
+									to={formatViewLink(parts.next.uuid, isSecond)}
 									label={`${t('metadata:next_unit')} ${parts.next.label}`}
 								/>
 							</Box>

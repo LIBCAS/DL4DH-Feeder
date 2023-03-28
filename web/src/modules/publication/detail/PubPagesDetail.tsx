@@ -39,6 +39,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	//TODO: refactor using  useParseUrlIdsAndParams()
 	// const { getApropriateIds } = useParseUrlIdsAndParams();
 	// const {} = getApropriateIds(isSecond);
+	const [view, setView] = useState('');
 
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
@@ -122,7 +123,6 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 			if (!filteredChildren[0]?.pid) {
 				sp.delete(PAGE_KEY);
 				setSp(sp);
-				return;
 			} else {
 				sp.set(PAGE_KEY, filteredChildren[0]?.pid);
 				setSp(sp);
@@ -185,7 +185,7 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					}
 				}}
 			/>
-			<BibInternalParts isSecond={isSecond} />
+			<BibInternalParts />
 			<PubThumbnails
 				isSecond={isSecond}
 				marginTop={150}
