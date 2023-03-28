@@ -172,11 +172,11 @@ const BibInternalParts: FC = ({ children }) => {
 	}
 
 	return (
-		<Wrapper p={3}>
-			<Flex width={1}>
+		<Wrapper>
+			<Flex width={1} my={2} px={2} position="relative">
 				<Button
 					mx={1}
-					width={1 / 2}
+					width={1 / 2.2}
 					variant={open ? 'outlined' : 'primary'}
 					onClick={() => setOpen(false)}
 				>
@@ -184,7 +184,7 @@ const BibInternalParts: FC = ({ children }) => {
 				</Button>
 				<Button
 					mx={1}
-					width={1 / 2}
+					width={1 / 2.2}
 					variant={!open ? 'outlined' : 'primary'}
 					onClick={() => setOpen(true)}
 				>
@@ -193,7 +193,7 @@ const BibInternalParts: FC = ({ children }) => {
 			</Flex>
 
 			{open ? (
-				<Wrapper>
+				<Wrapper px={2}>
 					<Text color="#616161" fontSize="16.5px" fontWeight="bold">
 						Kapitoly
 					</Text>
