@@ -108,22 +108,19 @@ export const BibInternalPartsDialog: FC = () => {
 		<ModalDialog
 			label="Chapters"
 			control={openModal => (
-				<IconButton
-					onClick={openModal}
-					color="#9e9e9e"
-					tooltip="Zvolit jinou kapitolu"
-				>
-					<MdOutlineMore size={18} />
-				</IconButton>
-			)}
-		>
-			{closeModal => (
-				<Paper>
+				<Flex>
+					<IconButton
+						onClick={openModal}
+						color="#9e9e9e"
+						tooltip="Zvolit jinou kapitolu"
+					>
+						<MdOutlineMore size={18} />
+					</IconButton>
 					{parent && (
 						<Box>
 							<NavLinkButton
 								color="text"
-								fontSize="md"
+								fontSize="sm"
 								variant="text"
 								textAlign="left"
 								fontWeight="bold"
@@ -133,6 +130,11 @@ export const BibInternalPartsDialog: FC = () => {
 							</NavLinkButton>
 						</Box>
 					)}
+				</Flex>
+			)}
+		>
+			{closeModal => (
+				<Paper>
 					<Flex width={1} justifyContent="space-between" alignItems="center">
 						<H5 my={2}>Zvolit jinou kapitolu</H5>
 						<IconButton color="primary" onClick={closeModal}>
@@ -150,51 +152,75 @@ export const BibInternalPartsDialog: FC = () => {
 	);
 };
 
-const BibInternalParts: FC = () => {
+const BibInternalParts: FC = ({ children }) => {
 	const [open, setOpen] = useState(false);
-	const { loading, hasInternalParts, children, formatLink, id, parent } =
-		useInternalParts();
+	const {
+		loading,
+		hasInternalParts,
+		children: internalPartsChildren,
+		formatLink,
+		id,
+		parent,
+	} = useInternalParts();
 
 	if (loading) {
 		return <Loader />;
 	}
 
 	if (!hasInternalParts) {
-		return <></>;
+		return <>{children}</>;
 	}
 
 	return (
 		<Wrapper p={3}>
-			{parent && (
-				<Box>
-					<NavLinkButton
-						color="text"
-						fontSize="md"
-						variant="text"
-						textAlign="left"
-						fontWeight="bold"
-						to={parent.link}
-					>
-						Přejít na celou publikaci
-					</NavLinkButton>
-				</Box>
-			)}
-			<Button variant="primary" onClick={() => setOpen(p => !p)}>
-				{open ? 'Skrýt kapitoly' : 'Zobrazit kapitoly'}
-			</Button>
+			<Flex width={1}>
+				<Button
+					mx={1}
+					width={1 / 2}
+					variant={open ? 'outlined' : 'primary'}
+					onClick={() => setOpen(false)}
+				>
+					Stránky
+				</Button>
+				<Button
+					mx={1}
+					width={1 / 2}
+					variant={!open ? 'outlined' : 'primary'}
+					onClick={() => setOpen(true)}
+				>
+					Zobrazit kapitoly
+				</Button>
+			</Flex>
 
-			{open && (
+			{open ? (
 				<Wrapper>
 					<Text color="#616161" fontSize="16.5px" fontWeight="bold">
 						Kapitoly
 					</Text>
 
+					{parent && (
+						<Box>
+							<NavLinkButton
+								color="text"
+								fontSize="md"
+								variant="text"
+								textAlign="left"
+								fontWeight="bold"
+								to={parent.link}
+							>
+								Přejít na celou publikaci
+							</NavLinkButton>
+						</Box>
+					)}
+
 					<BibInternalPartsList
-						ipList={children ?? []}
+						ipList={internalPartsChildren ?? []}
 						formatLink={formatLink}
 						activeId={id}
 					/>
 				</Wrapper>
+			) : (
+				<>{children}</>
 			)}
 		</Wrapper>
 	);
