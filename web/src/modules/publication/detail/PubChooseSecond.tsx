@@ -265,7 +265,8 @@ const ChoosePeriodical: FC<{
 	onClose: () => void;
 	variant?: 'left' | 'right';
 }> = ({ id: rootId, onClose, variant }) => {
-	//TODO: cleanup
+	//TODO: cleanup A ZAROVEN POZOR NAVIGACIA KAPITOL ZLYHAVA
+	// datanode treba testovat inak
 	const pubCtx = usePublicationContext();
 	const {
 		id: singleId,
@@ -300,12 +301,15 @@ const ChoosePeriodical: FC<{
 	const childrenResponse = usePublicationChildren(newId ?? '');
 	const nav = useNavigate();
 	const children = useMemo(
-		() => childrenResponse.data ?? [],
+		() => ({
+			datanodes: (childrenResponse.data ?? []).filter(c => c.datanode),
+			notDataNodes: (childrenResponse.data ?? []).filter(c => !c.datanode),
+		}),
 		[childrenResponse.data],
 	);
 
 	useEffect(() => {
-		if (children?.[0]?.datanode) {
+		if (children.datanodes.length > 0) {
 			if (currentIdToBeChanged === newId && !singleId) {
 				onClose();
 			} else {
@@ -338,9 +342,8 @@ const ChoosePeriodical: FC<{
 							])}`,
 					  );
 			}
-		}
-		if (children.length === 1 && !children?.[0]?.datanode) {
-			setNewId(children[0].pid);
+		} else if (children.notDataNodes.length === 1) {
+			setNewId(children.notDataNodes[0].pid);
 		}
 	}, [
 		children,
@@ -363,7 +366,10 @@ const ChoosePeriodical: FC<{
 	return (
 		<Wrapper>
 			<H2>Vyberte se seznamu:</H2>
-			<PeriodicalTiles data={children} onSelect={id => setNewId(id)} />
+			<PeriodicalTiles
+				data={children.notDataNodes}
+				onSelect={id => setNewId(id)}
+			/>
 		</Wrapper>
 	);
 };
