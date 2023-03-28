@@ -39,13 +39,10 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 	//TODO: refactor using  useParseUrlIdsAndParams()
 	// const { getApropriateIds } = useParseUrlIdsAndParams();
 	// const {} = getApropriateIds(isSecond);
-	const [view, setView] = useState('');
 
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
 	const { t } = useTranslation();
-	//TODO: tabs ako na krameriovi
-	//const [tab, setTab] = useState<'pages' | 'internalparts'>('pages');
 
 	const [nameTag, setNameTag] = useState<TagNameEnum | null>(
 		(sp.get(NT_KEY) as TagNameEnum) ?? null,
@@ -185,13 +182,14 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					}
 				}}
 			/>
-			<BibInternalParts />
-			<PubThumbnails
-				isSecond={isSecond}
-				marginTop={150}
-				pagesSearchResult={filtered}
-				searchMode={query !== ''}
-			/>
+			<BibInternalParts>
+				<PubThumbnails
+					isSecond={isSecond}
+					marginTop={150}
+					pagesSearchResult={filtered}
+					searchMode={query !== ''}
+				/>
+			</BibInternalParts>
 		</Flex>
 	);
 };

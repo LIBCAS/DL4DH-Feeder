@@ -61,6 +61,7 @@ const mapPartInfo = {
 	periodicalvolume: 'volume',
 	periodicalitem: 'issue',
 	page: 'page',
+	map: '',
 };
 
 type FormattedMetadata = {
@@ -273,12 +274,14 @@ export const useMetadataFormatter = () => {
 			if (!titles || titles.length === 0) {
 				return null;
 			}
-			const label = `${t(`metadata:${mapPartInfo[model]}`)}`;
+			const label = mapPartInfo[model]
+				? `${t(`metadata:${mapPartInfo[model]}`)}`
+				: '';
 			const mainPartNumber = (titles[0]?.partNumber ?? '') as string;
 			const mainPartName = (titles[0]?.partName ?? '') as string;
 			const otherTitles = titles.slice(1).map(t => ({
-				partNumber: t.partNumber as string,
-				partName: t.partName as string,
+				partNumber: (t.partNumber ?? '') as string,
+				partName: (t.partName ?? '') as string,
 			}));
 			return { mainPartNumber, mainPartName, otherTitles, label };
 		},

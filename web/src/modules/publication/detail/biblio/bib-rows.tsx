@@ -78,7 +78,7 @@ const PartsInfo: FC<Pick<FormattedBibliohraphy, 'parts'>> = ({ parts }) => {
 	return (
 		<Text color="#616161" fontSize="15px" fontWeight="bold">
 			{parts?.label ?? ''} {parts?.mainPartNumber ?? ''}
-			{'. '}
+			{(parts?.label || parts?.mainPartNumber) && '. '}
 			{parts?.mainPartName ?? ''}
 		</Text>
 	);
@@ -101,7 +101,7 @@ export const BibRootInfo: FC<{
 		root?.model === 'periodicalvolume' ||
 		formatted.slice(1).find(f => f?.model === 'monographunit');
 	const { t } = useTranslation();
-
+	console.log({ root });
 	if (!root) {
 		return <></>;
 	}

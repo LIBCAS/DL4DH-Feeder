@@ -12,8 +12,6 @@ import Button from 'components/styled/Button';
 import Paper from 'components/styled/Paper';
 import Text, { H4 } from 'components/styled/Text';
 
-import { useTheme } from 'theme';
-
 export type StatItem = {
 	label: string;
 	value?: number;
@@ -39,7 +37,6 @@ export const StatList: FC<{
 }> = ({ items, maxRows, refresh, onClick, customDialog, listId }) => {
 	const [exp, setExp] = useState<boolean>(!maxRows);
 	const [dialogOpen, setDialogOpen] = useState<string>('');
-	const theme = useTheme();
 	const { t } = useTranslation();
 
 	return (
