@@ -29,6 +29,8 @@ export const useParseUrlIdsAndParams = () => {
 	const page2 = sp.get('page2');
 	const fulltext = sp.get('fulltext');
 	const fulltext2 = sp.get('fulltext2');
+	const nameTag = sp.get('nameTag');
+	const nameTag2 = sp.get('nameTag2');
 	const navLeft = useCallback(
 		() =>
 			nav({
@@ -76,6 +78,40 @@ export const useParseUrlIdsAndParams = () => {
 			singleId,
 		],
 	);
+todo bug: --- ked dam vyhladat vec s nametagom ale nenajde sa nic, tak to neajk pri multiview cykly
+plus zvyraznovanie slov pri obohatenych a nametag nejde, BE by mal zachovat format z neobohatenych
+//http://localhost:3000/multiview/uuid:21426150-9e46-11dc-a259-000d606f5dc6/uuid:1f0db940-6404-11e8-8637-005056827e51?fulltext2=cici&nameTag2=GEOGRAPHICAL_NAMES&page=uuid%3A4c66f50f-a6f7-4e59-a1ee-945cb226944a&page2=uuid%3A8df2ad00-68de-11e8-828b-005056825209
+	const formatViewLink = useCallback(
+		(uuid: string, isSecond?: boolean) => {
+			if (!isMultiview) {
+				return `/view/${uuid}`;
+			} else {
+				if (isSecond) {
+					return `/multiview/${mIdLeft}/${uuid}${createSearchParamsString([
+						{ name: 'page', value: page },
+						{ name: 'fulltext', value: fulltext },
+						{ name: 'nameTag', value: nameTag },
+					])}`;
+				}
+				return `/multiview/${uuid}/${mIdRight}${createSearchParamsString([
+					{ name: 'page2', value: page2 },
+					{ name: 'fulltext2', value: fulltext2 },
+					{ name: 'nameTag2', value: nameTag2 },
+				])}`;
+			}
+		},
+		[
+			fulltext,
+			fulltext2,
+			isMultiview,
+			mIdLeft,
+			mIdRight,
+			nameTag,
+			nameTag2,
+			page,
+			page2,
+		],
+	);
 
 	return {
 		isSingleView,
@@ -91,6 +127,7 @@ export const useParseUrlIdsAndParams = () => {
 		navLeft,
 		navRight,
 		getApropriateIds,
+		formatViewLink,
 	};
 };
 

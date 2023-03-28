@@ -15,6 +15,7 @@ import {
 } from 'api/publicationsApi';
 
 import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
+import { MultiviewContextProvider } from 'hooks/useMultiviewContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
@@ -23,16 +24,23 @@ import { usePublicationContext } from '../ctx/pub-ctx';
 import PublicationSidePanel from './PublicationSidePanel';
 import PubMainDetail from './PubMainDetail';
 //http://localhost:3000/view/uuid:0bec6e50-11e1-11eb-a4cf-005056827e52?page=uuid:18617fd7-cc78-4042-95aa-c7e7ce6363aa
+//TODO: refactor
 const MultiView = () => {
 	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
 
 	const pubChildren1 = usePublicationChildren(id1 ?? '');
 	const detail1 = usePublicationDetail(id1 ?? '');
-	const pages1 = useMemo(() => pubChildren1.data ?? [], [pubChildren1.data]);
+	const pages1 = useMemo(
+		() => (pubChildren1.data ?? []).filter(d => d.model !== 'internalpart'),
+		[pubChildren1.data],
+	);
 
 	const pubChildren2 = usePublicationChildren(id2 ?? '');
 	const detail2 = usePublicationDetail(id2 ?? '');
-	const pages2 = useMemo(() => pubChildren2.data ?? [], [pubChildren2.data]);
+	const pages2 = useMemo(
+		() => (pubChildren2.data ?? []).filter(d => d.model !== 'internalpart'),
+		[pubChildren2.data],
+	);
 
 	const [sp, setSp] = useSearchParams();
 	const pubCtx = usePublicationContext();
@@ -116,11 +124,11 @@ const MultiView = () => {
 
 	useEffect(() => {
 		if (!sp.get('page') || !sp.get('page2')) {
-			if (!sp.get('page')) {
-				sp.append('page', pages1[0]?.pid ?? 'undefined');
+			if (!sp.get('page') && pages1[0]?.pid) {
+				sp.append('page', pages1[0]?.pid ?? 'multiview-undefined-left');
 			}
-			if (!sp.get('page2')) {
-				sp.append('page2', pages2[0]?.pid ?? 'undefined');
+			if (!sp.get('page2') && pages2[0]?.pid) {
+				sp.append('page2', pages2[0]?.pid ?? 'undefined-undefined-right');
 			}
 			setSp(sp, { replace: true });
 		}
@@ -147,7 +155,7 @@ const MultiView = () => {
 				mx={0}
 				alignItems="flex-start"
 				width={1}
-				height="100vh"
+				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
 			>
 				<Flex
 					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
@@ -168,16 +176,18 @@ const MultiView = () => {
 						css={css`
 							transition-duration: 200ms;
 							transition-property: width transform;
-							transform: translateX(${leftCollapsed ? '-305px' : '0px'});
+							transform: translateX(${leftCollapsed ? '-300px' : '0px'});
 						`}
 					>
-						<PublicationSidePanel
-							variant="left"
-							defaultView="detail"
-							pages={pages1}
-							onCollapse={() => setLeftCollapsed(p => !p)}
-							isCollapsed={leftCollapsed}
-						/>
+						<MultiviewContextProvider initSidePanel="left">
+							<PublicationSidePanel
+								variant="left"
+								defaultView="detail"
+								pages={pages1}
+								onCollapse={() => setLeftCollapsed(p => !p)}
+								isCollapsed={leftCollapsed}
+							/>
+						</MultiviewContextProvider>
 					</Flex>
 
 					<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
@@ -188,14 +198,15 @@ const MultiView = () => {
 							rightPublic={isPublicRight}
 						/>
 					</Flex>
-
-					<PublicationSidePanel
-						variant="right"
-						pages={pages2}
-						onCollapse={() => setRightCollapsed(p => !p)}
-						isCollapsed={rightCollapsed}
-						isSecond
-					/>
+					<MultiviewContextProvider initSidePanel="right">
+						<PublicationSidePanel
+							variant="right"
+							pages={pages2}
+							onCollapse={() => setRightCollapsed(p => !p)}
+							isCollapsed={rightCollapsed}
+							isSecond
+						/>
+					</MultiviewContextProvider>
 				</Flex>
 			</ResponsiveWrapper>
 		</WordHighlightContextProvider>
