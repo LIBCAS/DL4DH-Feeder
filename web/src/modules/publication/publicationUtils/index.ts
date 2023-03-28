@@ -78,9 +78,6 @@ export const useParseUrlIdsAndParams = () => {
 			singleId,
 		],
 	);
-todo bug: --- ked dam vyhladat vec s nametagom ale nenajde sa nic, tak to neajk pri multiview cykly
-plus zvyraznovanie slov pri obohatenych a nametag nejde, BE by mal zachovat format z neobohatenych
-//http://localhost:3000/multiview/uuid:21426150-9e46-11dc-a259-000d606f5dc6/uuid:1f0db940-6404-11e8-8637-005056827e51?fulltext2=cici&nameTag2=GEOGRAPHICAL_NAMES&page=uuid%3A4c66f50f-a6f7-4e59-a1ee-945cb226944a&page2=uuid%3A8df2ad00-68de-11e8-828b-005056825209
 	const formatViewLink = useCallback(
 		(uuid: string, isSecond?: boolean) => {
 			if (!isMultiview) {

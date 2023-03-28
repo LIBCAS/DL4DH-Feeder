@@ -33,8 +33,8 @@ import { TSearchQuery } from 'hooks/useSearchContext';
 
 import useHeaderHeight from 'utils/useHeaderHeight';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
 import { createSearchParamsString } from '../publicationUtils';
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {

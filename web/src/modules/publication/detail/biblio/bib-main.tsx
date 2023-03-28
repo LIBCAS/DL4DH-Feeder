@@ -8,10 +8,10 @@ import Divider from 'components/styled/Divider';
 import Text from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
 import { Loader } from 'modules/loader';
 import PrintDialog from 'modules/publication/print/PrintDialog';
-import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 import CitationDialog from 'modules/quote/CitationDialog';
 import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 import ShareDialog from 'modules/share/ShareDialog';

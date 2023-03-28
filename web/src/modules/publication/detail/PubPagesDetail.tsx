@@ -123,7 +123,6 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 			if (!filteredChildren[0]?.pid) {
 				sp.delete(PAGE_KEY);
 				setSp(sp);
-				return;
 			} else {
 				sp.set(PAGE_KEY, filteredChildren[0]?.pid);
 				setSp(sp);

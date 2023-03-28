@@ -27,7 +27,7 @@ import PubMainDetail from './PubMainDetail';
 //TODO: refactor
 const MultiView = () => {
 	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
-
+	const pubCtx = usePublicationContext();
 	const pubChildren1 = usePublicationChildren(id1 ?? '');
 	const detail1 = usePublicationDetail(id1 ?? '');
 	const pages1 = useMemo(
@@ -43,7 +43,7 @@ const MultiView = () => {
 	);
 
 	const [sp, setSp] = useSearchParams();
-	const pubCtx = usePublicationContext();
+
 	const [rightCollapsed, setRightCollapsed] = useState(false);
 	const [leftCollapsed, setLeftCollapsed] = useState(false);
 
@@ -121,18 +121,32 @@ const MultiView = () => {
 		detail2.data,
 		pubCtx.publicationChildrenFilteredOfSecond,
 	]);
-
+	//TODO:"refactor"
 	useEffect(() => {
 		if (!sp.get('page') || !sp.get('page2')) {
 			if (!sp.get('page') && pages1[0]?.pid) {
-				sp.append('page', pages1[0]?.pid ?? 'multiview-undefined-left');
+				if (!sp.get('fulltext') || pubCtx.publicationChildrenFiltered) {
+					sp.append('page', pages1[0]?.pid ?? 'multiview-undefined-left');
+				}
 			}
 			if (!sp.get('page2') && pages2[0]?.pid) {
-				sp.append('page2', pages2[0]?.pid ?? 'undefined-undefined-right');
+				if (
+					!sp.get('fulltext2') ||
+					pubCtx.publicationChildrenFilteredOfSecond
+				) {
+					sp.append('page2', pages2[0]?.pid ?? 'undefined-undefined-right');
+				}
 			}
 			setSp(sp, { replace: true });
 		}
-	}, [pages1, pages2, setSp, sp]);
+	}, [
+		pages1,
+		pages2,
+		pubCtx.publicationChildrenFiltered,
+		pubCtx.publicationChildrenFilteredOfSecond,
+		setSp,
+		sp,
+	]);
 
 	if (
 		pubChildren1.isLoading ||

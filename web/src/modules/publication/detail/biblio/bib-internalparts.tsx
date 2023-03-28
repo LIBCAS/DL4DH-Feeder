@@ -10,8 +10,8 @@ import ModalDialog from 'components/modal';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
 
-import { Loader } from 'modules/loader';
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
+import { Loader } from 'modules/loader';
 
 import {
 	usePublicationChildren,
