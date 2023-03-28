@@ -56,11 +56,11 @@ const TooltipRender = () => {
 				}
 
 				opacity: 0;
-				animation: 500ms ease forwards slide-up;
+				animation: ${200}ms ease forwards slide-up;
 				animation-delay: ${TooltipCtx.msgDisplayDelay}ms;
 				box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2);
 				border: 1px solid #444;
-				border-radius: 3%;
+				border-radius: 5px;
 				cursor: pointer;
 				position: absolute;
 				z-index: 9999;

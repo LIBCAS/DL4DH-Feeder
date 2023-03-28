@@ -45,7 +45,7 @@ const ToolButton: FC<{
 			variant="text"
 			onClick={onClick}
 			disabled={disabled}
-			px={[2, 2, 3]}
+			px={[1, 1, 2]}
 			css={css`
 				box-sizing: border-box;
 				border: 1px solid ${theme.colors.lightGrey};
@@ -107,7 +107,7 @@ const ZoomifyToolbar: FC<Props> = ({
 		<Flex
 			position="absolute"
 			width={isMultiView ? 1 / 2 : 1}
-			bottom={100}
+			bottom={20}
 			justifyContent={'center'}
 		>
 			<Flex
