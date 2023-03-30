@@ -30,6 +30,7 @@ import MetaStreamsDialog from '../MetaStreamsDialog';
 import { BibLink } from '../PubBiblioDetail';
 
 import { BibRootInfo } from './bib-rows';
+import BibDonators from './bib-donators';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -56,7 +57,6 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 			</Wrapper>
 		);
 	}
-
 	return (
 		<Wrapper m={0} width={1} overflow="hidden" position="relative">
 			<Flex
@@ -72,7 +72,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 				/>
 				{isDetailView && (
 					<>
-						<PublicationExportDialog isSecond={isSecond} />
+						<PublicationExportDialog />
 						<PrintDialog isSecond={isSecond} />
 					</>
 				)}
@@ -116,6 +116,9 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 							</Box>
 						)}
 					</BibRootInfo>
+
+					<BibDonators donators={pubDetail.data?.donator ?? []} />
+
 					{pageDetail.data?.title && (
 						<Box mb={3}>
 							{t('metadata:page')}

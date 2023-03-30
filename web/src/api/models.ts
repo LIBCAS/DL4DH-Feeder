@@ -29,6 +29,7 @@ export type PublicationDetail = {
 		title: string;
 	};
 	enriched?: boolean;
+	donator: string[];
 };
 
 export type PublicationsListDto = {

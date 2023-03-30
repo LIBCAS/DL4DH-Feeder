@@ -101,7 +101,7 @@ export const BibRootInfo: FC<{
 		root?.model === 'periodicalvolume' ||
 		formatted.slice(1).find(f => f?.model === 'monographunit');
 	const { t } = useTranslation();
-	console.log({ root });
+
 	if (!root) {
 		return <></>;
 	}

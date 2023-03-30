@@ -112,48 +112,51 @@ const PublicationSidePanel: FC<Props> = ({
 				</>
 
 				{urlParams.isMultiview && (
-					<Flex
-						height={50}
-						bg="primaryLight"
-						width={1}
-						alignItems="center"
-						justifyContent="center"
-						flexShrink={0}
-					>
-						<Tabs
-							tabs={[
-								{
-									key: 'search',
-									jsx: (
-										<Button
-											height={30}
-											hoverDisable
-											variant={viewMode === 'search' ? 'primary' : 'outlined'}
-										>
-											{t('search')}
-										</Button>
-									),
-								},
-								{
-									key: 'detail',
-									jsx: (
-										<Button
-											height={30}
-											hoverDisable
-											ml={2}
-											variant={viewMode === 'detail' ? 'primary' : 'outlined'}
-										>
-											{t('detail')}
-										</Button>
-									),
-								},
-							]}
-							setActiveTab={k => setViewMode(k as 'detail' | 'search')}
-							activeTab={viewMode}
-						/>
-					</Flex>
+					<>
+						<Flex
+							height={50}
+							bg="primaryLight"
+							width={1}
+							alignItems="center"
+							justifyContent="center"
+							flexShrink={0}
+						>
+							<Tabs
+								tabs={[
+									{
+										key: 'search',
+										jsx: (
+											<Button
+												height={30}
+												hoverDisable
+												variant={viewMode === 'search' ? 'primary' : 'outlined'}
+											>
+												{t('search')}
+											</Button>
+										),
+									},
+									{
+										key: 'detail',
+										jsx: (
+											<Button
+												height={30}
+												hoverDisable
+												ml={2}
+												variant={viewMode === 'detail' ? 'primary' : 'outlined'}
+											>
+												{t('detail')}
+											</Button>
+										),
+									},
+								]}
+								setActiveTab={k => setViewMode(k as 'detail' | 'search')}
+								activeTab={viewMode}
+							/>
+						</Flex>
+						<Divider />
+					</>
 				)}
-				<Divider />
+
 				{!chooseSecondDialogOpen && (
 					<>
 						{/* <PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} /> */}

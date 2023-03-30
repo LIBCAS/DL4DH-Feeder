@@ -146,8 +146,6 @@ const ActiveFilters: React.FC<{
 
 	const keys = Object.keys(arrayFilters);
 
-	console.log({ state, savedFilters });
-
 	return (
 		<Box px={0}>
 			<Box my={3} px={2}>

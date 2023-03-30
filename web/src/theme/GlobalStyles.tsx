@@ -103,6 +103,7 @@ const GlobalStyles = () => (
 			}
 			[data-reach-menu-item] {
 				padding: 12px 32px;
+				font-size: 14px;
 			}
 			[data-reach-menu-item][data-selected] {
 				background-color: ${theme.colors.primary};
