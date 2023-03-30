@@ -24,6 +24,8 @@ import { api } from 'api';
 import { ModelsEnum, PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
 
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
+
 import { modelToText } from 'utils/enumsMap';
 
 type Props = {
@@ -172,8 +174,10 @@ const ShowCitation: FC<{
 	);
 };
 
-const CitationDialog: FC<Props> = ({ isSecond }) => {
+const CitationDialog = () => {
 	const pctx = usePublicationContext();
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 	const { t } = useTranslation();
 	const currentPagePid = isSecond
 		? pctx.currentPageOfSecond?.uuid ?? undefined

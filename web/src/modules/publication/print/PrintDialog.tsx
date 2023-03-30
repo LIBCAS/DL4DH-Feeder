@@ -18,20 +18,20 @@ import { downloadFile } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
-type Props = {
-	isSecond?: boolean;
-};
+import { usePublicationContext } from '../ctx/pub-ctx';
 
 type FormProps = {
 	closeModal: () => void;
-	isSecond?: boolean;
 };
 
 const PRINT_LIMIT = 90;
 
-const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
+const PrintForm: FC<FormProps> = ({ closeModal }) => {
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
+
 	const pctx = usePublicationContext();
 	const pages = isSecond
 		? pctx.publicationChildrenOfSecond ?? []
@@ -187,7 +187,7 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 	);
 };
 
-const PrintDialog: FC<Props> = ({ isSecond }) => {
+const PrintDialog = () => {
 	return (
 		<ModalDialog
 			label="Info"
@@ -201,7 +201,7 @@ const PrintDialog: FC<Props> = ({ isSecond }) => {
 				</IconButton>
 			)}
 		>
-			{closeModal => <PrintForm closeModal={closeModal} isSecond={isSecond} />}
+			{closeModal => <PrintForm closeModal={closeModal} />}
 		</ModalDialog>
 	);
 };

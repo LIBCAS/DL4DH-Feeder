@@ -12,6 +12,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { useStreams } from 'api/publicationsApi';
 
 import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { deepSearchByKey } from './altoUtils';
 
@@ -64,10 +65,13 @@ export const wordHighlightStyle = new Style({
 });
 
 //TODO: memoize
-export const useHighlightWord = (uuid: string, isSecond?: boolean) => {
+export const useHighlightWord = (uuid: string) => {
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
 	const { result1, result2, parsePageResult } = useWordHighlightContext();
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 	const [words, setWords] = useState<WordAltoObj[]>([]);
+
 	const pageResult = useMemo(
 		() =>
 			parsePageResult((isSecond ? result2 : result1)?.[uuid]?.textOcr ?? []),

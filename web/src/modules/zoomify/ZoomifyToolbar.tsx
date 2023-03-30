@@ -21,6 +21,7 @@ import Button from 'components/styled/Button';
 
 import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import { Loader } from 'modules/loader';
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { useTheme } from 'theme';
 
@@ -28,6 +29,7 @@ import { useStreamList } from 'api/publicationsApi';
 
 import { useMobileView } from 'hooks/useViewport';
 import { useFullscreenContext } from 'hooks/useFullscreenContext';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 const ToolButton: FC<{
 	onClick: () => void;
@@ -72,8 +74,6 @@ const ToolButton: FC<{
 type Props = {
 	page: string;
 	onUpdateRotation: Dispatch<SetStateAction<number>>;
-	isSecond?: boolean;
-	isMultiView?: boolean;
 	onDragBoxModeEnabled: () => void;
 	onZoomIn: () => void;
 	onZoomOut: () => void;
@@ -85,11 +85,12 @@ const ZoomifyToolbar: FC<Props> = ({
 	onDragBoxModeEnabled,
 	onZoomIn,
 	onZoomOut,
-	isSecond,
-	isMultiView,
 }) => {
 	const { t } = useTranslation('view_controls');
 	const { fullscreen, setFullscreen } = useFullscreenContext();
+	const { isMultiview } = useParseUrlIdsAndParams();
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 	const pbctx = usePublicationContext();
 	const [pageUrl, setPageUrl] = useSearchParams();
 	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
@@ -106,7 +107,7 @@ const ZoomifyToolbar: FC<Props> = ({
 	return (
 		<Flex
 			position="absolute"
-			width={isMultiView ? 1 / 2 : 1}
+			width={isMultiview ? 1 / 2 : 1}
 			bottom={20}
 			justifyContent={'center'}
 		>

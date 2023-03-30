@@ -7,12 +7,13 @@ import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { useStreams } from 'api/publicationsApi';
 
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
+
 import ZoomifyToolbar from './ZoomifyToolbar';
 
-const OcrView: FC<{ uuid: string; isSecond?: boolean }> = ({
-	uuid,
-	isSecond,
-}) => {
+const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 	const response = useStreams(uuid, 'TEXT_OCR', 'text/plain');
 	const pctx = usePublicationContext();
 	const onZoomIn = useCallback(() => {
@@ -55,7 +56,6 @@ const OcrView: FC<{ uuid: string; isSecond?: boolean }> = ({
 			fontSize={fontSize}
 		>
 			<ZoomifyToolbar
-				isSecond={isSecond}
 				onZoomIn={onZoomIn}
 				onZoomOut={onZoomOut}
 				page={uuid}

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MdClose, MdCopyAll, MdShare } from 'react-icons/md';
 import { css } from '@emotion/core';
 import { uniqWith } from 'lodash-es';
@@ -19,18 +19,18 @@ import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import { PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
 
-import { ModelToText } from 'utils/enumsMap';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
-type Props = {
-	isSecond?: boolean;
-};
+import { ModelToText } from 'utils/enumsMap';
 
 //TODO:
 // skontrolovat sharovanie tohto periodika, porovnat s ndk, ked sharujem rocnik tak to blbne
 //http://localhost:3000/periodical/uuid:a3499e99-8120-465b-81d4-8d87717708e5
 // resp nefunguje tam routing spravne
 //https://ndk.cz/periodical/uuid:a3499e99-8120-465b-81d4-8d87717708e5
-const ShareDialog: FC<Props> = ({ isSecond }) => {
+const ShareDialog = () => {
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 	const pctx = usePublicationContext();
 	const currentPagePid = isSecond
 		? pctx.currentPageOfSecond?.uuid ?? undefined

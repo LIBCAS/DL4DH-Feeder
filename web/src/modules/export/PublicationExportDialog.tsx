@@ -521,7 +521,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 								<EditSelectedChildren
 									preSelected={getPreselectedChildren(values.pagesFilter)}
-									isSecond={isSecond}
 									disabled={
 										values.format.id !== 'json' &&
 										values.format.id !== 'csv' &&

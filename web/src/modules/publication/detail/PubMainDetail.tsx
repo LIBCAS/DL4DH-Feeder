@@ -8,6 +8,8 @@ import Text from 'components/styled/Text';
 
 import ZoomifyView from 'modules/zoomify/ZoomifyView';
 
+import { MultiviewContextProvider } from 'hooks/useMultiviewContext';
+
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
@@ -72,35 +74,33 @@ const PubMainDetail: FC<Props> = ({
 			alignItems="center"
 			position="relative"
 		>
-			{fulltext1 && !pageUrl1 && !pctx.isLoadingLeft ? (
-				<PubPageNotFound multiview={!!pageOfSecond} />
-			) : (
-				<>
-					{leftPublic ? (
-						<ZoomifyView id={page} isMultiView={!!pageOfSecond} />
-					) : (
-						<PriavatePublicationInfo isMultiView={!!pageOfSecond} />
-					)}
-				</>
-			)}
+			<MultiviewContextProvider initSidePanel="left">
+				{fulltext1 && !pageUrl1 && !pctx.isLoadingLeft ? (
+					<PubPageNotFound multiview={!!pageOfSecond} />
+				) : (
+					<>
+						{leftPublic ? (
+							<ZoomifyView id={page} />
+						) : (
+							<PriavatePublicationInfo isMultiView={!!pageOfSecond} />
+						)}
+					</>
+				)}
+			</MultiviewContextProvider>
 			{pageOfSecond && (
-				<>
+				<MultiviewContextProvider initSidePanel="right">
 					{fulltext2 && !pageUrl2 && !pctx.isLoadingRight ? (
 						<PubPageNotFound isSecond multiview={!!pageOfSecond} />
 					) : (
 						<>
 							{rightPublic ? (
-								<ZoomifyView
-									id={pageOfSecond}
-									isSecond
-									isMultiView={!!pageOfSecond}
-								/>
+								<ZoomifyView id={pageOfSecond} />
 							) : (
 								<PriavatePublicationInfo isMultiView={!!pageOfSecond} />
 							)}
 						</>
 					)}
-				</>
+				</MultiviewContextProvider>
 			)}
 		</Flex>
 	);

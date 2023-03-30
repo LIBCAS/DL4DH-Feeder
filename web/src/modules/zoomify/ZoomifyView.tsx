@@ -27,6 +27,7 @@ import { useTheme } from 'theme';
 import { useImageProperties } from 'api/publicationsApi';
 
 import useViewport from 'hooks/useViewport';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
@@ -61,9 +62,7 @@ const MapWrapper: FC<{
 	isLoading?: boolean;
 	imgWidth: number;
 	imgHeight: number;
-	isSecond?: boolean;
-	isMultiView?: boolean;
-}> = ({ imgId, imgWidth, imgHeight, isSecond, isMultiView }) => {
+}> = ({ imgId, imgWidth, imgHeight }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const [dragBoxMode, setDragBoxMode] = useState(false);
@@ -75,10 +74,13 @@ const MapWrapper: FC<{
 		box: Extent;
 	}>({ open: false, box: [] });
 
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
+
 	const [rotation, setRotation] = useState(0);
 	const [sp] = useSearchParams();
 	const fulltext = isSecond ? sp.get('fulltext2') : sp.get('fulltext');
-	const highlightPolygons = useHighlightWord(imgId ?? '', isSecond);
+	const highlightPolygons = useHighlightWord(imgId ?? '');
 	const { width: screenWidth, height: screenHeight } = useViewport();
 
 	const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
@@ -190,8 +192,6 @@ const MapWrapper: FC<{
 
 			<ZoomifyToolbar
 				page={imgId ?? ''}
-				isSecond={isSecond}
-				isMultiView={isMultiView}
 				onUpdateRotation={setRotation}
 				onZoomIn={() => {
 					const currentZoom = MR.current?.getView().getResolution() ?? 1;
@@ -227,11 +227,10 @@ const MapWrapper: FC<{
 };
 const ZoomifyView: FC<{
 	id?: string;
-	isLoading?: boolean;
-	isSecond?: boolean;
-	isMultiView?: boolean;
-}> = ({ id, isSecond, isMultiView }) => {
+}> = ({ id }) => {
 	const imgProps = useImageProperties(id ?? '');
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 
 	const theme = useTheme();
 
@@ -268,15 +267,13 @@ const ZoomifyView: FC<{
 			`}
 		>
 			{textMode ? (
-				<OcrView uuid={id} isSecond={isSecond} />
+				<OcrView uuid={id} />
 			) : (
 				<MapWrapper
 					key={id + counter.current}
 					imgId={id}
 					imgWidth={imgWidth}
 					imgHeight={imgHeight}
-					isSecond={isSecond}
-					isMultiView={isMultiView}
 				/>
 			)}
 		</Wrapper>

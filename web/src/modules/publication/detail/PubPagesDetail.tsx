@@ -15,15 +15,13 @@ import { useChildrenSearch } from 'api/childrenSearchApi';
 import { TagNameEnum } from 'api/models';
 
 import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { usePublicationContext } from '../ctx/pub-ctx';
+import { useParseUrlIdsAndParams } from '../publicationUtils';
 
 import PubThumbnails from './PubThumbnails';
 import BibInternalParts from './biblio/bib-internalparts';
-
-type Props = {
-	isSecond?: boolean;
-};
 
 export type PagesSearchResult = {
 	title: string;
@@ -32,10 +30,16 @@ export type PagesSearchResult = {
 	nameTag: Record<TagNameEnum, string[]>;
 };
 
-const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
+const PubPagesDetail = () => {
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
+	// const x = useParseUrlIdsAndParams();
+	// const y = x.getApropriateIds();
+	// const { uuid, fulltext } = y;
 	const SP_KEY = isSecond ? 'fulltext2' : 'fulltext';
 	const NT_KEY = isSecond ? 'nameTag2' : 'nameTag';
 	const PAGE_KEY = isSecond ? 'page2' : 'page';
+
 	//TODO: refactor using  useParseUrlIdsAndParams()
 	// const { getApropriateIds } = useParseUrlIdsAndParams();
 	// const {} = getApropriateIds(isSecond);
@@ -176,9 +180,10 @@ const PubPagesDetail: React.FC<Props> = ({ isSecond }) => {
 					setSp(sp);
 					if (isSecond) {
 						pctx.setPublicationChildrenFilteredOfSecond?.(null);
+						setResult2?.({});
 					} else {
 						pctx.setPublicationChildrenFiltered?.(null);
-						//pctx.setIsLoadingLeft(true);
+						setResult1?.({});
 					}
 				}}
 			/>

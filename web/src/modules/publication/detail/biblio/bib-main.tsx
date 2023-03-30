@@ -32,16 +32,11 @@ import { BibLink } from '../PubBiblioDetail';
 import { BibRootInfo } from './bib-rows';
 import BibDonators from './bib-donators';
 
-type Props = {
-	variant: 'left' | 'right';
-	isSecond?: boolean;
-};
-
-const BibMain: React.FC<Props> = ({ isSecond }) => {
+const Bibliography = () => {
 	const { t } = useTranslation();
 	const { getApropriateIds, isDetailView, formatViewLink } =
 		useParseUrlIdsAndParams();
-	const { id, pageId } = getApropriateIds(isSecond);
+	const { id, pageId } = getApropriateIds();
 	const pubDetail = usePublicationDetail(id ?? '');
 	const pageDetail = usePublicationDetail(pageId ?? '');
 	const theme = useTheme();
@@ -73,11 +68,11 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 				{isDetailView && (
 					<>
 						<PublicationExportDialog />
-						<PrintDialog isSecond={isSecond} />
+						<PrintDialog />
 					</>
 				)}
-				<CitationDialog isSecond={isSecond} />
-				<ShareDialog isSecond={isSecond} />
+				<CitationDialog />
+				<ShareDialog />
 			</Flex>
 			<Divider />
 			<Wrapper position="relative" height="100%">
@@ -101,7 +96,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.prev?.uuid && (
 							<Box>
 								<BibLink
-									to={formatViewLink(parts.prev.uuid, isSecond)}
+									to={formatViewLink(parts.prev.uuid)}
 									label={`${t('metadata:previous_unit')} ${parts.prev.label}`}
 								/>
 							</Box>
@@ -110,7 +105,7 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.next?.uuid && (
 							<Box>
 								<BibLink
-									to={formatViewLink(parts.next.uuid, isSecond)}
+									to={formatViewLink(parts.next.uuid)}
 									label={`${t('metadata:next_unit')} ${parts.next.label}`}
 								/>
 							</Box>
@@ -168,4 +163,4 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 	);
 };
 
-export default BibMain;
+export default Bibliography;

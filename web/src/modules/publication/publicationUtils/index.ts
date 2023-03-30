@@ -1,9 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
+
 //const err_msg = 'pparts_parent_out_of_bounds';
 
 export const useParseUrlIdsAndParams = () => {
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = useMemo(() => sidePanel === 'right', [sidePanel]);
 	const isMultiview = useMemo(
 		() => window.location.pathname.includes('/multiview/'),
 		[],
@@ -55,31 +59,29 @@ export const useParseUrlIdsAndParams = () => {
 		[fulltext2, mIdRight, nav, page2],
 	);
 
-	const getApropriateIds = useCallback(
-		(isSecond?: boolean) => {
-			if (isMultiview) {
-				if (isSecond) {
-					return { id: mIdRight, pageId: page2, fulltext: fulltext2 };
-				} else {
-					return { id: mIdLeft, pageId: page, fulltext };
-				}
+	const getApropriateIds = useCallback(() => {
+		if (isMultiview) {
+			if (isSecond) {
+				return { id: mIdRight, pageId: page2, fulltext: fulltext2 };
 			} else {
-				return { id: singleId, pageId: page, fulltext };
+				return { id: mIdLeft, pageId: page, fulltext };
 			}
-		},
-		[
-			fulltext,
-			fulltext2,
-			isMultiview,
-			mIdLeft,
-			mIdRight,
-			page,
-			page2,
-			singleId,
-		],
-	);
+		} else {
+			return { id: singleId, pageId: page, fulltext };
+		}
+	}, [
+		fulltext,
+		fulltext2,
+		isMultiview,
+		mIdLeft,
+		mIdRight,
+		page,
+		page2,
+		singleId,
+		isSecond,
+	]);
 	const formatViewLink = useCallback(
-		(uuid: string, isSecond?: boolean) => {
+		(uuid: string) => {
 			if (!isMultiview) {
 				return `/view/${uuid}`;
 			} else {
@@ -107,6 +109,7 @@ export const useParseUrlIdsAndParams = () => {
 			nameTag2,
 			page,
 			page2,
+			isSecond,
 		],
 	);
 

@@ -19,8 +19,6 @@ import {
 } from 'api/publicationsApi';
 import { PublicationChild, PublicationContext } from 'api/models';
 
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
-
 const getParentPid = (context: PublicationContext[], pid?: string) => {
 	if (!pid || pid === '') {
 		return undefined;
@@ -33,9 +31,8 @@ const getParentPid = (context: PublicationContext[], pid?: string) => {
 };
 
 export const useInternalParts = () => {
-	const { sidePanel } = useMultiviewContext();
 	const { getApropriateIds, formatViewLink } = useParseUrlIdsAndParams();
-	const { id } = getApropriateIds(sidePanel === 'right');
+	const { id } = getApropriateIds();
 	const currentDetail = usePublicationDetail(id);
 	const isInternalPart = currentDetail.data?.model === 'internalpart';
 	const parentId = getParentPid(currentDetail.data?.context ?? [], id);
@@ -49,7 +46,7 @@ export const useInternalParts = () => {
 	const parent = parentId
 		? {
 				id: parentId,
-				link: formatViewLink(parentId, sidePanel === 'right'),
+				link: formatViewLink(parentId),
 		  }
 		: undefined;
 
@@ -59,7 +56,7 @@ export const useInternalParts = () => {
 		loading: response.isLoading || currentDetail.isLoading,
 		hasInternalParts: children && children?.length > 0,
 		children,
-		formatLink: (uuid: string) => formatViewLink(uuid, sidePanel === 'right'),
+		formatLink: (uuid: string) => formatViewLink(uuid),
 	};
 };
 

@@ -218,7 +218,6 @@ const MultiView = () => {
 							pages={pages2}
 							onCollapse={() => setRightCollapsed(p => !p)}
 							isCollapsed={rightCollapsed}
-							isSecond
 						/>
 					</MultiviewContextProvider>
 				</Flex>

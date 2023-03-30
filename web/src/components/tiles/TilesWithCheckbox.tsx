@@ -25,10 +25,10 @@ import { PublicationChild, PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useSearchContext } from 'hooks/useSearchContext';
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 type FormProps = {
 	closeModal: () => void;
-	isSecond?: boolean;
 	variant: string;
 	title: string;
 	actionButton: (selected: string[]) => JSX.Element;
@@ -216,14 +216,12 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 };
 
 type Props = {
-	isSecond?: boolean;
 	onEdit: (selected: string[]) => void;
 	preSelected: string[];
 	disabled?: boolean;
 };
 
 export const EditSelectedChildren: FC<Props> = ({
-	isSecond,
 	onEdit,
 	preSelected,
 	disabled,
@@ -234,6 +232,9 @@ export const EditSelectedChildren: FC<Props> = ({
 		publicationChildrenFilteredOfSecond,
 		publicationChildrenOfSecond,
 	} = usePublicationContext();
+
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 
 	const data = isSecond
 		? publicationChildrenFilteredOfSecond ?? publicationChildrenOfSecond
@@ -258,7 +259,6 @@ export const EditSelectedChildren: FC<Props> = ({
 				<TilesWithCheckboxForm
 					preSelected={preSelected}
 					closeModal={closeModal}
-					isSecond={isSecond}
 					data={data ?? []}
 					variant="periodical"
 					title="Upravit seznam pro export"

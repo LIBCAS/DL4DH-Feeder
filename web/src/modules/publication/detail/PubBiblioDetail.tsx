@@ -236,11 +236,11 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				{isPrintableOrExportable && (
 					<>
 						<PublicationExportDialog />
-						<PrintDialog isSecond={isSecond} />
+						<PrintDialog />
 					</>
 				)}
-				<CitationDialog isSecond={isSecond} />
-				<ShareDialog isSecond={isSecond} />
+				<CitationDialog />
+				<ShareDialog />
 			</Flex>
 			<Divider />
 			<Box
