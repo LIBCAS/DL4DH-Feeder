@@ -23,6 +23,8 @@ import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 
 import { api } from 'api';
 
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
+
 import {
 	AltoParam,
 	altoParamsOptions,
@@ -101,7 +103,6 @@ export const enrichedFormatOptions: ExportFormatOption[] = [
 
 type Props = {
 	closeModal: () => void;
-	isSecond?: boolean;
 };
 
 export const formatValues = (values: ExportFormType): ExportParasConfig => {
@@ -172,10 +173,16 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 	};
 };
 
-export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
+//TODO: "Upravit - pocet publikaci textace"
+// refactor pubctx, zrejme nebude potreba
+
+export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
 	const { t } = useTranslation();
+
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 
 	const { id: paramId } = useParams<{ id: string }>();
 	const { labelFromOption, nameTagParamsExportOptions } =
@@ -534,7 +541,7 @@ export const ExportForm: FC<Props> = ({ closeModal, isSecond }) => {
 	);
 };
 
-const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
+const PublicationExportDialog = () => {
 	return (
 		<ModalDialog
 			label="Info"
@@ -548,7 +555,7 @@ const PublicationExportDialog: FC<{ isSecond?: boolean }> = ({ isSecond }) => {
 				</IconButton>
 			)}
 		>
-			{closeModal => <ExportForm closeModal={closeModal} isSecond={isSecond} />}
+			{closeModal => <ExportForm closeModal={closeModal} />}
 		</ModalDialog>
 	);
 };

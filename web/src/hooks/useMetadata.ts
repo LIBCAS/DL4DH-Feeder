@@ -370,7 +370,6 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 				} else {
 					const prev = otherChildren?.[currentIndex - 1];
 					const next = otherChildren?.[currentIndex + 1];
-					console.log({ prev, next });
 					const uuidPrev = prev?.pid;
 					const uuidNext = next?.pid;
 					const detailPrev = prev?.details;

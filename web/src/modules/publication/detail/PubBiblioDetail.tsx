@@ -235,7 +235,7 @@ const PubBiblioDetail: FC<Props> = ({ isSecond, variant }) => {
 				<MetaStreamsDialog rootId={id} pageId={pageId} />
 				{isPrintableOrExportable && (
 					<>
-						<PublicationExportDialog isSecond={isSecond} />
+						<PublicationExportDialog />
 						<PrintDialog isSecond={isSecond} />
 					</>
 				)}
