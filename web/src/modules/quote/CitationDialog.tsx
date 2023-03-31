@@ -28,9 +28,6 @@ import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { modelToText } from 'utils/enumsMap';
 
-type Props = {
-	isSecond?: boolean;
-};
 // TODO: use useFullContextMetadata from hook
 // fix http://localhost:3000/view/uuid:21426150-9e46-11dc-a259-000d606f5dc6?page=uuid%3Abdc7b117-1078-4a27-b7e4-abd12e788142
 

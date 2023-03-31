@@ -29,12 +29,12 @@ export const useParseUrlIdsAndParams = () => {
 		id2: mIdRight,
 	} = useParams<{ id: string; id1: string; id2: string }>();
 	const [sp] = useSearchParams();
-	const page = sp.get('page');
-	const page2 = sp.get('page2');
-	const fulltext = sp.get('fulltext');
-	const fulltext2 = sp.get('fulltext2');
-	const nameTag = sp.get('nameTag');
-	const nameTag2 = sp.get('nameTag2');
+	const page = sp.get('page') ?? undefined;
+	const page2 = sp.get('page2') ?? undefined;
+	const fulltext = sp.get('fulltext') ?? undefined;
+	const fulltext2 = sp.get('fulltext2') ?? undefined;
+	const nameTag = sp.get('nameTag') ?? undefined;
+	const nameTag2 = sp.get('nameTag2') ?? undefined;
 	const navLeft = useCallback(
 		() =>
 			nav({
@@ -42,9 +42,10 @@ export const useParseUrlIdsAndParams = () => {
 				search: createSearchParamsString([
 					{ name: 'page', value: page },
 					{ name: 'fulltext', value: fulltext },
+					{ name: 'nameTag', value: nameTag },
 				]),
 			}),
-		[fulltext, mIdLeft, nav, page],
+		[fulltext, mIdLeft, nameTag, nav, page],
 	);
 
 	const navRight = useCallback(
@@ -54,31 +55,64 @@ export const useParseUrlIdsAndParams = () => {
 				search: createSearchParamsString([
 					{ name: 'page', value: page2 },
 					{ name: 'fulltext', value: fulltext2 },
+					{ name: 'nameTag', value: nameTag2 },
 				]),
 			}),
-		[fulltext2, mIdRight, nav, page2],
+		[fulltext2, mIdRight, nameTag2, nav, page2],
 	);
 
 	const getApropriateIds = useCallback(() => {
 		if (isMultiview) {
 			if (isSecond) {
-				return { id: mIdRight, pageId: page2, fulltext: fulltext2 };
+				return {
+					id: mIdRight,
+					pageId: page2,
+					fulltext: fulltext2,
+					nameTag: nameTag2,
+					keys: {
+						page: 'page2',
+						fulltext: 'fulltext2',
+						nameTag: 'nameTag2',
+					},
+				};
 			} else {
-				return { id: mIdLeft, pageId: page, fulltext };
+				return {
+					id: mIdLeft,
+					pageId: page,
+					fulltext,
+					nameTag,
+					keys: {
+						page: 'page',
+						fulltext: 'fulltext',
+						nameTag: 'nameTag',
+					},
+				};
 			}
 		} else {
-			return { id: singleId, pageId: page, fulltext };
+			return {
+				id: singleId,
+				pageId: page,
+				fulltext,
+				nameTag,
+				keys: {
+					page: 'page',
+					fulltext: 'fulltext',
+					nameTag: 'nameTag',
+				},
+			};
 		}
 	}, [
-		fulltext,
-		fulltext2,
 		isMultiview,
-		mIdLeft,
-		mIdRight,
-		page,
-		page2,
-		singleId,
 		isSecond,
+		mIdRight,
+		page2,
+		fulltext2,
+		nameTag2,
+		mIdLeft,
+		page,
+		fulltext,
+		nameTag,
+		singleId,
 	]);
 	const formatViewLink = useCallback(
 		(uuid: string) => {

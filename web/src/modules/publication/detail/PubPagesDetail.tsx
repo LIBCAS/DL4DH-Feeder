@@ -33,28 +33,24 @@ export type PagesSearchResult = {
 const PubPagesDetail = () => {
 	const { sidePanel } = useMultiviewContext();
 	const isSecond = sidePanel === 'right';
-	// const x = useParseUrlIdsAndParams();
-	// const y = x.getApropriateIds();
-	// const { uuid, fulltext } = y;
-	const SP_KEY = isSecond ? 'fulltext2' : 'fulltext';
-	const NT_KEY = isSecond ? 'nameTag2' : 'nameTag';
-	const PAGE_KEY = isSecond ? 'page2' : 'page';
+	const { getApropriateIds } = useParseUrlIdsAndParams();
 
-	//TODO: refactor using  useParseUrlIdsAndParams()
-	// const { getApropriateIds } = useParseUrlIdsAndParams();
-	// const {} = getApropriateIds(isSecond);
+	const {
+		id: uuid,
+		fulltext,
+		pageId,
+		keys,
+		nameTag: urlNameTag,
+	} = getApropriateIds();
 
 	const pctx = usePublicationContext();
 	const [sp, setSp] = useSearchParams();
 	const { t } = useTranslation();
 
 	const [nameTag, setNameTag] = useState<TagNameEnum | null>(
-		(sp.get(NT_KEY) as TagNameEnum) ?? null,
+		(urlNameTag as TagNameEnum) ?? null,
 	);
-	const [query, setQuery] = useState(sp.get(SP_KEY) ?? '');
-	const uuid = isSecond
-		? pctx.secondPublication?.pid ?? ''
-		: pctx.publication?.pid ?? '';
+	const [query, setQuery] = useState(fulltext ?? '');
 
 	const isEnriched = isSecond
 		? pctx.secondPublication?.enriched
@@ -114,22 +110,22 @@ const PubPagesDetail = () => {
 		[children, results],
 	);
 	useEffect(() => {
-		const cp = sp.get(PAGE_KEY);
-		const fltx = sp.get(SP_KEY);
+		const cp = pageId;
+		const fltx = fulltext;
 		if (
 			!response.isLoading &&
 			!filteredChildren.some(fc => fc?.pid === cp) &&
 			fltx
 		) {
 			if (!filteredChildren[0]?.pid) {
-				sp.delete(PAGE_KEY);
+				sp.delete(keys.page);
 				setSp(sp);
 			} else {
-				sp.set(PAGE_KEY, filteredChildren[0]?.pid);
+				sp.set(keys.page, filteredChildren[0]?.pid);
 				setSp(sp);
 			}
 		}
-	}, [filteredChildren, sp, setSp, SP_KEY, PAGE_KEY, response.isLoading]);
+	}, [filteredChildren, sp, setSp, keys, response.isLoading, pageId, fulltext]);
 
 	if (response.isLoading) {
 		return <Loader />;
@@ -144,9 +140,9 @@ const PubPagesDetail = () => {
 							onTagNameSelected={tag => {
 								setNameTag(tag);
 								if (tag) {
-									sp.set(NT_KEY, tag);
+									sp.set(keys.nameTag, tag);
 								} else {
-									sp.delete(NT_KEY);
+									sp.delete(keys.nameTag);
 								}
 
 								setSp(sp);
@@ -167,16 +163,16 @@ const PubPagesDetail = () => {
 				}
 				onQueryUpdate={q => {
 					setQuery(q);
-					sp.set(SP_KEY, q);
+					sp.set(keys.fulltext, q);
 					setSp(sp);
 				}}
 				placeholder={t('search:search_in_publication')}
-				urlKeyOfValue={SP_KEY}
+				urlKeyOfValue={keys.fulltext}
 				onQueryClear={() => {
 					setQuery('');
 					setNameTag(null);
-					sp.delete(SP_KEY);
-					sp.delete(NT_KEY);
+					sp.delete(keys.fulltext);
+					sp.delete(keys.nameTag);
 					setSp(sp);
 					if (isSecond) {
 						pctx.setPublicationChildrenFilteredOfSecond?.(null);

@@ -5,8 +5,8 @@ import { api } from 'api';
 import { ChildSearchResult } from './models';
 
 export const useChildrenSearch = (
-	uuid: string,
-	query: string,
+	uuid: string | undefined,
+	query: string | undefined,
 	enabled?: boolean,
 ) =>
 	useQuery(
@@ -15,7 +15,7 @@ export const useChildrenSearch = (
 			api()
 				.get(`item/${uuid}/children/search?q=${query}`)
 				.json<ChildSearchResult>(),
-		{ enabled },
+		{ enabled: enabled && !!uuid },
 	);
 
 export const useChildrenSearchHints = (

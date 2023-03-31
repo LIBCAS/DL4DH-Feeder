@@ -20,6 +20,7 @@ import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
 import { ClickAway } from 'components/form/select/SimpleSelect';
 import Checkbox from 'components/form/checkbox/Checkbox';
+import LoaderSpin from 'components/loaders/LoaderSpin';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
@@ -73,6 +74,8 @@ const QuerySearchInput: FC<Props> = ({
 		urlKeyOfValue ? sp.get(urlKeyOfValue) ?? '' : initialQuery ?? '',
 	);
 
+	const [hintLoading, setHintLoading] = useState(false);
+
 	const query = externalState ? value : localState;
 
 	const [hints, setHints] = useState<string[]>([]);
@@ -81,6 +84,10 @@ const QuerySearchInput: FC<Props> = ({
 
 	const getHint = useCallback(
 		async (q: string) => {
+			if (!q) {
+				return;
+			}
+			setHintLoading(true);
 			const hints = hintApi
 				? await hintApi(q).catch(r => console.log(r))
 				: await api()
@@ -91,7 +98,7 @@ const QuerySearchInput: FC<Props> = ({
 						})
 						.json<string[]>()
 						.catch(r => console.log(r));
-
+			setHintLoading(false);
 			if (hints) {
 				setHints(hints);
 			}
@@ -147,20 +154,33 @@ const QuerySearchInput: FC<Props> = ({
 						</Flex>
 					}
 					iconRight={
-						query !== '' ? (
+						hintLoading ? (
 							<Flex mr={3} color="primary">
-								<MdClear
-									onClick={() => {
-										setLocalState('');
-										onQueryClear?.();
-									}}
+								<LoaderSpin
+									size={24}
 									css={css`
-										cursor: pointer;
+										padding: 0 !important;
 									`}
 								/>
 							</Flex>
 						) : (
-							<></>
+							<>
+								{query !== '' ? (
+									<Flex mr={3} color="primary">
+										<MdClear
+											onClick={() => {
+												setLocalState('');
+												onQueryClear?.();
+											}}
+											css={css`
+												cursor: pointer;
+											`}
+										/>
+									</Flex>
+								) : (
+									<></>
+								)}
+							</>
 						)
 					}
 					wrapperCss={css`
