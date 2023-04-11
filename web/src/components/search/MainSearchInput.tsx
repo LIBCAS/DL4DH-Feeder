@@ -12,6 +12,7 @@ import TextInput from 'components/form/input/TextInput';
 import { Flex } from 'components/styled';
 import SimpleSelect, { ClickAway } from 'components/form/select/SimpleSelect';
 import Button from 'components/styled/Button';
+import LoaderSpin from 'components/loaders/LoaderSpin';
 
 import { useTheme } from 'theme';
 import { api } from 'api';
@@ -45,7 +46,7 @@ const MainSearchInput = () => {
 	const mainInputRef = useRef<HTMLInputElement | null>(null);
 	const testRef = useRef<HTMLInputElement | null>(null);
 	const [hh, setHh] = useState(0);
-
+	const [hintLoading, setHintLoading] = useState(false);
 	const [localState, setLocalState] = useState('');
 	const [showTagNameMenu, setShowTagNameMenu] = useState(false);
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
@@ -60,6 +61,8 @@ const MainSearchInput = () => {
 	const nav = useNavigate();
 	const location = useLocation();
 	const { t } = useTranslation();
+	// counter to prevent older hints promises to rewrite newer
+	const counter = useRef(0);
 
 	const [hints, setHints] = useState<string[]>([]);
 	/* useEffect(() => {
@@ -131,6 +134,9 @@ const MainSearchInput = () => {
 	const getHint = useCallback(
 		async (q: string) => {
 			const nameTagMode = selectedTagName && selectedTagOp;
+			setHintLoading(true);
+			setHints([]);
+			const cnt = ++counter.current;
 			const hints = await api()
 				.post(
 					`search/hint?${
@@ -139,8 +145,10 @@ const MainSearchInput = () => {
 				)
 				.json<string[]>()
 				.catch(r => console.log(r));
+			setHintLoading(false);
 
-			if (hints) {
+			if (hints && cnt === counter.current) {
+				counter.current = 0;
 				setHints(hints);
 			}
 		},
@@ -168,6 +176,9 @@ const MainSearchInput = () => {
 					value={localState}
 					ref={mainInputRef}
 					inputPadding="10px 8px"
+					wrapperCss={css`
+						border: 1px solid white !important;
+					`}
 					onChange={e => {
 						setShowTagNameMenu(false);
 						setShowTagOpMenu(false);
@@ -327,21 +338,34 @@ const MainSearchInput = () => {
 						</Flex>
 					}
 					iconRight={
-						localState !== '' || selectedTagName || selectedTagOp ? (
+						hintLoading ? (
 							<Flex mr={3} color="primary">
-								<MdClear
-									onClick={() => {
-										setLocalState('');
-										setSelectedTagName(null);
-										setSelectedTagOp(null);
-									}}
+								<LoaderSpin
+									size={24}
 									css={css`
-										cursor: pointer;
+										padding: 0 !important;
 									`}
 								/>
 							</Flex>
 						) : (
-							<></>
+							<>
+								{localState !== '' || selectedTagName || selectedTagOp ? (
+									<Flex mr={3} color="primary">
+										<MdClear
+											onClick={() => {
+												setLocalState('');
+												setSelectedTagName(null);
+												setSelectedTagOp(null);
+											}}
+											css={css`
+												cursor: pointer;
+											`}
+										/>
+									</Flex>
+								) : (
+									<></>
+								)}
+							</>
 						)
 					}
 				/>
@@ -393,13 +417,14 @@ const MainSearchInput = () => {
 							<Flex
 								position="absolute"
 								left={0}
-								top={45}
+								top={41}
 								bg="white"
 								color="text"
 								css={css`
 									border: 1px solid ${theme.colors.border};
 									border-top: none;
-									box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.2);
+									/* box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.2); */
+									box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
 								`}
 							>
 								<Flex
@@ -409,30 +434,44 @@ const MainSearchInput = () => {
 									maxHeight="80vh"
 									width={wrapperWidth - 16}
 								>
-									{hints.map((h, index) => (
-										<Flex
-											px={3}
-											py={1}
-											key={index}
-											onClick={() => {
-												setLocalState(h);
-												handleUpdateContext(h);
-												setHints([]);
-											}}
-											bg={index === hh ? 'primary' : 'initial'}
-											color={index === hh ? 'white' : 'initial'}
-											css={css`
-												cursor: default;
-												border-bottom: 1px solid ${theme.colors.primaryLight};
-												&:hover {
-													color: white;
-													background-color: ${theme.colors.primary};
-												}
-											`}
-										>
-											<Text fontSize="md">{h}</Text>
-										</Flex>
-									))}
+									{hints.map((h, index) => {
+										const qindex = h
+											.toLocaleUpperCase()
+											.indexOf(localState?.toUpperCase() ?? '');
+
+										const qEnd = qindex + (localState?.length ?? 0);
+										const part1 = h.slice(0, qindex);
+										const part2 = h.slice(qindex, qEnd);
+										const part3 = h.slice(qEnd);
+										return (
+											<Flex
+												px={3}
+												py={1}
+												key={index}
+												onClick={() => {
+													setLocalState(h);
+													handleUpdateContext(h);
+													setHints([]);
+												}}
+												bg={index === hh ? 'primaryBright' : 'initial'}
+												css={css`
+													cursor: default;
+													border-bottom: 1px solid ${theme.colors.primaryLight};
+													&:hover {
+														background-color: ${theme.colors.primaryBright};
+													}
+												`}
+											>
+												<Text fontSize="md" my="2px">
+													{part1}
+													<Text as="span" color="primary" fontWeight="bold">
+														{part2}
+													</Text>
+													{part3}
+												</Text>
+											</Flex>
+										);
+									})}
 								</Flex>
 							</Flex>
 						</ClickAway>

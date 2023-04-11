@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/core';
+import { SerializedStyles, css } from '@emotion/react';
 import { MdSearch, MdClear } from 'react-icons/md';
 import {
 	Dispatch,
 	FC,
 	SetStateAction,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -35,6 +36,7 @@ export const OperationToTextLabel: Record<TOperation, string> = {
 type Props = {
 	hintApi?: (q: string) => Promise<string[]>;
 	onQueryUpdate: (query: string) => void;
+	onQuerySubmit?: () => void;
 	onQueryClear?: () => void;
 	publicOnly?: boolean;
 	setPublicOnly?: Dispatch<SetStateAction<boolean>>;
@@ -44,6 +46,7 @@ type Props = {
 	initialQuery?: string;
 	value?: string;
 	externalState?: boolean;
+	customWrapperCss?: SerializedStyles;
 };
 
 const QuerySearchInput: FC<Props> = ({
@@ -58,18 +61,19 @@ const QuerySearchInput: FC<Props> = ({
 	initialQuery,
 	value,
 	externalState,
+	customWrapperCss,
+	onQuerySubmit,
 }) => {
 	const theme = useTheme();
 	const [wrapperRef, { width: wrapperWidth }] = useMeasure({
 		debounce: 100,
 	});
 	const mainInputRef = useRef<HTMLInputElement | null>(null);
-	const testRef = useRef<HTMLInputElement | null>(null);
-	const [hh, setHh] = useState(0);
+	const keysNavigatorRef = useRef<HTMLInputElement | null>(null);
+	const [hh, setHh] = useState(-1);
 	const { t } = useTranslation();
-
 	const [sp] = useSearchParams();
-
+	const counter = useRef(0);
 	const [localState, setLocalState] = useState(
 		urlKeyOfValue ? sp.get(urlKeyOfValue) ?? '' : initialQuery ?? '',
 	);
@@ -88,7 +92,9 @@ const QuerySearchInput: FC<Props> = ({
 				return;
 			}
 			setHintLoading(true);
-			const hints = hintApi
+			setHints([]);
+			const cnt = ++counter.current;
+			const fhints = hintApi
 				? await hintApi(q).catch(r => console.log(r))
 				: await api()
 						.post(`search/hint?q=${q}`, {
@@ -99,11 +105,14 @@ const QuerySearchInput: FC<Props> = ({
 						.json<string[]>()
 						.catch(r => console.log(r));
 			setHintLoading(false);
-			if (hints) {
-				setHints(hints);
+
+			if (fhints && cnt === counter.current) {
+				counter.current = 0;
+				setHints(fhints);
+				setHh(-1);
 			}
 		},
-		[publicOnly, hintApi],
+		[hintApi, publicOnly],
 	);
 
 	const debouncedHint = useMemo(() => debounce(getHint, 50), [getHint]);
@@ -138,13 +147,20 @@ const QuerySearchInput: FC<Props> = ({
 							e.preventDefault();
 							e.stopPropagation();
 							handleUpdateContext(query ?? '');
+							onQuerySubmit?.();
 						}
 					}}
 					onKeyDown={e => {
 						if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
 							e.stopPropagation();
 							e.preventDefault();
-							testRef.current?.focus();
+							if (e.key === 'ArrowDown') {
+								setHh(0);
+							} else {
+								setHh(hints.length - 1);
+							}
+
+							keysNavigatorRef.current?.focus();
 						}
 					}}
 					iconLeft={
@@ -183,24 +199,28 @@ const QuerySearchInput: FC<Props> = ({
 							</>
 						)
 					}
-					wrapperCss={css`
-						border-top: none;
-						border-left: none;
-						border-right: none;
-					`}
+					wrapperCss={
+						customWrapperCss
+							? customWrapperCss
+							: css`
+									border-top: none;
+									border-left: none;
+									border-right: none;
+							  `
+					}
 				/>
 				<div style={{ position: 'absolute', left: '-1000px', opacity: 0 }}>
 					<input
 						width={0}
 						height={0}
-						ref={testRef}
+						ref={keysNavigatorRef}
 						onKeyPress={e => {
 							if (e.key === 'Enter') {
 								e.preventDefault();
 								e.stopPropagation();
 								setLocalState(hints[hh]);
 								handleUpdateContext(hints[hh]);
-								setHh(0);
+								setHh(-1);
 								setHints([]);
 							}
 						}}
@@ -214,13 +234,20 @@ const QuerySearchInput: FC<Props> = ({
 							}
 							if (e.key === 'ArrowDown') {
 								e.stopPropagation();
-								setHh(p => (p + 1) % hints.length);
+								if (hh < hints.length - 1) {
+									setHh(p => p + 1);
+								}
+								if (hh === hints.length - 1) {
+									mainInputRef.current?.focus?.();
+									setHh(-1);
+								}
 							}
 							if (e.key === 'ArrowUp') {
 								e.stopPropagation();
 								setHh(p => {
 									if (p <= 0) {
-										return hints.length - 1;
+										mainInputRef.current?.focus?.();
+										return -1;
 									} else {
 										return p - 1;
 									}
@@ -234,14 +261,18 @@ const QuerySearchInput: FC<Props> = ({
 					<ClickAway onClickAway={() => setHints([])}>
 						<Flex
 							position="absolute"
-							left={0}
-							top={45}
+							left={-1}
+							top={43}
 							bg="white"
 							color="text"
 							css={css`
 								border: 1px solid ${theme.colors.border};
+								&:focus {
+									border: 1px solid ${theme.colors.border};
+								}
 								border-top: none;
-								box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.2);
+								/* box-shadow: 0px 5px 4px 2px rgba(0, 0, 0, 0.2); */
+								box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
 							`}
 						>
 							<Flex
@@ -249,32 +280,48 @@ const QuerySearchInput: FC<Props> = ({
 								flexDirection="column"
 								overflowY="auto"
 								maxHeight="80vh"
-								width={wrapperWidth - 10}
+								width={wrapperWidth}
 							>
-								{hints.map((h, index) => (
-									<Flex
-										px={3}
-										py={1}
-										key={index}
-										onClick={() => {
-											setLocalState(h);
-											handleUpdateContext(h);
-											setHints([]);
-										}}
-										bg={index === hh ? 'primary' : 'initial'}
-										color={index === hh ? 'white' : 'initial'}
-										css={css`
-											cursor: default;
-											border-bottom: 1px solid ${theme.colors.primaryLight};
-											&:hover {
-												color: white;
-												background-color: ${theme.colors.primary};
-											}
-										`}
-									>
-										<Text fontSize="md">{h}</Text>
-									</Flex>
-								))}
+								{hints.map((h, index) => {
+									const qindex = h
+										.toLocaleUpperCase()
+										.indexOf(query?.toUpperCase() ?? '');
+
+									const qEnd = qindex + (query?.length ?? 0);
+									const part1 = h.slice(0, qindex);
+									const part2 = h.slice(qindex, qEnd);
+									const part3 = h.slice(qEnd);
+
+									return (
+										<Flex
+											px={3}
+											py={1}
+											key={index}
+											onClick={() => {
+												setLocalState(h);
+												handleUpdateContext(h);
+												setHints([]);
+											}}
+											bg={index === hh ? 'primaryBright' : 'initial'}
+											//color={index === hh ? 'white' : 'initial'}
+											css={css`
+												cursor: default;
+												border-bottom: 1px solid ${theme.colors.primaryLight};
+												&:hover {
+													background-color: ${theme.colors.primaryBright};
+												}
+											`}
+										>
+											<Text fontSize="md" my="2px">
+												{part1}
+												<Text as="span" color="primary" fontWeight="bold">
+													{part2}
+												</Text>
+												{part3}
+											</Text>
+										</Flex>
+									);
+								})}
 							</Flex>
 						</Flex>
 					</ClickAway>

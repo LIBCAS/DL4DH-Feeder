@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { createRef, FC, useEffect, useMemo, useState } from 'react';
-import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
+import { MdArrowDownward, MdArrowUpward, MdLock } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 import { FixedSizeGrid } from 'react-window';
@@ -15,7 +15,8 @@ import Text from 'components/styled/Text';
 
 import { useTheme } from 'theme';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { useParseUrlIdsAndParams } from '../publicationUtils';
+import { usePublicationContext2 } from '../ctx/pubContext';
 
 import { PagesSearchResult } from './PubPagesDetail';
 
@@ -29,33 +30,35 @@ type Props = {
 
 const PubThumbnails: FC<Props> = ({
 	isSecond,
-	pagesSearchResult,
+	//pagesSearchResult,
 	searchMode,
 }) => {
+	const pctx = usePublicationContext2();
+	const pagesSearchResult = pctx.filtered.filteredOcrResults;
 	const COLUMNS_COUNT = pagesSearchResult?.length ?? 0 > 0 ? 1 : 3;
 	const { t } = useTranslation();
-	const pubCtx = usePublicationContext();
-	const pageId = isSecond
-		? pubCtx.currentPageOfSecond?.uuid ?? 'ctx-right-current_page_uuid_error'
-		: pubCtx.currentPage?.uuid ?? 'ctx-left-current_page_uuid_error';
 
-	const pagesRaw = useMemo(
-		() =>
-			isSecond
-				? pubCtx.publicationChildrenOfSecond ?? []
-				: pubCtx.publicationChildren ?? [],
-		[pubCtx.publicationChildren, pubCtx.publicationChildrenOfSecond, isSecond],
-	);
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { pageId, keys } = getApropriateIds();
 
-	const pages = useMemo(
-		() =>
-			(pagesSearchResult?.length ?? 0) > 0
-				? pagesRaw.filter(pr =>
-						(pagesSearchResult ?? []).some(x => x.pid === pr.pid),
-				  )
-				: pagesRaw,
-		[pagesSearchResult, pagesRaw],
-	);
+	const pagesRaw = useMemo(() => {
+		if (pctx.filtered.notFound) {
+			return [];
+		}
+		return pctx.filtered.isActive
+			? pctx.filtered.filteredChildren
+			: pctx.publicationChildren ?? [];
+	}, [pctx]);
+
+	// const pages = useMemo(
+	// 	() =>
+	// 		(pagesSearchResult?.length ?? 0) > 0
+	// 			? pagesRaw.filter(pr =>
+	// 					(pagesSearchResult ?? []).some(x => x.pid === pr.pid),
+	// 			  )
+	// 			: pagesRaw,
+	// 	[pagesSearchResult, pagesRaw],
+	// );
 
 	const theme = useTheme();
 	const [wrapperRef, { height: wrapperHeight }] = useMeasure({
@@ -75,28 +78,30 @@ const PubThumbnails: FC<Props> = ({
 	const gridRef = createRef<FixedSizeGrid>();
 
 	useEffect(() => {
-		const index = pages.findIndex(p => p.pid === pageId);
+		const index = pagesRaw.findIndex(p => p.pid === pageId);
 		setSelectedPage({
-			pid: pageId,
+			pid: pageId ?? '',
 			rowIndex: Math.floor(index / COLUMNS_COUNT),
 			index,
 		});
-	}, [pageId, pages, COLUMNS_COUNT]);
+	}, [pageId, pagesRaw, COLUMNS_COUNT]);
 
 	useEffect(() => {
 		gridRef.current?.scrollToItem({
 			rowIndex: selectedPage?.rowIndex,
 			align: 'start',
 		});
-	}, [selectedPage, pages, gridRef]);
+	}, [selectedPage, pagesRaw, gridRef]);
 
 	useEffect(() => {
 		setGoToPage((selectedPage?.index ?? 0) + 1);
 	}, [selectedPage?.index]);
 
-	if (searchMode && (pagesSearchResult?.length ?? 0) === 0) {
-		return <></>;
-	}
+	//console.log({ searchMode, pagesSearchResult });
+
+	// if (searchMode && (pagesSearchResult?.length ?? 0) === 0) {
+	// 	return <></>;
+	// }
 
 	return (
 		<Box width={1} height="100%" position="relative">
@@ -146,16 +151,19 @@ const PubThumbnails: FC<Props> = ({
 							onKeyDown={e => {
 								if (e.key === 'Enter') {
 									const parsed = parseInt((goToPage ?? Infinity) as string) - 1;
-									sp.set(
-										isSecond ? 'page2' : 'page',
-										pages[Math.min(pages.length - 1, Math.max(parsed, 0))].pid,
-									);
-									setSp(sp);
+									const pid =
+										pagesRaw?.[
+											Math.min(pagesRaw.length - 1, Math.max(parsed, 0))
+										]?.pid;
+									if (pid) {
+										sp.set(keys.page, pid);
+										setSp(sp);
+									}
 								}
 							}}
 						/>
 						<Text fontSize="md">
-							{t('common:of')} <strong>{pages.length}</strong>{' '}
+							{t('common:of')} <strong>{pagesRaw.length}</strong>{' '}
 							{t('common:of_pages')}
 						</Text>
 					</Flex>
@@ -163,7 +171,7 @@ const PubThumbnails: FC<Props> = ({
 					<IconButton
 						onClick={() => {
 							gridRef.current?.scrollToItem({
-								rowIndex: pages.length - 2,
+								rowIndex: pagesRaw.length - 2,
 								align: 'start',
 							});
 						}}
@@ -187,7 +195,7 @@ const PubThumbnails: FC<Props> = ({
 					overflow="hidden"
 				>
 					<FixedSizeGrid
-						rowCount={Math.ceil(pages.length / COLUMNS_COUNT)}
+						rowCount={Math.ceil(pagesRaw.length / COLUMNS_COUNT)}
 						rowHeight={126}
 						height={wrapperHeight - resultsMargin * 1.1}
 						columnCount={COLUMNS_COUNT}
@@ -200,8 +208,9 @@ const PubThumbnails: FC<Props> = ({
 					>
 						{({ style, rowIndex, columnIndex }) => {
 							const index = COLUMNS_COUNT * rowIndex + columnIndex;
-							const url = `/api/item/${pages[index]?.pid ?? ''}/thumb`;
-							if (index >= pages.length) {
+							const url = `/api/item/${pagesRaw[index]?.pid ?? ''}/thumb`;
+							const isPublic = pagesRaw[index].policy === 'public';
+							if (index >= pagesRaw.length) {
 								return <></>;
 							}
 							return (
@@ -214,20 +223,21 @@ const PubThumbnails: FC<Props> = ({
 											width: fill-available !important;
 											cursor: pointer;
 											box-sizing: border-box;
-											background-color: ${selectedPage?.pid === pages[index].pid
+											background-color: ${selectedPage?.pid ===
+											pagesRaw[index].pid
 												? 'white'
 												: 'unset'};
 											${isSecond
 												? css`
 														border-left: ${selectedPage?.pid ===
-															pages[index].pid
+															pagesRaw[index].pid
 																? 3
 																: 0}px
 															solid ${theme.colors.primary};
 												  `
 												: css`
 														border-right: ${selectedPage?.pid ===
-															pages[index].pid
+															pagesRaw[index].pid
 																? 3
 																: 0}px
 															solid ${theme.colors.primary};
@@ -240,16 +250,43 @@ const PubThumbnails: FC<Props> = ({
 									`}
 									onClick={() => {
 										if (searchMode) {
-											sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+											sp.set(isSecond ? 'page2' : 'page', pagesRaw[index].pid);
 											setSp(sp);
 											setSelectedPage({
-												pid: pages[index].pid,
+												pid: pagesRaw[index].pid,
 												rowIndex,
 												index,
 											});
 										}
 									}}
 								>
+									{/* 	TODO: buble onclick, right now this overlay is blocking event
+								{!isPublic && (
+										<Flex
+											position="absolute"
+											width="100%"
+											height="100%"
+											justifyContent="center"
+											alignItems="center"
+											zIndex={1}
+										>
+											<Flex
+												justifyContent="center"
+												alignItems="center"
+												position="relative"
+												width="80px"
+												height="80px"
+												opacity={0.5}
+												bg="white"
+												css={css`
+													border: 1px solid white;
+													border-radius: 100%;
+												`}
+											>
+												<MdLock size={40} />
+											</Flex>
+										</Flex>
+									)} */}
 									<Flex
 										alignItems="center"
 										width={80}
@@ -260,7 +297,7 @@ const PubThumbnails: FC<Props> = ({
 										m={1}
 										ml={2}
 										css={css`
-											border: ${selectedPage?.pid === pages[index].pid
+											border: ${selectedPage?.pid === pagesRaw[index].pid
 													? 5
 													: 1}px
 												solid ${theme.colors.primary};
@@ -274,10 +311,10 @@ const PubThumbnails: FC<Props> = ({
 											}
 										`}
 										onClick={() => {
-											sp.set(isSecond ? 'page2' : 'page', pages[index].pid);
+											sp.set(isSecond ? 'page2' : 'page', pagesRaw[index].pid);
 											setSp(sp);
 											setSelectedPage({
-												pid: pages[index].pid,
+												pid: pagesRaw[index].pid,
 												rowIndex,
 												index,
 											});
@@ -293,13 +330,14 @@ const PubThumbnails: FC<Props> = ({
 											p={1}
 										>
 											<Text my={0} fontSize="sm">
-												{pages[index].title}
+												{pagesRaw[index].title}
 											</Text>
 										</Box>
 									</Flex>
+
 									<Flex fontSize="sm" width="auto" flexGrow={1}>
 										{pagesSearchResult
-											?.filter(p => p.pid === pages[index].pid)
+											?.filter(p => p.pid === pagesRaw[index].pid)
 											.map((k, i) => (
 												<Flex
 													flexDirection="column"

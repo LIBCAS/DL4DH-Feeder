@@ -16,15 +16,13 @@ import { Metadata } from 'components/kramerius/model/metadata.model';
 import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
 //import { KRAMERIUS_ENUMS } from 'components/kramerius/enums/kenums';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import { Loader } from 'modules/loader';
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { api } from 'api';
 
 import { ModelsEnum, PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
-
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { modelToText } from 'utils/enumsMap';
 
@@ -172,16 +170,13 @@ const ShowCitation: FC<{
 };
 
 const CitationDialog = () => {
-	const pctx = usePublicationContext();
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { pageId, id } = getApropriateIds();
 	const { t } = useTranslation();
-	const currentPagePid = isSecond
-		? pctx.currentPageOfSecond?.uuid ?? undefined
-		: pctx.currentPage?.uuid ?? undefined;
-	const pubPid = isSecond ? pctx.secondPublication?.pid : pctx.publication?.pid;
+
+	const pubPid = id; //isSecond ? pctx.secondPublication?.pid : pctx.publication?.pid;
 	const rootDetailResponse = usePublicationDetail(
-		currentPagePid ?? pubPid ?? 'pageId_rootId_undefined',
+		pageId ?? pubPid ?? 'pageId_rootId_undefined',
 	);
 	const rootDetail = rootDetailResponse.data ?? null;
 
@@ -303,8 +298,8 @@ const CitationDialog = () => {
 					</Flex>
 					<Text color="black">
 						<ShowCitation
-							uuid={pctx.publication?.root_pid ?? ''}
-							pageId={currentPagePid ?? ''}
+							uuid={rootDetail.root_pid ?? ''}
+							pageId={pageId ?? ''}
 							pubContext={sources}
 							currentSource={source?.model ?? ''}
 						/>

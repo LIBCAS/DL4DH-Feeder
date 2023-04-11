@@ -15,9 +15,9 @@ import { FormattedBibliohraphy } from 'hooks/useMetadata';
 import { modelToText } from 'utils/enumsMap';
 
 import AuthorsDialog from '../AuthorsDialog';
-import { BibLink } from '../PubBiblioDetail';
 
 import { BibInternalPartsDialog } from './bib-internalparts';
+import { BibLink } from './bib-main';
 
 export const BibAuthors: FC<{
 	mainAuthors: Author[];

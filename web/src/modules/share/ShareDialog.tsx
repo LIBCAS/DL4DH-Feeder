@@ -14,12 +14,10 @@ import Text from 'components/styled/Text';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import Divider from 'components/styled/Divider';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
-
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import { ModelToText } from 'utils/enumsMap';
 
@@ -29,15 +27,10 @@ import { ModelToText } from 'utils/enumsMap';
 // resp nefunguje tam routing spravne
 //https://ndk.cz/periodical/uuid:a3499e99-8120-465b-81d4-8d87717708e5
 const ShareDialog = () => {
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
-	const pctx = usePublicationContext();
-	const currentPagePid = isSecond
-		? pctx.currentPageOfSecond?.uuid ?? undefined
-		: pctx.currentPage?.uuid ?? undefined;
-	const pubPid = isSecond ? pctx.secondPublication?.pid : pctx.publication?.pid;
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { pageId, id } = getApropriateIds();
 	const rootDetailResponse = usePublicationDetail(
-		currentPagePid ?? pubPid ?? 'pageId_rootId_undefined',
+		pageId ?? id ?? 'pageId_rootId_undefined',
 	);
 	const rootDetail = rootDetailResponse.data ?? null;
 

@@ -1,16 +1,21 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
+import { useSidepanelContext } from 'hooks/useSidepanelContext';
 
 //const err_msg = 'pparts_parent_out_of_bounds';
 
 export const useParseUrlIdsAndParams = () => {
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = useMemo(() => sidePanel === 'right', [sidePanel]);
+	const sidepanel = useSidepanelContext();
+
 	const isMultiview = useMemo(
 		() => window.location.pathname.includes('/multiview/'),
 		[],
+	);
+
+	const isSecond = useMemo(
+		() => sidepanel === 'right' && isMultiview,
+		[sidepanel, isMultiview],
 	);
 
 	const isSingleView = useMemo(
@@ -61,23 +66,37 @@ export const useParseUrlIdsAndParams = () => {
 		[fulltext2, mIdRight, nameTag2, nav, page2],
 	);
 
-	const getApropriateIds = useCallback(() => {
-		if (isMultiview) {
-			if (isSecond) {
-				return {
-					id: mIdRight,
-					pageId: page2,
-					fulltext: fulltext2,
-					nameTag: nameTag2,
-					keys: {
-						page: 'page2',
-						fulltext: 'fulltext2',
-						nameTag: 'nameTag2',
-					},
-				};
+	const getApropriateIds = useCallback(
+		(multiview?: 'left' | 'right') => {
+			if (isMultiview) {
+				if ((multiview && multiview === 'right') || isSecond) {
+					return {
+						id: mIdRight,
+						pageId: page2,
+						fulltext: fulltext2,
+						nameTag: nameTag2,
+						keys: {
+							page: 'page2',
+							fulltext: 'fulltext2',
+							nameTag: 'nameTag2',
+						},
+					};
+				} else {
+					return {
+						id: mIdLeft,
+						pageId: page,
+						fulltext,
+						nameTag,
+						keys: {
+							page: 'page',
+							fulltext: 'fulltext',
+							nameTag: 'nameTag',
+						},
+					};
+				}
 			} else {
 				return {
-					id: mIdLeft,
+					id: singleId,
 					pageId: page,
 					fulltext,
 					nameTag,
@@ -88,62 +107,74 @@ export const useParseUrlIdsAndParams = () => {
 					},
 				};
 			}
-		} else {
-			return {
-				id: singleId,
-				pageId: page,
-				fulltext,
-				nameTag,
-				keys: {
-					page: 'page',
-					fulltext: 'fulltext',
-					nameTag: 'nameTag',
-				},
-			};
-		}
-	}, [
-		isMultiview,
-		isSecond,
-		mIdRight,
-		page2,
-		fulltext2,
-		nameTag2,
-		mIdLeft,
-		page,
-		fulltext,
-		nameTag,
-		singleId,
-	]);
+		},
+		[
+			isMultiview,
+			isSecond,
+			mIdRight,
+			page2,
+			fulltext2,
+			nameTag2,
+			mIdLeft,
+			page,
+			fulltext,
+			nameTag,
+			singleId,
+		],
+	);
 	const formatViewLink = useCallback(
-		(uuid: string) => {
-			if (!isMultiview) {
-				return `/view/${uuid}`;
+		(uuid: string, forceMultiview?: boolean) => {
+			if (!isDetailView) {
+				return `/periodical/${uuid}`;
 			} else {
-				if (isSecond) {
-					return `/multiview/${mIdLeft}/${uuid}${createSearchParamsString([
-						{ name: 'page', value: page },
-						{ name: 'fulltext', value: fulltext },
-						{ name: 'nameTag', value: nameTag },
+				if (!isMultiview) {
+					if (forceMultiview) {
+						if (sidepanel === 'right') {
+							console.log({ mIdLeft, page, fulltext });
+							return `/multiview/${singleId}/${uuid}${createSearchParamsString([
+								{ name: 'page', value: page },
+								{ name: 'fulltext', value: fulltext },
+								{ name: 'nameTag', value: nameTag },
+							])}`;
+						} else {
+							return `/multiview/${uuid}/${singleId}${createSearchParamsString([
+								{ name: 'page2', value: page },
+								{ name: 'fulltext2', value: fulltext },
+								{ name: 'nameTag2', value: nameTag },
+							])}`;
+						}
+					}
+					return `/view/${uuid}`;
+				} else {
+					if (isSecond) {
+						return `/multiview/${mIdLeft}/${uuid}${createSearchParamsString([
+							{ name: 'page', value: page },
+							{ name: 'fulltext', value: fulltext },
+							{ name: 'nameTag', value: nameTag },
+						])}`;
+					}
+					return `/multiview/${uuid}/${mIdRight}${createSearchParamsString([
+						{ name: 'page2', value: page2 },
+						{ name: 'fulltext2', value: fulltext2 },
+						{ name: 'nameTag2', value: nameTag2 },
 					])}`;
 				}
-				return `/multiview/${uuid}/${mIdRight}${createSearchParamsString([
-					{ name: 'page2', value: page2 },
-					{ name: 'fulltext2', value: fulltext2 },
-					{ name: 'nameTag2', value: nameTag2 },
-				])}`;
 			}
 		},
 		[
-			fulltext,
-			fulltext2,
+			isDetailView,
 			isMultiview,
+			sidepanel,
 			mIdLeft,
-			mIdRight,
-			nameTag,
-			nameTag2,
 			page,
-			page2,
+			fulltext,
+			singleId,
+			nameTag,
 			isSecond,
+			mIdRight,
+			page2,
+			fulltext2,
+			nameTag2,
 		],
 	);
 
@@ -162,6 +193,7 @@ export const useParseUrlIdsAndParams = () => {
 		navRight,
 		getApropriateIds,
 		formatViewLink,
+		isSecond,
 	};
 };
 

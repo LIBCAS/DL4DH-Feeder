@@ -21,15 +21,14 @@ const mapDonatorImage: Record<string, string> = {
 
 const BibDonators: React.FC<Props> = ({ donators }) => {
 	const { t } = useTranslation();
-
-	if (donators.length === 0) {
+	if (!donators || donators.length === 0) {
 		return <></>;
 	}
 
 	return (
 		<Box>
 			<Text>{t('metadata:donator')}</Text>
-			{donators.map(d => (
+			{[donators ?? []].flat().map(d => (
 				<NavHrefButton
 					key={d}
 					variant="text"

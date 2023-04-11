@@ -1,57 +1,29 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { debounce } from 'lodash-es';
-import { FC, useCallback, useMemo, useState } from 'react';
-import {
-	MdArrowForward,
-	MdClear,
-	MdImage,
-	MdInfo,
-	MdSearch,
-} from 'react-icons/md';
-import useMeasure from 'react-use-measure';
+import { FC, useState } from 'react';
+import { MdArrowForward, MdImage, MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
-import TextInput from 'components/form/input/TextInput';
-import { ClickAway } from 'components/form/select/SimpleSelect';
 import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
+import QuerySearchInput from 'components/search/QuerySearchInput';
 
-import { api } from 'api';
-import { theme } from 'theme';
+import { useTheme } from 'theme';
 
 import { useInfoApi } from 'api/infoApi';
 
 import HomepageFeeds from './homepageFeeds';
 
 const Homepage: FC = () => {
-	const [toSearch, setToSearch] = useState('');
 	const [publicOnly, setPublicOnly] = useState<boolean>(true);
-	const [hints, setHints] = useState<string[]>([]);
-	const [wrapperRef, { width }] = useMeasure({
-		debounce: 100,
-	});
 	const nav = useNavigate();
 	const { t } = useTranslation('homepage');
-	const query = `${toSearch ? `query=${toSearch}` : ''}${
-		publicOnly ? `${toSearch ? '&' : ''}availability=PUBLIC` : ''
-	}`;
-
-	const getHint = useCallback(async (q: string) => {
-		const hints = await api()
-			.post(`search/hint?q=${q}`)
-			.json<string[]>()
-			.catch(r => console.log(r));
-		if (hints) {
-			setHints(hints);
-		}
-	}, []);
-
-	const debouncedHint = useMemo(() => debounce(getHint, 200), [getHint]);
+	const [query, setQuery] = useState('');
+	const theme = useTheme();
 
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
@@ -74,7 +46,6 @@ const Homepage: FC = () => {
 					justifyContent="center"
 				>
 					{logo ? <img src={logo} height={80} /> : <MdImage size={80} />}
-
 					<Flex mt={3} mb={4} flexDirection="column" alignItems="center">
 						<Text fontSize="xl" fontWeight="bold">
 							{libName}
@@ -93,91 +64,29 @@ const Homepage: FC = () => {
 						ml={[0, 100, 100]}
 						position="relative"
 					>
-						<Flex ref={wrapperRef} width={1}>
-							<TextInput
-								placeholder={t('hp_search_placeholder')}
-								label=""
-								labelType="inline"
-								color="primary"
-								onKeyPress={e => {
-									if (e.key === 'Enter') {
-										nav(`/search${query ? `?${query}` : ''}`);
-									}
+						<Flex
+							width={1}
+							css={css`
+								border: 1px solid ${theme.colors.border};
+								border-bottom: none;
+								border-radius: 3px;
+							`}
+						>
+							<QuerySearchInput
+								onQueryUpdate={q => {
+									const formatted = `${q ? `query=${q}` : ''}${
+										publicOnly ? `${q ? '&' : ''}availability=PUBLIC` : ''
+									}`;
+									nav(`/search${formatted ? `?${formatted}` : ''}`);
 								}}
-								value={toSearch}
-								iconLeft={
-									<Flex color="primary" ml={2}>
-										<MdSearch size={26} />
-									</Flex>
-								}
-								iconRight={
-									toSearch !== '' ? (
-										<Flex mr={3} color="primary">
-											<MdClear
-												onClick={() => setToSearch('')}
-												css={css`
-													cursor: pointer;
-												`}
-											/>
-										</Flex>
-									) : (
-										<></>
-									)
-								}
-								onChange={e => {
-									console.log('e.currentTarget.value');
-									console.log(e.target.value);
-									setToSearch(e.target.value);
-									debouncedHint(e.target.value);
+								placeholder={t('search:search_in_publication')}
+								onQueryClear={() => {
+									setQuery('');
 								}}
+								//customWrapperCss={css``}
 							/>
 						</Flex>
-						{hints.length > 0 && toSearch !== '' && (
-							<ClickAway onClickAway={() => setHints([])}>
-								<Flex
-									position="absolute"
-									left={16}
-									top={40}
-									bg="white"
-									color="text"
-									css={css`
-										border: 1px solid ${theme.colors.border};
-										box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);
-										z-index: 1;
-									`}
-								>
-									<Flex
-										position="relative"
-										flexDirection="column"
-										overflowY="auto"
-										maxHeight="30vh"
-										width={width}
-									>
-										{hints.map((h, index) => (
-											<Flex
-												px={3}
-												py={2}
-												key={index}
-												onClick={() => {
-													setToSearch(h);
-													setHints([]);
-												}}
-												css={css`
-													cursor: default;
-													border-bottom: 1px solid ${theme.colors.primaryLight};
-													&:hover {
-														color: white;
-														background-color: ${theme.colors.primary};
-													}
-												`}
-											>
-												<Text>{h}</Text>
-											</Flex>
-										))}
-									</Flex>
-								</Flex>
-							</ClickAway>
-						)}
+
 						<Flex alignItems="center" minWidth={150} ml={[0, 3]} mt={[3, 0]}>
 							<Checkbox
 								checked={publicOnly}
@@ -187,6 +96,7 @@ const Homepage: FC = () => {
 							/>
 						</Flex>
 					</Flex>
+					{/* //TODO: treba updatovat aj toto query */}
 					<NavLinkButton
 						mt={4}
 						to={`/search${query ? `?${query}` : ''}`}

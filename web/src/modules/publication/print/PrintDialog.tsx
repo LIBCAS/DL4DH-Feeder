@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { MdClose, MdPrint } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
@@ -18,9 +18,7 @@ import { downloadFile } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
 
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
-
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { usePublicationContext2 } from '../ctx/pubContext';
 
 type FormProps = {
 	closeModal: () => void;
@@ -29,13 +27,8 @@ type FormProps = {
 const PRINT_LIMIT = 90;
 
 const PrintForm: FC<FormProps> = ({ closeModal }) => {
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
-
-	const pctx = usePublicationContext();
-	const pages = isSecond
-		? pctx.publicationChildrenOfSecond ?? []
-		: pctx.publicationChildren ?? [];
+	const { getChildren } = usePublicationContext2();
+	const pages = useMemo(() => getChildren?.() ?? [], [getChildren]);
 
 	const [selected, setSelected] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);

@@ -8,7 +8,7 @@ import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 
 import { formatForUuidHeap } from 'modules/export/BulkExportAdditionalButtons';
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { SelectedOverlayCss, useTheme } from 'theme';
 
@@ -28,24 +28,23 @@ const PeriodicalTileItem: React.FC<Props> = ({
 }) => {
 	const nav = useNavigate();
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
+	const pctx = usePublicationContext2();
+
 	const isMonograph = child.model === 'monographunit';
 	const isPeriodical = child.model.includes('periodical'); //TODO:FIXME: check child node
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
-	const pubCtx = usePublicationContext();
 	const isSelected = exportModeOn && uuidHeap[child.pid]?.selected;
 	const theme = useTheme();
 	const handleAddToExport = useCallback(() => {
 		const selected = !(uuidHeap[child.pid]?.selected ?? false);
-		const parent = pubCtx?.publicationChildren?.find(
-			ch => ch.pid === child.pid,
-		);
+		const parent = pctx?.publicationChildren?.find(ch => ch.pid === child.pid);
 		const title = parent?.title ? parent?.title : parent?.root_title;
 
 		updateExportHeap?.(p => ({
 			...p,
 			[child.pid]: formatForUuidHeap('child', child, selected, title),
 		}));
-	}, [child, pubCtx?.publicationChildren, updateExportHeap, uuidHeap]);
+	}, [child, pctx?.publicationChildren, updateExportHeap, uuidHeap]);
 
 	return (
 		<a
@@ -73,6 +72,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 				position="relative"
 				px={1}
 				m={1}
+				maxWidth={120}
 				css={css`
 					${isSelected
 						? css`
@@ -189,6 +189,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								text-overflow: ellipsis;
 								overflow: hidden;
 								white-space: nowrap;
+								max-width: 100%;
 							`}
 						>
 							Číslo {child.details?.partNumber}

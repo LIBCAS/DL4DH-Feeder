@@ -19,9 +19,9 @@ import { useTranslation } from 'react-i18next';
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import { Loader } from 'modules/loader';
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useTheme } from 'theme';
 
@@ -88,22 +88,25 @@ const ZoomifyToolbar: FC<Props> = ({
 }) => {
 	const { t } = useTranslation('view_controls');
 	const { fullscreen, setFullscreen } = useFullscreenContext();
-	const { isMultiview } = useParseUrlIdsAndParams();
+	const { isMultiview, getApropriateIds } = useParseUrlIdsAndParams();
+	const { keys } = getApropriateIds();
 	const { sidePanel } = useMultiviewContext();
 	const isSecond = sidePanel === 'right';
-	const pbctx = usePublicationContext();
+
 	const [pageUrl, setPageUrl] = useSearchParams();
-	const currentPage = isSecond ? pbctx.currentPageOfSecond : pbctx.currentPage;
-	const setCurrentPage = isSecond
-		? pbctx.setCurrentPageOfSecond
-		: pbctx.setCurrentPage;
-	const pageParamName = isSecond ? 'page2' : 'page';
+	const pctx2 = usePublicationContext2();
+
+	const currentPage = pctx2.currentPage;
+
+	const setCurrentPage = pctx2.setCurrentPage;
+	const pageParamName = keys.page;
 	const { isMobile } = useMobileView();
 	const ICON_SIZE = isMobile ? 19 : 24;
-	const isOcrMode = pbctx.ocrMode?.[isSecond ? 'right' : 'left'] === 'ocr';
+	const isOcrMode = pctx2.ocrMode?.left === 'ocr';
 
 	const streams = useStreamList(currentPage?.uuid);
 	const doesntHaveAlto = streams.record?.ALTO === undefined;
+
 	return (
 		<Flex
 			position="absolute"
@@ -144,7 +147,7 @@ const ZoomifyToolbar: FC<Props> = ({
 					tooltip={isOcrMode ? t('tooltip_scan_mode') : t('tooltip_ocr_mode')}
 					onClick={() => {
 						if (currentPage) {
-							const newOcrMode = pbctx.ocrMode ?? {
+							const newOcrMode = pctx2.ocrMode ?? {
 								left: 'zoomify',
 								right: 'zoomify',
 								leftZoom: 12,
@@ -158,8 +161,8 @@ const ZoomifyToolbar: FC<Props> = ({
 									newOcrMode.left === 'zoomify' ? 'ocr' : 'zoomify';
 							}
 
-							pbctx.setOcrMode({ ...newOcrMode });
-							setCurrentPage({ ...currentPage });
+							pctx2?.setOcrMode?.({ ...newOcrMode });
+							setCurrentPage?.({ ...currentPage });
 						}
 					}}
 					Icon={

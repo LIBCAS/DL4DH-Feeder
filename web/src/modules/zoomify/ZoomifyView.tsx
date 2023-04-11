@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
-
+import 'ol/ol.css';
+import { FC, useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { Extent } from 'ol/extent';
 import { Geometry } from 'ol/geom';
@@ -12,7 +13,6 @@ import Static from 'ol/source/ImageStatic';
 import VectorSource from 'ol/source/Vector';
 import Zoomify from 'ol/source/Zoomify';
 import View from 'ol/View';
-import React, { FC, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import XML from 'xml2js';
 
@@ -20,14 +20,13 @@ import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
-
-import { useTheme } from 'theme';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useImageProperties } from 'api/publicationsApi';
 
 import useViewport from 'hooks/useViewport';
 import { useMultiviewContext } from 'hooks/useMultiviewContext';
+import { useFullscreenContext } from 'hooks/useFullscreenContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
@@ -40,8 +39,6 @@ import {
 	useHighlightWord,
 	wordHighlightStyle,
 } from './useHighlightWord';
-
-import 'ol/ol.css';
 
 const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 
@@ -69,6 +66,7 @@ const MapWrapper: FC<{
 	const vectorLayerRef = useRef<VectorLayer<VectorSource<Geometry>> | null>(
 		null,
 	);
+
 	const [altoDialogOpen, setAltoDialogOpen] = useState<{
 		open: boolean;
 		box: Extent;
@@ -167,6 +165,7 @@ const MapWrapper: FC<{
 			mapRef.current = map.current;
 		}
 	}, [map, isSecond]);
+
 	return (
 		<Box
 			key={imgId}
@@ -230,14 +229,14 @@ const ZoomifyView: FC<{
 }> = ({ id }) => {
 	const imgProps = useImageProperties(id ?? '');
 	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
+	const { fullscreen } = useFullscreenContext();
 
-	const theme = useTheme();
+	const isSecond = sidePanel === 'right';
 
 	const counter = useRef(0);
 
 	const [parsedXML, setParsedXML] = useState<ImageProps>();
-	const pbctx = usePublicationContext();
+	const pbctx = usePublicationContext2();
 
 	const textMode = isSecond
 		? pbctx.ocrMode?.right === 'ocr' ?? false
@@ -261,10 +260,7 @@ const ZoomifyView: FC<{
 	return (
 		<Wrapper
 			width="100%"
-			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
-			css={css`
-				border-left: ${isSecond ? 2 : 0}px solid ${theme.colors.primary};
-			`}
+			height={`calc(100vh - ${fullscreen ? 0 : INIT_HEADER_HEIGHT}px)`}
 		>
 			{textMode ? (
 				<OcrView uuid={id} />

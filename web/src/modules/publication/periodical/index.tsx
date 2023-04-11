@@ -1,188 +1,158 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import { useEffect, useMemo } from 'react';
-import { MdLock } from 'react-icons/md';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { MdLock } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
 
+import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
+import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
 import { Loader } from 'modules/loader';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
-import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
-import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
-
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
+import useProcessPublication from '../detail/useProcessPublication';
+import { PublicationContextProvider } from '../ctx/pubContext';
 
 import PeriodicalSidePanel from './PeriodicalSidePanel';
 
 const PeriodicalDetail = () => {
 	const { t } = useTranslation();
-	const { id } = useParams<{ id: string }>();
-	const pubChildren = usePublicationChildren(id ?? '');
-	const detail = usePublicationDetail(id ?? '');
-	const pages = useMemo(() => pubChildren.data ?? [], [pubChildren.data]);
-	const [page] = useSearchParams();
-	const pubCtx = usePublicationContext();
+
+	const processed = useProcessPublication();
+	const { publication, publicationChildren, isLoading } = processed;
+	const pages = useMemo(() => publicationChildren ?? [], [publicationChildren]);
+
 	const nav = useNavigate();
 	const { exportModeOn } = useBulkExportContext();
 
-	const pageId = useMemo(
-		() => page.get('page') ?? pages[0]?.pid ?? undefined,
-		[page, pages],
-	);
-
 	useEffect(() => {
-		const childIndex = pages.findIndex(p => p.pid === pageId);
-		pubCtx.setCurrentPage({
-			uuid: pageId ?? '',
-			childIndex,
-			prevPid: pages[childIndex - 1]?.pid,
-			nextPid: pages[childIndex + 1]?.pid,
-		});
-		pubCtx.setPublicationChildren(pages);
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId]);
-
-	useEffect(() => {
-		if (detail?.data) {
-			const context = detail.data?.context?.flat() ?? [];
-			pubCtx.setPublication({
-				...detail.data,
-				context,
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [detail.data]);
-
-	useEffect(() => {
-		if (pubChildren.data?.[0]?.model === 'page') {
-			nav('/view/' + id + '?page=' + pubChildren.data?.[0].pid, {
+		if (publication?.pid && pages?.[0]?.model === 'page') {
+			nav('/view/' + publication.pid + '?page=' + pages?.[0].pid, {
 				replace: true,
 			});
 		}
-		// auto navigate to children when there is only one
-		// if (pubChildren.data?.length === 1) {
-		// 	nav('/periodical/' + pubChildren.data?.[0].pid);
-		// }
-	}, [pubChildren.data, detail.data, nav, id]);
+	}, [pages, publication, nav]);
 
-	if (pubChildren.isLoading || detail.isLoading) {
+	if (isLoading) {
 		return <Loader />;
 	}
-	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
-	const isPublic = detail.data?.policy === 'public';
+	const isPublic = publication?.policy === 'public';
 
 	return (
-		<ResponsiveWrapper
-			bg="primaryLight"
-			px={0}
-			mx={0}
-			alignItems="flex-start"
-			width={1}
-			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px`}
-		>
-			<MainContainer
-				subHeader={{
-					leftJsx: (
-						<Flex pl={3} alignItems="center">
-							<Text>
-								Výsledky: <strong>{pubChildren.data?.length ?? 0}</strong>
-							</Text>
-						</Flex>
-					),
-					mainJsx: (
-						<Flex
-							alignItems="center"
-							px={3}
-							justifyContent="space-between"
-							width={1}
-						>
-							<Text
-								fontSize="md"
-								color="textCommon"
-								css={css`
-									text-overflow: ellipsis;
-									overflow: hidden;
-									white-space: nowrap;
-								`}
+		<PublicationContextProvider {...processed}>
+			<ResponsiveWrapper
+				bg="primaryLight"
+				px={0}
+				mx={0}
+				alignItems="flex-start"
+				width={1}
+				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px`}
+			>
+				<MainContainer
+					subHeader={{
+						leftJsx: (
+							<Flex pl={3} alignItems="center">
+								<Text>
+									Výsledky: <strong>{pages?.length ?? 0}</strong>
+								</Text>
+							</Flex>
+						),
+						mainJsx: (
+							<Flex
+								alignItems="center"
+								px={3}
+								justifyContent="space-between"
+								width={1}
 							>
-								{detail.data?.title ?? 'Periodikum'}
-							</Text>
-							<Flex>
-								<Flex mr={3} alignItems="center">
-									{/* 	<Sorting /> */}
-									{exportModeOn && (
-										<>
-											<BulkExportAdditionalButtons periodicalChildren={pages} />
-											<Text mx={3}>|</Text>
-										</>
-									)}
-									<BulkExportModeSwitch />
+								<Text
+									fontSize="md"
+									color="textCommon"
+									css={css`
+										text-overflow: ellipsis;
+										overflow: hidden;
+										white-space: nowrap;
+									`}
+								>
+									{publication?.title ?? 'Periodikum'}
+								</Text>
+								<Flex>
+									<Flex mr={3} alignItems="center">
+										{/* 	<Sorting /> */}
+										{exportModeOn && (
+											<>
+												<BulkExportAdditionalButtons
+													periodicalChildren={pages}
+												/>
+												<Text mx={3}>|</Text>
+											</>
+										)}
+										<BulkExportModeSwitch />
+									</Flex>
 								</Flex>
 							</Flex>
-						</Flex>
-					),
-				}}
-				body={{
-					leftJsx: (
-						<PeriodicalSidePanel
-							variant="left"
-							defaultView="search"
-							pages={pages}
-						/>
-					),
-					rightJsx: (
-						<PeriodicalSidePanel
-							variant="right"
-							defaultView="search"
-							pages={pages}
-						/>
-					),
-				}}
-			>
-				{isPublic ? (
-					<>
-						<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
-							<PeriodicalTiles data={pubChildren.data} />
-						</Wrapper>
-					</>
-				) : (
-					<Flex
-						width="100%"
-						p={4}
-						alignItems="center"
-						justifyContent="center"
-						fontWeight="bold"
-						fontSize="xl"
-						height="100vh"
-					>
+						),
+					}}
+					body={{
+						leftJsx: (
+							<PeriodicalSidePanel
+								variant="left"
+								defaultView="search"
+								pages={pages}
+							/>
+						),
+						rightJsx: (
+							<PeriodicalSidePanel
+								variant="right"
+								defaultView="search"
+								pages={pages}
+							/>
+						),
+					}}
+				>
+					{isPublic ? (
+						<>
+							<Wrapper
+								overflowY="auto"
+								overflowX="hidden"
+								p={3}
+								maxHeight="90vh"
+							>
+								<PeriodicalTiles data={pages} />
+							</Wrapper>
+						</>
+					) : (
 						<Flex
-							justifyContent="center"
+							width="100%"
+							p={4}
 							alignItems="center"
-							flexDirection="column"
-							mt={-100}
+							justifyContent="center"
+							fontWeight="bold"
+							fontSize="xl"
+							height="100vh"
 						>
-							<MdLock size={60} />
-							<Text>{t('licence:private_label')}</Text>
+							<Flex
+								justifyContent="center"
+								alignItems="center"
+								flexDirection="column"
+								mt={-100}
+							>
+								<MdLock size={60} />
+								<Text>{t('licence:private_label')}</Text>
+							</Flex>
 						</Flex>
-					</Flex>
-				)}
-			</MainContainer>
-		</ResponsiveWrapper>
+					)}
+				</MainContainer>
+			</ResponsiveWrapper>
+		</PublicationContextProvider>
 	);
 };
 export default PeriodicalDetail;

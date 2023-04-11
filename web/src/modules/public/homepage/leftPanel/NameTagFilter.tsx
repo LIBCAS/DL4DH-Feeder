@@ -107,7 +107,7 @@ const NameTagFilter = () => {
 	if (!hasNameTags && !nameTagFacet) {
 		return <></>;
 	}
-
+	//TODO: pouzit QuerySearchInput a tiez tam nastavit eclipse na text asi
 	return (
 		<Box
 			bg="#E4F0F3"
@@ -249,7 +249,9 @@ const NameTagFilter = () => {
 														}
 													`}
 												>
-													<Text fontSize="md">{h}</Text>
+													<Text fontSize="md" my="2px">
+														{h}
+													</Text>
 												</Flex>
 											))}
 										</Flex>

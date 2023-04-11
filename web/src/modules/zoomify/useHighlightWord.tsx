@@ -9,10 +9,9 @@ import VectorSource from 'ol/source/Vector';
 import Geometry from 'ol/geom/Geometry';
 import VectorLayer from 'ol/layer/Vector';
 
-import { useStreams } from 'api/publicationsApi';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
-import { useWordHighlightContext } from 'hooks/useWordHighlightContext';
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
+import { useStreams } from 'api/publicationsApi';
 
 import { deepSearchByKey } from './altoUtils';
 
@@ -32,6 +31,18 @@ export type WordCoords = {
 	hpos: number;
 	swidth: number;
 	sheight: number;
+};
+
+// extract all words inside <strong> tags
+const parsePageResult = (pageOcrs: string[]) => {
+	const result: string[] = [];
+	pageOcrs.forEach(text => {
+		const parsed = text.match(/(?<=<strong>)(.*?)(?=<\/strong>)/g)?.slice();
+		if (parsed && parsed.length > 0) {
+			parsed.forEach(p => result.push(p));
+		}
+	});
+	return result;
 };
 
 export const highlightWord = (
@@ -60,24 +71,20 @@ export const wordHighlightStyle = new Style({
 		width: 2,
 	}),
 	fill: new Fill({
-		color: 'rgba(0, 0, 255, 0)',
+		color: 'rgba(255, 0, 0, 0.05)',
 	}),
 });
 
-//TODO: memoize
 export const useHighlightWord = (uuid: string) => {
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
-	const { result1, result2, parsePageResult } = useWordHighlightContext();
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
+	const pctx = usePublicationContext2();
+	const results = pctx.filtered.filteredOcrResults;
 	const [words, setWords] = useState<WordAltoObj[]>([]);
 
 	const pageResult = useMemo(
-		() =>
-			parsePageResult((isSecond ? result2 : result1)?.[uuid]?.textOcr ?? []),
-		[isSecond, parsePageResult, result1, result2, uuid],
+		() => parsePageResult(results.find(r => r.pid === uuid)?.ocr ?? []),
+		[results, uuid],
 	);
-
 	useEffect(() => {
 		XML.parseString(altoStream.data, (err, result) =>
 			setWords(deepSearchByKey(result, 'String').flat() as WordAltoObj[]),
@@ -90,7 +97,7 @@ export const useHighlightWord = (uuid: string) => {
 				? pageResult
 						.map(ocr =>
 							words
-								.filter(w => w?.$?.CONTENT?.includes?.(ocr))
+								.filter(w => compare(w?.$?.CONTENT ?? '', ocr))
 								.map(f => ({
 									hpos: parseInt(f.$.HPOS),
 									vpos: parseInt(f.$.VPOS),
@@ -105,6 +112,10 @@ export const useHighlightWord = (uuid: string) => {
 
 	return filtered;
 };
+
+export const compare = (s1: string, s2: string): boolean =>
+	s1.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '') ===
+	s2.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '');
 
 //TODO: remove
 

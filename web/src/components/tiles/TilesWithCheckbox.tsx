@@ -13,11 +13,11 @@ import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import ListView from 'modules/searchResult/list';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 import TileView from 'modules/searchResult/tiles/TileView';
 import DashboardModeSwither from 'modules/public/homepage/DashboardViewModeSwitcher';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useTheme } from 'theme';
 
@@ -25,7 +25,6 @@ import { PublicationChild, PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useSearchContext } from 'hooks/useSearchContext';
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 type FormProps = {
 	closeModal: () => void;
@@ -226,19 +225,8 @@ export const EditSelectedChildren: FC<Props> = ({
 	preSelected,
 	disabled,
 }) => {
-	const {
-		publicationChildrenFiltered,
-		publicationChildren,
-		publicationChildrenFilteredOfSecond,
-		publicationChildrenOfSecond,
-	} = usePublicationContext();
-
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
-
-	const data = isSecond
-		? publicationChildrenFilteredOfSecond ?? publicationChildrenOfSecond
-		: publicationChildrenFiltered ?? publicationChildren;
+	const { getChildren } = usePublicationContext2();
+	const data = useMemo(() => getChildren?.() ?? [], [getChildren]);
 	return (
 		<ModalDialog
 			label="Info"

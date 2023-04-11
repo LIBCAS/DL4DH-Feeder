@@ -2,7 +2,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useFormik } from 'formik';
 import { FC, useCallback } from 'react';
 import { MdClose, MdDownload, MdInfo } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 
@@ -19,11 +18,10 @@ import Text, { H1 } from 'components/styled/Text';
 import { EditSelectedChildren } from 'components/tiles/TilesWithCheckbox';
 import TextInput from 'components/form/input/TextInput';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { api } from 'api';
-
-import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
 import {
 	AltoParam,
@@ -174,32 +172,22 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 };
 
 //TODO: "Upravit - pocet publikaci textace"
-// refactor pubctx, zrejme nebude potreba
 
 export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { keycloak } = useKeycloak();
 
 	const { t } = useTranslation();
 
-	const { sidePanel } = useMultiviewContext();
-	const isSecond = sidePanel === 'right';
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { id } = getApropriateIds();
 
-	const { id: paramId } = useParams<{ id: string }>();
+	//const { id: paramId } = useParams<{ id: string }>();
 	const { labelFromOption, nameTagParamsExportOptions } =
 		useNameTagParamExportOptions();
-
-	const pubCtx = usePublicationContext();
-	const pubId = isSecond
-		? pubCtx.secondPublication?.pid ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.pid ?? paramId ?? 'ctx-left-pid-export-error';
-	const pubTitle = isSecond
-		? pubCtx.secondPublication?.title ?? 'ctx-right-pid-export-error'
-		: pubCtx.publication?.title ?? paramId ?? 'ctx-left-pid-export-error';
-
-	const enriched = isSecond
-		? pubCtx.secondPublication?.enriched
-		: pubCtx.publication?.enriched;
-
+	const pctx = usePublicationContext2();
+	const pubId = id ?? 'ctx-id-undefined';
+	const pubTitle = pctx.publication?.title ?? 'unknown';
+	const enriched = pctx.publication?.enriched ?? false;
 	const formatOptions: ExportFormatOption[] = enriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
@@ -209,20 +197,13 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			if (pagesFilter.length > 0) {
 				return pagesFilter;
 			}
-			if (isSecond) {
-				return (
-					pubCtx.publicationChildrenFilteredOfSecond ??
-					pubCtx.publicationChildrenOfSecond ??
-					[]
-				).map(p => p.pid);
-			}
 			return (
-				pubCtx.publicationChildrenFiltered ??
-				pubCtx.publicationChildren ??
-				[]
+				pctx.filtered.isActive
+					? pctx.filtered.filteredChildren ?? []
+					: pctx.publicationChildren ?? []
 			).map(p => p.pid);
 		},
-		[pubCtx, isSecond],
+		[pctx],
 	);
 
 	const formik = useFormik<ExportFormType>({
@@ -307,6 +288,11 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
 		formik;
 
+	console.log({
+		pctx,
+		values,
+		getPreselectedChildren: getPreselectedChildren(values.pagesFilter),
+	});
 	return (
 		<form onSubmit={handleSubmit}>
 			<Flex

@@ -1,228 +1,187 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useEffect, useMemo, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useRef, useState } from 'react';
 
 import { Flex } from 'components/styled';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
-import { mapRef, mapRefOfSecond } from 'modules/zoomify/ZoomifyView';
+import ZoomifyView, {
+	mapRef,
+	mapRefOfSecond,
+} from 'modules/zoomify/ZoomifyView';
 
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
+import { useTheme } from 'theme';
 
-import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
 import { MultiviewContextProvider } from 'hooks/useMultiviewContext';
+import { useMobileView } from 'hooks/useViewport';
+import { SidepanelContextProvider } from 'hooks/useSidepanelContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { useParseUrlIdsAndParams } from '../publicationUtils';
+import { PublicationContextProvider } from '../ctx/pubContext';
 
 import PublicationSidePanel from './PublicationSidePanel';
-import PubMainDetail from './PubMainDetail';
+import PriavatePublicationInfo from './PriavatePublicationInfo';
+import useProcessPublication from './useProcessPublication';
+import PubPageNotFound from './PubPageNotFound';
+
 //http://localhost:3000/view/uuid:0bec6e50-11e1-11eb-a4cf-005056827e52?page=uuid:18617fd7-cc78-4042-95aa-c7e7ce6363aa
-//TODO: refactor
+//TODO:cleanup
 const MultiView = () => {
-	const { id1, id2 } = useParams<{ id1: string; id2: string }>();
-	const pubCtx = usePublicationContext();
-	const pubChildren1 = usePublicationChildren(id1 ?? '');
-	const detail1 = usePublicationDetail(id1 ?? '');
-	const pages1 = useMemo(
-		() => (pubChildren1.data ?? []).filter(d => d.model !== 'internalpart'),
-		[pubChildren1.data],
-	);
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const zoomRef = useRef<HTMLDivElement | null>(null);
+	const { pageId: pageIdLeft, fulltext: fulltextLeft } =
+		getApropriateIds('left');
+	const { pageId: pageIdRight, fulltext: fulltextRight } =
+		getApropriateIds('right');
 
-	const pubChildren2 = usePublicationChildren(id2 ?? '');
-	const detail2 = usePublicationDetail(id2 ?? '');
-	const pages2 = useMemo(
-		() => (pubChildren2.data ?? []).filter(d => d.model !== 'internalpart'),
-		[pubChildren2.data],
-	);
+	const processedLeft = useProcessPublication('left');
+	const processedRight = useProcessPublication('right');
+	const { isMobile } = useMobileView();
+	const [rightCollapsed, setRightCollapsed] = useState(isMobile);
+	const [leftCollapsed, setLeftCollapsed] = useState(isMobile);
+	const theme = useTheme();
 
-	const [sp, setSp] = useSearchParams();
+	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
+	const leftPublic = true;
+	const rightPublic = true;
+	//const publication = detail.data;
 
-	const [rightCollapsed, setRightCollapsed] = useState(false);
-	const [leftCollapsed, setLeftCollapsed] = useState(false);
+	// 1.
 
-	const pageId1 = useMemo(
-		() => sp.get('page') ?? pages1[0]?.pid ?? undefined,
-		[sp, pages1],
-	);
-
-	const pageId2 = useMemo(
-		() => sp.get('page2') ?? pages2[0]?.pid ?? undefined,
-		[sp, pages2],
-	);
-
-	useEffect(() => {
-		if (detail1?.data) {
-			const context = detail1.data?.context?.flat() ?? [];
-			pubCtx.setPublication({
-				...detail1.data,
-				context,
-			});
-		}
-		const childIndex = (
-			pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered
-				: pages1
-		).findIndex(p => p.pid === pageId1);
-
-		pubCtx.setCurrentPage({
-			uuid: pageId1 ?? '',
-			childIndex,
-			prevPid: pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered[childIndex - 1]?.pid
-				: pages1[childIndex - 1]?.pid,
-			nextPid: pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered[childIndex + 1]?.pid
-				: pages1[childIndex + 1]?.pid,
-		});
-		pubCtx.setPublicationChildren(pages1);
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages1, pageId1, detail1.data, pubCtx.publicationChildrenFiltered]);
-
-	useEffect(() => {
-		if (detail2?.data) {
-			const context = detail2.data?.context?.flat() ?? [];
-			pubCtx.setSecondPublication({
-				...detail2.data,
-				context,
-			});
-		}
-		//
-
-		const childIndex2 = (
-			pubCtx.publicationChildrenFilteredOfSecond
-				? pubCtx.publicationChildrenFilteredOfSecond
-				: pages2
-		).findIndex(p => p.pid === pageId2);
-
-		pubCtx.setCurrentPageOfSecond({
-			uuid: pageId2 ?? '',
-			childIndex: childIndex2,
-			prevPid: pubCtx.publicationChildrenFilteredOfSecond
-				? pubCtx.publicationChildrenFilteredOfSecond[childIndex2 - 1]?.pid
-				: pages2[childIndex2 - 1]?.pid,
-			nextPid: pubCtx.publicationChildrenFilteredOfSecond
-				? pubCtx.publicationChildrenFilteredOfSecond[childIndex2 + 1]?.pid
-				: pages2[childIndex2 + 1]?.pid,
-		});
-		pubCtx.setPublicationChildrenOfSecond(pages2);
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		pages2,
-		pageId2,
-		detail2.data,
-		pubCtx.publicationChildrenFilteredOfSecond,
-	]);
-	//TODO:"refactor"
-	useEffect(() => {
-		if (!sp.get('page') || !sp.get('page2')) {
-			if (!sp.get('page') && pages1[0]?.pid) {
-				if (!sp.get('fulltext') || pubCtx.publicationChildrenFiltered) {
-					sp.append('page', pages1[0]?.pid ?? 'multiview-undefined-left');
-				}
-			}
-			if (!sp.get('page2') && pages2[0]?.pid) {
-				if (
-					!sp.get('fulltext2') ||
-					pubCtx.publicationChildrenFilteredOfSecond
-				) {
-					sp.append('page2', pages2[0]?.pid ?? 'undefined-undefined-right');
-				}
-			}
-			setSp(sp, { replace: true });
-		}
-	}, [
-		pages1,
-		pages2,
-		pubCtx.publicationChildrenFiltered,
-		pubCtx.publicationChildrenFilteredOfSecond,
-		setSp,
-		sp,
-	]);
-
-	if (
-		pubChildren1.isLoading ||
-		detail1.isLoading ||
-		pubChildren2.isLoading ||
-		detail2.isLoading
-	) {
-		return <Loader />;
-	}
-
-	//FIXME: isPubliuc musi byt pre obe publikacie zvlast
-	const isPublicLeft = detail1.data?.policy === 'public';
-	const isPublicRight = detail2.data?.policy === 'public';
+	// postup na zreprodukovanie:
+	// v pravom paneli dam vyhladat nejaku vec co bude not found
+	// v lavom paneli dam nasledne tiez vyhladat vec co bude not found
+	// potom v lavom paneli zrusim krizikom search
+	// zostane to vysiet na loaderi
 
 	return (
-		<WordHighlightContextProvider>
-			<ResponsiveWrapper
-				bg="primaryLight"
-				px={0}
-				mx={0}
-				alignItems="flex-start"
-				width={1}
-				height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
+		<ResponsiveWrapper
+			bg="primaryLight"
+			px={0}
+			mx={0}
+			alignItems="flex-start"
+			width={1}
+			height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
+		>
+			<Flex
+				width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
+				css={css`
+					transition: width 200ms;
+				`}
+				onTransitionEnd={() => {
+					mapRef.current?.updateSize();
+					mapRefOfSecond.current?.updateSize();
+				}}
 			>
 				<Flex
-					width={`calc(100% + ${rightCollapsed ? 300 : 0}px)`}
+					overflow="visible"
+					width={leftCollapsed ? 0 : 300}
+					minWidth={leftCollapsed ? 0 : 300}
+					maxWidth={300}
+					zIndex={3}
 					css={css`
-						transition: width 200ms;
+						transition-duration: 200ms;
+						transition-property: width transform;
+						transform: translateX(${leftCollapsed ? '-300px' : '0px'});
 					`}
-					onTransitionEnd={() => {
-						mapRef.current?.updateSize();
-						mapRefOfSecond.current?.updateSize();
-					}}
 				>
-					<Flex
-						overflow="visible"
-						width={leftCollapsed ? 0 : 300}
-						minWidth={leftCollapsed ? 0 : 300}
-						maxWidth={300}
-						zIndex={3}
-						css={css`
-							transition-duration: 200ms;
-							transition-property: width transform;
-							transform: translateX(${leftCollapsed ? '-300px' : '0px'});
-						`}
-					>
+					<PublicationContextProvider {...processedLeft}>
 						<MultiviewContextProvider initSidePanel="left">
-							<PublicationSidePanel
-								variant="left"
-								defaultView="detail"
-								pages={pages1}
-								onCollapse={() => setLeftCollapsed(p => !p)}
-								isCollapsed={leftCollapsed}
-							/>
+							<SidepanelContextProvider sidepanel="left">
+								<PublicationSidePanel
+									variant="left"
+									defaultView="detail"
+									pages={processedLeft.publicationChildren ?? []}
+									onCollapse={() => setLeftCollapsed(p => !p)}
+									isCollapsed={leftCollapsed}
+								/>
+							</SidepanelContextProvider>
 						</MultiviewContextProvider>
-					</Flex>
-
-					<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
-						<PubMainDetail
-							page={pageId1}
-							pageOfSecond={pageId2}
-							leftPublic={isPublicLeft}
-							rightPublic={isPublicRight}
-						/>
-					</Flex>
-					<MultiviewContextProvider initSidePanel="right">
-						<PublicationSidePanel
-							variant="right"
-							pages={pages2}
-							onCollapse={() => setRightCollapsed(p => !p)}
-							isCollapsed={rightCollapsed}
-						/>
-					</MultiviewContextProvider>
+					</PublicationContextProvider>
 				</Flex>
-			</ResponsiveWrapper>
-		</WordHighlightContextProvider>
+
+				<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
+					<Flex
+						id="ZOOMIFY_PARRENT_EL"
+						ref={zoomRef}
+						width={1}
+						bg="border"
+						alignItems="center"
+						position="relative"
+					>
+						<PublicationContextProvider {...processedLeft}>
+							<MultiviewContextProvider initSidePanel="left">
+								<SidepanelContextProvider sidepanel="left">
+									{fulltextLeft && !pageIdLeft ? (
+										<PubPageNotFound multiview={true} />
+									) : (
+										<>
+											{processedLeft.isLoading ? (
+												<Loader />
+											) : (
+												<>
+													{leftPublic ? (
+														<ZoomifyView id={pageIdLeft} />
+													) : (
+														<PriavatePublicationInfo isMultiView />
+													)}
+												</>
+											)}
+										</>
+									)}
+								</SidepanelContextProvider>
+							</MultiviewContextProvider>
+						</PublicationContextProvider>
+
+						<PublicationContextProvider {...processedRight}>
+							<MultiviewContextProvider initSidePanel="right">
+								<SidepanelContextProvider sidepanel="right">
+									{fulltextRight && !pageIdRight ? (
+										<PubPageNotFound isSecond multiview />
+									) : (
+										<Flex
+											width={1 / 2}
+											height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`}
+											alignItems="center"
+											css={css`
+												border-left: 2px solid ${theme.colors.primary};
+											`}
+										>
+											{processedRight.isLoading ? (
+												<Loader />
+											) : (
+												<>
+													{rightPublic ? (
+														<ZoomifyView id={pageIdRight} />
+													) : (
+														<PriavatePublicationInfo isMultiView />
+													)}
+												</>
+											)}
+										</Flex>
+									)}
+								</SidepanelContextProvider>
+							</MultiviewContextProvider>
+						</PublicationContextProvider>
+					</Flex>
+				</Flex>
+				<PublicationContextProvider {...processedRight}>
+					<MultiviewContextProvider initSidePanel="right">
+						<SidepanelContextProvider sidepanel="right">
+							<PublicationSidePanel
+								variant="right"
+								pages={processedRight.publicationChildren ?? []}
+								onCollapse={() => setRightCollapsed(p => !p)}
+								isCollapsed={rightCollapsed}
+							/>
+						</SidepanelContextProvider>
+					</MultiviewContextProvider>
+				</PublicationContextProvider>
+			</Flex>
+		</ResponsiveWrapper>
 	);
 };
 export default MultiView;

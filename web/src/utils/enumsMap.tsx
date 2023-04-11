@@ -22,13 +22,6 @@ export const ACCESS_TOKEN_CONTEXT = 'feeder-access-token';
 
 export const REFRESH_TOKEN_CONTEXT = 'feeder-refresh-token';
 
-/**OIDC */
-export const OIDC_URL = 'TODO';
-export const OIDC_REDIRECT_URI = `${window.location.origin}${APP_CONTEXT}/auth`;
-export const OIDC_CLIENT_ID = 'TODO';
-export const OIDC_CLIENT_SECRET = 'TODO';
-export const OIDC_USER_INFO_URL = 'TODO';
-
 //export const MAX_PHOTO_FILE_SIZE = 1048576;
 export const BROWSER_MAX_PHOTO_FILE_SIZE = 30971520;
 export const BACKEND_MAX_PHOTO_FILE_SIZE = 20971520;

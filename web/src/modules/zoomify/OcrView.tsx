@@ -3,7 +3,7 @@ import { FC, useCallback } from 'react';
 import { Flex } from 'components/styled';
 
 import { Loader } from 'modules/loader';
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useStreams } from 'api/publicationsApi';
 
@@ -15,15 +15,15 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 	const { sidePanel } = useMultiviewContext();
 	const isSecond = sidePanel === 'right';
 	const response = useStreams(uuid, 'TEXT_OCR', 'text/plain');
-	const pctx = usePublicationContext();
+	const pctx = usePublicationContext2();
 	const onZoomIn = useCallback(() => {
 		if (isSecond) {
 			//pctx.setOcrMode(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));
-			pctx.setOcrMode(p =>
+			pctx.setOcrMode?.(p =>
 				p ? { ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 } : null,
 			);
 		} else {
-			pctx.setOcrMode(p =>
+			pctx.setOcrMode?.(p =>
 				p ? { ...p, leftZoom: (p?.leftZoom ?? 12) * 1.1 } : null,
 			);
 		}
@@ -31,12 +31,12 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 
 	const onZoomOut = useCallback(() => {
 		if (isSecond) {
-			//pctx.setOcrMode(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));
-			pctx.setOcrMode(p =>
+			//pctx.setOcrMode?.(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));
+			pctx.setOcrMode?.(p =>
 				p ? { ...p, rightZoom: (p?.rightZoom ?? 12) * 0.9 } : null,
 			);
 		} else {
-			pctx.setOcrMode(p =>
+			pctx.setOcrMode?.(p =>
 				p ? { ...p, leftZoom: (p?.leftZoom ?? 12) * 0.9 } : null,
 			);
 		}

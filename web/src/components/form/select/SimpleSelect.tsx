@@ -95,6 +95,7 @@ const SimpleSelect = <T extends unknown>({
 			flexDirection="column"
 			width={menuFixedSize ? 'unset' : 1}
 			css={css`
+				border-radius: 3px;
 				border: 1px solid ${theme.colors.primaryLight};
 				border-bottom: none;
 				${variant === 'borderless' &&
@@ -119,7 +120,14 @@ const SimpleSelect = <T extends unknown>({
 				${menuWrapperCss}
 			`}
 		>
-			<Box position="relative" bg="white" width={1}>
+			<Box
+				position="relative"
+				bg="white"
+				width={1}
+				css={css`
+					border-radius: 3px;
+				`}
+			>
 				{options.map((o, i) => (
 					<Box
 						fontSize="md"

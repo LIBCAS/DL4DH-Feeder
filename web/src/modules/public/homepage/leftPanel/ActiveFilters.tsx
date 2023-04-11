@@ -183,6 +183,7 @@ const ActiveFilters: React.FC<{
 						{arrayFilters[k].map(val => (
 							<Button
 								key={val}
+								textAlign="left"
 								py={1}
 								px={0}
 								width={1}
