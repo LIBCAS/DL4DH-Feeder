@@ -8,7 +8,7 @@ import PublishDateFilterForm from 'components/filters/Accordions/publishDateFilt
 
 import { PublicationChild } from 'api/models';
 
-import BibMain from '../detail/biblio/bib-main';
+import Bibliography from '../detail/biblio/bib-main';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -27,7 +27,7 @@ const PeriodicalSidePanel: FC<Props> = ({ variant }) => {
 					alignItems="flex-start"
 					flexDirection="column"
 				>
-					<BibMain variant="right" />
+					<Bibliography />
 				</Flex>
 			)}
 			{variant === 'left' && (

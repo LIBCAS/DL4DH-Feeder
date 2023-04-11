@@ -50,6 +50,7 @@ export const InputWrapper = styled(Flex)<InputWrapperProps>`
 	border: ${p => (p.borderless ? 0 : 1)}px solid ${p => p.theme.colors.border};
 	padding: 0;
 	background-color: white;
+	border-radius: 3px;
 
 	border-color: ${p =>
 		// eslint-disable-next-line no-nested-ternary

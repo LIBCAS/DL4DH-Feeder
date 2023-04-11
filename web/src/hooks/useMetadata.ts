@@ -20,6 +20,7 @@ const bibApi = async (pid: string) =>
 			headers: { accept: 'application/json' },
 		})
 		.then(async r => await r.text());
+//TODO: refactor -- use single useMetadata hook in the end
 
 export const useFullContextMetadata = (context: PublicationContext[]) => {
 	const [metadata, setMetadata] = useState<Record<string, Metadata>>({});

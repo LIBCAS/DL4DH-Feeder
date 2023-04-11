@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MdClose, MdCopyAll, MdShare } from 'react-icons/md';
 import { css } from '@emotion/core';
 import { uniqWith } from 'lodash-es';
@@ -14,30 +14,23 @@ import Text from 'components/styled/Text';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import Divider from 'components/styled/Divider';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
 
 import { ModelToText } from 'utils/enumsMap';
 
-type Props = {
-	isSecond?: boolean;
-};
-
 //TODO:
 // skontrolovat sharovanie tohto periodika, porovnat s ndk, ked sharujem rocnik tak to blbne
 //http://localhost:3000/periodical/uuid:a3499e99-8120-465b-81d4-8d87717708e5
 // resp nefunguje tam routing spravne
 //https://ndk.cz/periodical/uuid:a3499e99-8120-465b-81d4-8d87717708e5
-const ShareDialog: FC<Props> = ({ isSecond }) => {
-	const pctx = usePublicationContext();
-	const currentPagePid = isSecond
-		? pctx.currentPageOfSecond?.uuid ?? undefined
-		: pctx.currentPage?.uuid ?? undefined;
-	const pubPid = isSecond ? pctx.secondPublication?.pid : pctx.publication?.pid;
+const ShareDialog = () => {
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { pageId, id } = getApropriateIds();
 	const rootDetailResponse = usePublicationDetail(
-		currentPagePid ?? pubPid ?? 'pageId_rootId_undefined',
+		pageId ?? id ?? 'pageId_rootId_undefined',
 	);
 	const rootDetail = rootDetailResponse.data ?? null;
 

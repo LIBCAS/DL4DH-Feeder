@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { MdClose, MdPrint } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
@@ -18,24 +18,17 @@ import { downloadFile } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
-
-type Props = {
-	isSecond?: boolean;
-};
+import { usePublicationContext2 } from '../ctx/pubContext';
 
 type FormProps = {
 	closeModal: () => void;
-	isSecond?: boolean;
 };
 
 const PRINT_LIMIT = 90;
 
-const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
-	const pctx = usePublicationContext();
-	const pages = isSecond
-		? pctx.publicationChildrenOfSecond ?? []
-		: pctx.publicationChildren ?? [];
+const PrintForm: FC<FormProps> = ({ closeModal }) => {
+	const { getChildren } = usePublicationContext2();
+	const pages = useMemo(() => getChildren?.() ?? [], [getChildren]);
 
 	const [selected, setSelected] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -187,7 +180,7 @@ const PrintForm: FC<FormProps> = ({ closeModal, isSecond }) => {
 	);
 };
 
-const PrintDialog: FC<Props> = ({ isSecond }) => {
+const PrintDialog = () => {
 	return (
 		<ModalDialog
 			label="Info"
@@ -201,7 +194,7 @@ const PrintDialog: FC<Props> = ({ isSecond }) => {
 				</IconButton>
 			)}
 		>
-			{closeModal => <PrintForm closeModal={closeModal} isSecond={isSecond} />}
+			{closeModal => <PrintForm closeModal={closeModal} />}
 		</ModalDialog>
 	);
 };

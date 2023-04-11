@@ -8,7 +8,7 @@ import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 
 import { formatForUuidHeap } from 'modules/export/BulkExportAdditionalButtons';
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { SelectedOverlayCss, useTheme } from 'theme';
 
@@ -43,7 +43,7 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 	const nav = useNavigate();
 	const isPeriodical = child.model.includes('periodical');
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
-	const pubCtx = usePublicationContext();
+	const pctx = usePublicationContext2();
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
 	const theme = useTheme();
 	const title = getTitle(child.details);
@@ -55,10 +55,10 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 				'child',
 				child,
 				selected,
-				pubCtx?.publicationChildren?.find(ch => ch.pid === child.pid)?.title,
+				pctx?.publicationChildren?.find(ch => ch.pid === child.pid)?.title,
 			),
 		}));
-	}, [child, updateExportHeap, uuidHeap, pubCtx]);
+	}, [child, updateExportHeap, uuidHeap, pctx]);
 
 	const isSelected = exportModeOn && uuidHeap[child.pid]?.selected;
 

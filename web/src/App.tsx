@@ -10,7 +10,6 @@ import TooltipRender from 'components/tooltip/Tooltip';
 
 import Header from 'modules/header';
 import { Loader } from 'modules/loader';
-import { PubDetailCtxProvider } from 'modules/publication/ctx/pub-ctx';
 
 import { GlobalStyles, ThemeProvider } from 'theme';
 
@@ -52,24 +51,22 @@ const App = () => {
 								<DashboardFiltersContextProvider>
 									<SearchResultContextProvider>
 										<BulkExportContextProvider>
-											<PubDetailCtxProvider>
-												<SearchContextProvider>
-													<GlobalStyles />
-													<ToastifyStyles />
-													<Header />
-													<AppRoutes />
-													<ToastContainer
-														position="bottom-center"
-														newestOnTop={false}
-														closeOnClick
-														draggable
-														pauseOnHover
-														transition={Slide}
-														autoClose={5000}
-													/>
-													<TooltipRender />
-												</SearchContextProvider>
-											</PubDetailCtxProvider>
+											<SearchContextProvider>
+												<GlobalStyles />
+												<ToastifyStyles />
+												<Header />
+												<AppRoutes />
+												<ToastContainer
+													position="bottom-center"
+													newestOnTop={false}
+													closeOnClick
+													draggable
+													pauseOnHover
+													transition={Slide}
+													autoClose={5000}
+												/>
+												<TooltipRender />
+											</SearchContextProvider>
 										</BulkExportContextProvider>
 									</SearchResultContextProvider>
 								</DashboardFiltersContextProvider>

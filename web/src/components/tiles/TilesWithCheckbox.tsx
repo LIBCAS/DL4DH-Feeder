@@ -13,11 +13,11 @@ import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 
-import { usePublicationContext } from 'modules/publication/ctx/pub-ctx';
 import ListView from 'modules/searchResult/list';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 import TileView from 'modules/searchResult/tiles/TileView';
 import DashboardModeSwither from 'modules/public/homepage/DashboardViewModeSwitcher';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useTheme } from 'theme';
 
@@ -28,7 +28,6 @@ import { useSearchContext } from 'hooks/useSearchContext';
 
 type FormProps = {
 	closeModal: () => void;
-	isSecond?: boolean;
 	variant: string;
 	title: string;
 	actionButton: (selected: string[]) => JSX.Element;
@@ -216,28 +215,18 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 };
 
 type Props = {
-	isSecond?: boolean;
 	onEdit: (selected: string[]) => void;
 	preSelected: string[];
 	disabled?: boolean;
 };
 
 export const EditSelectedChildren: FC<Props> = ({
-	isSecond,
 	onEdit,
 	preSelected,
 	disabled,
 }) => {
-	const {
-		publicationChildrenFiltered,
-		publicationChildren,
-		publicationChildrenFilteredOfSecond,
-		publicationChildrenOfSecond,
-	} = usePublicationContext();
-
-	const data = isSecond
-		? publicationChildrenFilteredOfSecond ?? publicationChildrenOfSecond
-		: publicationChildrenFiltered ?? publicationChildren;
+	const { getChildren } = usePublicationContext2();
+	const data = useMemo(() => getChildren?.() ?? [], [getChildren]);
 	return (
 		<ModalDialog
 			label="Info"
@@ -258,7 +247,6 @@ export const EditSelectedChildren: FC<Props> = ({
 				<TilesWithCheckboxForm
 					preSelected={preSelected}
 					closeModal={closeModal}
-					isSecond={isSecond}
 					data={data ?? []}
 					variant="periodical"
 					title="Upravit seznam pro export"

@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import Divider from 'components/styled/Divider';
-import Text from 'components/styled/Text';
+import Text, { H5 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
+import { NavLinkButton } from 'components/styled/Button';
 
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 import PublicationExportDialog from 'modules/export/PublicationExportDialog';
@@ -27,21 +28,37 @@ import useMetadata, {
 } from 'hooks/useMetadata';
 
 import MetaStreamsDialog from '../MetaStreamsDialog';
-import { BibLink } from '../PubBiblioDetail';
 
 import { BibRootInfo } from './bib-rows';
 import BibDonators from './bib-donators';
 
-type Props = {
-	variant: 'left' | 'right';
-	isSecond?: boolean;
+export const BibLink: FC<{
+	to: string;
+	label?: string | string[];
+	prefix?: string;
+}> = ({ to, label, prefix }) => {
+	const theme = useTheme();
+	return (
+		<Box>
+			{prefix && <Text mb={0}>{prefix}</Text>}
+			<NavLinkButton variant="text" m={0} p={0} to={to} textAlign="left">
+				<H5
+					color="primary"
+					m={0}
+					style={{ color: theme.colors.primary, fontWeight: 'normal' }}
+				>
+					{label ?? ''}
+				</H5>
+			</NavLinkButton>
+		</Box>
+	);
 };
 
-const BibMain: React.FC<Props> = ({ isSecond }) => {
+const Bibliography = () => {
 	const { t } = useTranslation();
 	const { getApropriateIds, isDetailView, formatViewLink } =
 		useParseUrlIdsAndParams();
-	const { id, pageId } = getApropriateIds(isSecond);
+	const { id, pageId } = getApropriateIds();
 	const pubDetail = usePublicationDetail(id ?? '');
 	const pageDetail = usePublicationDetail(pageId ?? '');
 	const theme = useTheme();
@@ -73,11 +90,11 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 				{isDetailView && (
 					<>
 						<PublicationExportDialog />
-						<PrintDialog isSecond={isSecond} />
+						<PrintDialog />
 					</>
 				)}
-				<CitationDialog isSecond={isSecond} />
-				<ShareDialog isSecond={isSecond} />
+				<CitationDialog />
+				<ShareDialog />
 			</Flex>
 			<Divider />
 			<Wrapper position="relative" height="100%">
@@ -101,8 +118,9 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.prev?.uuid && (
 							<Box>
 								<BibLink
-									to={formatViewLink(parts.prev.uuid, isSecond)}
-									label={`${t('metadata:previous_unit')} ${parts.prev.label}`}
+									to={formatViewLink(parts.prev.uuid)}
+									prefix={`${t('metadata:previous_unit')}`}
+									label={`${parts.prev.label}`}
 								/>
 							</Box>
 						)}
@@ -110,8 +128,9 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 						{parts?.next?.uuid && (
 							<Box>
 								<BibLink
-									to={formatViewLink(parts.next.uuid, isSecond)}
-									label={`${t('metadata:next_unit')} ${parts.next.label}`}
+									to={formatViewLink(parts.next.uuid)}
+									prefix={`${t('metadata:next_unit')}`}
+									label={`${parts.next.label}`}
 								/>
 							</Box>
 						)}
@@ -168,4 +187,4 @@ const BibMain: React.FC<Props> = ({ isSecond }) => {
 	);
 };
 
-export default BibMain;
+export default Bibliography;

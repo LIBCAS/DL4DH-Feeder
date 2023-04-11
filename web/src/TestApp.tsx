@@ -1,7 +1,7 @@
 import { Flex } from 'components/styled';
 import { NavLinkButton } from 'components/styled/Button';
 
-import BibMain from 'modules/publication/detail/biblio/bib-main';
+import Bibliography from 'modules/publication/detail/biblio/bib-main';
 
 // povodne
 // uuid:21426150-9e46-11dc-a259-000d606f5dc6
@@ -34,7 +34,7 @@ const TestApp = () => {
 					Kapitola
 				</NavLinkButton>
 			</Flex>
-			<BibMain variant="right" />
+			<Bibliography />
 		</Flex>
 	);
 };

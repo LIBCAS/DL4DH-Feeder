@@ -13,11 +13,13 @@ import { useTheme } from 'theme';
 
 import { PublicationChild } from 'api/models';
 
+import { useMultiviewContext } from 'hooks/useMultiviewContext';
+
 import { useParseUrlIdsAndParams } from '../publicationUtils';
 
 import PubChooseSecond from './PubChooseSecond';
 import PubPagesDetail from './PubPagesDetail';
-import BibMain from './biblio/bib-main';
+import Bibliography from './biblio/bib-main';
 
 type Props = {
 	variant: 'left' | 'right';
@@ -25,7 +27,6 @@ type Props = {
 	pages: PublicationChild[];
 	onCollapse?: (clp?: boolean) => void;
 	isCollapsed?: boolean;
-	isSecond?: boolean;
 };
 
 const PublicationSidePanel: FC<Props> = ({
@@ -33,12 +34,13 @@ const PublicationSidePanel: FC<Props> = ({
 	defaultView,
 	onCollapse,
 	isCollapsed,
-	isSecond,
 }) => {
 	const theme = useTheme();
 	const [chooseSecondDialogOpen, setChooseSecondDialogOpen] = useState(false);
 	const { t } = useTranslation('publication_detail');
 	const urlParams = useParseUrlIdsAndParams();
+	const { sidePanel } = useMultiviewContext();
+	const isSecond = sidePanel === 'right';
 
 	const [viewMode, setViewMode] = useState<'detail' | 'search'>(
 		isSecond ? 'detail' : defaultView ?? 'detail',
@@ -158,14 +160,7 @@ const PublicationSidePanel: FC<Props> = ({
 				)}
 
 				{!chooseSecondDialogOpen && (
-					<>
-						{/* <PubThumbnails marginTop={60} pages={pages} isSecond={isSecond} /> */}
-						{viewMode === 'search' ? (
-							<PubPagesDetail isSecond={isSecond} />
-						) : (
-							<BibMain variant={variant} isSecond={isSecond} />
-						)}
-					</>
+					<>{viewMode === 'search' ? <PubPagesDetail /> : <Bibliography />}</>
 				)}
 			</Flex>
 			<SidePanelHideButton

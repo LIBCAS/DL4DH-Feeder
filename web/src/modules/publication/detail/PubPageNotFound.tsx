@@ -25,14 +25,23 @@ const PubPageNotFound: React.FC<Props> = ({ multiview, isSecond }) => {
 		>
 			<Flex
 				width={1}
-				//height="100vh"
 				alignItems="center"
 				justifyContent="center"
+				textAlign="center"
 				bg="formBg"
+				px={4}
 			>
-				<Text fontSize="xl" fontWeight="600" color="warning">
-					Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný dotaz.
-				</Text>
+				<div>
+					<Text fontSize="xxl" fontWeight="600" color="warning">
+						Upozornění!
+					</Text>
+					<Text fontSize="xxl" fontWeight="600" color="warning">
+						Nebyly nalezeny žádné výsledky.
+					</Text>
+					<Text fontSize="xxl" fontWeight="600" color="warning">
+						Prosím, zkuste jiný dotaz.
+					</Text>
+				</div>
 			</Flex>
 		</Flex>
 	);

@@ -1,114 +1,42 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useRef, useState } from 'react';
 
 import { Flex } from 'components/styled';
-import Text from 'components/styled/Text';
-import { ResponsiveWrapper, Wrapper } from 'components/styled/Wrapper';
+import { ResponsiveWrapper } from 'components/styled/Wrapper';
 
 import { Loader } from 'modules/loader';
-import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
-import { mapRef } from 'modules/zoomify/ZoomifyView';
-
-import { useTheme } from 'theme';
-
-import {
-	usePublicationChildren,
-	usePublicationDetail,
-} from 'api/publicationsApi';
+import ZoomifyView, { mapRef } from 'modules/zoomify/ZoomifyView';
 
 import { useMobileView } from 'hooks/useViewport';
-import { WordHighlightContextProvider } from 'hooks/useWordHighlightContext';
+import { SidepanelContextProvider } from 'hooks/useSidepanelContext';
+import { MultiviewContextProvider } from 'hooks/useMultiviewContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
 
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { PublicationContextProvider } from '../ctx/pubContext';
+import { useParseUrlIdsAndParams } from '../publicationUtils';
 
 import PublicationSidePanel from './PublicationSidePanel';
-import PubMainDetail from './PubMainDetail';
+import PriavatePublicationInfo from './PriavatePublicationInfo';
+import useProcessPublication from './useProcessPublication';
+import PubPageNotFound from './PubPageNotFound';
 
-//TODO: refactor
 const PublicationDetail = () => {
-	const { id } = useParams<{ id: string }>();
-	const theme = useTheme();
-	const pubChildren = usePublicationChildren(id ?? '');
-	const detail = usePublicationDetail(id ?? '');
-	const pages = useMemo(
-		() => (pubChildren.data ?? []).filter(c => c.model !== 'internalpart'),
-		[pubChildren.data],
-	);
-	const [sp, setSp] = useSearchParams();
-	const pubCtx = usePublicationContext();
-	const nav = useNavigate();
+	const zoomRef = useRef<HTMLDivElement | null>(null);
+	const { getApropriateIds } = useParseUrlIdsAndParams();
+
+	const { pageId, fulltext } = getApropriateIds();
+
+	const processed = useProcessPublication();
 	const { isMobile } = useMobileView();
 	const [rightCollapsed, setRightCollapsed] = useState(isMobile);
 	const [leftCollapsed, setLeftCollapsed] = useState(isMobile);
 
-	const pageId = useMemo(
-		() => sp.get('page') ?? pages[0]?.pid ?? undefined,
-		[sp, pages],
-	);
-
-	useEffect(() => {
-		const childIndex = (
-			pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered
-				: pages
-		).findIndex(p => p.pid === pageId);
-
-		pubCtx.setCurrentPage({
-			uuid: pageId ?? '',
-			childIndex,
-			prevPid: pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered[childIndex - 1]?.pid
-				: pages[childIndex - 1]?.pid,
-			nextPid: pubCtx.publicationChildrenFiltered
-				? pubCtx.publicationChildrenFiltered[childIndex + 1]?.pid
-				: pages[childIndex + 1]?.pid,
-		});
-		pubCtx.setPublicationChildren(pages);
-
-		if (detail?.data) {
-			const context = detail.data?.context?.flat() ?? [];
-			pubCtx.setPublication({
-				...detail.data,
-				context,
-			});
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages, pageId, detail.data, pubCtx.publicationChildrenFiltered]);
-	useEffect(() => {
-		if (
-			pubChildren.isSuccess &&
-			pubChildren.data.filter(d => d.datanode)?.length === 0
-		) {
-			nav(`/periodical/${id}`, { replace: true });
-		}
-	}, [pubChildren.data, nav, pubChildren.isSuccess, id]);
-
-	const datanode = useMemo(
-		() =>
-			((pubChildren.isSuccess &&
-				pubChildren.data.filter(d => d.datanode)?.length) ??
-				0) > 0,
-		[pubChildren.data, pubChildren.isSuccess],
-	);
-
-	if (pubChildren.isLoading || detail.isLoading) {
-		return <Loader />;
-	}
-	if (!sp.get('page') && pages[0]?.pid) {
-		sp.append('page', pages[0]?.pid ?? 'index-detail-undefined');
-		setSp(sp, { replace: true });
-	}
-
-	//TODO: na krameriovi sa rozlisuje URL, ak je to periodical, cize neni datanode, tak to nejde na /view ale na /periodical .. uuid
-	const isPublic = detail.data?.policy === 'public';
+	const isPublic = processed.publication?.policy === 'public';
 
 	return (
-		<WordHighlightContextProvider>
+		<PublicationContextProvider {...processed}>
 			<ResponsiveWrapper
 				bg="primaryLight"
 				px={0}
@@ -135,58 +63,62 @@ const PublicationDetail = () => {
 						css={css`
 							transition-duration: 200ms;
 							transition-property: width transform;
-							transform: translateX(${leftCollapsed ? '-310px' : '0px'});
+							transform: translateX(${leftCollapsed ? '-300px' : '0px'});
 						`}
 					>
-						<PublicationSidePanel
-							variant="left"
-							pages={pages}
-							onCollapse={() => setLeftCollapsed(p => !p)}
-							isCollapsed={leftCollapsed}
-							defaultView="search"
-						/>
+						<SidepanelContextProvider sidepanel="left">
+							<PublicationSidePanel
+								variant="left"
+								pages={processed.publicationChildren ?? []}
+								onCollapse={() => setLeftCollapsed(p => !p)}
+								isCollapsed={leftCollapsed}
+								defaultView="search"
+							/>
+						</SidepanelContextProvider>
 					</Flex>
 
-					{!datanode ? (
-						<Wrapper overflowY="auto" overflowX="hidden" p={3} maxHeight="90vh">
-							<PeriodicalTiles data={pubChildren.data} />
-							<Text>Dlasie info</Text>
-							<Flex flexWrap="wrap">
-								{(pubChildren.data ?? []).map(ch => (
-									<Flex
-										key={ch.pid}
-										p={3}
-										m={2}
-										flexWrap="wrap"
-										css={css`
-											border: 1px solid ${theme.colors.primary};
-										`}
-									>
-										{Object.keys(ch.details).map(k => (
-											<Text key={k} m={2}>
-												{k} : {ch.details[k]}
-											</Text>
-										))}
-									</Flex>
-								))}
+					<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
+						<MultiviewContextProvider initSidePanel="left">
+							<Flex
+								id="ZOOMIFY_PARRENT_EL"
+								ref={zoomRef}
+								width={1}
+								bg="border"
+								alignItems="center"
+								position="relative"
+							>
+								{fulltext && !pageId ? (
+									<PubPageNotFound />
+								) : (
+									<>
+										{processed.isLoading ? (
+											<Loader />
+										) : (
+											<>
+												{isPublic ? (
+													<ZoomifyView id={pageId} />
+												) : (
+													<PriavatePublicationInfo />
+												)}
+											</>
+										)}
+									</>
+								)}
 							</Flex>
-						</Wrapper>
-					) : (
-						<Flex height={`calc(100vh - ${INIT_HEADER_HEIGHT}px)`} width="100%">
-							<PubMainDetail page={pageId} leftPublic={isPublic} />
-						</Flex>
-					)}
-
-					<PublicationSidePanel
-						variant="right"
-						defaultView="detail"
-						pages={pages}
-						onCollapse={() => setRightCollapsed(p => !p)}
-						isCollapsed={rightCollapsed}
-					/>
+						</MultiviewContextProvider>
+					</Flex>
+					<SidepanelContextProvider sidepanel="right">
+						<PublicationSidePanel
+							variant="right"
+							defaultView="detail"
+							pages={processed.publicationChildren ?? []}
+							onCollapse={() => setRightCollapsed(p => !p)}
+							isCollapsed={rightCollapsed}
+						/>
+					</SidepanelContextProvider>
 				</Flex>
 			</ResponsiveWrapper>
-		</WordHighlightContextProvider>
+		</PublicationContextProvider>
 	);
 };
 export default PublicationDetail;

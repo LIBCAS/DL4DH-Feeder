@@ -1,7 +1,6 @@
 import { ResponsePromise } from 'ky';
 import normalizeUtility from 'normalize-url';
 
-import { Backend } from 'api/endpoints';
 import { AvailableNameTagFilters, TagNameEnum } from 'api/models';
 
 import {
@@ -92,29 +91,6 @@ export const asyncForEach = async <T>(
 	}
 };
 
-const formatDate = (d: Date) => {
-	const date = new Date(d);
-	const offset = new Date(date).getTimezoneOffset();
-	const newDate = new Date(date.getTime() - offset * 60 * 1000);
-	return newDate.toISOString().split('T')[0];
-};
-
-export const easRange = (
-	field: string,
-	date: Date,
-): { field: string; operation: string; value: string }[] => [
-	{
-		field,
-		operation: 'GTE',
-		value: formatDate(date) + 'T00:00:00.000Z' ?? '',
-	},
-	{
-		field,
-		operation: 'LTE',
-		value: formatDate(date) + 'T23:59:59.999Z' ?? '',
-	},
-];
-
 // for testing, TODO: delete
 export function wait(ms: number, value: Response): Promise<Response> {
 	return new Promise(resolve => setTimeout(resolve, ms, value));
@@ -157,36 +133,7 @@ export function getScrollBarWidth(): number {
 	return size;
 }
 
-type KeysOfType<T, U, B = false> = {
-	[P in keyof T]: B extends true
-		? T[P] extends U
-			? U extends T[P]
-				? P
-				: never
-			: never
-		: T[P] extends U
-		? P
-		: never;
-}[keyof T];
-
-type PickByType<T, U, B = false> = Pick<T, KeysOfType<T, U, B>>;
 export type Lookup<T, K> = K extends keyof T ? T[K] : never;
-type DateAttrs = Record<keyof PickByType<Backend.Reading, Date>, unknown>;
-
-const Dates: DateAttrs = {
-	created: null,
-	deleted: null,
-	evaluatedAdmin: null,
-	record1evaluatedAi: null,
-	record2evaluatedAi: null,
-	responseFromSap: null,
-	sentToAi: null,
-	sentToSap: null,
-	updated: null,
-	definiteEvaluation: null,
-};
-
-export const isDateAttr = (key: string) => key in Dates;
 
 export const getDateString = (date: Date) =>
 	(typeof date === 'string' ? new Date(date) : date)?.toLocaleDateString(

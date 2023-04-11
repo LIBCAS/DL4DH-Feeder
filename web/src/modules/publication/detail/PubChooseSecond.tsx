@@ -4,7 +4,7 @@ import { debounce } from 'lodash-es';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdRefresh } from 'react-icons/md';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Checkbox from 'components/form/checkbox/Checkbox';
 import QuerySearchInput from 'components/search/QuerySearchInput';
@@ -33,8 +33,8 @@ import { TSearchQuery } from 'hooks/useSearchContext';
 
 import useHeaderHeight from 'utils/useHeaderHeight';
 
-import { createSearchParamsString } from '../publicationUtils';
-import { usePublicationContext } from '../ctx/pub-ctx';
+import { usePublicationContext2 } from '../ctx/pubContext';
+import { useParseUrlIdsAndParams } from '../publicationUtils';
 
 const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 	({ onClose, variant }) => {
@@ -221,7 +221,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 						</>
 					) : (
 						<Flex px={2}>
-							<ChoosePeriodical id={uuid} onClose={onClose} variant={variant} />
+							<ChoosePeriodical id={uuid} onClose={onClose} />
 						</Flex>
 					)}
 					<Flex
@@ -263,41 +263,15 @@ export default PubChooseSecond;
 const ChoosePeriodical: FC<{
 	id: string;
 	onClose: () => void;
-	variant?: 'left' | 'right';
-}> = ({ id: rootId, onClose, variant }) => {
+}> = ({ id: newIdProp, onClose }) => {
 	//TODO: cleanup A ZAROVEN POZOR NAVIGACIA KAPITOL ZLYHAVA
-	// datanode treba testovat inak
-	const pubCtx = usePublicationContext();
-	const {
-		id: singleId,
-		id1: mIdLeft,
-		id2: mIdRight,
-	} = useParams<{ id: string; id1: string; id2: string }>();
-	const [sp] = useSearchParams();
-	let currentIdToBeChanged: string | undefined = undefined;
-	let notChangingId: string | undefined = undefined;
-	let notChangingPage: string | undefined = undefined;
-	let notChangingFulltext: string | undefined = undefined;
-	console.log({ singleId, mIdLeft, mIdRight });
 
-	if (!singleId) {
-		//is multiview variant
-		currentIdToBeChanged = variant === 'left' ? mIdLeft : mIdRight;
-		notChangingId =
-			variant === 'left'
-				? mIdRight ?? 'ctx-right-pubid-error'
-				: mIdLeft ?? 'ctx-left-pubid-error';
-		notChangingPage =
-			variant === 'left' ? sp.get('page2') ?? '' : sp.get('page') ?? '';
-		notChangingFulltext =
-			variant === 'left' ? sp.get('fulltext2') ?? '' : sp.get('fulltext') ?? '';
-	} else {
-		currentIdToBeChanged = singleId;
-		notChangingId = currentIdToBeChanged;
-		notChangingPage = sp.get('page') ?? '';
-		notChangingFulltext = sp.get('fulltext') ?? '';
-	}
-	const [newId, setNewId] = useState(rootId);
+	const { isSingleView, getApropriateIds, formatViewLink } =
+		useParseUrlIdsAndParams();
+
+	const { id: currentId } = getApropriateIds();
+	const { setOcrMode } = usePublicationContext2();
+	const [newId, setNewId] = useState(newIdProp);
 	const childrenResponse = usePublicationChildren(newId ?? '');
 	const nav = useNavigate();
 	const children = useMemo(
@@ -310,11 +284,11 @@ const ChoosePeriodical: FC<{
 
 	useEffect(() => {
 		if (children.datanodes.length > 0) {
-			if (currentIdToBeChanged === newId && !singleId) {
+			if (!isSingleView && currentId === newId) {
 				onClose();
 			} else {
-				if (singleId) {
-					pubCtx.setOcrMode(p => {
+				if (isSingleView) {
+					setOcrMode?.(p => {
 						if (p) {
 							return {
 								...p,
@@ -328,35 +302,22 @@ const ChoosePeriodical: FC<{
 						}
 					});
 				}
-				variant === 'left'
-					? nav(
-							`/multiview/${newId}/${notChangingId}${createSearchParamsString([
-								{ name: 'page2', value: notChangingPage },
-								{ name: 'fulltext2', value: notChangingFulltext },
-							])}`,
-					  )
-					: nav(
-							`/multiview/${notChangingId}/${newId}${createSearchParamsString([
-								{ name: 'page', value: notChangingPage },
-								{ name: 'fulltext', value: notChangingFulltext },
-							])}`,
-					  );
+
+				nav(formatViewLink(newId, true));
 			}
 		} else if (children.notDataNodes.length === 1) {
 			setNewId(children.notDataNodes[0].pid);
 		}
 	}, [
-		children,
-		newId,
-		notChangingId,
+		children.datanodes.length,
+		children.notDataNodes,
+		currentId,
+		formatViewLink,
+		isSingleView,
 		nav,
-		currentIdToBeChanged,
+		newId,
 		onClose,
-		variant,
-		notChangingPage,
-		pubCtx,
-		singleId,
-		notChangingFulltext,
+		setOcrMode,
 	]);
 
 	if (childrenResponse.isLoading) {
