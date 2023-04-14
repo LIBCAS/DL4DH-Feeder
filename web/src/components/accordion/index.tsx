@@ -102,7 +102,7 @@ const Accordion: FC<Props> = ({
 					`}
 				>
 					<div ref={measureRef}>
-						<Box px={2} py={1}>
+						<Box px={2} pb={1} mt={-1}>
 							{typeof children === 'function' ? children(onRefresh) : children}
 						</Box>
 					</div>
