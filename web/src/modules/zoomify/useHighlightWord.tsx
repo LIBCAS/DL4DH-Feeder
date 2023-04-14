@@ -10,8 +10,10 @@ import Geometry from 'ol/geom/Geometry';
 import VectorLayer from 'ol/layer/Vector';
 
 import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
+import { PagesSearchResult } from 'modules/publication/detail/PubPagesDetail';
 
 import { useStreams } from 'api/publicationsApi';
+import { TagNameEnum } from 'api/models';
 
 import { deepSearchByKey } from './altoUtils';
 
@@ -34,7 +36,18 @@ export type WordCoords = {
 };
 
 // extract all words inside <strong> tags
-const parsePageResult = (pageOcrs: string[]) => {
+const parsePageResult = (page?: PagesSearchResult) => {
+	if (!page) {
+		return [];
+	}
+
+	const pageOcrs = page.ocr ?? [];
+	const pageNametags = page.nameTag
+		? Object.keys(page.nameTag)
+				.map(key => page.nameTag[key as TagNameEnum])
+				.flat()
+		: undefined;
+
 	const result: string[] = [];
 	pageOcrs.forEach(text => {
 		const parsed = text.match(/(?<=<strong>)(.*?)(?=<\/strong>)/g)?.slice();
@@ -42,6 +55,13 @@ const parsePageResult = (pageOcrs: string[]) => {
 			parsed.forEach(p => result.push(p));
 		}
 	});
+	//nametag are not inside <strong></strong> tags yet
+	if (pageNametags) {
+		pageNametags.forEach(text => {
+			result.push(text);
+		});
+	}
+
 	return result;
 };
 
@@ -80,9 +100,10 @@ export const useHighlightWord = (uuid: string) => {
 	const pctx = usePublicationContext2();
 	const results = pctx.filtered.filteredOcrResults;
 	const [words, setWords] = useState<WordAltoObj[]>([]);
+	console.log({ pctx });
 
 	const pageResult = useMemo(
-		() => parsePageResult(results.find(r => r.pid === uuid)?.ocr ?? []),
+		() => parsePageResult(results.find(r => r.pid === uuid)),
 		[results, uuid],
 	);
 	useEffect(() => {
@@ -116,41 +137,3 @@ export const useHighlightWord = (uuid: string) => {
 export const compare = (s1: string, s2: string): boolean =>
 	s1.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '') ===
 	s2.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '');
-
-//TODO: remove
-
-// .map(f => ({
-// 	hpos: parseInt(f.$.VPOS),
-// 	vpos: 2524 - 1.8 * parseInt(f.$.HPOS),
-// 	swidth: parseInt(f.$.HEIGHT),
-// 	sheight: parseInt(f.$.WIDTH),
-// 	what: 1.8 * parseInt(f.$.HPOS),
-// }))
-
-/*
-
-const filtered: WordCoords[] = (
-		pageResult
-			? pageResult.map(ocr =>
-					words
-						.filter(
-							w =>
-								w.$.CONTENT.replace(
-									/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g,
-									'',
-								).toUpperCase() ===
-								ocr
-									.replace(/-|\?|!|»|«|;|\)|\(|\.|„|“|"|,|\)/g, '')
-									.toUpperCase(),
-						)
-						.map(f => ({
-							hpos: parseInt(f.$.HPOS),
-							vpos: parseInt(f.$.VPOS),
-							swidth: parseInt(f.$.WIDTH),
-							sheight: parseInt(f.$.HEIGHT),
-						})),
-			  )
-			: []
-	).flat();
-
-	*/

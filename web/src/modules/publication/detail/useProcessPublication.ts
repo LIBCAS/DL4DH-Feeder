@@ -26,6 +26,7 @@ const useSearchPageDetail = (
 		() => (publicationChildren ?? []).filter(child => results[child.pid]),
 		[publicationChildren, results],
 	);
+	console.log({ results });
 	//for word highlighting
 	const filteredOcrResults: PagesSearchResult[] = useMemo(
 		() =>

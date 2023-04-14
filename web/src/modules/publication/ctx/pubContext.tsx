@@ -6,11 +6,7 @@ import React, {
 	useState,
 } from 'react';
 
-import {
-	ChildSearchResult,
-	PublicationChild,
-	PublicationDetail,
-} from 'api/models';
+import { PublicationChild, PublicationDetail } from 'api/models';
 
 import { PagesSearchResult } from '../detail/PubPagesDetail';
 
