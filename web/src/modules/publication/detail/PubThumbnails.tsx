@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { createRef, FC, useEffect, useMemo, useState } from 'react';
-import { MdArrowDownward, MdArrowUpward, MdLock } from 'react-icons/md';
+import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 import { FixedSizeGrid } from 'react-window';
@@ -209,7 +209,7 @@ const PubThumbnails: FC<Props> = ({
 						{({ style, rowIndex, columnIndex }) => {
 							const index = COLUMNS_COUNT * rowIndex + columnIndex;
 							const url = `/api/item/${pagesRaw[index]?.pid ?? ''}/thumb`;
-							const isPublic = pagesRaw[index].policy === 'public';
+							//const isPublic = pagesRaw[index].policy === 'public';
 							if (index >= pagesRaw.length) {
 								return <></>;
 							}

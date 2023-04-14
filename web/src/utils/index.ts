@@ -1,5 +1,4 @@
 import { ResponsePromise } from 'ky';
-import normalizeUtility from 'normalize-url';
 
 import { AvailableNameTagFilters, TagNameEnum } from 'api/models';
 
@@ -44,14 +43,6 @@ export const responseWithData = <T>(
 	getData: (r: Response) => Promise<T> | T = async r => (await r.json()) as T,
 ) => response.then(async r => [r, await getData(r)] as const);
 
-export const normalizeUrl = (url: string) => {
-	try {
-		return url ? normalizeUtility(url, { stripWWW: false }) : '';
-	} catch (error) {
-		return '';
-	}
-};
-
 export const asRecord = <T extends unknown>(...obj: T[]): Record<number, T> =>
 	obj;
 
@@ -95,10 +86,6 @@ export const asyncForEach = async <T>(
 export function wait(ms: number, value: Response): Promise<Response> {
 	return new Promise(resolve => setTimeout(resolve, ms, value));
 }
-
-// const czRes = await fetch(
-// 	window.location.origin + '/locales/cz.json',
-// ).then(val => wait(1000, val));
 
 /**
  * Returns width of scrollbar on current browser
