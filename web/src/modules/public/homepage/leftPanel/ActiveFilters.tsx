@@ -5,6 +5,7 @@ import { MdClose, MdSave } from 'react-icons/md';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { useKeycloak } from '@react-keycloak/web';
 
 import { Flex, Box } from 'components/styled';
 import IconButton from 'components/styled/IconButton';
@@ -119,6 +120,7 @@ const ActiveFilters: React.FC<{
 	const theme = useTheme();
 	const { state } = useSearchContext();
 	const [sp, setSp] = useSearchParams();
+	const { keycloak } = useKeycloak();
 	const nav = useNavigate();
 	const aval = useAvailableFilters();
 	const [savingFilter, setSavingFilter] = useState(false);
@@ -148,7 +150,58 @@ const ActiveFilters: React.FC<{
 
 	return (
 		<Box px={0}>
-			<Box my={3} px={2}>
+			<Box mb={3} px={2}>
+				{!readonly && keycloak.authenticated && (
+					<Flex
+						width={1}
+						justifyContent="space-between"
+						alignItems="center"
+						mb={0}
+					>
+						<Text fontWeight="bold">Uložit filtry</Text>
+						{savingFilter && <Loader size={22} />}
+						<IconButton
+							tooltip="Uložit filtry"
+							width={22}
+							height={22}
+							color="white"
+							disabled={savingFilter}
+							css={css`
+								border: 1px solid ${theme.colors.primaryLight};
+								background-color: ${theme.colors.warning};
+								border-radius: 22px;
+								box-sizing: border-box;
+								&:hover {
+									border: 1px solid ${theme.colors.primary};
+									background-color: ${theme.colors.primary};
+								}
+							`}
+							onClick={async () => {
+								const body = {
+									pageSize: 15,
+									page: 0,
+									query: '',
+									sort: 'TITLE_ASC',
+									availability: 'PUBLIC',
+									...state.searchQuery,
+								};
+								setSavingFilter(true);
+								const resp = await api().post('search?save=true', {
+									body: JSON.stringify(body),
+									headers: { 'Content-Type': 'application/json' },
+								});
+								setSavingFilter(false);
+								if (resp.ok) {
+									toast.success('Filter byl úspěšně uložen');
+								}
+							}}
+						>
+							<Flex alignItems="center" justifyContent="center">
+								{savingFilter ? <Loader size={18} /> : <MdSave size={18} />}
+							</Flex>
+						</IconButton>
+					</Flex>
+				)}
 				<Flex justifyContent="space-between" alignItems="center" mb={2}>
 					<Text color="warning" fontWeight="bold" my={0}>
 						{t('filters:used_header')}
@@ -345,58 +398,6 @@ const ActiveFilters: React.FC<{
 						</Button>
 					</Box>
 				))}
-
-				{!readonly && (
-					<Flex
-						width={1}
-						justifyContent="space-between"
-						alignItems="center"
-						mb={2}
-					>
-						<Text fontWeight="bold">Uložit filtry</Text>
-						{savingFilter && <Loader size={22} />}
-						<IconButton
-							tooltip="Uložit filtry"
-							width={22}
-							height={22}
-							color="white"
-							disabled={savingFilter}
-							css={css`
-								border: 1px solid ${theme.colors.primaryLight};
-								background-color: ${theme.colors.warning};
-								border-radius: 22px;
-								box-sizing: border-box;
-								&:hover {
-									border: 1px solid ${theme.colors.primary};
-									background-color: ${theme.colors.primary};
-								}
-							`}
-							onClick={async () => {
-								const body = {
-									pageSize: 15,
-									page: 0,
-									query: '',
-									sort: 'TITLE_ASC',
-									availability: 'PUBLIC',
-									...state.searchQuery,
-								};
-								setSavingFilter(true);
-								const resp = await api().post('search?save=true', {
-									body: JSON.stringify(body),
-									headers: { 'Content-Type': 'application/json' },
-								});
-								setSavingFilter(false);
-								if (resp.ok) {
-									toast.success('Filter byl úspěšně uložen');
-								}
-							}}
-						>
-							<Flex alignItems="center" justifyContent="center">
-								{savingFilter ? <Loader size={18} /> : <MdSave size={18} />}
-							</Flex>
-						</IconButton>
-					</Flex>
-				)}
 			</Box>
 			<Divider />
 		</Box>
