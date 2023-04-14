@@ -6,7 +6,6 @@ import {
 	FC,
 	SetStateAction,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
