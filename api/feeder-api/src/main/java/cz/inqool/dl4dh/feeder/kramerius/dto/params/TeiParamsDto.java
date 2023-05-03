@@ -3,6 +3,8 @@ package cz.inqool.dl4dh.feeder.kramerius.dto.params;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class TeiParamsDto {
@@ -19,7 +21,7 @@ public class TeiParamsDto {
         height, width, vpos, hpos
     }
 
-    private UdPipeParams udPipeParams;
-    private NameTagParams nameTagParams;
-    private AltoParams altoParams;
+    private List<UdPipeParams> udPipeParams;
+    private List<NameTagParams> nameTagParams;
+    private List<AltoParams> altoParams;
 }
