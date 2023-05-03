@@ -39,6 +39,7 @@
       "few": "occurrences",
       "many": "occurrences"
     },
+    "edit":"Edit",
     "public": "Public",
     "private": "Private",
     "set_page_number": "Set page number",
@@ -235,6 +236,8 @@
     "remove_all":"Remove all",
 
     "dialog":{
+      "export_publication": "Export publication",
+      "edit_export_list": "Edit page list for export",
       "all_enriched":"All enriched",
       "all_alto_available":"ALTO available for all selected publications",
       "export_name":"Export name",
@@ -252,7 +255,10 @@
       "exclude_fields":"Exclude fields",
       "finish_export_button":"Export",
       "cancel":"Cancel",
-      "publications_count":"publications"
+      "publications_count":"publications",
+      "json_csv_only":"Available for JSON and CSV only",
+      "pub_title":"Publication title",
+      "pub_id":"Publication ID"
     },
     "exports_dashboard": {
       "page_title": "Exports",
@@ -264,7 +270,8 @@
       "status": "Status",
       "created": "Created",
       "format": "Format",
-      "action": "Actions"
+      "action": "Actions",
+      "detail":"Export detail"
     },
     "status_enum": {
       "CREATED": "CREATED",

@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FC, useMemo, useState } from 'react';
 import { MdClose, MdPrint } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import ModalDialog from 'components/modal';
 import { Box, Flex } from 'components/styled';
@@ -14,7 +15,7 @@ import Text, { H1 } from 'components/styled/Text';
 import PeriodicalTiles from 'modules/searchResult/tiles/PeriodicalTileView';
 
 import { SelectedOverlayCss, useTheme } from 'theme';
-import { downloadFile } from 'utils';
+import { downloadFile, pluralRules } from 'utils';
 
 import { callPrintApi } from 'api/printApi';
 
@@ -29,7 +30,7 @@ const PRINT_LIMIT = 90;
 const PrintForm: FC<FormProps> = ({ closeModal }) => {
 	const { getChildren } = usePublicationContext2();
 	const pages = useMemo(() => getChildren?.() ?? [], [getChildren]);
-
+	const { t } = useTranslation();
 	const [selected, setSelected] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
 
@@ -47,7 +48,7 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 				//height={'80vh'}
 			>
 				<Flex alignItems="center" justifyContent="space-between">
-					<H1>Připravit k tisku</H1>
+					<H1>{t('pdf-dialog:title_prepare')}</H1>
 					<IconButton color="primary" onClick={closeModal}>
 						<MdClose size={32} />
 					</IconButton>
@@ -94,7 +95,7 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 					<Flex alignItems="center">
 						{selected.length > 0 ? (
 							<Text fontSize="md">
-								Máte vybrané{' '}
+								{t(`pdf-dialog:selection1:${pluralRules(selected.length)}`)}{' '}
 								<Text
 									as="span"
 									fontWeight="bold"
@@ -103,7 +104,8 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 									{' '}
 									{selected.length}
 								</Text>{' '}
-								strany (limit{' '}
+								{t(`pdf-dialog:selection2:${pluralRules(selected.length)}`)}{' '}
+								(limit{' '}
 								<Text
 									as="span"
 									fontWeight="bold"
@@ -114,7 +116,7 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 								)
 							</Text>
 						) : (
-							<Text>Nemáte vybranou žádnou stranu</Text>
+							<Text>{t('pdf-dialog:selection')}</Text>
 						)}
 
 						{pages.length !== selected.length && (
@@ -125,7 +127,7 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 								fontWeight="bold"
 								onClick={() => setSelected(pages.map(p => p.pid))}
 							>
-								| Vybrat vše
+								| {t('pdf-dialog:select_all')}
 							</Button>
 						)}
 						{selected.length > 0 && (
@@ -136,13 +138,13 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 								px={1}
 								onClick={() => setSelected([])}
 							>
-								| Zrušit výběr
+								| {t('pdf-dialog:deselect_all')}
 							</Button>
 						)}
 					</Flex>
 					<Flex alignItems="center">
 						<Button fontSize="md" variant="text" mx={3} onClick={closeModal}>
-							Zrušit
+							{t('common:cancel')}
 						</Button>
 						<Button
 							variant="primary"
@@ -159,20 +161,20 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 									downloadFile(url, 'publicaton_print.pdf');
 									//window.open(url, '_blank');
 								} catch (error) {
-									toast.error('Při exportu nastala chyba.');
+									toast.error(t('pdf-dialog:error_generate'));
 									console.log(error);
 								}
 
 								setLoading(false);
 							}}
 						>
-							Připravit k tisku
+							{t('pdf-dialog:action_prepare')}
 						</Button>
 					</Flex>
 				</Flex>
 				{selected.length > PRINT_LIMIT && (
 					<Text py={0} my={0} color="error">
-						Je překročen maximální počet stran
+						{t('pdf-dialog:warning_too_manny_pages')}
 					</Text>
 				)}
 			</Paper>
@@ -181,6 +183,7 @@ const PrintForm: FC<FormProps> = ({ closeModal }) => {
 };
 
 const PrintDialog = () => {
+	const { t } = useTranslation();
 	return (
 		<ModalDialog
 			label="Info"
@@ -188,7 +191,7 @@ const PrintDialog = () => {
 				<IconButton
 					color="primary"
 					onClick={openModal}
-					tooltip="Připravit na tisk"
+					tooltip={t('pdf-dialog:title_prepare')}
 				>
 					<MdPrint size={24} />
 				</IconButton>

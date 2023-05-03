@@ -22,6 +22,7 @@ import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { api } from 'api';
+import { pluralRules } from 'utils';
 
 import {
 	AltoParam,
@@ -265,19 +266,19 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>{t('exports:dialog:export_publication')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						<Text>Pro export je nutné se přihlásit</Text>
+						<Text>{t('exports:export_dialog_login_request')}</Text>
 						<Button
 							variant="primary"
 							onClick={() => {
 								keycloak.login();
 							}}
 						>
-							Přihlásit se
+							{t('navbar:login')}
 						</Button>
 					</Box>
 				</Paper>
@@ -288,11 +289,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const { handleSubmit, handleChange, setFieldValue, values, isSubmitting } =
 		formik;
 
-	console.log({
-		pctx,
-		values,
-		getPreselectedChildren: getPreselectedChildren(values.pagesFilter),
-	});
 	return (
 		<form onSubmit={handleSubmit}>
 			<Flex
@@ -309,19 +305,20 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				>
 					<Box>
 						<Flex width={1} justifyContent="space-between" alignItems="center">
-							<H1 my={3}>Exportovat publikaci</H1>
+							<H1 my={3}>{t('exports:dialog:export_publication')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
 						<Text fontSize="sm">
-							Název publikace: <b>{pubTitle}</b>
+							{t('exports:dialog:pub_title')}: <b>{pubTitle}</b>
 						</Text>
 						<Text fontSize="sm">
-							ID publikace: <b>{pubId}</b>
+							{t('exports:dialog:pub_id')}: <b>{pubId}</b>
 						</Text>
 						<Text fontSize="sm">
-							Obohacená: <b>{enriched ? 'Áno' : 'Ne'}</b>
+							{t('search:enrichment:is_enriched')}:{' '}
+							<b>{enriched ? t('common:yes') : t('common:no')}</b>
 						</Text>
 
 						<Text my={2} mt={4}>
@@ -502,7 +499,12 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<MdInfo size={20} />
 								<Text ml={2}>
 									{getPreselectedChildren(values.pagesFilter).length}{' '}
-									{t('exports:dialog.publications_count')} |
+									{t(
+										`common:n_pages:${pluralRules(
+											getPreselectedChildren(values.pagesFilter).length,
+										)}`,
+									)}{' '}
+									|
 								</Text>
 
 								<EditSelectedChildren
@@ -527,6 +529,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 };
 
 const PublicationExportDialog = () => {
+	const { t } = useTranslation();
 	return (
 		<ModalDialog
 			label="Info"
@@ -534,7 +537,7 @@ const PublicationExportDialog = () => {
 				<IconButton
 					color="primary"
 					onClick={openModal}
-					tooltip="Exportovat publikaci"
+					tooltip={t('exports:dialog:export_publication')}
 				>
 					<MdDownload size={24} />
 				</IconButton>

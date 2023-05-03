@@ -30,6 +30,8 @@ export type PublicationDetail = {
 	};
 	enriched?: boolean;
 	donator: string[];
+	dnnt: boolean;
+	'dnnt-labels': string[];
 };
 
 export type PublicationsListDto = {
@@ -149,6 +151,8 @@ export type PublicationChild = {
 		subTitle: string;
 		nonSort: string;
 		partName: string;
+		page_type: string;
+		issue_type: string;
 	};
 	root_pid: string;
 	root_title: string;
@@ -186,8 +190,7 @@ export type Collection = {
 
 export type ChildSearchDto = {
 	textOcr: string[];
-
-	nameTag: Record<string, string[]>; //TODO:
+	nameTag: Record<string, string[]>;
 };
 
 export type ChildSearchResult = Record<string, ChildSearchDto>;
