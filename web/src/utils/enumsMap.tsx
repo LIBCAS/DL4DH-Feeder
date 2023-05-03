@@ -6,7 +6,6 @@ import { MdFormatQuote, MdHome } from 'react-icons/md';
 import { TbClock, TbSum } from 'react-icons/tb';
 
 import { AvailableNameTagFilters, ModelsEnum, TagNameEnum } from 'api/models';
-import { JobStatusEnum } from 'api/exportsApi';
 
 export const SIDE_PANEL_WIDTH = 300;
 
@@ -196,17 +195,4 @@ export const ModelToText = {
 	track: 'Nahrávka',
 	collection: 'Sbírka',
 	convolute: 'Konvolut',
-};
-
-export const ExportJobStatusToText: Record<JobStatusEnum, string> = {
-	COMPLETED: 'Úspěšně dokončen',
-	SUCCESSFUL: 'Úspěšně dokončen',
-	CREATED: 'Vytvořen',
-	ABANDONED: 'Opuštěn',
-	FAILED: 'Neúspěšně ukončen',
-	STARTED: 'Započatý',
-	STARTING: 'Začíná',
-	STOPPED: 'Zastaven',
-	STOPPING: 'Zastavuje',
-	UNKNOWN: 'Neznámý',
 };

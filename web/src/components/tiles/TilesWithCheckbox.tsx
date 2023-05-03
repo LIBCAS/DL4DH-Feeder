@@ -20,6 +20,7 @@ import DashboardModeSwither from 'modules/public/homepage/DashboardViewModeSwitc
 import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useTheme } from 'theme';
+import { pluralRules } from 'utils';
 
 import { PublicationChild, PublicationDto } from 'api/models';
 
@@ -58,7 +59,7 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 	const [selected, setSelected] = useState<string[]>(
 		preSelected ?? data.map((d: { pid: string }) => d.pid),
 	);
-
+	const { t } = useTranslation();
 	const Tiles = variant === 'periodical' ? PeriodicalTiles : TileView;
 	const tilesData = data as PublicationChild[] & PublicationDto[];
 
@@ -142,7 +143,7 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 					<Flex alignItems="center">
 						{selected.length > 0 ? (
 							<Text fontSize="md">
-								Máte vybrané{' '}
+								{t(`pdf-dialog:selection1:${pluralRules(selected.length)}`)}
 								<Text
 									as="span"
 									fontWeight="bold"
@@ -155,7 +156,7 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 									{' '}
 									{selected.length}
 								</Text>{' '}
-								strany{' '}
+								{t(`pdf-dialog:selection2:${pluralRules(selected.length)}`)}{' '}
 								{checkLimit && (
 									<>
 										(limit{' '}
@@ -171,7 +172,7 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 								)}
 							</Text>
 						) : (
-							<Text>Nemáte vybranou žádnou stranu</Text>
+							<Text>{t('pdf-dialog:selection')}</Text>
 						)}
 
 						{data.length !== selected.length && (
@@ -182,7 +183,7 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 								fontWeight="bold"
 								onClick={() => setSelected(data.map(p => p.pid))}
 							>
-								| Vybrat vše
+								| {t('pdf-dialog:select_all')}
 							</Button>
 						)}
 						{selected.length > 0 && (
@@ -193,20 +194,20 @@ const TilesWithCheckboxForm: FC<FormProps> = ({
 								px={1}
 								onClick={() => setSelected([])}
 							>
-								| Zrušit výběr
+								| {t('pdf-dialog:deselect_all')}
 							</Button>
 						)}
 					</Flex>
 					<Flex alignItems="center">
 						<Button fontSize="md" variant="text" mx={3} onClick={closeModal}>
-							Zrušit
+							{t('common:cancel')}
 						</Button>
 						{actionButton(selected)}
 					</Flex>
 				</Flex>
 				{checkLimit && selected.length > checkLimit && (
 					<Text py={0} my={0} color="error">
-						Je překročen maximální počet stran
+						{t('pdf-dialog:warning_too_manny_pages')}
 					</Text>
 				)}
 			</Paper>
@@ -227,6 +228,7 @@ export const EditSelectedChildren: FC<Props> = ({
 }) => {
 	const { getChildren } = usePublicationContext2();
 	const data = useMemo(() => getChildren?.() ?? [], [getChildren]);
+	const { t } = useTranslation();
 	return (
 		<ModalDialog
 			label="Info"
@@ -235,11 +237,13 @@ export const EditSelectedChildren: FC<Props> = ({
 					px={1}
 					variant="text"
 					onClick={openModal}
-					tooltip={disabled ? 'Dostupné jen pro JSON a CSV' : 'Upravit seznam'}
+					tooltip={
+						disabled ? t('exports:dialog:json_csv_only') : t('common:edit')
+					}
 					fontSize="md"
 					disabled={disabled}
 				>
-					Upravit
+					{t('common:edit')}
 				</Button>
 			)}
 		>
@@ -249,7 +253,7 @@ export const EditSelectedChildren: FC<Props> = ({
 					closeModal={closeModal}
 					data={data ?? []}
 					variant="periodical"
-					title="Upravit seznam pro export"
+					title={t('exports:dialog:edit_export_list')}
 					actionButton={selected => (
 						<Button
 							disabled={selected.length < 1}
@@ -259,7 +263,7 @@ export const EditSelectedChildren: FC<Props> = ({
 								closeModal();
 							}}
 						>
-							Potvrdit
+							{t('common:confirm')}
 						</Button>
 					)}
 				/>
@@ -312,11 +316,11 @@ export const EditSelectedPublications: FC<Props> = ({ disabled, onEdit }) => {
 					px={1}
 					variant="text"
 					onClick={openModal}
-					tooltip="Upravit seznam"
+					tooltip={t('common:edit')}
 					fontSize="md"
 					disabled={disabled}
 				>
-					Upravit
+					{t('common:edit')}
 				</Button>
 			)}
 			onClose={() => onEdit?.([])}
@@ -383,7 +387,7 @@ export const EditSelectedPublications: FC<Props> = ({ disabled, onEdit }) => {
 									closeModal();
 								}}
 							>
-								Zavřít
+								{t('common:cancel')}
 							</Button>
 						</Flex>
 					</Paper>

@@ -2,12 +2,12 @@
 import { css } from '@emotion/core';
 import Dialog from '@reach/dialog';
 import { FC } from 'react';
-import { BiLinkExternal } from 'react-icons/bi';
 import { MdClose, MdDownload } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
-import Button, { NavLinkButton } from 'components/styled/Button';
+import Button from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
@@ -18,8 +18,6 @@ import { downloadFile, getDateString } from 'utils';
 import { api } from 'api';
 
 import { ExportDto } from 'api/exportsApi';
-
-import { ExportJobStatusToText } from 'utils/enumsMap';
 
 import {
 	AltoParam,
@@ -99,6 +97,8 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 		'teiParameters',
 	);
 
+	const { t } = useTranslation();
+
 	return (
 		<Flex
 			alignItems="center"
@@ -109,34 +109,22 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 			<Paper bg="paper" minWidth={['80%', 500]} overflow="visible">
 				<Box>
 					<Flex width={1} justifyContent="space-between" alignItems="center">
-						<H1 my={3}>Detail exportu publikace</H1>
+						<H1 my={3}>{t('exports:exports_dashboard:detail')}</H1>
 						<IconButton color="primary" onClick={closeModal}>
 							<MdClose size={32} />
 						</IconButton>
 					</Flex>
 					<Text fontSize="sm">
-						Název publikace:
-						<NavLinkButton
-							variant="text"
-							target="_blank"
-							ml={1}
-							p={0}
-							to={`/view/${exportDto.publicationId}`}
-						>
-							<Text as="span" fontWeight="bold" mr={2}>
-								{exportDto.publicationTitle}
-							</Text>
-							<BiLinkExternal size={14} />
-						</NavLinkButton>
+						{t('exports:exports_dashboard:export_name')}:{' '}
+						<Text as="span" fontWeight="bold" mr={2}>
+							{exportDto.publicationTitle}
+						</Text>
 					</Text>
 					<Text fontSize="sm">
-						ID publikace: <b>{exportDto.publicationId}</b>
+						Status: <b>{t(`exports:status_enum:${exportDto.status}`)}</b>
 					</Text>
 					<Text fontSize="sm">
-						Status: <b>{ExportJobStatusToText[exportDto.status]}</b>
-					</Text>
-					<Text fontSize="sm">
-						Vytvořeno:{' '}
+						{t('exports:exports_dashboard:created')}:{' '}
 						<b>
 							{exportDto.created
 								? getDateString(new Date(exportDto.created))
@@ -145,8 +133,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					</Text>
 					{(exportDto.status === 'COMPLETED' ||
 						exportDto.status == 'SUCCESSFUL') && (
-						<Text fontSize="sm">
-							Výsledek:
+						<Text fontSize="md">
 							<IconButton
 								onClick={async e => {
 									e.stopPropagation();
@@ -169,8 +156,8 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 									color="primary"
 									fontWeight="bold"
 								>
-									<Text my={0} py={0} px={1}>
-										Stáhnout
+									<Text my={0} py={0} px={1} fontSize="lg">
+										{t('exports:exports_dashboard:download')}
 									</Text>{' '}
 									<MdDownload size={16} />
 								</Flex>
@@ -181,7 +168,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 
 					<Box fontSize="md" mt={2}>
 						<Text my={2}>
-							Formát: <b>{exportDto.format}</b>
+							{t('exports:exports_dashboard:format')}: <b>{exportDto.format}</b>
 						</Text>
 
 						{exportDto.format === 'CSV' && exportDto.delimiter && (
@@ -192,7 +179,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								mr={2}
 							>
 								<Text my={2}>
-									Rozdělovač:{' '}
+									{t('exports:dialog:delimiter')}:{' '}
 									<b>
 										{delimiterOptions.find(d => d.id === exportDto.delimiter)
 											?.label ?? 'neznámy'}
@@ -203,7 +190,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						{(includeFields ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
-									Zahrnuté pole:
+									{t('exports:dialog:include_fields')}:{' '}
 								</Text>
 								<Flex flexWrap="wrap">
 									{includeFields?.map((f, i) => (
@@ -218,7 +205,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						{(excludeFields ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
-									Vynechané pole:
+									{t('exports:dialog:exclude_fields')}:{' '}
 								</Text>
 								<Flex flexWrap="wrap">
 									{excludeFields?.map((f, i) => (
@@ -232,7 +219,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						{(altoParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
-									Alto Params:
+									{t('exports:dialog:altoParams')}:{' '}
 								</Text>
 								<Flex flexWrap="wrap">
 									{altoParams?.map((p, i) => (
@@ -246,7 +233,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						{(nameTagParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
-									NameTag Params:
+									{t('exports:dialog:nameTagParams')}:{' '}
 								</Text>
 								<Flex flexWrap="wrap">
 									{nameTagParams?.map((p, i) => (
@@ -260,7 +247,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						{(udPipeParams ?? []).length > 0 && (
 							<Flex my={2} mr={2}>
 								<Text flexShrink={0} my={2}>
-									udPipe Params:
+									{t('exports:dialog:udPipeParams')}:{' '}
 								</Text>
 								<Flex flexWrap="wrap">
 									{udPipeParams?.map((p, i) => (
@@ -275,7 +262,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 					<Divider my={3} />
 					<Flex my={1} justifyContent="flex-end" alignItems="center">
 						<Button variant="primary" ml={3} onClick={closeModal}>
-							Zavřít
+							{t('common:cancel')}
 						</Button>
 					</Flex>
 				</Box>

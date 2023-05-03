@@ -23,8 +23,8 @@ export function assert(
 
 export const pluralRules = (
 	count: number,
-	options: { one: string; few: string; many: string },
-	showCount = true,
+	options = { one: 'one', few: 'few', many: 'many' },
+	showCount = false,
 ) => {
 	switch (Math.abs(count)) {
 		case 1:

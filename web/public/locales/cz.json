@@ -42,6 +42,7 @@
       "few": "výskyty",
       "many": "výskytů"
     },
+    "edit":"Upravit",
     "set_page_number": "Zadejte číslo stránky",
     "show_whole_title": "Ukaž celý titulek",
     "hide_whole_title": "Skryj celý titulek",
@@ -239,6 +240,8 @@
       "tooltip_sort_off": "Zrušit seřazení"
     },
     "dialog":{
+      "export_publication": "Exportovat publikaci",
+      "edit_export_list": "Upravit seznam stránek pro export",
       "all_enriched":"Všechny obohacené",
       "all_alto_available":"ALTO dostupné u všech označených publikací",
       "export_name":"Název exportu",
@@ -256,7 +259,11 @@
       "exclude_fields":"Nezahrnout pole",
       "finish_export_button":"Exportovat",
       "cancel":"Zrušit",
-      "publications_count":"publikací"
+      "publications_count":"publikací",
+      "json_csv_only":"Dostupné jen pro JSON a CSV",
+      "pub_title":"Název publikace",
+      "pub_id":"ID publikace"
+      
     },
     "exports_dashboard": {
       "page_title": "Exporty",
@@ -268,7 +275,8 @@
       "status": "Status",
       "created": "Vytvořeno",
       "format": "Formát",
-      "action": "Akce"
+      "action": "Akce",
+      "detail":"Detail exportu publikace"
     },
     "status_enum": {
       "CREATED": "Vytvořen",
