@@ -115,7 +115,6 @@ export const BibRootInfo: FC<{
 					{root.model === 'internalpart' && <BibInternalPartsDialog />}
 				</>
 			)}
-
 			<Box
 				pl={level > 0 ? 3 : 'unset'}
 				css={css`
@@ -129,6 +128,12 @@ export const BibRootInfo: FC<{
 					<Text color="#616161" fontSize="15px">
 						{root?.titles?.mainSubTitle ?? ''}
 					</Text>
+
+					{root?.identifiers?.isbn && (
+						<Text color="#616161" fontSize="15px">
+							ISBN {root?.identifiers?.isbn ?? ''}
+						</Text>
+					)}
 					<PartsInfo parts={root.parts} />
 					{isPeriodical && currentId !== root.pid && (
 						<Box>

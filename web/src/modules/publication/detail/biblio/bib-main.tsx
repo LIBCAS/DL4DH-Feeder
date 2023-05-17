@@ -124,7 +124,6 @@ const Bibliography = () => {
 								/>
 							</Box>
 						)}
-
 						{parts?.next?.uuid && (
 							<Box>
 								<BibLink
@@ -135,9 +134,7 @@ const Bibliography = () => {
 							</Box>
 						)}
 					</BibRootInfo>
-
 					<BibDonators donators={pubDetail.data?.donator ?? []} />
-
 					{pageDetail.data?.title && (
 						<Box mb={3}>
 							{t('metadata:page')}
@@ -179,7 +176,22 @@ const Bibliography = () => {
 						</Flex>
 					)}
 					{pubDetail.data?.model && (
-						<PubModelTagBadge model={pubDetail.data.model as ModelsEnum} />
+						<>
+							{pubDetail.data?.model === 'monographunit' ? (
+								<PubModelTagBadge model={'monographbundle' as ModelsEnum} />
+							) : (
+								<>
+									{pubDetail.data?.model === 'monograph' &&
+									!pubDetail.data?.datanode ? (
+										<PubModelTagBadge model={'monographbundle' as ModelsEnum} />
+									) : (
+										<PubModelTagBadge
+											model={pubDetail.data?.model as ModelsEnum}
+										/>
+									)}
+								</>
+							)}
+						</>
 					)}
 				</Flex>
 			</Box>

@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import {
 	usePublicationChildren,
@@ -26,7 +26,7 @@ const useSearchPageDetail = (
 		() => (publicationChildren ?? []).filter(child => results[child.pid]),
 		[publicationChildren, results],
 	);
-	console.log({ results });
+
 	//for word highlighting
 	const filteredOcrResults: PagesSearchResult[] = useMemo(
 		() =>
@@ -56,8 +56,9 @@ const useSearchPageDetail = (
 const useProcessPublication = (
 	multiview?: 'left' | 'right',
 ): PublicationContextSingleType => {
-	const { getApropriateIds } = useParseUrlIdsAndParams();
+	const { getApropriateIds, isDetailView } = useParseUrlIdsAndParams();
 	const { id, pageId, keys } = getApropriateIds(multiview);
+	const nav = useNavigate();
 
 	// TODO: treba vyfiltrovat kapitoly zase
 	// viz error
@@ -90,36 +91,51 @@ const useProcessPublication = (
 		if (filtered.isLoading) {
 			return;
 		}
-		if (!filtered.isActive) {
-			if (!pageId && childrenToUse?.[0]?.pid) {
-				sp.set(keys.page, childrenToUse?.[0]?.pid ?? 'index-detail-undefined');
-				setSp(sp, { replace: true });
-			}
-		} else {
-			if (filtered.notFound) {
-				if (pageId) {
-					sp.delete(keys.page);
-					setSp(sp, { replace: true });
-				}
-			} else {
-				if (pageId && !childrenToUse.some(c => c.pid === pageId)) {
+		// we need to redirect monographbundle to periodical page
+		if (
+			pubChildren?.[0]?.datanode === false &&
+			detailResponse?.data?.model === 'monograph' &&
+			isDetailView
+		) {
+			nav(`/periodical/${detailResponse.data.pid}`, { replace: true });
+			return;
+		}
+		if (isDetailView) {
+			if (!filtered.isActive) {
+				if (!pageId && childrenToUse?.[0]?.pid) {
 					sp.set(
 						keys.page,
 						childrenToUse?.[0]?.pid ?? 'index-detail-undefined',
 					);
 					setSp(sp, { replace: true });
+				}
+			} else {
+				if (filtered.notFound) {
+					if (pageId) {
+						sp.delete(keys.page);
+						setSp(sp, { replace: true });
+					}
 				} else {
-					if (!pageId && childrenToUse?.[0]?.pid) {
+					if (pageId && !childrenToUse.some(c => c.pid === pageId)) {
 						sp.set(
 							keys.page,
 							childrenToUse?.[0]?.pid ?? 'index-detail-undefined',
 						);
 						setSp(sp, { replace: true });
+					} else {
+						if (!pageId && childrenToUse?.[0]?.pid) {
+							sp.set(
+								keys.page,
+								childrenToUse?.[0]?.pid ?? 'index-detail-undefined',
+							);
+							setSp(sp, { replace: true });
+						}
 					}
 				}
 			}
 		}
 	}, [
+		nav,
 		childrenToUse,
 		keys.page,
 		pageId,
@@ -129,6 +145,10 @@ const useProcessPublication = (
 		filtered.notFound,
 		filtered.isActive,
 		filtered.isLoading,
+		detailResponse.data?.datanode,
+		detailResponse.data?.model,
+		detailResponse.data?.pid,
+		isDetailView,
 	]);
 
 	const childIndex = childrenToUse.findIndex(p => p.pid === pageId);
