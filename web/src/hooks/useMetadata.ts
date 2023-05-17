@@ -82,7 +82,7 @@ export type FormattedBibliohraphy = {
 	pid: string;
 	data: FormattedMetadata;
 	identifiers: {
-		issn: string;
+		isbn: string;
 	};
 	titles: {
 		mainTitle: string;
@@ -307,7 +307,7 @@ export const useMetadataFormatter = () => {
 				year: m.metadata.getYearRange(),
 				authors: getAuthors(m.metadata),
 				metadata: m.metadata,
-				identifiers: { issn: _.get(m.metadata.identifiers, 'issn') },
+				identifiers: { isbn: _.get(m.metadata.identifiers, 'isbn') },
 			}));
 		},
 		[formatMetadata, getAuthors, getPartsInfo, getTitles],
@@ -345,6 +345,7 @@ const MapDetailInfo = {
 	monographunit: {
 		key1: 'partNumber',
 		key2: 'date',
+		key3: 'title',
 	},
 
 	internalpart: {
@@ -375,20 +376,36 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 					const uuidNext = next?.pid;
 					const detailPrev = prev?.details;
 					const detailNext = next?.details;
+
+					const keysPrev = Object.keys(MapDetailInfo?.[prev?.model] ?? {});
+					const keysNext = Object.keys(MapDetailInfo?.[next?.model] ?? {});
+
 					const labelPrev = detailPrev
-						? `${detailPrev?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
-								detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]
-									? `(${detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]})`
-									: ''
-						  }`
+						? `${keysPrev
+								.map(k => detailPrev?.[MapDetailInfo?.[prev?.model]?.[k]] ?? '')
+								.join(' ')}`
 						: undefined;
+
+					// const labelPrevOld = detailPrev
+					// 	? `${detailPrev?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
+					// 			detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]
+					// 				? `(${detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]})`
+					// 				: ''
+					// 	  }`
+					// 	: undefined;
+
 					const labelNext = detailNext
-						? `${detailNext?.[MapDetailInfo?.[next?.model]?.key1] ?? ''} ${
-								detailNext?.[MapDetailInfo?.[next?.model]?.key2]
-									? `(${detailNext?.[MapDetailInfo?.[next?.model]?.key2]})`
-									: ''
-						  }`
+						? `${keysNext
+								.map(k => detailNext?.[MapDetailInfo?.[next?.model]?.[k]] ?? '')
+								.join(' ')}`
 						: undefined;
+					// const labelNextOld = detailNext
+					// 	? `${detailNext?.[MapDetailInfo?.[next?.model]?.key1] ?? ''} ${
+					// 			detailNext?.[MapDetailInfo?.[next?.model]?.key2]
+					// 				? `(${detailNext?.[MapDetailInfo?.[next?.model]?.key2]})`
+					// 				: ''
+					// 	  }`
+					// 	: undefined;
 
 					setParts({
 						prev: {
