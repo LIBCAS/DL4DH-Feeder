@@ -95,21 +95,36 @@ export const wordHighlightStyle = new Style({
 	}),
 });
 
+const getOrientationFromAlto = (result: unknown) => {
+	const res = deepSearchByKey(result, 'Page')?.flat()?.[0] as WordAltoObj;
+
+	const width = parseFloat(res?.['$']?.['WIDTH']);
+	const height = parseFloat(res?.['$']?.['HEIGHT']);
+
+	if (isNaN(width) || isNaN(height)) {
+		return undefined;
+	}
+	return { isFlipped: width > height, width, height };
+};
+
 export const useHighlightWord = (uuid: string) => {
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
 	const pctx = usePublicationContext2();
 	const results = pctx.filtered.filteredOcrResults;
 	const [words, setWords] = useState<WordAltoObj[]>([]);
-	console.log({ pctx });
+	const [orientation, setOrientation] = useState<
+		{ isFlipped: boolean; width: number; height: number } | undefined
+	>();
 
 	const pageResult = useMemo(
 		() => parsePageResult(results.find(r => r.pid === uuid)),
 		[results, uuid],
 	);
 	useEffect(() => {
-		XML.parseString(altoStream.data, (err, result) =>
-			setWords(deepSearchByKey(result, 'String').flat() as WordAltoObj[]),
-		);
+		XML.parseString(altoStream.data, (err, result) => {
+			setWords(deepSearchByKey(result, 'String').flat() as WordAltoObj[]);
+			setOrientation(getOrientationFromAlto(result));
+		});
 	}, [altoStream.data]);
 
 	const filtered: WordCoords[] = useMemo(
@@ -119,16 +134,28 @@ export const useHighlightWord = (uuid: string) => {
 						.map(ocr =>
 							words
 								.filter(w => compare(w?.$?.CONTENT ?? '', ocr))
-								.map(f => ({
-									hpos: parseInt(f.$.HPOS),
-									vpos: parseInt(f.$.VPOS),
-									swidth: parseInt(f.$.WIDTH),
-									sheight: parseInt(f.$.HEIGHT),
-								})),
+								.map(f =>
+									orientation?.isFlipped
+										? {
+												hpos: parseFloat(f.$.VPOS),
+												vpos:
+													orientation.width -
+													parseFloat(f.$.HPOS) -
+													parseFloat(f.$.WIDTH),
+												swidth: parseFloat(f.$.HEIGHT),
+												sheight: parseFloat(f.$.WIDTH),
+										  }
+										: {
+												hpos: parseInt(f.$.HPOS),
+												vpos: parseInt(f.$.VPOS),
+												swidth: parseInt(f.$.WIDTH),
+												sheight: parseInt(f.$.HEIGHT),
+										  },
+								),
 						)
 						.flat()
 				: [],
-		[pageResult, words],
+		[pageResult, words, orientation],
 	);
 
 	return filtered;
