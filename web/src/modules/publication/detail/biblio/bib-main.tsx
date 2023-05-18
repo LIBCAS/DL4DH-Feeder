@@ -16,6 +16,7 @@ import PrintDialog from 'modules/publication/print/PrintDialog';
 import CitationDialog from 'modules/quote/CitationDialog';
 import { PubModelTagBadge } from 'modules/searchResult/tiles/GenericTileItem';
 import ShareDialog from 'modules/share/ShareDialog';
+import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
 import { useTheme } from 'theme';
 
@@ -61,6 +62,8 @@ const Bibliography = () => {
 	const { id, pageId } = getApropriateIds();
 	const pubDetail = usePublicationDetail(id ?? '');
 	const pageDetail = usePublicationDetail(pageId ?? '');
+	const pctx = usePublicationContext2();
+
 	const theme = useTheme();
 	const { fcm, isLoading } = useMetadata(id ?? '');
 	const { format } = useMetadataFormatter();
@@ -175,6 +178,7 @@ const Bibliography = () => {
 							</Text>
 						</Flex>
 					)}
+					{/* TODO: refactor, move logic of monographbundle to useProcessPublication */}
 					{pubDetail.data?.model && (
 						<>
 							{pubDetail.data?.model === 'monographunit' ? (
@@ -182,7 +186,7 @@ const Bibliography = () => {
 							) : (
 								<>
 									{pubDetail.data?.model === 'monograph' &&
-									!pubDetail.data?.datanode ? (
+									!pctx.publicationChildren?.[0]?.datanode ? (
 										<PubModelTagBadge model={'monographbundle' as ModelsEnum} />
 									) : (
 										<PubModelTagBadge
