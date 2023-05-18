@@ -76,12 +76,18 @@ const getPartsInfoText = (
 	const result: (string | JSX.Element)[] = [];
 	const sourceIndex = pubContext.findIndex(pc => pc.model === currentSource);
 
-	//console.log(metadata);
+	const volumeNumber =
+		metadata['periodicalvolume']?.titles?.[0]?.partNumber ?? '';
+	const issueNumber = metadata['periodicalitem']?.titles?.[0]?.partNumber ?? '';
+	const monographPartNumber =
+		metadata['monographunit']?.titles?.[0]?.partNumber ??
+		metadata['monographunit']?.titles?.[1]?.partNumber ??
+		'';
 
-	const volumeNumber = metadata['periodicalvolume']?.titles[0].partNumber ?? '';
-	const issueNumber = metadata['periodicalitem']?.titles[0].partNumber ?? '';
-	const monographUnitName =
-		metadata['monographunit']?.titles[1].partNumber ?? '';
+	const monographPartName =
+		metadata['monographunit']?.titles?.[0]?.partName ??
+		metadata['monographunit']?.titles?.[1]?.partName ??
+		'';
 
 	let index = sourceIndex;
 	while (index < pubContext.length) {
@@ -135,7 +141,8 @@ const getPartsInfoText = (
 			result.push(`, ${volumeNumber} (${issueNumber})`);
 		}
 		if (metadata['monographunit']) {
-			result.push(`, ${monographUnitName}`);
+			result.push(`, sv. ${monographPartNumber}`);
+			result.push(`, ${monographPartName}`);
 		}
 	}
 
