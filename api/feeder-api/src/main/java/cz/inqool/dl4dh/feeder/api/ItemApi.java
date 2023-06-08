@@ -233,14 +233,15 @@ public class ItemApi {
         // If SOLR or SOLR_PLUS is requested, make a query to Kramerius Solr or Feeder Solr
         if (stream.equals("SOLR") || stream.equals("SOLR_PLUS")) {
             WebClient client = stream.equals("SOLR") ? kramerius : solrWebClient;
+            url = stream.equals("SOLR") ? "/search?q=PID:\"" + uuid + "\"" : "/select?q=PID:\"" + uuid + "\"";
             try {
                 SolrQueryResponseDto solrResponse = Objects.requireNonNull(client.get()
-                        .uri("/search?q=PID:\"" + uuid + "\"")
+                        .uri(url)
                         .acceptCharset(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(SolrQueryResponseDto.class).block());
-                Map<String, Object> document = solrResponse.getResponse().getDocs().stream().findFirst().orElse(null);
+                Map<String, Object> document = solrResponse.getResponse().getDocs().stream().findFirst().orElseThrow();
                 return ResponseEntity
                         .ok()
                         .contentType(MediaType.APPLICATION_JSON)
@@ -252,6 +253,14 @@ public class ItemApi {
         }
 
         // Get the stream
-        return kramerius.get().uri(url).retrieve().toEntity(ByteArrayResource.class).block();
+        ResponseEntity<ByteArrayResource> entity = kramerius.get().uri(url).retrieve().toEntity(ByteArrayResource.class).block();
+        MediaType mediaType = MediaType.TEXT_PLAIN;
+        try {
+            mediaType = Objects.requireNonNull(entity).getHeaders().getContentType();
+        }
+        catch (Exception ex) {
+            // OK
+        }
+        return ResponseEntity.ok().contentType(mediaType).body(entity.getBody());
     }
 }
