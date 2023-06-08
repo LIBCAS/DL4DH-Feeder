@@ -138,6 +138,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public boolean areEnriched(Set<String> PIDs) {
+        return reduceToEnrichedPIDs(PIDs).size() == PIDs.size();
+    }
+
+    @Override
     public SearchDto search(Filter filters) {
         boolean useEnriched = filters.useOnlyEnriched();
 

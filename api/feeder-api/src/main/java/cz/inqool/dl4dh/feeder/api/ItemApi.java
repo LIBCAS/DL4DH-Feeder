@@ -1,9 +1,15 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.inqool.dl4dh.feeder.dto.ChildSearchDto;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
+import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
+import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithHighlightResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
+import cz.inqool.dl4dh.feeder.kramerius.dto.StreamDto;
+import cz.inqool.dl4dh.feeder.service.SearchService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -12,6 +18,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,9 +40,14 @@ public class ItemApi {
     private WebClient solrWebClient;
 
     private final HttpSolrClient solr;
+    private final SearchService searchService;
 
-    public ItemApi(@Value("${solr.host.query}") String solrHost) {
+    private final ObjectMapper objectMapper;
+
+    public ItemApi(@Value("${solr.host.query}") String solrHost, SearchService searchService, ObjectMapper objectMapper) {
         this.solr = new HttpSolrClient.Builder(solrHost.trim()).build();
+        this.searchService = searchService;
+        this.objectMapper = objectMapper;
     }
 
     @Resource(name = "krameriusWebClient")
@@ -181,14 +193,64 @@ public class ItemApi {
     }
 
     @GetMapping("/{uuid}/streams")
-    public @ResponseBody Object streams(@PathVariable(value="uuid") String uuid) {
-        return kramerius.get()
-                .uri("/item/"+uuid+"/streams").retrieve().bodyToMono(Object.class).block();
+    public @ResponseBody Map<String, StreamDto> streams(@PathVariable(value="uuid") String uuid) {
+        Map<String, StreamDto> streams =  kramerius.get()
+                .uri("/item/"+uuid+"/streams").retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, StreamDto>>() {}).block();
+        streams.put("SOLR", new StreamDto("Solr document from Kramerius.", "application/json"));
+        if (searchService.areEnriched(Set.of(uuid))) {
+            streams.put("SOLR_PLUS", new StreamDto("Solr document from Kramerius+.", "application/json"));
+        }
+        if (hasDocumentFoxml(uuid)) {
+            streams.put("FOXML", new StreamDto("FOXML content of the document.", "application/xml"));
+        }
+        return streams;
+    }
+
+    /**
+     * Check if the document has FOXML stream
+     * @param uuid document id
+     * @return true if document has FOXML
+     */
+    private boolean hasDocumentFoxml(String uuid) {
+        try {
+            return Objects.requireNonNull(kramerius.get().uri("/item/" + uuid + "/foxml").retrieve()
+                    .toBodilessEntity().block()).getStatusCodeValue() == 200;
+        }
+        catch (NullPointerException ex) {
+            return false;
+        }
     }
 
     @GetMapping("/{uuid}/streams/{stream}")
     public @ResponseBody ByteArrayResource streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
-        return kramerius.get()
-                .uri("/item/"+uuid+"/streams/"+stream).retrieve().bodyToMono(ByteArrayResource.class).block();
+        // Base url for streams
+        String url = "/item/"+uuid+"/streams/"+stream;
+
+        // If FOXML is requested, change the url
+        if (stream.equals("FOXML")) {
+            url = "/item/"+uuid+"/foxml";
+        }
+
+        // If SOLR or SOLR_PLUS is requested, make a query to Kramerius Solr or Feeder Solr
+        if (stream.equals("SOLR") || stream.equals("SOLR_PLUS")) {
+            WebClient client = stream.equals("SOLR") ? kramerius : solrWebClient;
+            try {
+                SolrQueryResponseDto solrResponse = Objects.requireNonNull(client.get()
+                        .uri("/search?q=PID:\"" + uuid + "\"")
+                        .acceptCharset(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .retrieve()
+                        .bodyToMono(SolrQueryResponseDto.class).block());
+                Map<String, Object> document = solrResponse.getResponse().getDocs().stream().findFirst().orElse(null);
+                return new ByteArrayResource(objectMapper.writeValueAsBytes(document));
+            }
+            catch (JsonProcessingException ex) {
+                return new ByteArrayResource(new byte[]{});
+            }
+        }
+
+        // Get the stream
+        return kramerius.get().uri(url).retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 }
