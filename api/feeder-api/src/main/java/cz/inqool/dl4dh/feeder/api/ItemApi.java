@@ -1,10 +1,8 @@
 package cz.inqool.dl4dh.feeder.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.inqool.dl4dh.feeder.dto.ChildSearchDto;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithHighlightResponseDto;
 import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
@@ -18,8 +16,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -223,7 +221,7 @@ public class ItemApi {
     }
 
     @GetMapping("/{uuid}/streams/{stream}")
-    public @ResponseBody ByteArrayResource streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
+    public @ResponseBody ResponseEntity<ByteArrayResource> streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
         // Base url for streams
         String url = "/item/"+uuid+"/streams/"+stream;
 
@@ -243,14 +241,17 @@ public class ItemApi {
                         .retrieve()
                         .bodyToMono(SolrQueryResponseDto.class).block());
                 Map<String, Object> document = solrResponse.getResponse().getDocs().stream().findFirst().orElse(null);
-                return new ByteArrayResource(objectMapper.writeValueAsBytes(document));
+                return ResponseEntity
+                        .ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(new ByteArrayResource(objectMapper.writeValueAsBytes(document)));
             }
-            catch (JsonProcessingException ex) {
-                return new ByteArrayResource(new byte[]{});
+            catch (Exception ex) {
+                return ResponseEntity.notFound().build();
             }
         }
 
         // Get the stream
-        return kramerius.get().uri(url).retrieve().bodyToMono(ByteArrayResource.class).block();
+        return kramerius.get().uri(url).retrieve().toEntity(ByteArrayResource.class).block();
     }
 }
