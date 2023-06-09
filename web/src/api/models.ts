@@ -243,7 +243,28 @@ export type StreamTypeEnum =
 	| 'ALTO'
 	| 'TEXT_OCR'
 	| 'IMG_THUMB'
-	| 'DC';
+	| 'DC'
+	| 'FOXML'
+	| 'SOLR';
+export const StreamsOrder: Record<
+	//StreamTypeEnum & { ITEM: string; CHILDREN: string },
+	string,
+	number
+> = {
+	ITEM: 6,
+	CHILDREN: 7,
+	IMG_PREVIEW: 9,
+	BIBLIO_MODS: 0,
+	IMG_FULL_ADM: 99, // OFF
+	IMG_FULL: 10,
+	TEXT_OCR_ADM: 100, // OFF
+	ALTO: 4,
+	TEXT_OCR: 5,
+	IMG_THUMB: 8,
+	DC: 1,
+	FOXML: 3,
+	SOLR: 2,
+};
 
 export type AdvancedFilterFieldEnum =
 	| 'TITLE'
