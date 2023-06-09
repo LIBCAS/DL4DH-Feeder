@@ -7,6 +7,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import ModalDialog from 'components/modal';
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 import { Flex } from 'components/styled';
@@ -14,7 +15,9 @@ import { Flex } from 'components/styled';
 import { api } from 'api';
 
 import Store from 'utils/Store';
+
 import '@reach/menu-button/styles.css';
+import UserAccountModal from './UserAccountModal';
 
 const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 	const { keycloak } = useKeycloak();
@@ -65,19 +68,27 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			>
 				<Text>{t('history')}</Text>
 			</Button>
-			{/*<Button*/}
-			{/*	disabled*/}
-			{/*	onClick={() => nav('/account')}*/}
-			{/*	variant="text"*/}
-			{/*	color="primary"*/}
-			{/*	minWidth={50}*/}
-			{/*	px={1}*/}
-			{/*	my={2}*/}
-			{/*	fontSize="inherit"*/}
-			{/*	mr={4}*/}
-			{/*>*/}
-			{/*	<Text>{t('account')}</Text>*/}
-			{/*</Button>*/}
+
+			<ModalDialog
+				label={t('account')}
+				control={openModal => (
+					<Button
+						onClick={openModal}
+						variant="text"
+						color="primary"
+						minWidth={50}
+						px={1}
+						my={2}
+						fontSize="inherit"
+						mr={4}
+					>
+						<Text>{t('account')}</Text>
+					</Button>
+				)}
+			>
+				{closeModal => <UserAccountModal closeModal={closeModal} />}
+			</ModalDialog>
+
 			<Flex alignItems="center" justifyContent="space-between" width={1} px={2}>
 				<Flex alignItems="center">
 					<MdPerson size={22} />
@@ -127,9 +138,16 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 				<MenuItem onSelect={() => nav('/search-history')}>
 					{t('history')}
 				</MenuItem>
-				{/*<MenuItem disabled={true} onSelect={() => nav('/account')}>*/}
-				{/*	{t('account')}*/}
-				{/*</MenuItem>*/}
+
+				<ModalDialog
+					label={t('account')}
+					control={openModal => (
+						<MenuItem onSelect={openModal}>{t('account')}</MenuItem>
+					)}
+				>
+					{closeModal => <UserAccountModal closeModal={closeModal} />}
+				</ModalDialog>
+
 				<MenuItem
 					onSelect={async () => {
 						api().get('user/logout');

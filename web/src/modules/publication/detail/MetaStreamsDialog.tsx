@@ -19,7 +19,7 @@ import Tabs from 'components/tabs';
 
 import { useTheme } from 'theme';
 
-import { PublicationContext, StreamTypeEnum } from 'api/models';
+import { PublicationContext, StreamTypeEnum, StreamsOrder } from 'api/models';
 import {
 	StreamInfoDto,
 	usePublicationChildren,
@@ -30,6 +30,20 @@ import {
 
 import { ModelToText } from 'utils/enumsMap';
 
+const ViewImage: FC<{ uuid: string; stream: string }> = ({ stream, uuid }) => {
+	const path = `api/item/${uuid}/streams/${stream}`;
+	return (
+		<Box
+			width={1}
+			css={css`
+				background-image: url(${path});
+				background-size: contain;
+				background-repeat: no-repeat;
+			`}
+		/>
+	);
+};
+
 const ViewStream: FC<{
 	uuid: string;
 	stream: StreamTypeEnum;
@@ -37,6 +51,14 @@ const ViewStream: FC<{
 	contentRef: React.MutableRefObject<string>;
 }> = ({ uuid, stream, mime, contentRef }) => {
 	const response = useStreams(uuid, stream, mime);
+	const dataArr = useMemo(() => {
+		if (stream === 'SOLR') {
+			contentRef.current = response.data;
+			return response.data.split('\n');
+		} else {
+			return [] as string[];
+		}
+	}, [contentRef, response.data, stream]);
 	if (response.isLoading) {
 		return <LoaderSpin />;
 	}
@@ -45,6 +67,56 @@ const ViewStream: FC<{
 	//TODO: IMG_FULL_ADM => niekedy vracia obrazok... pozor mrzne to
 	//TODO: napr http://localhost:3000/view/uuid:93d73550-7099-11e5-99af-005056827e52?page=uuid%3A2f66a5f0-766c-11e5-83b9-5ef3fc9bb22f
 	//TEXT_OCR_ADM => niekedy je OCR a niekedy XML
+	//TODO: FIXME: DUPLICITNY KOD, zobecnit, riadit sa mimetype / content type
+	if (stream === 'SOLR') {
+		const ITEM_HEIGHT = 20;
+		const maxWidth = Math.max(...dataArr.map(c => c.length)) * 7;
+		return (
+			<Flex
+				flexDirection="column"
+				alignItems="flex-top"
+				css={css`
+					position: absolute;
+					top: 0;
+					width: 100%;
+					height: 100%;
+					overflow: hidden !important;
+				`}
+			>
+				<AutoSizer>
+					{({ width, height }) => (
+						<FixedSizeList
+							itemCount={dataArr.length}
+							width={width}
+							height={height}
+							itemSize={ITEM_HEIGHT}
+							style={{ overflow: 'auto' }}
+						>
+							{({ index, style }) => (
+								<Box
+									p={0}
+									m={0}
+									height={ITEM_HEIGHT}
+									style={{ ...style }}
+									minWidth={maxWidth}
+								>
+									<SyntaxHighlighter
+										language="json"
+										customStyle={{
+											background: 'transparent!important',
+											overflow: 'hidden',
+										}}
+									>
+										{dataArr[index]}
+									</SyntaxHighlighter>
+								</Box>
+							)}
+						</FixedSizeList>
+					)}
+				</AutoSizer>
+			</Flex>
+		);
+	}
 	return (
 		<Flex overflow="auto" width={1} p={2}>
 			{stream === 'TEXT_OCR' ? (
@@ -142,6 +214,8 @@ const ViewJSON: FC<{
 	);
 };
 
+const excludeStreams: StreamTypeEnum[] = ['IMG_FULL_ADM', 'TEXT_OCR_ADM'];
+
 const itemStream = {
 	key: 'ITEM',
 	mimeType: 'json',
@@ -171,13 +245,18 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	const allStreams = useStreamList(source?.pid ?? '');
 
 	const streamsOptions = useMemo(
-		() => [
-			itemStream,
-			childrenStream,
-			...allStreams.list.filter(
-				s => !s.mimeType.toUpperCase().includes('IMAGE'),
+		() =>
+			[
+				itemStream,
+				childrenStream,
+				...allStreams.list.filter(s => {
+					return !excludeStreams.some(es => es === s.key);
+				}),
+			].sort(
+				(a, b) =>
+					(StreamsOrder?.[a.key ?? ''] ?? 99) -
+					(StreamsOrder?.[b.key ?? ''] ?? 0),
 			),
-		],
 		[allStreams],
 	);
 
@@ -317,12 +396,21 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 								contentRef={contentRef}
 							/>
 						) : (
-							<ViewStream
-								uuid={source?.pid ?? 'stream_undefined'}
-								stream={selectedStream?.key ?? 'DC'}
-								mime={selectedStream?.mimeType ?? 'text/plain'}
-								contentRef={contentRef}
-							/>
+							<>
+								{selectedStream?.mimeType.toUpperCase().includes('IMAGE') ? (
+									<ViewImage
+										uuid={source?.pid ?? 'stream_undefined'}
+										stream={selectedStream?.key ?? ''}
+									/>
+								) : (
+									<ViewStream
+										uuid={source?.pid ?? 'stream_undefined'}
+										stream={selectedStream?.key ?? 'DC'}
+										mime={selectedStream?.mimeType ?? 'text/plain'}
+										contentRef={contentRef}
+									/>
+								)}
+							</>
 						)}
 					</>
 				) : (

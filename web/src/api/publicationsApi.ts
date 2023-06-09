@@ -205,7 +205,7 @@ export const useStreams = (
 					headers: { accept: mime ?? 'application/json' },
 					retry: { statusCodes: [408, 413, 429, 502, 503, 504] },
 				})
-				.then(r => r.text()),
+				.then(async r => await r.text()),
 		{
 			retry: 0,
 			refetchInterval: 600000,
@@ -223,15 +223,43 @@ export const useStreams = (
 	return { data, isLoading };
 };
 
-/*
+export const useUnicodeStreams = (
+	uuid: string,
+	stream: string,
+	mime?: string,
+	disabled?: boolean,
+) => {
+	const [data, setData] = useState<string>();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	//stackoverflow.com/questions/27318715/blob-url-with-utf-16le-encoding
+	const resp = useQuery(
+		['stream-unicode', uuid, stream],
+		() =>
+			api()
+				.get(`item/${uuid}/streams/${stream}`, {
+					headers: { accept: mime ?? 'text/plain' },
+					retry: { statusCodes: [408, 413, 429, 502, 503, 504] },
+				})
+				.then(async r => {
+					const arr = await r.arrayBuffer();
+					const uint8Array = new Uint8Array(arr);
+					const decoder = new TextDecoder('utf-16le');
+					const utf8String = decoder.decode(uint8Array);
+					return utf8String;
+				}),
+		{
+			retry: 0,
+			refetchInterval: 600000,
+			refetchOnWindowFocus: false,
+			enabled: !disabled,
+		},
+	);
+	useEffect(() => {
+		if (!resp.isLoading) {
+			setData(resp.data);
+			setIsLoading(false);
+		}
+	}, [resp]);
 
-api()
-				.get(
-					`https://kramerius5.nkp.cz/search/api/v5.0/item/${uuid}/streams/${stream}`,
-					{
-						headers: { accept: mime ?? 'application/json' },
-						timeout: 250,
-					},
-				)
-				.text(),
-				*/
+	return { data, isLoading };
+};
