@@ -1,11 +1,12 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { detect } from 'jschardet';
 
 import { Flex } from 'components/styled';
 
 import { Loader } from 'modules/loader';
 import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
-import { useStreams } from 'api/publicationsApi';
+import { useStreams, useUnicodeStreams } from 'api/publicationsApi';
 
 import { useMultiviewContext } from 'hooks/useMultiviewContext';
 
@@ -15,10 +16,17 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 	const { sidePanel } = useMultiviewContext();
 	const isSecond = sidePanel === 'right';
 	const response = useStreams(uuid, 'TEXT_OCR', 'text/plain');
+	const [unicodeVersion, setUnicodeVersion] = useState<boolean>(false);
+	const respUnicode = useUnicodeStreams(
+		uuid,
+		'TEXT_OCR',
+		'text/plain',
+		!unicodeVersion,
+	);
+
 	const pctx = usePublicationContext2();
 	const onZoomIn = useCallback(() => {
 		if (isSecond) {
-			//pctx.setOcrMode(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));
 			pctx.setOcrMode?.(p =>
 				p ? { ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 } : null,
 			);
@@ -31,7 +39,6 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 
 	const onZoomOut = useCallback(() => {
 		if (isSecond) {
-			//pctx.setOcrMode?.(p => ({ ...p, rightZoom: (p?.rightZoom ?? 12) * 1.1 }));
 			pctx.setOcrMode?.(p =>
 				p ? { ...p, rightZoom: (p?.rightZoom ?? 12) * 0.9 } : null,
 			);
@@ -41,12 +48,24 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 			);
 		}
 	}, [isSecond, pctx]);
-	if (response.isLoading) {
+
+	useEffect(() => {
+		if (
+			response.data &&
+			!response.isLoading &&
+			!detect(response.data).encoding
+		) {
+			setUnicodeVersion(true);
+		}
+	}, [response.data, response.isLoading]);
+
+	if (response.isLoading || respUnicode.isLoading) {
 		return <Loader />;
 	}
 	const fontSize = isSecond
 		? pctx.ocrMode?.rightZoom ?? 12
 		: pctx.ocrMode?.leftZoom ?? 12;
+
 	return (
 		<Flex
 			justifyContent="center"
@@ -62,7 +81,12 @@ const OcrView: FC<{ uuid: string }> = ({ uuid }) => {
 				onUpdateRotation={() => null}
 				onDragBoxModeEnabled={() => null}
 			/>
-			<pre>{response.data}</pre>
+
+			{unicodeVersion ? (
+				<pre>{respUnicode.data}</pre>
+			) : (
+				<pre>{response.data}</pre>
+			)}
 		</Flex>
 	);
 };
