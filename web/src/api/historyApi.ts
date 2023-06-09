@@ -17,9 +17,9 @@ export const useSearchHistory = (
 				)
 				.json<PageFilter>(),
 		{
-			staleTime: 600000,
+			staleTime: 1,
 			refetchInterval: 600000,
-			refetchOnWindowFocus: false,
+			refetchOnWindowFocus: true,
 			refetchIntervalInBackground: false,
 			enabled: !disabled,
 		},
