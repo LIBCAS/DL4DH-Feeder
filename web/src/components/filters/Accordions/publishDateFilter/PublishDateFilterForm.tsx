@@ -9,18 +9,23 @@ import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
-//TODO: toto obmedzenie nakoniec nechcu - min a maxYear, cize zatial zakomentovavam a obmedzuje sa len na [0, aktualny rok]
 const PublishDateFilterForm: FC<{
 	interval?: { maxYear: number; minYear: number };
-}> = () => {
+}> = ({ interval }) => {
 	const { t } = useTranslation('search');
-	const maxYear = new Date().getFullYear(); //interval?.maxYear ?? new Date().getFullYear();
-	const minYear = 0; //interval?.minYear ?? 0;
+	const maxYear = new Date().getFullYear();
+	const minYear = 0;
 	const [searchParams, setSearchParams] = useSearchParams();
 	const formik = useFormik<{ yearFrom: string; yearTo: string }>({
 		initialValues: {
-			yearFrom: searchParams.get('from') ?? minYear.toString(),
-			yearTo: searchParams.get('to') ?? maxYear.toString(),
+			yearFrom:
+				searchParams.get('from') ??
+				interval?.minYear?.toString?.() ??
+				minYear.toString(),
+			yearTo:
+				searchParams.get('to') ??
+				interval?.maxYear?.toString?.() ??
+				maxYear.toString(),
 		},
 
 		onSubmit: values => {
