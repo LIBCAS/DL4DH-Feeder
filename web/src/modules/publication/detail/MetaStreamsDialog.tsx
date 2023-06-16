@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { MdCode, MdCopyAll, MdExpandMore } from 'react-icons/md';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import XMLViewer from 'react-xml-viewer';
+import { detect } from 'jschardet';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
@@ -26,6 +27,7 @@ import {
 	usePublicationDetail,
 	useStreamList,
 	useStreams,
+	useUnicodeStreams,
 } from 'api/publicationsApi';
 
 import { ModelToText } from 'utils/enumsMap';
@@ -51,6 +53,14 @@ const ViewStream: FC<{
 	contentRef: React.MutableRefObject<string>;
 }> = ({ uuid, stream, mime, contentRef }) => {
 	const response = useStreams(uuid, stream, mime);
+	const [decodeUTF16, setDecodeUTF16] = useState<boolean>(false);
+	const responseUTF16 = useUnicodeStreams(
+		uuid,
+		'TEXT_OCR',
+		'text/plain',
+		!decodeUTF16,
+	);
+
 	const dataArr = useMemo(() => {
 		if (stream === 'SOLR') {
 			contentRef.current = response.data;
@@ -59,10 +69,24 @@ const ViewStream: FC<{
 			return [] as string[];
 		}
 	}, [contentRef, response.data, stream]);
-	if (response.isLoading) {
+
+	useEffect(() => {
+		if (
+			stream === 'TEXT_OCR' &&
+			response?.data &&
+			!response?.isLoading &&
+			!detect(response.data).encoding
+		) {
+			setDecodeUTF16(true);
+		}
+	}, [response.data, response.isLoading, stream]);
+
+	if (response.isLoading || responseUTF16.isLoading) {
 		return <LoaderSpin />;
 	}
-	contentRef.current = response.data ?? '';
+	contentRef.current = decodeUTF16
+		? responseUTF16.data ?? ''
+		: response.data ?? '';
 
 	//TODO: IMG_FULL_ADM => niekedy vracia obrazok... pozor mrzne to
 	//TODO: napr http://localhost:3000/view/uuid:93d73550-7099-11e5-99af-005056827e52?page=uuid%3A2f66a5f0-766c-11e5-83b9-5ef3fc9bb22f
@@ -121,7 +145,11 @@ const ViewStream: FC<{
 		<Flex overflow="auto" width={1} p={2}>
 			{stream === 'TEXT_OCR' ? (
 				<Text>
-					<pre>{response.data}</pre>
+					{decodeUTF16 ? (
+						<pre>{responseUTF16?.data}</pre>
+					) : (
+						<pre>{response.data}</pre>
+					)}
 				</Text>
 			) : (
 				<>
