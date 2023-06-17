@@ -8,3 +8,10 @@ services:
     build:
       args:
         REACT_APP_KEYCLOAK_URL: https://keycloak.sekan.eu
+  keycloak:
+    image: tianon/true
+    command: /true
+    deploy:
+      resources:
+        limits:
+          memory: 10m
