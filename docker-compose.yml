@@ -20,7 +20,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 300m
+          memory: 100m
   keycloak:
     image: quay.io/keycloak/keycloak:19.0.1
     command: start-dev
@@ -33,7 +33,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 600m
+          memory: 400m
     expose:
       - 8080
     environment:
