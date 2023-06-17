@@ -11,7 +11,9 @@ services:
   keycloak:
     image: tianon/true
     command: /true
+    restart: "no"
     deploy:
+      replicas: 0
       resources:
         limits:
           memory: 10m
