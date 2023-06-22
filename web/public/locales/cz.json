@@ -1326,5 +1326,13 @@
     "wdc": "Dřevořezbář",
     "wde": "Dřevorytec",
     "wit": "Svědek"
+  },
+  "user": {
+    "user-info-dialog": {
+      "title":"Informace o uživateli",
+      "name":"Jméno",
+      "email":"E-mail",
+      "roles":"Role"
+    }
   }
 }

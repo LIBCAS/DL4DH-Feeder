@@ -1685,5 +1685,13 @@
     "wit": "Witness",
     "wpr": "Writer of preface",
     "wst": "Writer of supplementary textual content"
+  },
+  "user": {
+    "user-info-dialog": {
+      "title":"User information",
+      "name":"Name",
+      "email":"E-mail",
+      "roles":"Roles"
+    }
   }
 }
