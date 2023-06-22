@@ -57,7 +57,7 @@ const PublicationDetail = () => {
 					<Flex
 						overflow="visible"
 						width={leftCollapsed ? 0 : 300}
-						minWidth={0}
+						minWidth={leftCollapsed ? 0 : 300}
 						maxWidth={300}
 						zIndex={3}
 						css={css`
