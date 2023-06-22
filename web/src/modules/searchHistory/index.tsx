@@ -43,6 +43,55 @@ const isAdvancedFilterActive = (filter: FiltersDto): boolean => {
 	return true;
 };
 
+const constructQuery = (filter: FiltersDto) => {
+	const sp = new URLSearchParams();
+
+	if (filter.query && !isAdvancedFilterActive(filter)) {
+		sp.append('query', filter.query);
+	}
+	if (filter.availability) {
+		sp.set('availability', filter.availability);
+	}
+
+	if (filter.enrichment && filter.enrichment !== 'ALL') {
+		sp.set('enrichment', filter.enrichment);
+	}
+
+	if (filter.models) {
+		filter.models.forEach(m => sp.append('models', m));
+	}
+	if (filter.keywords) {
+		filter.keywords.forEach(m => sp.append('keywords', m));
+	}
+	if (filter.authors) {
+		filter.authors.forEach(m => sp.append('authors', m));
+	}
+	if (filter.languages) {
+		filter.languages.forEach(m => sp.append('languages', m));
+	}
+
+	if (isAdvancedFilterActive(filter)) {
+		sp.set('field', filter.advancedFilterField);
+		sp.set('value', filter.query);
+	}
+
+	['from', 'to', 'nameTagFacet'].map(key => {
+		if (filter?.[key]) {
+			sp.set(key, filter[key]);
+		}
+	});
+	if (filter.nameTagFilters && filter.nameTagFilters.length > 0) {
+		filter.nameTagFilters.forEach(nt => {
+			const formatedNt = nameTagQueryCtor(nt.type, nt.operator, nt.values[0]);
+			if (formatedNt) {
+				sp.append(formatedNt?.name, formatedNt?.value);
+			}
+		});
+	}
+
+	return `/search?${sp.toString()}`;
+};
+
 const SearchHistory = () => {
 	const enumToText = useActiveFilterLabel();
 	const { t } = useTranslation();
@@ -55,55 +104,6 @@ const SearchHistory = () => {
 		sort: { direction: sorting, field: 'createdAt' },
 	});
 
-	const constructQuery = useCallback((filter: FiltersDto) => {
-		const sp = new URLSearchParams();
-
-		if (filter.query && !isAdvancedFilterActive(filter)) {
-			sp.append('query', filter.query);
-		}
-		if (filter.availability) {
-			sp.set('availability', filter.availability);
-		}
-
-		if (filter.enrichment && filter.enrichment !== 'ALL') {
-			sp.set('enrichment', filter.enrichment);
-		}
-
-		if (filter.models) {
-			filter.models.forEach(m => sp.append('models', m));
-		}
-		if (filter.keywords) {
-			filter.keywords.forEach(m => sp.append('keywords', m));
-		}
-		if (filter.authors) {
-			filter.authors.forEach(m => sp.append('authors', m));
-		}
-		if (filter.languages) {
-			filter.languages.forEach(m => sp.append('languages', m));
-		}
-
-		if (isAdvancedFilterActive(filter)) {
-			sp.set('field', filter.advancedFilterField);
-			sp.set('value', filter.query);
-		}
-
-		['from', 'to', 'nameTagFacet'].map(key => {
-			if (filter?.[key]) {
-				sp.set(key, filter[key]);
-			}
-		});
-		if (filter.nameTagFilters && filter.nameTagFilters.length > 0) {
-			filter.nameTagFilters.forEach(nt => {
-				const formatedNt = nameTagQueryCtor(nt.type, nt.operator, nt.values[0]);
-				if (formatedNt) {
-					sp.append(formatedNt?.name, formatedNt?.value);
-				}
-			});
-		}
-
-		return `/search?${sp.toString()}`;
-	}, []);
-
 	if (response.isLoading) {
 		return <Loader />;
 	}
@@ -112,7 +112,9 @@ const SearchHistory = () => {
 		formatted: formatActiveFilters(h),
 		link: constructQuery(h),
 		created: h.createdAt
-			? new Date(h.createdAt)?.toLocaleDateString?.('cs') ?? h.id
+			? `${new Date(h.createdAt)?.toLocaleDateString?.('cs') ?? h.id} ${
+					new Date(h.createdAt)?.toLocaleTimeString?.('cs') ?? h.id
+			  }`
 			: h.id,
 		query: h,
 		id: h.id,
