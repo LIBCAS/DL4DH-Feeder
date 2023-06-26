@@ -254,13 +254,21 @@ public class ItemApi {
 
         // Get the stream
         ResponseEntity<ByteArrayResource> entity = kramerius.get().uri(url).retrieve().toEntity(ByteArrayResource.class).block();
+        if (entity == null) {
+            return ResponseEntity.notFound().build();
+        }
+        ByteArrayResource body = entity.getBody();
+
+        // Get correct media type
         MediaType mediaType = MediaType.TEXT_PLAIN;
         try {
-            mediaType = Objects.requireNonNull(entity).getHeaders().getContentType();
+            if (entity.getHeaders().getContentType() != null) {
+                mediaType = entity.getHeaders().getContentType();
+            }
         }
         catch (Exception ex) {
             // OK
         }
-        return ResponseEntity.ok().contentType(mediaType).body(entity.getBody());
+        return ResponseEntity.ok().contentType(mediaType).body(body);
     }
 }

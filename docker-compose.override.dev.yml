@@ -4,6 +4,7 @@ services:
     environment:
       KEYCLOAK_AUTH-SERVER-URL: https://keycloak.sekan.eu
       KEYCLOAK_SSL-REQUIRED: none
+      INFO_APP_CONTACT: "lhotak@knav.cz"
   feederfe:
     build:
       args:

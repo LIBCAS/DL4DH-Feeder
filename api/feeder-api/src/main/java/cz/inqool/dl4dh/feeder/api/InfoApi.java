@@ -1,11 +1,12 @@
 package cz.inqool.dl4dh.feeder.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.inqool.dl4dh.feeder.dto.Info.FeederVersionDto;
+import cz.inqool.dl4dh.feeder.dto.Info.FeederInfoDto;
 import cz.inqool.dl4dh.feeder.dto.Info.InfoDto;
 import cz.inqool.dl4dh.feeder.dto.Info.KrameriusPlusVersionDto;
 import cz.inqool.dl4dh.feeder.dto.Info.KrameriusVersionDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -21,20 +22,23 @@ public class InfoApi {
 
     private WebClient krameriusPlus;
     private final String version;
+    private final String contact;
 
-    public InfoApi(@Value("${info.app.version:unknown}") String version) {
+    public InfoApi(@Value("${info.app.version:unknown}") String version, @Value("${info.app.contact:unknown}") String contact) {
         this.version = version;
+        this.contact = contact;
     }
 
     @GetMapping
     public InfoDto info() {
         Map<Object, Object> krameriusInfo = krameriusPlus.get()
-                .uri("/info").retrieve().bodyToMono(Map.class).block();
+                .uri("/info").retrieve().bodyToMono(new ParameterizedTypeReference<Map<Object, Object>>() {}).block();
+        FeederInfoDto feederInfo = new FeederInfoDto(version, contact);
         ObjectMapper mapper = new ObjectMapper();
         return new InfoDto(
-                new FeederVersionDto(version),
-                mapper.convertValue(krameriusInfo.get("krameriusPlus"), KrameriusPlusVersionDto.class),
-                mapper.convertValue(krameriusInfo.get("kramerius"), KrameriusVersionDto.class)
+                feederInfo,
+                krameriusInfo == null ? null : mapper.convertValue(krameriusInfo.get("krameriusPlus"), KrameriusPlusVersionDto.class),
+                krameriusInfo == null ? null : mapper.convertValue(krameriusInfo.get("kramerius"), KrameriusVersionDto.class)
         );
     }
 

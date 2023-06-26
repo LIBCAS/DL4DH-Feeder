@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FeederVersionDto {
+public class FeederInfoDto {
     private String version;
+    private String contact;
 }

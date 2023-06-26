@@ -50,6 +50,7 @@ system:
 info:
   app:
     version: '@project.version@'
+    contact: ''
 
 solr:
   host:
