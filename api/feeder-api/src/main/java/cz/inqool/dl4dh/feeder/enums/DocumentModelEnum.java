@@ -7,5 +7,6 @@ public enum DocumentModelEnum {
     GRAPHICS,
     ARCHIVAL,
     MANUSCRIPT,
-    SHEETMUSIC
+    SHEETMUSIC,
+    PAGE
 }
