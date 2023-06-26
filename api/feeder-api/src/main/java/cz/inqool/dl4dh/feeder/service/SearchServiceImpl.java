@@ -3,6 +3,7 @@ package cz.inqool.dl4dh.feeder.service;
 import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.dto.PublicationsListDto;
 import cz.inqool.dl4dh.feeder.dto.SearchDto;
+import cz.inqool.dl4dh.feeder.enums.DocumentModelEnum;
 import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
@@ -146,7 +147,9 @@ public class SearchServiceImpl implements SearchService {
     public SearchDto search(Filter filters) {
         boolean useEnriched = filters.useOnlyEnriched();
 
-        List<String> filterBase = List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
+        // Filter only basic types of documents if a page is not selected as a model
+        List<String> filterBase = filters.getModels().contains(DocumentModelEnum.PAGE) ? List.of() :
+                List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
         List<String> facetBase = List.of("keywords", "language", "facet_autor", "model_path", "dostupnost", "collection", "datum_begin");
 
         // Get documents from Feeder
