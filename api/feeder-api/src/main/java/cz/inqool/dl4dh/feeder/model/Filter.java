@@ -133,7 +133,7 @@ public class Filter extends AuditModel {
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {
         List<List<String>> list = new ArrayList<>();
-        if (base != null ){
+        if (base != null && !base.isEmpty()){
             list.add(base);
         }
 
