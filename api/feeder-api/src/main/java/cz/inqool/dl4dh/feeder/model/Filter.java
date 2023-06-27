@@ -34,6 +34,9 @@ public class Filter extends AuditModel {
     @Column(columnDefinition = "text")
     private String query = "";
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean searchThroughPages = false;
+
     //K5 filters
     private AvailabilityEnum availability = AvailabilityEnum.ALL;
 
@@ -133,7 +136,7 @@ public class Filter extends AuditModel {
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {
         List<List<String>> list = new ArrayList<>();
-        if (base != null && !base.isEmpty()){
+        if (base != null && !base.isEmpty()) {
             list.add(base);
         }
 
@@ -142,12 +145,16 @@ public class Filter extends AuditModel {
         }
 
         if (!models.isEmpty()) {
+            // If the user is searching through pages, we have to filter through model_path to filter parent's model
+            // model_path is a string with multiple values with delimiter
+            boolean useBaseModel = (base != null && base.contains("fedora.model:page"));
+            String modelPrefix = useBaseModel ? "model_path" : "fedora.model";
             list.add(models.stream().map(v -> {
                 if (v == DocumentModelEnum.MONOGRAPH) {
-                    return "fedora.model:monograph OR fedora.model:monographunit";
+                    return modelPrefix+":monograph OR "+modelPrefix+":monographunit";
                 }
-                return "fedora.model:" + v.toString().toLowerCase();
-            }).collect(Collectors.toList()));
+                return modelPrefix+":" + v.toString().toLowerCase();
+            }).map(v -> (useBaseModel ? v+"*" : v)).collect(Collectors.toList()));
         }
 
         if (!keywords.isEmpty()) {

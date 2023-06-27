@@ -100,6 +100,7 @@ public class FeedApi {
                                 (List<String>)d.get("author"),
                                 (String)d.get("title"),
                                 (String)d.get("pid"),
+                                List.of(),
                                 (String)d.get("root_title"),
                                 enrichedPIDs.contains((String)d.get("pid"))
                         )

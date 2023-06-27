@@ -32,6 +32,9 @@ public class PublicationDto {
     private String pid;
 
     @NotNull
+    private List<String> parentPid;
+
+    @NotNull
     private String rootTitle;
 
     @NotNull

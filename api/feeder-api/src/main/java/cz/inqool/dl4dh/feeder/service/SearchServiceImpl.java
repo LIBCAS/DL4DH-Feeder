@@ -3,7 +3,6 @@ package cz.inqool.dl4dh.feeder.service;
 import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.dto.PublicationsListDto;
 import cz.inqool.dl4dh.feeder.dto.SearchDto;
-import cz.inqool.dl4dh.feeder.enums.DocumentModelEnum;
 import cz.inqool.dl4dh.feeder.enums.EnrichmentEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
@@ -148,7 +147,7 @@ public class SearchServiceImpl implements SearchService {
         boolean useEnriched = filters.useOnlyEnriched();
 
         // Filter only basic types of documents if a page is not selected as a model
-        List<String> filterBase = filters.getModels().contains(DocumentModelEnum.PAGE) ? List.of() :
+        List<String> filterBase = filters.isSearchThroughPages() ? List.of("fedora.model:page") :
                 List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
         List<String> facetBase = List.of("keywords", "language", "facet_autor", "model_path", "dostupnost", "collection", "datum_begin");
 
@@ -163,7 +162,7 @@ public class SearchServiceImpl implements SearchService {
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field", f));
                     return uriBuilder.queryParam("q", filters.toQuery())
-                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
+                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true")
@@ -192,7 +191,7 @@ public class SearchServiceImpl implements SearchService {
                             .applyEdismaxToUriBuilder(uriBuilder, false);
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     return uriBuilder.queryParam("q", filters.toQuery())
-                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,datum_str,dnnt-labels")
+                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("f.datum_begin.facet.limit", "-1")
@@ -252,6 +251,7 @@ public class SearchServiceImpl implements SearchService {
                                         (List<String>) d.get("dc.creator"),
                                         (String) d.get("dc.title"),
                                         (String) d.get("PID"),
+                                        (List<String>) d.get("parent_pid"),
                                         (String) d.get("root_title"),
                                         enrichedPIDs.contains((String) d.get("PID"))
                                 )

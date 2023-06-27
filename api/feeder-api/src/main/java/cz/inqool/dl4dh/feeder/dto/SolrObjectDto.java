@@ -23,6 +23,9 @@ public class SolrObjectDto {
     @NotNull
     private final String root_pid;
 
+    @Field
+    private List<String> parent_pid;
+
     @Field("root_title")
     private String rootTitle;
 

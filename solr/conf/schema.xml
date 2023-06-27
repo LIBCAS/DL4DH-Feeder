@@ -34,6 +34,7 @@
 
     <!-- K5 fields -->
     <field name="root_pid" type="string" indexed="true" stored="true"/>
+    <field name="parent_pid" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="root_title" type="text_general_not_lemmatized" indexed="true" stored="true"/>
     <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="datum_begin" type="int" default="0" indexed="true" stored="true"/>

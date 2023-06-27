@@ -225,7 +225,7 @@ public class ImportServiceImpl implements ImportService {
             for (SolrObjectDto solrObjectDto : newObjects) {
                 SolrQueryResponseDto result = kramerius.get()
                         .uri("/search", uriBuilder -> uriBuilder
-                                .queryParam("fl", "PID,root_title,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,datum_str,keywords,language,collection,created_date,title_sort,facet_autor,model_path")
+                                .queryParam("fl", "PID,root_title,parent_pid,dostupnost,fedora.model,dc.creator,dc.title,datum_begin,datum_end,datum_str,keywords,language,collection,created_date,title_sort,facet_autor,model_path")
                                 .queryParam("q", "PID:" + solrObjectDto.getPID().replace(":", "\\:"))
                                 .queryParam("rows", "1")
                                 .build())
@@ -238,6 +238,7 @@ public class ImportServiceImpl implements ImportService {
                     Map<String, Object> values = result.getResponse().getDocs().stream().findFirst().get();
                     String created_date = (String) values.getOrDefault("created_date", null);
                     solrObjectDto.setRootTitle((String) values.get("root_title"));
+                    solrObjectDto.setParent_pid((ArrayList<String>) values.getOrDefault("parent_pid", new ArrayList<>()));
                     solrObjectDto.setModel((String) values.get("fedora.model"));
                     solrObjectDto.setDostupnost((String) values.get("dostupnost"));
                     solrObjectDto.setTitle((String) values.get("dc.title"));
