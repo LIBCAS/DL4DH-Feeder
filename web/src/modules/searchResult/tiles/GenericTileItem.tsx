@@ -17,6 +17,7 @@ import { SelectedOverlayCss, theme } from 'theme';
 import { ModelsEnum, PublicationDto } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
+import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import { modelToText, modelToColor } from 'utils/enumsMap';
 
@@ -51,10 +52,15 @@ const GenericTileItem: React.FC<Props> = ({
 	tileWrapperCss,
 }) => {
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
+	const { variant } = useSearchThroughContext();
+
 	const push = useNavigate();
 	const { t } = useTranslation('search');
 	const isPeriodical = publication.model.includes('periodical');
-	const url = `/${isPeriodical ? 'periodical' : 'view'}/${publication.pid}`;
+	const url = `/${
+		// eslint-disable-next-line no-nested-ternary
+		variant === 'pages' ? 'uuid' : isPeriodical ? 'periodical' : 'view'
+	}/${publication.pid}`;
 	const isSelected = exportModeOn && uuidHeap[publication.pid]?.selected;
 
 	return (

@@ -25,12 +25,15 @@ import { useSearchContext } from 'hooks/useSearchContext';
 import { useSearchResultContext } from 'hooks/useSearchResultContext';
 import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useDashboardFilters } from 'hooks/useDashboardFilters';
+import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
+import DashboardSearchThroughSwitch from './DashboardSearchThroughSwitch';
 
 const Dashboard: FC = () => {
 	const { state } = useSearchContext();
 	const { setResult } = useSearchResultContext();
+	const { variant: searchVariant } = useSearchThroughContext();
 	const { t } = useTranslation();
 
 	const {
@@ -45,6 +48,7 @@ const Dashboard: FC = () => {
 		start: ((state?.searchQuery?.page ?? 1) - 1) * state.pageSize,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
+		searchThroughPages: searchVariant === 'pages',
 		..._.omit(state.searchQuery, 'page'),
 	});
 	const {
@@ -104,6 +108,7 @@ const Dashboard: FC = () => {
 							</Flex>
 							<Flex>
 								<DashboardViewModeSwitcher />
+								<DashboardSearchThroughSwitch />
 								<Flex mr={3} alignItems="center">
 									<Sorting />
 									{state.viewMode !== 'graph' && <BulkExportModeSwitch />}

@@ -20,6 +20,7 @@ import { BulkExportContextProvider } from 'hooks/useBulkExport';
 import { SearchResultContextProvider } from 'hooks/useSearchResultContext';
 import { DashboardFiltersContextProvider } from 'hooks/useDashboardFilters';
 import { FullscreenContextProvider } from 'hooks/useFullscreenContext';
+import { SearchThroughContextProvider } from 'hooks/useSearchThroughContext';
 
 import { APP_CONTEXT } from 'utils/enumsMap';
 import Store from 'utils/Store';
@@ -52,20 +53,22 @@ const App = () => {
 									<SearchResultContextProvider>
 										<BulkExportContextProvider>
 											<SearchContextProvider>
-												<GlobalStyles />
-												<ToastifyStyles />
-												<Header />
-												<AppRoutes />
-												<ToastContainer
-													position="bottom-center"
-													newestOnTop={false}
-													closeOnClick
-													draggable
-													pauseOnHover
-													transition={Slide}
-													autoClose={5000}
-												/>
-												<TooltipRender />
+												<SearchThroughContextProvider>
+													<GlobalStyles />
+													<ToastifyStyles />
+													<Header />
+													<AppRoutes />
+													<ToastContainer
+														position="bottom-center"
+														newestOnTop={false}
+														closeOnClick
+														draggable
+														pauseOnHover
+														transition={Slide}
+														autoClose={5000}
+													/>
+													<TooltipRender />
+												</SearchThroughContextProvider>
 											</SearchContextProvider>
 										</BulkExportContextProvider>
 									</SearchResultContextProvider>
