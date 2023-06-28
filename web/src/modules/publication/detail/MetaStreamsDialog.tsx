@@ -62,7 +62,7 @@ const ViewStream: FC<{
 	);
 
 	const dataArr = useMemo(() => {
-		if (stream === 'SOLR') {
+		if (stream === 'SOLR' || stream === 'SOLR_PLUS') {
 			contentRef.current = response.data;
 			return response.data.split('\n');
 		} else {
@@ -92,7 +92,7 @@ const ViewStream: FC<{
 	//TODO: napr http://localhost:3000/view/uuid:93d73550-7099-11e5-99af-005056827e52?page=uuid%3A2f66a5f0-766c-11e5-83b9-5ef3fc9bb22f
 	//TEXT_OCR_ADM => niekedy je OCR a niekedy XML
 	//TODO: FIXME: DUPLICITNY KOD, zobecnit, riadit sa mimetype / content type
-	if (stream === 'SOLR') {
+	if (stream === 'SOLR' || stream === 'SOLR_PLUS') {
 		const ITEM_HEIGHT = 20;
 		const maxWidth = Math.max(...dataArr.map(c => c.length)) * 7;
 		return (
