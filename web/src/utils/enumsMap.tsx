@@ -38,6 +38,7 @@ const ModelsTexts: Record<ModelsEnum, string> = {
 	MONOGRAPHBUNDLE: 'monographbundle',
 	PERIODICALVOLUME: 'periodicalvolume',
 	INTERNALPART: 'internalpart',
+	PAGE: 'page',
 };
 const ModelsColors: Record<ModelsEnum, string> = {
 	ARCHIVAL: 'primary',
@@ -52,6 +53,7 @@ const ModelsColors: Record<ModelsEnum, string> = {
 	MONOGRAPHUNIT: 'modelMonograph',
 	MONOGRAPHBUNDLE: 'modelMonograph',
 	INTERNALPART: 'modelMonograph',
+	PAGE: 'warning',
 };
 
 export const modelToText = (model: ModelsEnum) => {
