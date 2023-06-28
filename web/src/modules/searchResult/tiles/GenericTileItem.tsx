@@ -5,6 +5,7 @@ import { MdCalendarToday, MdLock, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled/macro';
 import { useTranslation } from 'react-i18next';
+import { FaBookOpen } from 'react-icons/fa';
 
 import { Flex } from 'components/styled';
 import AspectRatio from 'components/styled/AspectRatio';
@@ -209,7 +210,9 @@ const GenericTileItem: React.FC<Props> = ({
 								white-space: nowrap;
 							`}
 						>
-							{publication.title}
+							{publication.model.toUpperCase() === 'PAGE'
+								? publication.rootTitle
+								: publication.title}
 						</H3>
 
 						<Flex
@@ -218,15 +221,23 @@ const GenericTileItem: React.FC<Props> = ({
 							flexDirection="column"
 							color="textCommon"
 						>
-							<Flex alignItems="center">
-								<MdPerson color="primary" />
-								{'  '}
-								<Cell>
-									{typeof publication.authors === 'object'
-										? publication.authors.map(a => a)
-										: publication.authors}
-								</Cell>
-							</Flex>
+							{publication.model.toUpperCase() === 'PAGE' ? (
+								<Flex alignItems="center">
+									<FaBookOpen color="primary" />
+									{'  '}
+									<Text ml={2}>{publication.title}</Text>
+								</Flex>
+							) : (
+								<Flex alignItems="center">
+									<MdPerson color="primary" />
+									{'  '}
+									<Cell>
+										{typeof publication.authors === 'object'
+											? publication.authors.map(a => a)
+											: publication.authors}
+									</Cell>
+								</Flex>
+							)}
 							<Flex alignItems="center">
 								<MdCalendarToday color="primary" />
 								<Text ml={2}>
