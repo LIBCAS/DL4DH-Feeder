@@ -85,6 +85,7 @@ const NameTagFilter = () => {
 		[formik.submitForm],
 	);
 
+	//const availableNameTagFilters = data?.pages?.[0].availableNameTagFilters;
 	const availableNameTagFilters = data?.availableNameTagFilters;
 	const {
 		handleSubmit,

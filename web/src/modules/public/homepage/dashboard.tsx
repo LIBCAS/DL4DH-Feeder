@@ -16,16 +16,14 @@ import Sorting from 'modules/sorting/Sorting';
 import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
 import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
 
-import {
-	useAvailableFilters,
-	useSearchPublications,
-} from 'api/publicationsApi';
+import { useSearchPublications } from 'api/publicationsApi';
 
 import { useSearchContext } from 'hooks/useSearchContext';
 import { useSearchResultContext } from 'hooks/useSearchResultContext';
 import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useDashboardFilters } from 'hooks/useDashboardFilters';
 import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
+import { AvailableFiltersContextProvider } from 'hooks/useAvailableFiltersContext';
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 import DashboardSearchThroughSwitch from './DashboardSearchThroughSwitch';
@@ -35,6 +33,10 @@ const Dashboard: FC = () => {
 	const { setResult } = useSearchResultContext();
 	const { variant: searchVariant } = useSearchThroughContext();
 	const { t } = useTranslation();
+	const parsedPage = parseInt(
+		(state?.searchQuery?.page as unknown as string) ?? '',
+	);
+	const page = isNaN(parsedPage) ? 1 : parsedPage;
 
 	const {
 		data,
@@ -44,18 +46,20 @@ const Dashboard: FC = () => {
 		isRefetching,
 		hasMore,
 		availableFilters,
+		dataUpdatedAt,
 	} = useSearchPublications({
-		start: ((state?.searchQuery?.page ?? 1) - 1) * state.pageSize,
+		start: (page - 1) * state.pageSize ?? 0,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		searchThroughPages: searchVariant === 'pages',
 		..._.omit(state.searchQuery, 'page'),
+		query: state?.searchQuery?.query ?? '',
 	});
-	const {
-		data: filtersData,
-		dataUpdatedAt: filtersKey,
-		isLoading: isFiltersLoading,
-	} = useAvailableFilters(_.omit(state.searchQuery, 'page'));
+	// const {
+	// 	data: filtersData,
+	// 	dataUpdatedAt: filtersKey,
+	// 	isLoading: isFiltersLoading,
+	// } = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
 	const { exportModeOn } = useBulkExportContext();
 	const { setDashboardFilters } = useDashboardFilters();
@@ -120,11 +124,16 @@ const Dashboard: FC = () => {
 				}}
 				body={{
 					leftJsx: (
-						<SearchResultLeftPanel
-							key={filtersKey}
-							data={filtersData?.availableFilters}
-							isLoading={isFiltersLoading}
-						/>
+						<AvailableFiltersContextProvider
+							availableFilters={availableFilters}
+							filtersLoading={isLoading}
+						>
+							<SearchResultLeftPanel
+								key={dataUpdatedAt}
+								data={availableFilters}
+								isLoading={isLoading}
+							/>
+						</AvailableFiltersContextProvider>
 					),
 				}}
 			>

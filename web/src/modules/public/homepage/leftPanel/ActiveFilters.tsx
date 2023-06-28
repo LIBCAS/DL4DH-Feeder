@@ -21,9 +21,9 @@ import { useTheme } from 'theme';
 import { api } from 'api';
 
 import { Collection, ModelsEnum } from 'api/models';
-import { useAvailableFilters } from 'api/publicationsApi';
 
 import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';
+import { useAvailableFiltersContext } from 'hooks/useAvailableFiltersContext';
 
 import {
 	NameTagCode,
@@ -122,7 +122,7 @@ const ActiveFilters: React.FC<{
 	const [sp, setSp] = useSearchParams();
 	const { keycloak } = useKeycloak();
 	const nav = useNavigate();
-	const aval = useAvailableFilters();
+	const { availableFilters, filtersLoading } = useAvailableFiltersContext();
 	const [savingFilter, setSavingFilter] = useState(false);
 	const { arrayFilters, NT } = formatActiveFilters(
 		savedFilters
@@ -141,10 +141,10 @@ const ActiveFilters: React.FC<{
 		return null;
 	}
 
-	if (aval.isLoading) {
+	if (filtersLoading) {
 		return <Loader />;
 	}
-	const collectionLabels = aval.data?.availableFilters.collections ?? {};
+	const collectionLabels = availableFilters?.collections ?? {};
 
 	const keys = Object.keys(arrayFilters);
 

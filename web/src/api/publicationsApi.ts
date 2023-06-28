@@ -4,7 +4,8 @@ import _ from 'lodash';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
-import { TSearchQuery } from 'hooks/useSearchContext';
+import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';
+import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import {
 	AvailableFilters,
@@ -58,6 +59,44 @@ export const useAvailableFilters = (searchQuery?: TSearchQuery) => {
 		}>(),
 	);
 };
+//TODO: unite main search  endpoint and availible filters
+export const useAvailableFilters2 = (searchQuery?: TSearchQuery) => {
+	const { state } = useSearchContext();
+
+	const { variant: searchVariant } = useSearchThroughContext();
+
+	const parsedPage = parseInt(
+		(state?.searchQuery?.page as unknown as string) ?? '',
+	);
+	const page = isNaN(parsedPage) ? 1 : parsedPage;
+
+	const body: Partial<FiltersDto> = {
+		start: (page - 1) * state.pageSize ?? 0,
+		pageSize: state.pageSize,
+		sort: state.sorting.id,
+		searchThroughPages: searchVariant === 'pages',
+		..._.omit(state.searchQuery, 'page'),
+		nameTagFacet: searchQuery?.nameTagFacet,
+		query: searchQuery?.query ?? state.searchQuery?.query ?? '',
+	};
+	const json =
+		searchQuery?.nameTagFacet === '' ? _.omit(body, 'nameTagFacet') : body;
+	return useQuery(['search-publication', json], () =>
+		api().post('search', { json }).json<{
+			pages: [
+				{
+					availableFilters: AvailableFilters;
+					availableNameTagFilters: AvailableNameTagFilters;
+				},
+			];
+		}>(),
+	);
+};
+
+// api().post('search', { json }).json<{
+// 	availableFilters: AvailableFilters;
+// 	availableNameTagFilters: AvailableNameTagFilters;
+// }>(),
 
 export const usePublicationDetailWithRoot = (
 	uuid: string,
