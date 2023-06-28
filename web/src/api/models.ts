@@ -8,6 +8,7 @@ export type PublicationDto = {
 	pid: string;
 	rootTitle: string;
 	enriched: boolean;
+	parentPid: string[];
 };
 
 export type PublicationContext = {
@@ -104,6 +105,7 @@ export type FiltersDto = {
 	collections: string[];
 	advancedFilterField: AdvancedFilterFieldEnum;
 	createdAt?: string;
+	searchThroughPages?: boolean;
 };
 
 export type PagableResponse<T> = {
@@ -163,6 +165,7 @@ export type PublicationChild = {
 export type InfoDto = {
 	feeder: {
 		version: string;
+		contact: string;
 	};
 	krameriusPlus: {
 		version: string;
@@ -214,7 +217,8 @@ export type ModelsEnum =
 	| 'MONOGRAPHBUNDLE'
 	| 'PERIODICALITEM'
 	| 'INTERNALPART'
-	| 'PERIODICALVOLUME';
+	| 'PERIODICALVOLUME'
+	| 'PAGE';
 
 export type TagNameEnum =
 	| 'NUMBERS_IN_ADDRESSES'
@@ -245,25 +249,27 @@ export type StreamTypeEnum =
 	| 'IMG_THUMB'
 	| 'DC'
 	| 'FOXML'
-	| 'SOLR';
+	| 'SOLR'
+	| 'SOLR_PLUS';
 export const StreamsOrder: Record<
 	//StreamTypeEnum & { ITEM: string; CHILDREN: string },
 	string,
 	number
 > = {
-	ITEM: 6,
-	CHILDREN: 7,
-	IMG_PREVIEW: 9,
+	ITEM: 7,
+	CHILDREN: 8,
+	IMG_PREVIEW: 10,
 	BIBLIO_MODS: 0,
 	IMG_FULL_ADM: 99, // OFF
-	IMG_FULL: 10,
+	IMG_FULL: 11,
 	TEXT_OCR_ADM: 100, // OFF
-	ALTO: 4,
-	TEXT_OCR: 5,
-	IMG_THUMB: 8,
+	ALTO: 5,
+	TEXT_OCR: 6,
+	IMG_THUMB: 9,
 	DC: 1,
-	FOXML: 3,
+	FOXML: 4,
 	SOLR: 2,
+	SOLR_PLUS: 3,
 };
 
 export type AdvancedFilterFieldEnum =

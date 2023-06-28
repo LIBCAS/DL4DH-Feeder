@@ -1,7 +1,8 @@
 import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
-import { Box, Grid } from 'components/styled';
+import { Box, Flex, Grid } from 'components/styled';
+import Divider from 'components/styled/Divider';
 
 import { useInfoApi } from 'api/infoApi';
 
@@ -9,7 +10,6 @@ import { HrefLink } from '../../components/styled/Link';
 
 const About = () => {
 	const info = useInfoApi();
-
 	return (
 		<Wrapper
 			height="100vh"
@@ -24,7 +24,7 @@ const About = () => {
 				marginRight="auto"
 				marginLeft="auto"
 			>
-				<Box mt={3} width={1}>
+				<Box my={3} width={1}>
 					<H1
 						my={3}
 						textAlign="left"
@@ -55,8 +55,9 @@ const About = () => {
 						probíhalo v letech 2020 – 2022.
 					</Text>
 				</Box>
-				<Box mt={3} maxWidth="500px" marginRight="auto" marginLeft="auto">
-					<Grid gridTemplateColumns="1fr 1fr" gridGap={1} bg="paper" p={1}>
+				<Divider my={3} />
+				<Box mt={3} maxWidth="500px" textAlign="left">
+					<Grid gridTemplateColumns="1fr 1fr" gridGap={1} bg="paper">
 						<Text>Kramerius:</Text>
 						<Text fontWeight="bold">
 							{info.data?.kramerius.version ?? '--'}
@@ -66,7 +67,9 @@ const About = () => {
 							{info.data?.krameriusPlus.version ?? '--'}
 						</Text>
 						<Text>DL4DH Feeder:</Text>
-						<Text fontWeight="bold">{info.data?.feeder.version ?? '--'}</Text>
+						<Flex>
+							<Text fontWeight="bold">{info.data?.feeder.version ?? '--'}</Text>
+						</Flex>
 
 						<Text>Odkazy:</Text>
 						<Text>
@@ -79,6 +82,15 @@ const About = () => {
 						<Text>
 							<HrefLink href="https://github.com/LIBCAS/DL4DH">
 								Informace o projektu DL4DH
+							</HrefLink>
+						</Text>
+						<Text>Kontakt:</Text>
+						<Text>
+							<HrefLink
+								href={`mailto:${info.data?.feeder.contact}`}
+								fontWeight="bold"
+							>
+								{info.data?.feeder.contact ?? '--'}
 							</HrefLink>
 						</Text>
 					</Grid>

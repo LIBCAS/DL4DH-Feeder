@@ -9,7 +9,7 @@ import store from 'utils/Store';
 
 import { FiltersDto, SearchDto } from './models';
 
-const FETCH_TIMEOUT = 10000;
+const FETCH_TIMEOUT = 30000;
 const INFINITE_QUERY_RETRY_COUNT = 1;
 export const REFETCH_INTERVAL = 30 * 60 * 1000;
 
