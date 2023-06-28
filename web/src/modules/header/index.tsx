@@ -18,6 +18,7 @@ import { useInfoApi } from 'api/infoApi';
 import { useMobileView } from 'hooks/useViewport';
 
 import { HEADER_WRAPPER_ID, INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+import Store from 'utils/Store';
 
 import { HeaderMenu } from './menuItems';
 
@@ -64,7 +65,11 @@ const Header = () => {
 							justifyContent="space-evenly"
 						>
 							<IconButton
-								onClick={() => nav(-1)}
+								onClick={() =>
+									nav(
+										`/search${Store.get(Store.keys.PreviousSearchQuery) ?? ''}`,
+									)
+								}
 								p={1}
 								color="headerColor"
 								tooltip={t('back')}
