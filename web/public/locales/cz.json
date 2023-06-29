@@ -288,7 +288,8 @@
       "STOPPED": "Zastaven",
       "FAILED": "Neúspěšně ukončen",
       "ABANDONED": "Opuštěn",
-      "UNKNOWN": "Neznámý"
+      "UNKNOWN": "Neznámý",
+      "PARTIAL": "Částečně dokončen"
     }
   },
   "browse": {

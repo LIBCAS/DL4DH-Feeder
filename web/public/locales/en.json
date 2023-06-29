@@ -283,7 +283,8 @@
       "STOPPED": "STOPPED",
       "FAILED": "FAILED",
       "ABANDONED": "ABANDONED",
-      "UNKNOWN": "UNKNOWN"
+      "UNKNOWN": "UNKNOWN",
+      "PARTIAL": "Partially finished"
     }
   },
   "browse": {
