@@ -82,6 +82,22 @@ public class Filter extends AuditModel {
         return Integer.min(100, Integer.max(1, pageSize));
     }
 
+    /**
+     * We have to modify sort, if we are looking for pages (because page has title in another field)
+     * @return sorting of the filter
+     */
+    public FiltersSortEnum getSort() {
+        if (isSearchThroughPages()) {
+            switch (sort) {
+                case TITLE_ASC:
+                    return FiltersSortEnum.PAGE_TITLE_ASC;
+                case LAST_ENRICHED:
+                    return FiltersSortEnum.PAGE_LAST_ENRICHED;
+            }
+        }
+        return sort;
+    }
+
     @JsonIgnore
     public String getQueryEscaped() {
         return query.replaceAll("\"","\\\\\"");

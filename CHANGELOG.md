@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.3.0
+
+- parent and self linking updating fix
+- internal parts list and tabs display
+- refactoring bibliographic mods parsing
+- design responsiveness
+- multiview context
+- donators image
+- hint and search params refactoring
+- nametag highlighting
+- login required to save filters
+- accordion padding
+- TeiParams as lists
+- translations for exports and print added
+- next and previous periodical title added
+- vertical page orientation word highlighting
+- new streams: SOLR, SOLR_PLUS, FOXML
+- negative queries fix
+- user info dialog
+- date filter limitations changed
+- UTF-16 detection and refetching OCR stream
+- memory limits improvements
+- zoomify image center fix
+- timestamp to search history
+- contact info configurable
+- search through pages
+- back button update
+- parentPid to Solr index
+- a lot of small fixes
+
 ## v1.2.1
 
 - upgrade spring dependencies 

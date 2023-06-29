@@ -2,9 +2,9 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 1.2.1
+  version: 1.3.0
 servers:
-- url: https://feeder.nkp.cz
+- url: https://feeder.dev.inqool.cz
   description: Generated server url
 paths:
   /api/search:
@@ -71,17 +71,12 @@ paths:
                 type: array
                 items:
                   type: string
-  /api/exports/generate/{format}:
+  /api/exports/generate:
     post:
       tags:
       - export-api
       operationId: create
       parameters:
-      - name: format
-        in: path
-        required: true
-        schema:
-          type: string
       - name: name
         in: query
         required: false
@@ -308,6 +303,8 @@ paths:
             '*/*':
               schema:
                 type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/StreamDto'
   /api/item/{uuid}/streams/{stream}:
     get:
       tags:
@@ -535,11 +532,16 @@ components:
     Filter:
       type: object
       properties:
+        createdAt:
+          type: string
+          format: date-time
         id:
           type: integer
           format: int64
         query:
           type: string
+        searchThroughPages:
+          type: boolean
         availability:
           type: string
           enum:
@@ -592,6 +594,7 @@ components:
           - CREATED_DESC
           - DATE_ASC
           - DATE_DESC
+          - LAST_ENRICHED
         enrichment:
           type: string
           enum:
@@ -634,6 +637,9 @@ components:
     NameTagFilter:
       type: object
       properties:
+        createdAt:
+          type: string
+          format: date-time
         id:
           type: integer
           format: int64
@@ -670,6 +676,7 @@ components:
       - date
       - enriched
       - model
+      - parentPid
       - pid
       - rootTitle
       - title
@@ -689,6 +696,10 @@ components:
           type: string
         pid:
           type: string
+        parentPid:
+          type: array
+          items:
+            type: string
         rootTitle:
           type: string
         enriched:
@@ -730,13 +741,19 @@ components:
     Export:
       type: object
       properties:
+        createdAt:
+          type: string
+          format: date-time
         id:
           type: integer
           format: int64
         username:
           type: string
-        publicationId:
-          type: string
+        publicationIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
         publicationTitle:
           type: string
         created:
@@ -751,12 +768,15 @@ components:
           type: string
           enum:
           - CREATED
+          - RUNNING
           - COMPLETED
+          - SUCCESSFUL
+          - FAILED
+          - PARTIAL
           - STARTING
           - STARTED
           - STOPPING
           - STOPPED
-          - FAILED
           - ABANDONED
           - UNKNOWN
         format:
@@ -767,6 +787,8 @@ components:
           - JSON
           - CSV
           - ALTO
+        finished:
+          type: boolean
     CurrentUserDto:
       type: object
       properties:
@@ -785,6 +807,17 @@ components:
         totalElements:
           type: integer
           format: int64
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
         size:
           type: integer
           format: int32
@@ -795,43 +828,32 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: '#/components/schemas/Sort'
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: '#/components/schemas/Sort'
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
-    Sort:
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        offset:
+          type: integer
+          format: int64
+    SortObject:
       type: object
       properties:
-        sorted:
-          type: boolean
         unsorted:
+          type: boolean
+        sorted:
           type: boolean
         empty:
           type: boolean
@@ -862,6 +884,16 @@ components:
           type: string
         en:
           type: string
+    StreamDto:
+      required:
+      - label
+      - mimeType
+      type: object
+      properties:
+        label:
+          type: string
+        mimeType:
+          type: string
     ChildSearchDto:
       type: object
       properties:
@@ -875,16 +907,18 @@ components:
             type: array
             items:
               type: string
-    FeederVersionDto:
+    FeederInfoDto:
       type: object
       properties:
         version:
+          type: string
+        contact:
           type: string
     InfoDto:
       type: object
       properties:
         feeder:
-          $ref: '#/components/schemas/FeederVersionDto'
+          $ref: '#/components/schemas/FeederInfoDto'
         krameriusPlus:
           $ref: '#/components/schemas/KrameriusPlusVersionDto'
         kramerius:
@@ -918,6 +952,17 @@ components:
         totalElements:
           type: integer
           format: int64
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
         size:
           type: integer
           format: int32
@@ -926,17 +971,6 @@ components:
           items:
             $ref: '#/components/schemas/Export'
         number:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/Sort'
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
           type: integer
           format: int32
         empty:
