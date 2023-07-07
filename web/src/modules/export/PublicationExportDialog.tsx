@@ -69,7 +69,7 @@ export type ExportParasConfig = {
 		excludeFields?: string[];
 		delimiter?: Delimiter;
 	};
-	teiExportParams?: {
+	teiParams?: {
 		udPipeParams?: PipeParam[];
 		altoParams?: AltoParam[];
 		nameTagParams?: TagParam[];
@@ -157,7 +157,7 @@ export const formatValues = (values: ExportFormType): ExportParasConfig => {
 			params: {
 				...common,
 			},
-			teiExportParams: {
+			teiParams: {
 				altoParams: values.altoParams,
 				nameTagParams: values.nameTagParams?.map(nt => nt.id),
 				udPipeParams: values.udPipeParams,
