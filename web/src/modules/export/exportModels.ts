@@ -112,10 +112,11 @@ export const nameTagParamsExportOptions: NameTagExportOption[] = [
 	{ id: 'o', labelCode: 'ARTIFACT_NAMES', label: '' },
 	{ id: 'p', labelCode: 'PERSONAL_NAMES', label: '' },
 	{ id: 't', labelCode: 'TIME_EXPRESSIONS', label: '' },
-	{ id: 'P', labelCode: 'COMPLEX_PERSON_NAMES', label: '' },
-	{ id: 'T', labelCode: 'COMPLEX_TIME_EXPRESSION', label: '' },
-	{ id: 'A', labelCode: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
-	{ id: 'C', labelCode: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
+	// TODO temporary disabled, because K+ is not able to process them
+	// { id: 'P', labelCode: 'COMPLEX_PERSON_NAMES', label: '' },
+	// { id: 'T', labelCode: 'COMPLEX_TIME_EXPRESSION', label: '' },
+	// { id: 'A', labelCode: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
+	// { id: 'C', labelCode: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
 ];
 
 export const useNameTagParamExportOptions = () => {
