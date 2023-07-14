@@ -58,9 +58,10 @@ const GenericTileItem: React.FC<Props> = ({
 	const push = useNavigate();
 	const { t } = useTranslation('search');
 	const isPeriodical = publication.model.includes('periodical');
+	const isPage = publication.model.includes('page') || variant === 'pages';
 	const url = `/${
 		// eslint-disable-next-line no-nested-ternary
-		variant === 'pages' ? 'uuid' : isPeriodical ? 'periodical' : 'view'
+		isPage ? 'uuid' : isPeriodical ? 'periodical' : 'view'
 	}/${publication.pid}`;
 	const isSelected = exportModeOn && uuidHeap[publication.pid]?.selected;
 

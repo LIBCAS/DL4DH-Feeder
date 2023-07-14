@@ -158,45 +158,40 @@ export const BibRootInfo: FC<{
 				{children}
 
 				<Box mb={3}>
-					{root.data.map((field, index) => {
-						return (
-							<Box mb={3} key={`${field.id}-${index}`}>
-								{field.data
-									.filter(d => d.value.length > 0)
-									.map(d => {
-										return (
-											<Box key={`${field.id}-${index}-${d.label}-${d.value}`}>
-												<Text fontSize="13.5px" color="#9e9e9e">
-													{d.label}
-												</Text>
-												{d.link ? (
-													<Box>
-														{d.value.map((linkLabel, itemIndex) => (
-															<>
-																<BibLink
-																	key={linkLabel}
-																	to={d.getLink(itemIndex)}
-																	label={linkLabel}
-																/>
-																<br />
-															</>
-														))}
-													</Box>
-												) : (
-													<Box>
-														{d.value.map((label, itemIndex) => (
-															<Box key={`not-link-${label}-${itemIndex}`}>
-																<b>{label}</b>
-															</Box>
-														))}
-													</Box>
-												)}
-											</Box>
-										);
-									})}
-							</Box>
-						);
-					})}
+					{root.data.map((field, index) => (
+						<Box mb={3} key={`${field.id}-${index}`}>
+							{field.data
+								.filter(d => d.value.length > 0)
+								.map(d => {
+									return (
+										<Box key={`${field.id}-${index}-${d.label}-${d.value}`}>
+											<Text fontSize="13.5px" color="#9e9e9e">
+												{d.label}
+											</Text>
+											{d.link ? (
+												<Box>
+													{d.value.map((linkLabel, itemIndex) => (
+														<BibLink
+															key={`${linkLabel}-${itemIndex}`}
+															to={d.getLink(itemIndex)}
+															label={linkLabel}
+														/>
+													))}
+												</Box>
+											) : (
+												<Box>
+													{d.value.map((label, itemIndex) => (
+														<Box key={`not-link-${label}-${itemIndex}`}>
+															<b>{label}</b>
+														</Box>
+													))}
+												</Box>
+											)}
+										</Box>
+									);
+								})}
+						</Box>
+					))}
 				</Box>
 			</Box>
 		</>

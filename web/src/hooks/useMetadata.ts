@@ -122,6 +122,7 @@ export const useMetadataFormatter = () => {
 				contents,
 				notes,
 				extent,
+				genres,
 			} = m;
 
 			if (publishers && publishers.length > 0) {
@@ -136,7 +137,7 @@ export const useMetadataFormatter = () => {
 					],
 				});
 			}
-			if (publishers && publishers.length > 0) {
+			if (keywords && keywords.length > 0) {
 				result.push({
 					id: 'keywords',
 					data: [
@@ -147,6 +148,18 @@ export const useMetadataFormatter = () => {
 							empty: keywords && keywords.length === 0,
 							getLink: (itemIndex: number) =>
 								`/search?keywords=${keywords[itemIndex]}`,
+						},
+					],
+				});
+			}
+			if (genres && genres.length > 0) {
+				result.push({
+					id: 'genres',
+					data: [
+						{
+							value: genres,
+							label: t('metadata:genres'),
+							empty: genres && genres.length === 0,
 						},
 					],
 				});
@@ -386,26 +399,11 @@ export const usePeriodicalParts = (fcm: FullContextMetadata) => {
 								.join(' ')}`
 						: undefined;
 
-					// const labelPrevOld = detailPrev
-					// 	? `${detailPrev?.[MapDetailInfo?.[prev?.model]?.key1] ?? ''} ${
-					// 			detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]
-					// 				? `(${detailPrev?.[MapDetailInfo?.[prev?.model]?.key2]})`
-					// 				: ''
-					// 	  }`
-					// 	: undefined;
-
 					const labelNext = detailNext
 						? `${keysNext
 								.map(k => detailNext?.[MapDetailInfo?.[next?.model]?.[k]] ?? '')
 								.join(' ')}`
 						: undefined;
-					// const labelNextOld = detailNext
-					// 	? `${detailNext?.[MapDetailInfo?.[next?.model]?.key1] ?? ''} ${
-					// 			detailNext?.[MapDetailInfo?.[next?.model]?.key2]
-					// 				? `(${detailNext?.[MapDetailInfo?.[next?.model]?.key2]})`
-					// 				: ''
-					// 	  }`
-					// 	: undefined;
 
 					setParts({
 						prev: {
