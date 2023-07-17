@@ -220,13 +220,12 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 		onSubmit: async values => {
 			const config = formatValues(values);
-			const json: ExportParamsDto = { config, publicationIds: [pubId] };
-
 			const exportName = values.exportName.trim();
+			const json: ExportParamsDto = { name: exportName, config, publicationIds: [pubId] };
 
 			try {
 				const response = await api().post(
-					`exports/generate?name=${exportName}`,
+					`exports/generate`,
 					{ json },
 				);
 
