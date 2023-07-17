@@ -203,7 +203,7 @@ export class Metadata {
 
 	public getPrimaryAuthors() {
 		const result: Author[] = [];
-		
+
 		if (!this?.authors) {
 			return [];
 		}

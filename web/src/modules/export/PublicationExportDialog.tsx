@@ -222,13 +222,14 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 		onSubmit: async values => {
 			const config = formatValues(values);
 			const exportName = values.exportName.trim();
-			const json: ExportParamsDto = { name: exportName, config, publicationIds: [pubId] };
+			const json: ExportParamsDto = {
+				name: exportName,
+				config,
+				publicationIds: [pubId],
+			};
 
 			try {
-				const response = await api().post(
-					`exports/generate`,
-					{ json },
-				);
+				const response = await api().post(`exports/generate`, { json });
 
 				if (response.status === 200) {
 					toast.info(

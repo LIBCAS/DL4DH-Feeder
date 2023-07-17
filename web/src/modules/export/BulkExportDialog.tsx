@@ -99,20 +99,18 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 		onSubmit: async values => {
 			const config = formatValues(values);
+			let exportName = generatedName;
 			const json: ExportParamsDto = {
+				name: exportName,
 				config,
 				publicationIds,
 			};
-			let exportName = generatedName;
 			if (values.exportName.trim() !== '') {
 				exportName = values.exportName.trim();
 			}
 
 			try {
-				const response = await api().post(
-					`exports/generate?name=${exportName}`,
-					{ json },
-				);
+				const response = await api().post(`exports/generate`, { json });
 
 				if (response.status === 200) {
 					toast.info(
