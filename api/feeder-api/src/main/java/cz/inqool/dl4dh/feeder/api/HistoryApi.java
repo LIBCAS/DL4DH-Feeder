@@ -33,6 +33,16 @@ public class HistoryApi {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/{id}")
+    public Filter getById(Principal user, @PathVariable Long id) {
+        Filter filter = filterRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        if (!filter.getUsername().equals(user.getName())) {
+            throw new AccessDeniedException();
+        }
+        return filter;
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping(value = "/{id}")
     public void deleteById(Principal user, @PathVariable Long id) {
         Filter filter = filterRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
