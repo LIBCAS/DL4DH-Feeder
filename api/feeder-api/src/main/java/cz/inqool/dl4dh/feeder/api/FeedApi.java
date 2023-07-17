@@ -2,8 +2,8 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.dto.PublicationsListDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.FeedResponseDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryWithFacetResponseDto;
+import cz.inqool.dl4dh.feeder.dto.kramerius.FeedResponseDto;
+import cz.inqool.dl4dh.feeder.dto.kramerius.SolrQueryWithFacetResponseDto;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;

@@ -1,10 +1,10 @@
 package cz.inqool.dl4dh.feeder.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.inqool.dl4dh.feeder.dto.Info.FeederInfoDto;
-import cz.inqool.dl4dh.feeder.dto.Info.InfoDto;
-import cz.inqool.dl4dh.feeder.dto.Info.KrameriusPlusVersionDto;
-import cz.inqool.dl4dh.feeder.dto.Info.KrameriusVersionDto;
+import cz.inqool.dl4dh.feeder.dto.info.FeederInfoDto;
+import cz.inqool.dl4dh.feeder.dto.info.InfoDto;
+import cz.inqool.dl4dh.feeder.dto.info.KrameriusPlusVersionDto;
+import cz.inqool.dl4dh.feeder.dto.info.KrameriusVersionDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.*;

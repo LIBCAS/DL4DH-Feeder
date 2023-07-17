@@ -1,8 +1,12 @@
 package cz.inqool.dl4dh.feeder.service;
 
 import cz.inqool.dl4dh.feeder.dto.*;
+import cz.inqool.dl4dh.feeder.dto.krameriusplus.document.KrameriusPlusDocumentDto;
+import cz.inqool.dl4dh.feeder.dto.krameriusplus.document.KrameriusPlusDocumentNameTagEntityDto;
+import cz.inqool.dl4dh.feeder.dto.krameriusplus.document.KrameriusPlusDocumentPageDto;
+import cz.inqool.dl4dh.feeder.dto.krameriusplus.document.KrameriusPlusPaging;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.kramerius.dto.SolrQueryResponseDto;
+import cz.inqool.dl4dh.feeder.dto.kramerius.SolrQueryResponseDto;
 import cz.inqool.dl4dh.feeder.model.Setting;
 import cz.inqool.dl4dh.feeder.repository.SettingRepository;
 import org.apache.solr.client.solrj.SolrServerException;

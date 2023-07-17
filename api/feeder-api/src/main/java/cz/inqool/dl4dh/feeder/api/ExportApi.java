@@ -2,10 +2,11 @@ package cz.inqool.dl4dh.feeder.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.inqool.dl4dh.feeder.dto.krameriusplus.export.ExportRequestCreateDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
-import cz.inqool.dl4dh.feeder.kramerius.dto.ExportRequestDto;
-import cz.inqool.dl4dh.feeder.kramerius.dto.KrameriusItemDto;
+import cz.inqool.dl4dh.feeder.dto.export.ExportRequestDto;
+import cz.inqool.dl4dh.feeder.dto.kramerius.KrameriusItemDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/generate")
-    public Export create(@RequestBody String body, @RequestParam(required = false) String name, Principal user) throws JsonProcessingException {
+    public Export create(@RequestBody String body, Principal user) throws JsonProcessingException {
         ExportRequestDto exportRequest = krameriusPlus.post()
                 .uri("/exports/export").header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
@@ -120,6 +121,8 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(ExportRequestDto.class).block();
 
+        ExportRequestCreateDto request = objectMapper.readValue(body, ExportRequestCreateDto.class);
+        String name = request.getName();
         if (name == null || name.isEmpty()) {
             if (exportRequest.getPublicationIds().size() == 1) {
                 String publicationId = exportRequest.getPublicationIds().stream().findFirst().get();

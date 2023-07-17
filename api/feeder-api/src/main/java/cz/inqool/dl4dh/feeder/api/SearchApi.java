@@ -2,7 +2,7 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.kramerius.dto.CollectionDto;
+import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
 import cz.inqool.dl4dh.feeder.model.Filter;
 import cz.inqool.dl4dh.feeder.repository.FilterRepository;
 import cz.inqool.dl4dh.feeder.service.SearchService;
