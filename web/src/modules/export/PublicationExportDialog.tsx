@@ -78,6 +78,7 @@ export type ExportParasConfig = {
 };
 
 export type ExportParamsDto = {
+	name: string;
 	config: ExportParasConfig;
 	publicationIds: string[];
 };
