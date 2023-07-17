@@ -112,7 +112,8 @@ public class ExportApi {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/generate")
-    public Export create(@RequestBody String body, Principal user) throws JsonProcessingException {
+    public Export create(@RequestBody ExportRequestDto request, Principal user) throws JsonProcessingException {
+        String body = objectMapper.writeValueAsString(request);
         ExportRequestDto exportRequest = krameriusPlus.post()
                 .uri("/exports/export").header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(body).retrieve().onStatus(HttpStatus::isError, res -> {
                     res.toEntity(String.class).subscribe(
@@ -121,7 +122,6 @@ public class ExportApi {
                     return Mono.error(new HttpClientErrorException(res.statusCode()));
                 }).bodyToMono(ExportRequestDto.class).block();
 
-        ExportRequestCreateDto request = objectMapper.readValue(body, ExportRequestCreateDto.class);
         String name = request.getName();
         if (name == null || name.isEmpty()) {
             if (exportRequest.getPublicationIds().size() == 1) {
