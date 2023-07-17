@@ -4,17 +4,10 @@ import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
 import cz.inqool.dl4dh.feeder.model.Filter;
-import cz.inqool.dl4dh.feeder.repository.FilterRepository;
 import cz.inqool.dl4dh.feeder.service.SearchService;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -31,11 +24,9 @@ public class SearchApi {
 
     private WebClient kramerius;
     private WebClient krameriusPrint;
-    private final FilterRepository filterRepository;
     private final SearchService searchService;
 
-    public SearchApi(FilterRepository filterRepository, SearchService searchService) {
-        this.filterRepository = filterRepository;
+    public SearchApi(SearchService searchService) {
         this.searchService = searchService;
     }
 
@@ -46,12 +37,15 @@ public class SearchApi {
 
     @PostMapping(value = "")
     public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") boolean save, Principal user) {
+        SearchDto results = searchService.search(filters);
+
         // Save a query if it is requested
         if (save && user != null) {
+            filters.setNumFound(results.getDocuments().getNumFound());
             searchService.saveSearch(filters, user.getName());
         }
 
-        return searchService.search(filters);
+        return results;
     }
 
     @GetMapping(value = "/collections")
@@ -65,12 +59,6 @@ public class SearchApi {
                         .queryParam("pagesize", pagesize.orElse("A4"))
                         .queryParam("imgop", imgop.orElse("FULL"))
                         .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping(value = "/history")
-    public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable p) {
-        return filterRepository.findByUsername(user.getName(), p);
     }
 
     @Resource(name = "krameriusWebClient")

@@ -64,7 +64,7 @@ public class Filter extends AuditModel {
     @Column(columnDefinition = "text")
     private FiltersSortEnum sort = FiltersSortEnum.TITLE_ASC;
 
-    //K+ filters
+    // K+ filters
     @Column(columnDefinition = "text")
     private EnrichmentEnum enrichment = EnrichmentEnum.ALL;
     private AdvancedFilterFieldEnum advancedFilterField = AdvancedFilterFieldEnum.NONE;
@@ -74,9 +74,13 @@ public class Filter extends AuditModel {
     private List<NameTagFilter> nameTagFilters;
     private String nameTagFacet = "";
 
-    //Pagination
+    // Pagination
     private Integer start = 0;
     private Integer pageSize = 100;
+
+    // User metadata (name and number of found documents during search)
+    private String name = "";
+    private Long numFound = 0L;
 
     public Integer getPageSize() {
         return Integer.min(100, Integer.max(1, pageSize));
