@@ -106,6 +106,7 @@ export type FiltersDto = {
 	advancedFilterField: AdvancedFilterFieldEnum;
 	createdAt?: string;
 	searchThroughPages?: boolean;
+	name?: string;
 };
 
 export type PagableResponse<T> = {

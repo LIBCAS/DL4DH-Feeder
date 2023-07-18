@@ -139,6 +139,7 @@ const SearchHistory = () => {
 			: h.id,
 		query: h,
 		id: h.id,
+		name: h.name,
 	}));
 
 	return (
@@ -235,7 +236,16 @@ const SearchHistory = () => {
 								px={3}
 							>
 								<Flex alignItems="center">
-									<Text mr={2}>{row.created}</Text>
+									<Box maxWidth={250}>
+										{row.name && (
+											<Text mr={2}>
+												<b>{row.name}</b>
+											</Text>
+										)}
+										<Text mr={2} fontSize="sm">
+											{row.created}
+										</Text>
+									</Box>
 									<Flex color="text" flexWrap="wrap" py={2}>
 										{Object.keys(row.formatted.arrayFilters).map(key =>
 											row.formatted.arrayFilters[key].map(value => {
