@@ -31,7 +31,7 @@ import { api } from 'api';
 import { useSearchHistory } from 'api/historyApi';
 import { FiltersDto } from 'api/models';
 
-import { NameTagToText } from 'utils/enumsMap';
+import { CUSTOM_URL_PARAMS, NameTagToText } from 'utils/enumsMap';
 
 const isAdvancedFilterActive = (filter: FiltersDto): boolean => {
 	if (!filter.advancedFilterField) {
@@ -90,6 +90,9 @@ const constructQuery = (filter: FiltersDto) => {
 				sp.append(formatedNt?.name, formatedNt?.value);
 			}
 		});
+	}
+	if (filter.id) {
+		sp.append(CUSTOM_URL_PARAMS.HISTORY_ID, filter.id);
 	}
 
 	return `/search?${sp.toString()}`;

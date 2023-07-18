@@ -198,3 +198,7 @@ export const ModelToText = {
 	collection: 'Sbírka',
 	convolute: 'Konvolut',
 };
+
+export enum CUSTOM_URL_PARAMS {
+	HISTORY_ID = 'historyId',
+}

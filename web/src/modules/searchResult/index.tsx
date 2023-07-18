@@ -18,6 +18,7 @@ import { useSearchContext } from 'hooks/useSearchContext';
 import ListView from './list';
 import TileView from './tiles/TileView';
 import GraphView from './graph';
+import HistoryNumFoundBar from './history-numfound-bar';
 
 type Props = {
 	data: PublicationDto[] | undefined;
@@ -48,6 +49,7 @@ const Results: FC<Props> = ({ data, count, isLoading, hasMore, stats }) => {
 
 	return (
 		<Wrapper>
+			<HistoryNumFoundBar currentCount={count} resultsLoading={isLoading} />
 			{state?.viewMode === 'list' ? (
 				<>
 					<ListView data={data} isLoading={isLoading} />
