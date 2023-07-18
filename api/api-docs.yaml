@@ -2,10 +2,12 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 1.3.0
+  version: 1.4.0
 servers:
 - url: https://feeder.dev.inqool.cz
   description: Generated server url
+security:
+- Keycloak: []
 paths:
   /api/search:
     post:
@@ -15,9 +17,11 @@ paths:
       parameters:
       - name: save
         in: query
+        description: Save the search query to user's history
         required: false
         schema:
           type: boolean
+          description: Save the search query to user's history
           default: false
       requestBody:
         content:
@@ -40,9 +44,11 @@ paths:
       parameters:
       - name: q
         in: query
+        description: Query string
         required: true
         schema:
           type: string
+          description: Query string
       - name: nameTagType
         in: query
         required: false
@@ -76,17 +82,11 @@ paths:
       tags:
       - export-api
       operationId: create
-      parameters:
-      - name: name
-        in: query
-        required: false
-        schema:
-          type: string
       requestBody:
         content:
           application/json:
             schema:
-              type: string
+              $ref: '#/components/schemas/ExportRequestCreateDto'
         required: true
       responses:
         "200":
@@ -174,16 +174,20 @@ paths:
         required: true
         schema:
           type: string
+          example: "uuid:677e4670-694b-11e4-8c6e-001018b5eb5c,uuid:6793a330-694b-11e4-8c6e-001018b5eb5c"
+        example: "uuid:677e4670-694b-11e4-8c6e-001018b5eb5c,uuid:6793a330-694b-11e4-8c6e-001018b5eb5c"
       - name: pagesize
         in: query
         required: false
         schema:
           type: string
+          default: A4
       - name: imgop
         in: query
         required: false
         schema:
           type: string
+          default: FULL
       responses:
         "200":
           description: OK
@@ -195,7 +199,7 @@ paths:
   /api/search/history:
     get:
       tags:
-      - search-api
+      - history-api
       operationId: getAll
       parameters:
       - name: page
@@ -232,6 +236,39 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/PageFilter'
+  /api/search/history/{id}:
+    get:
+      tags:
+      - history-api
+      operationId: getById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Filter'
+    delete:
+      tags:
+      - history-api
+      operationId: deleteById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
   /api/search/collections:
     get:
       tags:
@@ -535,11 +572,15 @@ components:
         createdAt:
           type: string
           format: date-time
+          readOnly: true
         id:
           type: integer
           format: int64
+          readOnly: true
         query:
           type: string
+          description: Advanced SOLR filter
+          example: macha AND (maj OR (zivot AND dilo))
         searchThroughPages:
           type: boolean
         availability:
@@ -566,27 +607,33 @@ components:
           type: array
           items:
             type: string
+            example: angličtina
         authors:
           uniqueItems: true
           type: array
           items:
             type: string
+            example: "Aleš, Mikoláš"
         languages:
           uniqueItems: true
           type: array
           items:
             type: string
+            example: cze
         collections:
           uniqueItems: true
           type: array
           items:
             type: string
+            example: vc:0922837d-56af-43e4-980b-a75f26cda253
         from:
           type: integer
           format: int32
+          example: 1920
         to:
           type: integer
           format: int32
+          example: 2020
         sort:
           type: string
           enum:
@@ -595,6 +642,8 @@ components:
           - DATE_ASC
           - DATE_DESC
           - LAST_ENRICHED
+          - PAGE_TITLE_ASC
+          - PAGE_LAST_ENRICHED
         enrichment:
           type: string
           enum:
@@ -628,21 +677,35 @@ components:
             $ref: '#/components/schemas/NameTagFilter'
         nameTagFacet:
           type: string
+          description: Filter availableNameTagFilters response values
+          example: "1"
         start:
           type: integer
           format: int32
+          writeOnly: true
         pageSize:
           type: integer
           format: int32
+          writeOnly: true
+          example: 100
+        name:
+          type: string
+          example: Obohacene publikace
+        numFound:
+          type: integer
+          format: int64
+          readOnly: true
     NameTagFilter:
       type: object
       properties:
         createdAt:
           type: string
           format: date-time
+          readOnly: true
         id:
           type: integer
           format: int64
+          readOnly: true
         type:
           type: string
           enum:
@@ -669,6 +732,149 @@ components:
           type: array
           items:
             type: string
+            example: "13"
+    Authors:
+      type: object
+      properties:
+        Aleš, Mikoláš:
+          type: integer
+          format: int32
+          example: 136
+        Arbes, Jakub:
+          type: integer
+          format: int32
+          example: 151
+    Availability:
+      type: object
+      properties:
+        private:
+          type: integer
+          format: int32
+          example: 216812
+        public:
+          type: integer
+          format: int32
+          example: 44226
+    Collections:
+      type: object
+      properties:
+        vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb:
+          $ref: '#/components/schemas/vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb'
+        vc:069d0e97-7f12-46e1-86af-fbc9cd6596df:
+          $ref: '#/components/schemas/vc:069d0e97-7f12-46e1-86af-fbc9cd6596df'
+    Enrichment:
+      type: object
+      properties:
+        ALL:
+          type: integer
+          format: int32
+          example: 261038
+        NOT_ENRICHED:
+          type: integer
+          format: int32
+          example: 261022
+        ENRICHED:
+          type: integer
+          format: int32
+          example: 16
+    ExampleNameTagFilter:
+      type: object
+      properties:
+        Abraham:
+          type: integer
+          format: int32
+          example: 136
+        "1898":
+          type: integer
+          format: int32
+          example: 151
+    Keywords:
+      type: object
+      properties:
+        accounting:
+          type: integer
+          format: int32
+          example: 367
+        anglictina:
+          type: integer
+          format: int32
+          example: 846
+    Languages:
+      type: object
+      properties:
+        cze:
+          type: integer
+          format: int32
+          example: 208112
+        eng:
+          type: integer
+          format: int32
+          example: 30899
+    Model:
+      type: object
+      properties:
+        map:
+          type: integer
+          format: int32
+          example: 3961
+        monograph:
+          type: integer
+          format: int32
+          example: 251086
+        periodical:
+          type: integer
+          format: int32
+          example: 4961
+        sheetmusic:
+          type: integer
+          format: int32
+          example: 1023
+    OpenAPIAvailableFilters:
+      type: object
+      properties:
+        models:
+          $ref: '#/components/schemas/Model'
+        enrichment:
+          $ref: '#/components/schemas/Enrichment'
+        keywords:
+          $ref: '#/components/schemas/Keywords'
+        languages:
+          $ref: '#/components/schemas/Languages'
+        collections:
+          $ref: '#/components/schemas/Collections'
+        availability:
+          $ref: '#/components/schemas/Availability'
+        years:
+          $ref: '#/components/schemas/Years'
+        authors:
+          $ref: '#/components/schemas/Authors'
+    OpenAPIAvailableNameTagFilters:
+      type: object
+      properties:
+        institutions:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        geographicalNames:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        mediaNames:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        personalNames:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        complexPersonNames:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        complexTimeExpression:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        numbersInAddresses:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        numberExpressions:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        complexAddressExpression:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        complexBiblioExpression:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        artifactNames:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
+        timeExpression:
+          $ref: '#/components/schemas/ExampleNameTagFilter'
     PublicationDto:
       required:
       - authors
@@ -684,24 +890,32 @@ components:
       properties:
         model:
           type: string
+          example: monograph
         availability:
           type: string
+          example: public
         date:
           type: string
+          example: "1903"
         authors:
           type: array
           items:
             type: string
+            example: "Aleš, Mikoláš"
         title:
           type: string
+          example: Anatomický atlas koně a krávy
         pid:
           type: string
+          example: uuid:541ac050-b54d-11ea-998c-005056827e51
         parentPid:
           type: array
           items:
             type: string
+            example: uuid:541ac050-b54d-11ea-998c-005056827e51
         rootTitle:
           type: string
+          example: Anatomický atlas koně a krávy
         enriched:
           type: boolean
     PublicationsListDto:
@@ -714,9 +928,11 @@ components:
         numFound:
           type: integer
           format: int64
+          example: 320
         start:
           type: integer
           format: int64
+          example: 1
         docs:
           type: array
           items:
@@ -727,26 +943,299 @@ components:
         documents:
           $ref: '#/components/schemas/PublicationsListDto'
         availableFilters:
-          type: object
-          additionalProperties:
-            type: object
-            additionalProperties:
-              type: object
+          $ref: '#/components/schemas/OpenAPIAvailableFilters'
         availableNameTagFilters:
-          type: object
-          additionalProperties:
+          $ref: '#/components/schemas/OpenAPIAvailableNameTagFilters'
+    TranslationsDto:
+      required:
+      - cs
+      - en
+      type: object
+      properties:
+        cs:
+          type: string
+          example: Pohádky
+        en:
+          type: string
+          example: Fairy Tales
+    Years:
+      type: object
+      properties:
+        "0":
+          type: integer
+          format: int32
+          example: 24755
+        "1772":
+          type: integer
+          format: int32
+          example: 55
+    vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb:
+      required:
+      - canLeave
+      - descs
+      - numberOfDocs
+      - pid
+      type: object
+      properties:
+        descs:
+          $ref: '#/components/schemas/TranslationsDto'
+        canLeave:
+          type: boolean
+        numberOfDocs:
+          type: integer
+          format: int32
+          example: 32
+        pid:
+          type: string
+          example: vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb
+    vc:069d0e97-7f12-46e1-86af-fbc9cd6596df:
+      required:
+      - canLeave
+      - descs
+      - numberOfDocs
+      - pid
+      type: object
+      properties:
+        descs:
+          $ref: '#/components/schemas/TranslationsDto'
+        canLeave:
+          type: boolean
+        numberOfDocs:
+          type: integer
+          format: int32
+          example: 32
+        pid:
+          type: string
+          example: vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb
+    AndFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+    EqFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+          value:
             type: object
-            additionalProperties:
-              type: object
+    ExportAltoJobConfigDto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ExportJobConfigDto'
+    ExportCsvJobConfigDto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ExportJobConfigDto'
+      - type: object
+        properties:
+          delimiter:
+            type: string
+    ExportJobConfigDto:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/ParamsDto'
+        exportFormat:
+          type: string
+          enum:
+          - JSON
+          - TEI
+          - CSV
+          - ALTO
+          - TEXT
+        jobType:
+          type: string
+          enum:
+          - EXPORT_ALTO
+          - EXPORT_TEXT
+          - EXPORT_CSV
+          - EXPORT_JSON
+          - EXPORT_TEI
+      discriminator:
+        propertyName: jobType
+    ExportJsonJobConfigDto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ExportJobConfigDto'
+    ExportRequestCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        publicationIds:
+          type: array
+          items:
+            type: string
+        config:
+          oneOf:
+          - $ref: '#/components/schemas/ExportAltoJobConfigDto'
+          - $ref: '#/components/schemas/ExportCsvJobConfigDto'
+          - $ref: '#/components/schemas/ExportJsonJobConfigDto'
+          - $ref: '#/components/schemas/ExportTeiJobConfigDto'
+          - $ref: '#/components/schemas/ExportTextJobConfigDto'
+    ExportTeiJobConfigDto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ExportJobConfigDto'
+      - type: object
+        properties:
+          teiParams:
+            $ref: '#/components/schemas/TeiParams'
+    ExportTextJobConfigDto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ExportJobConfigDto'
+    GtFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+          value:
+            type: object
+    InFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+          values:
+            type: array
+            items:
+              type: string
+    LtFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+          value:
+            type: object
+    NullFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+    OrFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+    Paging:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ParamsDto:
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        sorting:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sorting'
+        filters:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/AndFilter'
+            - $ref: '#/components/schemas/EqFilter'
+            - $ref: '#/components/schemas/GtFilter'
+            - $ref: '#/components/schemas/InFilter'
+            - $ref: '#/components/schemas/LtFilter'
+            - $ref: '#/components/schemas/NullFilter'
+            - $ref: '#/components/schemas/OrFilter'
+            - $ref: '#/components/schemas/RegexFilter'
+        includeFields:
+          type: array
+          items:
+            type: string
+        excludeFields:
+          type: array
+          items:
+            type: string
+    RegexFilter:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Filter'
+      - type: object
+        properties:
+          field:
+            type: string
+          value:
+            type: string
+    Sorting:
+      type: object
+      properties:
+        field:
+          type: string
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
+    TeiParams:
+      type: object
+      properties:
+        udPipeParams:
+          type: array
+          items:
+            type: string
+            enum:
+            - "n"
+            - lemma
+            - pos
+            - msd
+            - join
+        nameTagParams:
+          type: array
+          items:
+            type: string
+            enum:
+            - a
+            - g
+            - i
+            - m
+            - "n"
+            - o
+            - p
+            - t
+        altoParams:
+          type: array
+          items:
+            type: string
+            enum:
+            - height
+            - width
+            - vpos
+            - hpos
     Export:
       type: object
       properties:
         createdAt:
           type: string
           format: date-time
+          readOnly: true
         id:
           type: integer
           format: int64
+          readOnly: true
         username:
           type: string
         publicationIds:
@@ -758,14 +1247,17 @@ components:
           type: string
         created:
           type: string
+          readOnly: true
         delimiter:
           type: string
+          example: ","
         parameters:
           type: string
         teiParameters:
           type: string
         status:
           type: string
+          readOnly: true
           enum:
           - CREATED
           - RUNNING
@@ -807,17 +1299,6 @@ components:
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        numberOfElements:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
         size:
           type: integer
           format: int32
@@ -828,34 +1309,45 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        offset:
-          type: integer
-          format: int64
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
     SortObject:
       type: object
       properties:
-        unsorted:
+        empty:
           type: boolean
         sorted:
           type: boolean
-        empty:
+        unsorted:
           type: boolean
     CollectionDto:
       required:
@@ -872,18 +1364,10 @@ components:
         numberOfDocs:
           type: integer
           format: int32
+          example: 32
         pid:
           type: string
-    TranslationsDto:
-      required:
-      - cs
-      - en
-      type: object
-      properties:
-        cs:
-          type: string
-        en:
-          type: string
+          example: vc:05ae4510-72d4-4027-8c7a-e28d3f6900fb
     StreamDto:
       required:
       - label
@@ -912,8 +1396,10 @@ components:
       properties:
         version:
           type: string
+          example: 1.3.0
         contact:
           type: string
+          example: example@example.com
     InfoDto:
       type: object
       properties:
@@ -928,21 +1414,28 @@ components:
       properties:
         version:
           type: string
+          example: 1.0.3
         timeOfLastBuild:
           type: string
+          example: 2023-07-17T11:27:56.25
     KrameriusVersionDto:
       type: object
       properties:
         version:
           type: string
+          example: 5.8.3
         name:
           type: string
+          example: Národní knihovna České republiky
         name_en:
           type: string
+          example: National Library of the Czech Republic
         logo:
           type: string
+          example: https://api.registr.digitalniknihovna.cz/libraries/nkp/logo
         url:
           type: string
+          example: https://www.ndk.cz
     PageExport:
       type: object
       properties:
@@ -952,17 +1445,6 @@ components:
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        numberOfElements:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
         size:
           type: integer
           format: int32
@@ -973,5 +1455,25 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
         empty:
           type: boolean
+  securitySchemes:
+    Keycloak:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://keycloak.sekan.eu/realms/DL4DHFeeder/protocol/openid-connect/auth
+          tokenUrl: https://keycloak.sekan.eu/realms/DL4DHFeeder/protocol/openid-connect/token
+          scopes:
+            openid: base scope
