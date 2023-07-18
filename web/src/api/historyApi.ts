@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 
 import { api } from 'api';
 
-import { PagableParams, PageFilter } from './models';
+import { FiltersDto, PagableParams, PageFilter } from './models';
 
 export const useSearchHistory = (
 	{ sort, size, page }: PagableParams,
@@ -23,4 +23,11 @@ export const useSearchHistory = (
 			refetchIntervalInBackground: false,
 			enabled: !disabled,
 		},
+	);
+
+export const useSearchHistoryDetail = (id?: string | null) =>
+	useQuery(
+		['search-history-detail', id],
+		() => api().get(`search/history/${id}`).json<FiltersDto>(),
+		{ enabled: !!id, retry: 2 },
 	);

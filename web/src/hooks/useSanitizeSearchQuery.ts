@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import { ModelsEnum, NameTagFilterDto, TagNameEnum } from 'api/models';
 
-import { NameTagCode, OperationCode } from 'utils/enumsMap';
+import { CUSTOM_URL_PARAMS, NameTagCode, OperationCode } from 'utils/enumsMap';
 
 import { TSearchQuery } from './useSearchContext';
 
@@ -16,9 +16,14 @@ function getKeyByValue(object: Record<string, string>, value: string) {
 type TRawSearchQuery = Omit<TSearchQuery, 'nameTagFilters'> & {
 	NT: string | string[];
 };
+
+const KEYS_TO_OMIT = ['NT', 'field', 'value', CUSTOM_URL_PARAMS.HISTORY_ID];
+
 //TODO: Main searchquery parser, make hook from it and call it somwhere else probably (header? app?)
 const sanitizeSearchQuery = (q: TRawSearchQuery) => {
-	const sanitized = { ...omit(q, ['NT', 'field', 'value']) } as TSearchQuery;
+	const sanitized = {
+		...omit(q, KEYS_TO_OMIT),
+	} as TSearchQuery;
 	const page = q.page;
 	sanitized.page = page ?? 1;
 	const field = _.get(q, 'field');

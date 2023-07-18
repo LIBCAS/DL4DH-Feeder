@@ -23,6 +23,7 @@ import { Collection, ModelsEnum } from 'api/models';
 
 import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';
 import { useAvailableFiltersContext } from 'hooks/useAvailableFiltersContext';
+import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import {
 	NameTagCode,
@@ -118,6 +119,7 @@ const ActiveFilters: React.FC<{
 }> = ({ savedFilters, readonly }) => {
 	const theme = useTheme();
 	const { state } = useSearchContext();
+	const { variant } = useSearchThroughContext();
 	const [sp, setSp] = useSearchParams();
 	const { keycloak } = useKeycloak();
 	const nav = useNavigate();
@@ -151,7 +153,9 @@ const ActiveFilters: React.FC<{
 	const readOnlyFilterCss = css`
 		.filter-cross-icon {
 			visibility: hidden;
+			cursor: default !important;
 		}
+		cursor: default !important;
 	`;
 	const filterCss = css`
 		cursor: pointer;
@@ -225,7 +229,11 @@ const ActiveFilters: React.FC<{
 							height={22}
 							color="white"
 							css={controlBtnsCss}
-							onClick={() => nav('/search')}
+							onClick={() => {
+								variant === 'pages'
+									? nav('/search?enrichment=ENRICHED')
+									: nav('/search');
+							}}
 						>
 							<Flex alignItems="center" justifyContent="center">
 								<MdClose size={20} />
@@ -235,57 +243,63 @@ const ActiveFilters: React.FC<{
 				</Flex>
 				{keys.map((k, i) => (
 					<Box key={k + i} fontSize="13px">
-						{arrayFilters[k].map(val => (
-							<Button
-								key={val}
-								textAlign="left"
-								py={1}
-								px={0}
-								width={1}
-								disabled={readonly}
-								tooltip={
-									readonly
-										? ''
-										: `Smazat filtr: ${enumToText(k, val, collectionLabels)}`
-								}
-								variant="text"
-								onClick={() => {
-									removeParam(sp, k, val, k === 'models');
-									setSp(sp);
-								}}
-								css={readonly ? readOnlyFilterCss : filterCss}
-							>
-								<Flex alignItems="flex-start" position="relative" width={1}>
-									<Box
-										className="filter-cross-icon"
-										mr={2}
-										position="absolute"
-										left={0}
-										top={0}
-									>
-										<IconButton color="warning">
-											<MdClose size={15} />
-										</IconButton>
-									</Box>
-									<Box
-										className="filter-active-icon"
-										mr={2}
-										position="absolute"
-										left={0}
-									>
-										<IconButton>
-											<CheckmarkIcon
-												size={13}
-												color={readonly ? 'text' : 'primary'}
-											/>
-										</IconButton>
-									</Box>
-									<Text ml={3} my={0} py={0}>
-										{enumToText(k, val, collectionLabels)}
-									</Text>
-								</Flex>
-							</Button>
-						))}
+						{arrayFilters[k].map(val => {
+							const isRequired = variant === 'pages' && k === 'enrichment';
+							return (
+								<Button
+									key={val}
+									textAlign="left"
+									py={1}
+									px={0}
+									width={1}
+									disabled={(readonly ?? false) || isRequired}
+									tooltip={
+										// eslint-disable-next-line no-nested-ternary
+										readonly || isRequired
+											? isRequired
+												? 'Filtr je vyžadován při vyhledávání ve stránkách.'
+												: ''
+											: `Smazat filtr: ${enumToText(k, val, collectionLabels)}`
+									}
+									variant="text"
+									onClick={() => {
+										removeParam(sp, k, val, k === 'models');
+										setSp(sp);
+									}}
+									css={readonly || isRequired ? readOnlyFilterCss : filterCss}
+								>
+									<Flex alignItems="flex-start" position="relative" width={1}>
+										<Box
+											className="filter-cross-icon"
+											mr={2}
+											position="absolute"
+											left={0}
+											top={0}
+										>
+											<IconButton color="warning">
+												<MdClose size={15} />
+											</IconButton>
+										</Box>
+										<Box
+											className="filter-active-icon"
+											mr={2}
+											position="absolute"
+											left={0}
+										>
+											<IconButton>
+												<CheckmarkIcon
+													size={13}
+													color={readonly ? 'text' : 'primary'}
+												/>
+											</IconButton>
+										</Box>
+										<Text ml={3} my={0} py={0}>
+											{enumToText(k, val, collectionLabels)}
+										</Text>
+									</Flex>
+								</Button>
+							);
+						})}
 					</Box>
 				))}
 				{(NT ?? []).map(nt => (

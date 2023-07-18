@@ -107,6 +107,7 @@ export type FiltersDto = {
 	createdAt?: string;
 	searchThroughPages?: boolean;
 	name?: string;
+	numFound?: number;
 };
 
 export type PagableResponse<T> = {
