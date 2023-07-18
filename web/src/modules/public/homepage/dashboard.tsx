@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import _ from 'lodash';
 import { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 
 import MainContainer from 'components/layout/MainContainer';
 import { Flex } from 'components/styled';
@@ -34,6 +35,7 @@ const Dashboard: FC = () => {
 	const { setResult } = useSearchResultContext();
 	const { variant: searchVariant } = useSearchThroughContext();
 	const { t } = useTranslation();
+	const [sp, setSp] = useSearchParams();
 	const parsedPage = parseInt(
 		(state?.searchQuery?.page as unknown as string) ?? '',
 	);
@@ -47,9 +49,15 @@ const Dashboard: FC = () => {
 		..._.omit(state.searchQuery, 'page'),
 		query: state?.searchQuery?.query ?? '',
 	};
-
-	if (searchVariant === 'pages') {
+	// console.log({
+	// 	searchVariant,
+	// 	enr: sp.get('enrichment'),
+	// 	col: sp.get('collections'),
+	// });
+	if (searchVariant === 'pages' && sp.get('enrichment') !== 'ENRICHED') {
 		params.enrichment = 'ENRICHED';
+		sp.set('enrichment', 'ENRICHED');
+		setSp(sp);
 	}
 
 	const {
