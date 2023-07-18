@@ -5,6 +5,7 @@ import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
 import cz.inqool.dl4dh.feeder.model.Filter;
 import cz.inqool.dl4dh.feeder.service.SearchService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -22,21 +23,21 @@ import java.util.*;
 @RequestMapping("api/search")
 public class SearchApi {
 
+    private final SearchService searchService;
     private WebClient kramerius;
     private WebClient krameriusPrint;
-    private final SearchService searchService;
 
     public SearchApi(SearchService searchService) {
         this.searchService = searchService;
     }
 
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> hint(@RequestParam String q, @RequestParam(required = false) NameTagEntityType nameTagType) {
+    public List<String> hint(@RequestParam @Schema(description = "Query string") String q, @RequestParam(required = false) NameTagEntityType nameTagType) {
         return searchService.hint(q, nameTagType);
     }
 
     @PostMapping(value = "")
-    public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") boolean save, Principal user) {
+    public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") @Schema(description = "Save the search query to user's history", defaultValue = "false", type = "boolean") boolean save, Principal user) {
         SearchDto results = searchService.search(filters);
 
         // Save a query if it is requested
@@ -50,15 +51,16 @@ public class SearchApi {
 
     @GetMapping(value = "/collections")
     public @ResponseBody List<CollectionDto> collections() {
-        return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {}).block();
+        return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
+        }).block();
     }
 
     @GetMapping(value = "/localPrintPDF", produces = "application/pdf")
-    public @ResponseBody ByteArrayResource print(@RequestParam String pids, @RequestParam Optional<String> pagesize, @RequestParam Optional<String> imgop) {
-        return krameriusPrint.get().uri(uriBuilder -> uriBuilder.queryParam("pids",pids)
-                        .queryParam("pagesize", pagesize.orElse("A4"))
-                        .queryParam("imgop", imgop.orElse("FULL"))
-                        .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
+    public @ResponseBody ByteArrayResource print(@RequestParam @Schema(example = "uuid:677e4670-694b-11e4-8c6e-001018b5eb5c,uuid:6793a330-694b-11e4-8c6e-001018b5eb5c") String pids, @RequestParam @Schema(defaultValue = "A4") Optional<String> pagesize, @RequestParam @Schema(defaultValue = "FULL") Optional<String> imgop) {
+        return krameriusPrint.get().uri(uriBuilder -> uriBuilder.queryParam("pids", pids)
+                .queryParam("pagesize", pagesize.orElse("A4"))
+                .queryParam("imgop", imgop.orElse("FULL"))
+                .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 
     @Resource(name = "krameriusWebClient")

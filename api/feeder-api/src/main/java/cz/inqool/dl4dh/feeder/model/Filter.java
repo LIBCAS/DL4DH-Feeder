@@ -2,6 +2,8 @@ package cz.inqool.dl4dh.feeder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.inqool.dl4dh.feeder.enums.*;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class Filter extends AuditModel {
 
     @Id
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @GeneratedValue(generator = "filter_generator")
     @SequenceGenerator(
             name = "filter_generator",
@@ -32,6 +35,7 @@ public class Filter extends AuditModel {
     private String username;
 
     @Column(columnDefinition = "text")
+    @Schema(example = "macha AND (maj OR (zivot AND dilo))", description = "Advanced SOLR filter")
     private String query = "";
 
     @Column(columnDefinition = "boolean default false")
@@ -44,21 +48,27 @@ public class Filter extends AuditModel {
     private Set<DocumentModelEnum> models = new HashSet<>();
 
     @ElementCollection
+    @ArraySchema(schema = @Schema(example = "angličtina"))
     private Set<String> keywords = new HashSet<>();
 
     @ElementCollection
+    @ArraySchema(schema = @Schema(example = "Aleš, Mikoláš"))
     private Set<String> authors = new HashSet<>();
 
     @ElementCollection
+    @ArraySchema(schema = @Schema(example = "cze"))
     private Set<String> languages = new HashSet<>();
 
     @ElementCollection
+    @ArraySchema(schema = @Schema(example = "vc:0922837d-56af-43e4-980b-a75f26cda253"))
     private Set<String> collections = new HashSet<>();
 
     @Column(name = "date_from")
+    @Schema(example = "1920")
     private Integer from;
 
     @Column(name = "date_to")
+    @Schema(example = "2020")
     private Integer to;
 
     @Column(columnDefinition = "text")
@@ -72,14 +82,20 @@ public class Filter extends AuditModel {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="filter")
 
     private List<NameTagFilter> nameTagFilters;
+
+    @Schema(example = "1", description = "Filter availableNameTagFilters response values")
     private String nameTagFacet = "";
 
     // Pagination
+    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
     private Integer start = 0;
+    @Schema(example = "100", accessMode = Schema.AccessMode.WRITE_ONLY)
     private Integer pageSize = 100;
 
     // User metadata (name and number of found documents during search)
+    @Schema(example = "Obohacene publikace")
     private String name = "";
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long numFound = 0L;
 
     public Integer getPageSize() {

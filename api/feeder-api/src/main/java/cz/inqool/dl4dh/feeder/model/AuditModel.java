@@ -1,6 +1,7 @@
 package cz.inqool.dl4dh.feeder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,10 +24,12 @@ public abstract class AuditModel implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Date updatedAt;
 }

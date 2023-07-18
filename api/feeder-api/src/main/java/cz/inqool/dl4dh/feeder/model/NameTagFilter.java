@@ -3,6 +3,8 @@ package cz.inqool.dl4dh.feeder.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.inqool.dl4dh.feeder.enums.FilterOperatorEnum;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class NameTagFilter extends AuditModel {
 
     @Id
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @GeneratedValue(generator = "nametag_filter_generator")
     @SequenceGenerator(
             name = "nametag_filter_generator",
@@ -35,6 +38,7 @@ public class NameTagFilter extends AuditModel {
     private FilterOperatorEnum operator;
 
     @ElementCollection
+    @ArraySchema(schema = @Schema(example = "13"))
     private Set<String> values;
 
 

@@ -30,7 +30,21 @@ public class OpenAPISecurityConfig {
     }
 
     private SecurityScheme createOAuthScheme() {
-        return new SecurityScheme().type(SecurityScheme.Type.OPENIDCONNECT)
-                .openIdConnectUrl(authServerUrl + "/realms/" + realm + "/.well-known/openid-configuration");
+        OAuthFlows flows = createOAuthFlows();
+        return new SecurityScheme().type(SecurityScheme.Type.OAUTH2)
+                .flows(flows);
+//                .openIdConnectUrl(authServerUrl + "/realms/" + realm + "/.well-known/openid-configuration")
+    }
+
+    private OAuthFlows createOAuthFlows() {
+        OAuthFlow flow = createAuthorizationCodeFlow();
+        return new OAuthFlows().authorizationCode(flow);
+    }
+
+    private OAuthFlow createAuthorizationCodeFlow() {
+        return new OAuthFlow()
+                .authorizationUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/auth")
+                .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
+                .scopes(new Scopes().addString("openid", "base scope"));
     }
 }
