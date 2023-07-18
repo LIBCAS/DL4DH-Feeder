@@ -55,7 +55,10 @@ const SaveFiltersModal: FC<{
 	return (
 		<Dialog
 			isOpen={isOpen}
-			onDismiss={onDismiss}
+			onDismiss={() => {
+				setLoading(false);
+				onDismiss();
+			}}
 			css={css`
 				padding: 0 !important;
 				min-width: ${theme.breakpoints[0]};
@@ -75,7 +78,7 @@ const SaveFiltersModal: FC<{
 				<Paper bg="paper" minWidth={['80%', 400]} overflow="visible">
 					<Flex width={1} justifyContent="space-between" alignItems="center">
 						<H1 my={3}>Uložit filtry</H1>
-						<IconButton color="primary" onClick={onDismiss}>
+						<IconButton color="primary" onClick={onDismiss} disabled={loading}>
 							<MdClose size={32} />
 						</IconButton>
 					</Flex>
