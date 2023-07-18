@@ -3,6 +3,7 @@
 import { css } from '@emotion/react';
 import { ImBooks } from 'react-icons/im';
 import { FaBookOpen } from 'react-icons/fa';
+import { useSearchParams } from 'react-router-dom';
 
 import Tabs from 'components/tabs';
 import IconButton from 'components/styled/IconButton';
@@ -17,7 +18,8 @@ import {
 
 const DashboardSearchThroughSwitch = () => {
 	const theme = useTheme();
-	const { variant, setVariant } = useSearchThroughContext();
+	const { variant, setVariant, setShowModal } = useSearchThroughContext();
+	const [sp, setSp] = useSearchParams();
 
 	return (
 		<Flex
@@ -50,7 +52,19 @@ const DashboardSearchThroughSwitch = () => {
 						),
 					},
 				]}
-				setActiveTab={variant => setVariant(variant as SearchThroughVariant)}
+				setActiveTab={variant => {
+					if (variant === 'pages') {
+						sp.set('enrichment', 'ENRICHED');
+						sp.set('page', '1');
+						setSp(sp);
+						setShowModal(true);
+					} else {
+						sp.set('page', '1');
+						setSp(sp);
+						setShowModal(false);
+					}
+					setVariant(variant as SearchThroughVariant);
+				}}
 				activeTab={variant}
 			/>
 		</Flex>

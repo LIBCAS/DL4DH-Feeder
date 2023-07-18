@@ -47,13 +47,7 @@ const AppRoutes: React.FC = () => {
 				omit(state.searchQuery, 'nameTagFacet'),
 			)
 		) {
-			//console.log('not equal .. dispatching');
-			dispatch?.({
-				type: 'setSearchQuery',
-				searchQuery: {
-					...parsed,
-				},
-			});
+			dispatch?.({ type: 'setSearchQuery', searchQuery: parsed });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [parsed]);

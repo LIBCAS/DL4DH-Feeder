@@ -27,6 +27,7 @@ import { AvailableFiltersContextProvider } from 'hooks/useAvailableFiltersContex
 
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 import DashboardSearchThroughSwitch from './DashboardSearchThroughSwitch';
+import SearchThoroughPagesModal from './SearchThoroughPagesModal';
 
 const Dashboard: FC = () => {
 	const { state } = useSearchContext();
@@ -38,23 +39,30 @@ const Dashboard: FC = () => {
 	);
 	const page = isNaN(parsedPage) ? 1 : parsedPage;
 
-	const {
-		data,
-		count,
-		isLoading: loading,
-		isFetching,
-		isRefetching,
-		hasMore,
-		availableFilters,
-		dataUpdatedAt,
-	} = useSearchPublications({
+	const params = {
 		start: (page - 1) * state.pageSize ?? 0,
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		searchThroughPages: searchVariant === 'pages',
 		..._.omit(state.searchQuery, 'page'),
 		query: state?.searchQuery?.query ?? '',
-	});
+	};
+
+	if (searchVariant === 'pages') {
+		params.enrichment = 'ENRICHED';
+	}
+
+	const {
+		data,
+		count,
+
+		isLoading: loading,
+		isFetching,
+		isRefetching,
+		hasMore,
+		availableFilters,
+		dataUpdatedAt,
+	} = useSearchPublications(params);
 	// const {
 	// 	data: filtersData,
 	// 	dataUpdatedAt: filtersKey,
@@ -88,6 +96,7 @@ const Dashboard: FC = () => {
 				overflow: hidden !important;
 			`}
 		>
+			<SearchThoroughPagesModal />
 			<MainContainer
 				subHeader={{
 					leftJsx: (
@@ -114,8 +123,12 @@ const Dashboard: FC = () => {
 								<DashboardViewModeSwitcher />
 								<DashboardSearchThroughSwitch />
 								<Flex mr={3} alignItems="center">
-									<Sorting />
-									{state.viewMode !== 'graph' && <BulkExportModeSwitch />}
+									{state.viewMode !== 'graph' && (
+										<>
+											<Sorting />
+											<BulkExportModeSwitch />
+										</>
+									)}
 									{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
 								</Flex>
 							</Flex>

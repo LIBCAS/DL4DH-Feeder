@@ -132,6 +132,26 @@ const ActiveFilters: React.FC<{
 
 	const { t } = useTranslation();
 
+	const handleSaveFilter = useCallback(async () => {
+		const body = {
+			pageSize: 15,
+			page: 0,
+			query: '',
+			sort: 'TITLE_ASC',
+			availability: 'PUBLIC',
+			...state.searchQuery,
+		};
+		setSavingFilter(true);
+		const resp = await api().post('search?save=true', {
+			body: JSON.stringify(body),
+			headers: { 'Content-Type': 'application/json' },
+		});
+		setSavingFilter(false);
+		if (resp.ok) {
+			toast.success('Filter byl úspěšně uložen');
+		}
+	}, [state.searchQuery]);
+
 	const enumToText = useActiveFilterLabel();
 	// no filters?
 	if (
@@ -147,6 +167,41 @@ const ActiveFilters: React.FC<{
 	const collectionLabels = availableFilters?.collections ?? {};
 
 	const keys = Object.keys(arrayFilters);
+
+	/* css definitions */
+	const readOnlyFilterCss = css`
+		.filter-cross-icon {
+			visibility: hidden;
+		}
+	`;
+	const filterCss = css`
+		cursor: pointer;
+		&:hover,
+		&:hover {
+			color: ${theme.colors.warning};
+		}
+		&:hover .filter-cross-icon {
+			visibility: visible;
+			color: ${theme.colors.warning};
+		}
+		&:hover .filter-active-icon {
+			visibility: hidden;
+		}
+		.filter-cross-icon {
+			visibility: hidden;
+		}
+	`;
+
+	const controlBtnsCss = css`
+		border: 1px solid ${theme.colors.primaryLight};
+		background-color: ${theme.colors.warning};
+		border-radius: 22px;
+		box-sizing: border-box;
+		&:hover {
+			border: 1px solid ${theme.colors.primary};
+			background-color: ${theme.colors.primary};
+		}
+	`;
 
 	return (
 		<Box px={0}>
@@ -166,35 +221,8 @@ const ActiveFilters: React.FC<{
 							height={22}
 							color="white"
 							disabled={savingFilter}
-							css={css`
-								border: 1px solid ${theme.colors.primaryLight};
-								background-color: ${theme.colors.warning};
-								border-radius: 22px;
-								box-sizing: border-box;
-								&:hover {
-									border: 1px solid ${theme.colors.primary};
-									background-color: ${theme.colors.primary};
-								}
-							`}
-							onClick={async () => {
-								const body = {
-									pageSize: 15,
-									page: 0,
-									query: '',
-									sort: 'TITLE_ASC',
-									availability: 'PUBLIC',
-									...state.searchQuery,
-								};
-								setSavingFilter(true);
-								const resp = await api().post('search?save=true', {
-									body: JSON.stringify(body),
-									headers: { 'Content-Type': 'application/json' },
-								});
-								setSavingFilter(false);
-								if (resp.ok) {
-									toast.success('Filter byl úspěšně uložen');
-								}
-							}}
+							css={controlBtnsCss}
+							onClick={handleSaveFilter}
 						>
 							<Flex alignItems="center" justifyContent="center">
 								{savingFilter ? <Loader size={18} /> : <MdSave size={18} />}
@@ -213,16 +241,7 @@ const ActiveFilters: React.FC<{
 							width={22}
 							height={22}
 							color="white"
-							css={css`
-								border: 1px solid ${theme.colors.primaryLight};
-								background-color: ${theme.colors.warning};
-								border-radius: 22px;
-								box-sizing: border-box;
-								&:hover {
-									border: 1px solid ${theme.colors.primary};
-									background-color: ${theme.colors.primary};
-								}
-							`}
+							css={controlBtnsCss}
 							onClick={() => nav('/search')}
 						>
 							<Flex alignItems="center" justifyContent="center">
@@ -251,31 +270,7 @@ const ActiveFilters: React.FC<{
 									removeParam(sp, k, val, k === 'models');
 									setSp(sp);
 								}}
-								css={
-									readonly
-										? css`
-												.filter-cross-icon {
-													visibility: hidden;
-												}
-										  `
-										: css`
-												cursor: pointer;
-												&:hover,
-												&:hover {
-													color: ${theme.colors.warning};
-												}
-												&:hover .filter-cross-icon {
-													visibility: visible;
-													color: ${theme.colors.warning};
-												}
-												&:hover .filter-active-icon {
-													visibility: hidden;
-												}
-												.filter-cross-icon {
-													visibility: hidden;
-												}
-										  `
-								}
+								css={readonly ? readOnlyFilterCss : filterCss}
 							>
 								<Flex alignItems="flex-start" position="relative" width={1}>
 									<Box
@@ -337,31 +332,7 @@ const ActiveFilters: React.FC<{
 								);
 								setSp(sp);
 							}}
-							css={
-								readonly
-									? css`
-											.filter-cross-icon {
-												visibility: hidden;
-											}
-									  `
-									: css`
-											cursor: pointer;
-											&:hover,
-											&:hover {
-												color: ${theme.colors.warning};
-											}
-											&:hover .filter-cross-icon {
-												visibility: visible;
-												color: ${theme.colors.warning};
-											}
-											&:hover .filter-active-icon {
-												visibility: hidden;
-											}
-											.filter-cross-icon {
-												visibility: hidden;
-											}
-									  `
-							}
+							css={readonly ? readOnlyFilterCss : filterCss}
 						>
 							<Flex
 								alignItems="flex-start"
