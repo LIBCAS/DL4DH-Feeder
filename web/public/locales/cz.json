@@ -52,7 +52,9 @@
       "one": "titul",
       "few": "tituly",
       "many": "titulů"
-    }
+    },
+    "delete": "Smazat",
+    "save": "Uložit"
   },
   "lang": {
     "cs": "Čeština",

@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiLinkExternal } from 'react-icons/bi';
-import { MdCopyAll } from 'react-icons/md';
+import { MdCopyAll, MdDelete } from 'react-icons/md';
+import { toast } from 'react-toastify';
+import { useQueryClient } from 'react-query';
 
 import { Chip } from 'components/form/input/TextInput';
 import SimpleSelect from 'components/form/select/SimpleSelect';
@@ -24,6 +26,7 @@ import {
 
 import { theme } from 'theme';
 import { nameTagQueryCtor } from 'utils';
+import { api } from 'api';
 
 import { useSearchHistory } from 'api/historyApi';
 import { FiltersDto } from 'api/models';
@@ -98,11 +101,29 @@ const SearchHistory = () => {
 	const [page, setPage] = useState(0);
 	const [pageSize, setPageSize] = useState(10);
 	const [sorting, setSorting] = useState<'ASC' | 'DESC'>('DESC');
+	const queryClient = useQueryClient();
+
 	const response = useSearchHistory({
 		page,
 		size: pageSize,
 		sort: { direction: sorting, field: 'createdAt' },
 	});
+
+	const handleDeleteEntry = useCallback(
+		async (id: string) => {
+			if (!window.confirm('Opravdu chcete smazat záznam?')) {
+				return;
+			}
+			const response = await api().delete(`search/history/${id}`);
+			if (response.ok) {
+				toast.success('Záznam byl úspěšně smazán');
+				queryClient.invalidateQueries({ queryKey: ['search-history-list'] });
+			} else {
+				toast.error('Záznam se nepodařilo smazat');
+			}
+		},
+		[queryClient],
+	);
 
 	if (response.isLoading) {
 		return <Loader />;
@@ -271,6 +292,14 @@ const SearchHistory = () => {
 									<NavLinkButton to={row.link} variant="text" target="_blank">
 										<BiLinkExternal size={24} />
 									</NavLinkButton>
+									<Button
+										tooltip={t('common:delete')}
+										variant="text"
+										onClick={() => row.id && handleDeleteEntry(row.id)}
+										color="error"
+									>
+										<MdDelete size={24} />
+									</Button>
 								</Flex>
 							</Flex>
 						)}

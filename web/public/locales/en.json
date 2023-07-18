@@ -51,7 +51,9 @@
       "one": "document",
       "few": "documents",
       "many": "documents"
-    }
+    },
+    "delete": "Delete",
+    "save": "Save"
   },
   "lang": {
     "cs": "Čeština",

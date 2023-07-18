@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MdClose, MdSave } from 'react-icons/md';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 import { useKeycloak } from '@react-keycloak/web';
 
 import { Flex, Box } from 'components/styled';
@@ -13,12 +12,12 @@ import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
 import { OperationToTextLabel } from 'components/search/MainSearchInput';
 import Button from 'components/styled/Button';
+import SaveFiltersModal from 'components/filters/save-filters-modal';
 
 import { Loader } from 'modules/loader';
 
 import { CheckmarkIcon } from 'assets';
 import { useTheme } from 'theme';
-import { api } from 'api';
 
 import { Collection, ModelsEnum } from 'api/models';
 
@@ -132,26 +131,6 @@ const ActiveFilters: React.FC<{
 
 	const { t } = useTranslation();
 
-	const handleSaveFilter = useCallback(async () => {
-		const body = {
-			pageSize: 15,
-			page: 0,
-			query: '',
-			sort: 'TITLE_ASC',
-			availability: 'PUBLIC',
-			...state.searchQuery,
-		};
-		setSavingFilter(true);
-		const resp = await api().post('search?save=true', {
-			body: JSON.stringify(body),
-			headers: { 'Content-Type': 'application/json' },
-		});
-		setSavingFilter(false);
-		if (resp.ok) {
-			toast.success('Filter byl úspěšně uložen');
-		}
-	}, [state.searchQuery]);
-
 	const enumToText = useActiveFilterLabel();
 	// no filters?
 	if (
@@ -215,6 +194,10 @@ const ActiveFilters: React.FC<{
 					>
 						<Text fontWeight="bold">Uložit filtry</Text>
 						{savingFilter && <Loader size={22} />}
+						<SaveFiltersModal
+							isOpen={savingFilter}
+							onDismiss={() => setSavingFilter(false)}
+						/>
 						<IconButton
 							tooltip="Uložit filtry"
 							width={22}
@@ -222,7 +205,7 @@ const ActiveFilters: React.FC<{
 							color="white"
 							disabled={savingFilter}
 							css={controlBtnsCss}
-							onClick={handleSaveFilter}
+							onClick={() => setSavingFilter(true)}
 						>
 							<Flex alignItems="center" justifyContent="center">
 								{savingFilter ? <Loader size={18} /> : <MdSave size={18} />}
