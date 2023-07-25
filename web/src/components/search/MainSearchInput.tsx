@@ -25,8 +25,9 @@ import {
 	operationsTuple,
 	TOperation,
 } from 'hooks/useSearchContext';
+import useNameTagLocalizedLabel from 'hooks/useNameTagLabel';
 
-import { NameTagIcon, NameTagToText } from 'utils/enumsMap';
+import { NameTagIcon } from 'utils/enumsMap';
 
 export const OperationToTextLabel: Record<TOperation, string> = {
 	EQUAL: '=',
@@ -58,6 +59,7 @@ const MainSearchInput = () => {
 	>(null);
 
 	const [searchParams, setSearchParams] = useSearchParams();
+	const localizeNameTag = useNameTagLocalizedLabel();
 	const nav = useNavigate();
 	const location = useLocation();
 	const { t } = useTranslation();
@@ -227,7 +229,6 @@ const MainSearchInput = () => {
 										}
 									}}
 									keyFromOption={item => (item ? item : '')}
-									nameFromOption={item => (item ? NameTagToText[item] : '')}
 									renderMenuItem={(item, currentValue) => {
 										if (!item) {
 											return <></>;
@@ -245,7 +246,7 @@ const MainSearchInput = () => {
 													fontWeight={item === currentValue ? 'bold' : 'normal'}
 													ml={2}
 												>
-													{t(`nametag:labels.${item}`)}
+													{localizeNameTag(item)}
 												</Text>
 											</Flex>
 										);

@@ -105,21 +105,6 @@ export const availabilityToTextTag = (value: string) => {
 	}
 };
 
-export const NameTagToText: Record<TagNameEnum, string> = {
-	NUMBERS_IN_ADDRESSES: 'Čísla v adresách',
-	GEOGRAPHICAL_NAMES: 'Zeměpisné názvy',
-	INSTITUTIONS: 'Instituce',
-	MEDIA_NAMES: 'Názvy médií',
-	NUMBER_EXPRESSIONS: 'Kvantitativní výrazy',
-	ARTIFACT_NAMES: 'Názvy artefaktů',
-	PERSONAL_NAMES: 'Osobní jména',
-	TIME_EXPRESSIONS: 'Vyjádření času',
-	COMPLEX_PERSON_NAMES: 'Komplexní osobní jména',
-	COMPLEX_TIME_EXPRESSION: 'Komplexní vyjádření času',
-	COMPLEX_ADDRESS_EXPRESSION: 'Komplexní vyjádření adresy',
-	COMPLEX_BIBLIO_EXPRESSION: 'Bibliografické položky',
-};
-
 export const NameTagIcon: Record<TagNameEnum, IconType> = {
 	NUMBERS_IN_ADDRESSES: MdHome,
 	GEOGRAPHICAL_NAMES: GiEarthAfricaEurope,

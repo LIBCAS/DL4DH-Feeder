@@ -14,8 +14,9 @@ import { useTheme } from 'theme';
 import { TagNameEnum } from 'api/models';
 
 import { fieldsTuple, operationsTuple } from 'hooks/useSearchContext';
+import useNameTagLocalizedLabel from 'hooks/useNameTagLabel';
 
-import { NameTagToText, NameTagIcon } from 'utils/enumsMap';
+import { NameTagIcon } from 'utils/enumsMap';
 
 import { OperationToTextLabel, OperationToWord } from './MainSearchInput';
 type Props = {
@@ -34,6 +35,7 @@ const TagNameDropDown: React.FC<Props> = ({
 	const [showTagOpMenu, setShowTagOpMenu] = useState(false);
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const localizeNameTag = useNameTagLocalizedLabel();
 
 	const [selectedTagOp, setSelectedTagOp] = useState<
 		'EQUAL' | 'NOT_EQUAL' | null
@@ -50,7 +52,7 @@ const TagNameDropDown: React.FC<Props> = ({
 					onTagNameSelected(field);
 				}}
 				keyFromOption={item => (item ? item : '')}
-				nameFromOption={item => (item ? NameTagToText[item] : '')}
+				nameFromOption={item => (item ? localizeNameTag(item) : '')}
 				renderSelectedItem={
 					selectedItemView === 'ICON'
 						? item => {
