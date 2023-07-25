@@ -38,9 +38,8 @@ const HistoryNumFoundBar: FC<{
 			position="sticky"
 			top={0}
 			alignItems="center"
-			color="white"
+			color="black"
 			px={3}
-			textShadow="1px 1px 1px rgba(0,0,0,0.3)"
 			justifyContent="space-between"
 		>
 			<Flex alignItems="center">
@@ -66,7 +65,7 @@ const HistoryNumFoundBar: FC<{
 					minWidth={20}
 					width={20}
 					mr={3}
-					color="white"
+					color="black"
 					onClick={() => {
 						sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 						setSp(sp);

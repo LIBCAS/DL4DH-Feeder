@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiLinkExternal } from 'react-icons/bi';
 import { MdCopyAll, MdDelete } from 'react-icons/md';
@@ -31,7 +31,7 @@ import { api } from 'api';
 import { useSearchHistory } from 'api/historyApi';
 import { FiltersDto } from 'api/models';
 
-import { CUSTOM_URL_PARAMS, NameTagToText } from 'utils/enumsMap';
+import { CUSTOM_URL_PARAMS } from 'utils/enumsMap';
 
 const isAdvancedFilterActive = (filter: FiltersDto): boolean => {
 	if (!filter.advancedFilterField) {
@@ -128,22 +128,26 @@ const SearchHistory = () => {
 		[queryClient],
 	);
 
+	const hist = useMemo(
+		() =>
+			(response.data?.content ?? []).map(h => ({
+				formatted: formatActiveFilters(h),
+				link: constructQuery(h),
+				created: h.createdAt
+					? `${new Date(h.createdAt)?.toLocaleDateString?.('cs') ?? h.id} ${
+							new Date(h.createdAt)?.toLocaleTimeString?.('cs') ?? h.id
+					  }`
+					: h.id,
+				id: h.id,
+				name: h.name,
+				numFound: h.numFound,
+			})),
+		[response.data?.content],
+	);
+
 	if (response.isLoading) {
 		return <Loader />;
 	}
-
-	const hist = (response.data?.content ?? []).map(h => ({
-		formatted: formatActiveFilters(h),
-		link: constructQuery(h),
-		created: h.createdAt
-			? `${new Date(h.createdAt)?.toLocaleDateString?.('cs') ?? h.id} ${
-					new Date(h.createdAt)?.toLocaleTimeString?.('cs') ?? h.id
-			  }`
-			: h.id,
-		query: h,
-		id: h.id,
-		name: h.name,
-	}));
 
 	return (
 		<Wrapper
@@ -157,7 +161,7 @@ const SearchHistory = () => {
 				subHeader={{
 					leftJsx: (
 						<Flex px={2} alignItems="center" justifyContent="center">
-							Výsledky: {response.data?.totalElements ?? 0}
+							{t('search:results')}: {response.data?.totalElements ?? 0}
 						</Flex>
 					),
 
@@ -169,7 +173,7 @@ const SearchHistory = () => {
 							fontWeight="normal"
 							fontSize="lg"
 						>
-							Historie dotazů
+							{t('search_history:page_title')}
 						</H1>
 					),
 
@@ -181,7 +185,7 @@ const SearchHistory = () => {
 							alignItems="center"
 							justifyContent="flex-end"
 						>
-							<Text>Řazení:</Text>
+							<Text>{t('search:ordering.label')}:</Text>
 							<SimpleSelect<'ASC' | 'DESC'>
 								minWidth={150}
 								options={['ASC', 'DESC']}
@@ -245,6 +249,11 @@ const SearchHistory = () => {
 												<b>{row.name}</b>
 											</Text>
 										)}
+										{row.numFound != null && (
+											<Text mr={2} fontSize="sm">
+												{t('search:results')}: <b>{row.numFound}</b>
+											</Text>
+										)}
 										<Text mr={2} fontSize="sm">
 											{row.created}
 										</Text>
@@ -268,7 +277,7 @@ const SearchHistory = () => {
 											}),
 										)}
 										{row.formatted.NT.map(nt => {
-											const label = `${NameTagToText[nt.type]} ${
+											const label = `${t(`nametag:labels.${nt.type}`)} ${
 												OperationToTextLabel[nt.operator]
 											}
 												${nt.values[0]}`;

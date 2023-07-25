@@ -138,12 +138,14 @@
   },
   "filters": {
     "used_header": "Active filters",
+    "save_filters": "Save filters",
     "tooltip_remove_filter": "Cancel this filter",
     "tooltip_remove_filter_all": "Cancel all filters",
     "btn_show_more": "Show more",
     "btn_show_less": "Show less",
     "btn_show_filters": "Show filters",
-    "btn_hide_filters": "Hide filters"
+    "btn_hide_filters": "Hide filters",
+    "tooltip_filter_required": "Filter is required when searching through pages"
   },
   "toolbar": {
     "tooltip_display_grid": "Display grid",
@@ -197,7 +199,9 @@
       "from": "From",
       "to": "To",
       "apply": "Apply"
-    }
+    },
+    "query":"String",
+    "yearsInterval": "Years"
   },
   "advanced_search": {
     "title": "Advances Search",
@@ -326,6 +330,10 @@
     },
     "count_suffix": "documents"
   },
+  "search_history": {
+    "page_title": "Search history"
+  },
+
   "music": {
     "toolbar": {
       "playing": "Playing"
