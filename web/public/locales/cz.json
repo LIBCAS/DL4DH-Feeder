@@ -139,12 +139,14 @@
   },
   "filters": {
     "used_header": "Aktivní filtry",
+    "save_filters": "Uložit filtry",
     "tooltip_remove_filter": "Zrušit tento filtr",
     "tooltip_remove_filter_all": "Zrušit všechny aktivní filtry",
     "btn_show_more": "Zobrazit více",
     "btn_show_less": "Zobrazit méně",
     "btn_show_filters": "Zobraz filtry",
-    "btn_hide_filters": "Skýt filtry"
+    "btn_hide_filters": "Skýt filtry",
+    "tooltip_filter_required": "Filtr je vyžadován při vyhledávání ve stránkách."
   },
   "toolbar": {
     "tooltip_display_grid": "Zobraz mřížku",
@@ -198,7 +200,9 @@
       "from": "Od",
       "to": "Do",
       "apply": "Použít"
-    }
+    },
+    "query":"Řetězec",
+    "yearsInterval": "Léta"
   },
   "advanced_search": {
     "title": "Pokročilé vyhledávání",
@@ -330,6 +334,9 @@
       "alphabetical": "Abecedně"
     },
     "count_suffix": "dokumentů"
+  },
+  "search_history": {
+    "page_title": "Historie dotazů"
   },
   "music": {
     "toolbar": {

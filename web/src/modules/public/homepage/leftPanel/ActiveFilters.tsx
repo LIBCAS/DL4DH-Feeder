@@ -24,13 +24,13 @@ import { Collection, ModelsEnum } from 'api/models';
 import { TSearchQuery, useSearchContext } from 'hooks/useSearchContext';
 import { useAvailableFiltersContext } from 'hooks/useAvailableFiltersContext';
 import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
+import useNameTagLocalizedLabel from 'hooks/useNameTagLabel';
 
 import {
 	NameTagCode,
 	OperationCode,
 	availabilityToText,
 	modelToText,
-	NameTagToText,
 	enrichmentToText,
 } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
@@ -71,13 +71,15 @@ export const useActiveFilterLabel = () => {
 				case 'enrichment':
 					return value === 'ALL' ? '' : t(enrichmentToText(value));
 				case 'query':
-					return `Řetězec: "${value}"`;
+					return `${t('search:query')}: "${value}"`;
 				case 'yearsInterval':
-					return `Léta: ${value}`;
+					return `${t('search:yearsInterval')}: ${value}`;
 				case 'languages':
 					return `${t('search:languages')}: ${mapLangToCS?.[value] ?? value}`;
 				case 'collections':
-					return `Sbírka: ${collectionLabels?.[value]?.descs?.cs ?? value}`;
+					return `${t('search:collections')}: ${
+						collectionLabels?.[value]?.descs?.cs ?? value
+					}`;
 
 				default:
 					return value;
@@ -117,6 +119,7 @@ const ActiveFilters: React.FC<{
 	savedFilters?: TSearchQuery;
 	readonly?: boolean;
 }> = ({ savedFilters, readonly }) => {
+	const localizeNameTag = useNameTagLocalizedLabel();
 	const theme = useTheme();
 	const { state } = useSearchContext();
 	const { variant } = useSearchThroughContext();
@@ -196,14 +199,14 @@ const ActiveFilters: React.FC<{
 						alignItems="center"
 						mb={0}
 					>
-						<Text fontWeight="bold">Uložit filtry</Text>
+						<Text fontWeight="bold">{t('filters:save_filters')}</Text>
 						{savingFilter && <Loader size={22} />}
 						<SaveFiltersModal
 							isOpen={savingFilter}
 							onDismiss={() => setSavingFilter(false)}
 						/>
 						<IconButton
-							tooltip="Uložit filtry"
+							tooltip={t('filters:save_filters')}
 							width={22}
 							height={22}
 							color="white"
@@ -257,9 +260,13 @@ const ActiveFilters: React.FC<{
 										// eslint-disable-next-line no-nested-ternary
 										readonly || isRequired
 											? isRequired
-												? 'Filtr je vyžadován při vyhledávání ve stránkách.'
+												? t('filters:tooltip_filter_required')
 												: ''
-											: `Smazat filtr: ${enumToText(k, val, collectionLabels)}`
+											: `${t('filters:tooltip_remove_filter')}: ${enumToText(
+													k,
+													val,
+													collectionLabels,
+											  )}`
 									}
 									variant="text"
 									onClick={() => {
@@ -311,9 +318,9 @@ const ActiveFilters: React.FC<{
 							tooltip={
 								readonly
 									? ''
-									: `Smazat filtr: ${NameTagToText[nt.type]} ${
-											OperationToTextLabel[nt.operator]
-									  }
+									: `${t('filters:tooltip_remove_filter')}: ${localizeNameTag(
+											nt.type,
+									  )} ${OperationToTextLabel[nt.operator]}
 							${nt.values[0]}`
 							}
 							variant="text"
@@ -359,7 +366,7 @@ const ActiveFilters: React.FC<{
 									</IconButton>
 								</Box>
 								<Text ml={3} my={0} py={0}>
-									{NameTagToText[nt.type]} {OperationToTextLabel[nt.operator]}{' '}
+									{localizeNameTag(nt.type)} {OperationToTextLabel[nt.operator]}{' '}
 									{nt.values[0]}
 								</Text>
 							</Flex>
