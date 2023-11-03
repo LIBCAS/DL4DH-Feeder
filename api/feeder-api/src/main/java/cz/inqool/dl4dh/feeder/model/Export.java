@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,10 +22,13 @@ public class Export extends AuditModel {
 
     public enum Status {
         CREATED,
+        ENQUEUED,
         RUNNING,
         COMPLETED,
         SUCCESSFUL,
         FAILED,
+        FAILED_FATALLY,
+        CANCELLED,
         PARTIAL,
         STARTING,
         STARTED,
@@ -89,6 +93,9 @@ public class Export extends AuditModel {
     @JsonIgnore
     @Column(columnDefinition = "text")
     private String exportId;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="export")
+    private List<ExportItem> items;
 
     public boolean isFinished() {
         return status.equals(Status.COMPLETED) ||

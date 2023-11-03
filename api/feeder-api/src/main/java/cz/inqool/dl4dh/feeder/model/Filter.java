@@ -80,7 +80,6 @@ public class Filter extends AuditModel {
     private AdvancedFilterFieldEnum advancedFilterField = AdvancedFilterFieldEnum.NONE;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="filter")
-
     private List<NameTagFilter> nameTagFilters;
 
     @Schema(example = "1", description = "Filter availableNameTagFilters response values")

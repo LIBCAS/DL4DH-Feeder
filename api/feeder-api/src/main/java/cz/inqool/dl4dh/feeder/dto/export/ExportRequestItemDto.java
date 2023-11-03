@@ -9,4 +9,5 @@ public class ExportRequestItemDto {
     private String id;
     private String publicationId;
     private String publicationTitle;
+    private KrameriusExportDto rootExport;
 }
