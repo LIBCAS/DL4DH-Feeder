@@ -9,6 +9,8 @@ import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import Text from 'components/styled/Text';
 
+import { CUSTOM_URL_PARAMS } from 'utils/enumsMap';
+
 const PublishDateFilterForm: FC<{
 	interval?: { maxYear: number; minYear: number };
 }> = ({ interval }) => {
@@ -31,6 +33,8 @@ const PublishDateFilterForm: FC<{
 		onSubmit: values => {
 			searchParams.set('from', values.yearFrom);
 			searchParams.set('to', values.yearTo);
+			searchParams.delete('page');
+			searchParams.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 			setSearchParams(searchParams);
 		},
 	});
@@ -130,7 +134,7 @@ const PublishDateFilterForm: FC<{
 						value={values.yearTo}
 						onKeyDown={e => {
 							if (e.key === 'Enter') {
-								alert('enter');
+								// alert('enter');
 							}
 						}}
 						inputPadding="8px"

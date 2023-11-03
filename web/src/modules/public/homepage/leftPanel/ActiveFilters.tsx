@@ -32,6 +32,7 @@ import {
 	availabilityToText,
 	modelToText,
 	enrichmentToText,
+	CUSTOM_URL_PARAMS,
 } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
@@ -113,6 +114,7 @@ function removeParam(
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
 	sp.delete('page');
+	sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 }
 
 const ActiveFilters: React.FC<{
