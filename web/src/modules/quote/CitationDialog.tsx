@@ -178,10 +178,9 @@ const ShowCitation: FC<{
 
 const CitationDialog = () => {
 	const { getApropriateIds } = useParseUrlIdsAndParams();
-	const { pageId, id } = getApropriateIds();
+	const { pageId, id: pubPid } = getApropriateIds();
 	const { t } = useTranslation();
 
-	const pubPid = id; //isSecond ? pctx.secondPublication?.pid : pctx.publication?.pid;
 	const rootDetailResponse = usePublicationDetail(
 		pageId ?? pubPid ?? 'pageId_rootId_undefined',
 	);
