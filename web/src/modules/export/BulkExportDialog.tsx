@@ -95,6 +95,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 			delimiter: delimiterEnum.comma,
 			pagesFilter: [],
 			exportName: '',
+			altoParams: [...altoParamsOptions],
+			nameTagParams: [...nameTagParamsExportOptions],
+			udPipeParams: [...udPipeParamsOptions],
 		},
 
 		onSubmit: async values => {
