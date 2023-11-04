@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 import { MdDownload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 import ClassicTable from 'components/table/ClassicTable';
 import { Flex } from 'components/styled';
@@ -66,40 +67,49 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 							alignItems="flex-end"
 							justifyContent="flex-end"
 						>
-							<Text my={1}>{t(`exports:status_enum:${exportDto.status}`)}</Text>
-							{row.finished && row.status === 'COMPLETED' && (
-								<Text my={1} fontSize="md" css={css``}>
-									<IconButton
-										onClick={async e => {
-											e.stopPropagation();
-											const file = await api().get(
-												`exports/download/${exportDto.id}/item/${row.id}`,
-											);
-
-											const blob = await file.blob();
-											const url = URL.createObjectURL(blob);
-											downloadFile(
-												url,
-												`${exportDto?.publicationTitle ?? exportDto.id}-${
-													row.publicationTitle
-												}.zip`,
-											);
-										}}
-									>
-										<Flex
-											alignItems="center"
-											py={0}
-											color="primary"
-											fontWeight="bold"
+							<Text my={1}>{t(`exports:status_enum:${row.status}`)}</Text>
+							{row.finished &&
+								(row.status === 'COMPLETED' || row.status === 'SUCCESSFUL') && (
+									<Text my={1} fontSize="md" css={css``}>
+										<IconButton
+											onClick={async (e: MouseEvent) => {
+												e.stopPropagation();
+												try {
+													const file = await api().get(
+														`exports/download/${exportDto.id}/item/${row.id}`,
+														{ headers: { Accept: 'application/zip' } },
+													);
+													const blob = await file.blob();
+													const url = URL.createObjectURL(blob);
+													downloadFile(
+														url,
+														`${exportDto?.publicationTitle ?? exportDto.id}-${
+															row.publicationTitle
+														}.zip`,
+													);
+												} catch (error) {
+													toast.error(
+														`Při stahování došlo k chybě: ${
+															error as unknown as string
+														}`,
+													);
+												}
+											}}
 										>
-											<Text my={0} py={0} px={1} fontSize="lg">
-												{t('exports:exports_dashboard:download')}
-											</Text>{' '}
-											<MdDownload size={16} />
-										</Flex>
-									</IconButton>
-								</Text>
-							)}
+											<Flex
+												alignItems="center"
+												py={0}
+												color="primary"
+												fontWeight="bold"
+											>
+												<Text my={0} py={0} px={1} fontSize="lg">
+													{t('exports:exports_dashboard:download')}
+												</Text>{' '}
+												<MdDownload size={16} />
+											</Flex>
+										</IconButton>
+									</Text>
+								)}
 						</Flex>
 					</Flex>
 				)}

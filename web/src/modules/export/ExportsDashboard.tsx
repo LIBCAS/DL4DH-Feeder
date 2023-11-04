@@ -39,8 +39,8 @@ const ExportsDashboard = () => {
 			//width={1}
 			bg="paper"
 		>
-			<Box color="#444444!important" width="99%">
-				<Box mt={4} mx={3}>
+			<Box color="#444444!important" width="100%">
+				<Box mt={4} mx={4}>
 					<H1
 						my={3}
 						textAlign="left"
@@ -168,6 +168,7 @@ const Exportslist = () => {
 											e.stopPropagation();
 											const file = await api().get(
 												`exports/download/${row.id}`,
+												{ headers: { Accept: 'application/zip' } },
 											);
 											const blob = await file.blob();
 											const url = URL.createObjectURL(blob);
