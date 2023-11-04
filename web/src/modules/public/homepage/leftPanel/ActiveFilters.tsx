@@ -98,6 +98,7 @@ function removeParam(
 	value: string,
 	unique: boolean,
 ) {
+	sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 	if (key === 'yearsInterval') {
 		sp.delete('from');
 		sp.delete('to');
@@ -108,13 +109,10 @@ function removeParam(
 		sp.delete('value');
 	}
 	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
-
 	const newEntries = entries.filter(entry => entry !== value);
-
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
 	sp.delete('page');
-	sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 }
 
 const ActiveFilters: React.FC<{
