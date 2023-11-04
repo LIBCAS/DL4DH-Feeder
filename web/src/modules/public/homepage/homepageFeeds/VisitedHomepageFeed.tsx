@@ -45,6 +45,7 @@ const VisitedHomepageFeed = () => {
 	return (
 		<Flex flexDirection="column">
 			<TileView
+				disableExportMode
 				data={data.slice(
 					pageLimit * (page - 1),
 					pageLimit * (page - 1) + pageLimit,

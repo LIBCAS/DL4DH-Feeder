@@ -26,7 +26,7 @@ const NewestHomepageFeed = () => {
 	}
 	return (
 		<Flex flexDirection="column">
-			<TileView data={data} />
+			<TileView data={data} disableExportMode />
 			<Flex width={1} mt={4} alignItems="center" justifyContent="center">
 				<Flex>
 					{count > pageLimit && (

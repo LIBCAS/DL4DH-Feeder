@@ -26,6 +26,8 @@ import { useDashboardFilters } from 'hooks/useDashboardFilters';
 import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 import { AvailableFiltersContextProvider } from 'hooks/useAvailableFiltersContext';
 
+import Store from 'utils/Store';
+
 import DashboardViewModeSwitcher from './DashboardViewModeSwitcher';
 import DashboardSearchThroughSwitch from './DashboardSearchThroughSwitch';
 import SearchThoroughPagesModal from './SearchThoroughPagesModal';
@@ -43,17 +45,13 @@ const Dashboard: FC = () => {
 
 	const params = {
 		start: (page - 1) * state.pageSize ?? 0,
-		pageSize: state.pageSize,
+		pageSize: Store.get<number>('feeder-pagination-limit') ?? state.pageSize,
 		sort: state.sorting.id,
 		searchThroughPages: searchVariant === 'pages',
 		..._.omit(state.searchQuery, 'page'),
 		query: state?.searchQuery?.query ?? '',
 	};
-	// console.log({
-	// 	searchVariant,
-	// 	enr: sp.get('enrichment'),
-	// 	col: sp.get('collections'),
-	// });
+
 	if (searchVariant === 'pages' && sp.get('enrichment') !== 'ENRICHED') {
 		params.enrichment = 'ENRICHED';
 		sp.set('enrichment', 'ENRICHED');
@@ -70,12 +68,8 @@ const Dashboard: FC = () => {
 		hasMore,
 		availableFilters,
 		dataUpdatedAt,
+		availableNameTagFilters,
 	} = useSearchPublications(params);
-	// const {
-	// 	data: filtersData,
-	// 	dataUpdatedAt: filtersKey,
-	// 	isLoading: isFiltersLoading,
-	// } = useAvailableFilters(_.omit(state.searchQuery, 'page'));
 
 	const { exportModeOn } = useBulkExportContext();
 	const { setDashboardFilters } = useDashboardFilters();
@@ -148,6 +142,7 @@ const Dashboard: FC = () => {
 						<AvailableFiltersContextProvider
 							availableFilters={availableFilters}
 							filtersLoading={isLoading}
+							availableNameTagFilters={availableNameTagFilters}
 						>
 							<SearchResultLeftPanel
 								key={dataUpdatedAt}

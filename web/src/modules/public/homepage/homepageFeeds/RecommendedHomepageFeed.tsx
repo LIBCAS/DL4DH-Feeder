@@ -28,6 +28,7 @@ const RecommendedHomepageFeed = () => {
 	return (
 		<Flex flexDirection="column">
 			<TileView
+				disableExportMode
 				data={data?.docs.slice(
 					pageLimit * (page - 1),
 					pageLimit * (page - 1) + pageLimit,

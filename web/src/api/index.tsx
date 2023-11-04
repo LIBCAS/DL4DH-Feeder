@@ -53,7 +53,13 @@ export const infiniteMainSearchEndpoint =
 		promise: (a: ReturnType<typeof api>, ...args: Args) => ResponsePromise,
 	) =>
 	(...args: Args) => {
-		const { start, pageSize, sort } = args[args.length - 1] as FiltersDto;
+		const filters = args?.[args.length - 1] as FiltersDto;
+		const start = filters?.start ?? 0;
+		const pageSize = filters?.pageSize ?? 15;
+		const sort = filters?.sort ?? 'TITLE_ASC';
+		const searchThroughPages = filters?.searchThroughPages;
+		const enriched = filters?.enrichment === 'ENRICHED';
+		const disabled = searchThroughPages && !enriched;
 		const { state, dispatch } = useSearchContext();
 		const result = useInfiniteQuery(
 			[...key, ...args],
@@ -76,6 +82,7 @@ export const infiniteMainSearchEndpoint =
 				refetchOnWindowFocus: false,
 				refetchOnReconnect: false,
 				retryDelay: 3000,
+				enabled: !disabled,
 			},
 		);
 
@@ -118,7 +125,6 @@ export const infiniteMainSearchEndpoint =
 			() => start + (data?.length ?? 0) < count,
 			[start, count, data],
 		);
-
 		useEffect(() => {
 			if (state.totalCount !== count) {
 				dispatch?.({ type: 'setTotalCount', totalCount: count, hasMore });

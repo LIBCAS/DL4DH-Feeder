@@ -14,6 +14,7 @@ type Props = {
 	tileWrapperCss?: (uuid: string) => SerializedStyles;
 	onSelect?: (uuid: string) => void;
 	noResultsMsg?: string | ReactNode;
+	disableExportMode?: boolean;
 };
 
 const TileView: FC<Props> = ({
@@ -21,6 +22,7 @@ const TileView: FC<Props> = ({
 	tileWrapperCss,
 	onSelect,
 	noResultsMsg,
+	disableExportMode,
 }) => {
 	return (
 		<Wrapper p={2}>
@@ -35,6 +37,7 @@ const TileView: FC<Props> = ({
 						publication={d}
 						tileWrapperCss={tileWrapperCss}
 						onSelect={onSelect}
+						disableExportMode={disableExportMode}
 					/>
 				))}
 			</TileGrid>
