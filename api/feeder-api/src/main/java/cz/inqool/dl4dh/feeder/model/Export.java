@@ -101,6 +101,10 @@ public class Export extends AuditModel {
         return status.equals(Status.COMPLETED) ||
                 status.equals(Status.SUCCESSFUL) ||
                 status.equals(Status.FAILED) ||
-                status.equals(Status.PARTIAL);
+                status.equals(Status.FAILED_FATALLY) ||
+                status.equals(Status.CANCELLED) ||
+                status.equals(Status.STOPPED) ||
+                status.equals(Status.ABANDONED) ||
+                (status.equals(Status.PARTIAL) && items.stream().allMatch(ExportItem::isFinished));
     }
 }

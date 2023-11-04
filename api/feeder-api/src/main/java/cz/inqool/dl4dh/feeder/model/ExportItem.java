@@ -43,4 +43,14 @@ public class ExportItem extends AuditModel {
     @JoinColumn(name = "export_id", nullable = false)
     @JsonIgnore
     private Export export;
+
+    public boolean isFinished() {
+        return status.equals(Export.Status.COMPLETED) ||
+                status.equals(Export.Status.SUCCESSFUL) ||
+                status.equals(Export.Status.FAILED) ||
+                status.equals(Export.Status.FAILED_FATALLY) ||
+                status.equals(Export.Status.CANCELLED) ||
+                status.equals(Export.Status.STOPPED) ||
+                status.equals(Export.Status.ABANDONED);
+    }
 }
