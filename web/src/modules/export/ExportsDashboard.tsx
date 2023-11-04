@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
 import IconButton from 'components/styled/IconButton';
-import Paper from 'components/styled/Paper';
 import Text, { H1 } from 'components/styled/Text';
 import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
@@ -36,12 +35,12 @@ const ExportsDashboard = () => {
 		<Wrapper
 			height="100vh"
 			alignItems="flex-start"
-			p={[4, 0]}
-			width={1}
+			//p={[4, 0]}
+			//width={1}
 			bg="paper"
 		>
-			<Paper color="#444444!important" width="90%">
-				<Box mt={3}>
+			<Box color="#444444!important" width="99%">
+				<Box mt={4} mx={3}>
 					<H1
 						my={3}
 						textAlign="left"
@@ -52,7 +51,7 @@ const ExportsDashboard = () => {
 					</H1>
 					<Exportslist />
 				</Box>
-			</Paper>
+			</Box>
 		</Wrapper>
 	);
 };
@@ -157,7 +156,12 @@ const Exportslist = () => {
 							<Box flex={1}>
 								<Cell>{row.format}</Cell>
 							</Box>
-							<Box flex={1} maxWidth={100}>
+							<Flex flex={2} maxWidth={250} justifyContent="space-between">
+								<IconButton onClick={() => setEnabled(row.id)}>
+									<Text color="primary" fontSize="lg" px={2}>
+										Zobrazit podrobnosti
+									</Text>
+								</IconButton>
 								{(row.status === 'COMPLETED' || row.status == 'SUCCESSFUL') && (
 									<IconButton
 										onClick={async e => {
@@ -181,7 +185,12 @@ const Exportslist = () => {
 										</Flex>
 									</IconButton>
 								)}
-							</Box>
+							</Flex>
+							{/* <Box>
+								<IconButton onClick={() => setEnabled(row.id)}>
+									Detail
+								</IconButton>
+							</Box> */}
 						</Flex>
 					)}
 					renderHeader={() => (
@@ -224,7 +233,7 @@ const Exportslist = () => {
 								label={t('exports_dashboard.format')}
 							/>
 
-							<Box flex={1} maxWidth={100}>
+							<Box flex={2} maxWidth={250}>
 								{t('exports_dashboard.action')}
 							</Box>
 						</Flex>
