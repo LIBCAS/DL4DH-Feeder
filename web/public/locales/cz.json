@@ -286,6 +286,8 @@
     },
     "status_enum": {
       "CREATED": "Vytvořen",
+      "ENQUEUED":"Zařazen",
+      "RUNNING":"Zpracovává se",
       "COMPLETED": "Úspěšně dokončen",
 			"SUCCESSFUL": "Úspěšně dokončen",
       "STARTING": "Začíná",
@@ -293,6 +295,7 @@
       "STOPPING": "Zastavuje",
       "STOPPED": "Zastaven",
       "FAILED": "Neúspěšně ukončen",
+      "FAILED_FATALLY":"Neúspěšně ukončen",
       "ABANDONED": "Opuštěn",
       "UNKNOWN": "Neznámý",
       "PARTIAL": "Částečně dokončen"
