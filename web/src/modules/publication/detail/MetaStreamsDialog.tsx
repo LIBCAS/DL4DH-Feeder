@@ -7,6 +7,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import XMLViewer from 'react-xml-viewer';
 import { detect } from 'jschardet';
+import { useTranslation } from 'react-i18next';
 
 import SimpleSelect from 'components/form/select/SimpleSelect';
 import LoaderSpin from 'components/loaders/LoaderSpin';
@@ -20,7 +21,12 @@ import Tabs from 'components/tabs';
 
 import { useTheme } from 'theme';
 
-import { PublicationContext, StreamTypeEnum, StreamsOrder } from 'api/models';
+import {
+	ModelsEnum,
+	PublicationContext,
+	StreamTypeEnum,
+	StreamsOrder,
+} from 'api/models';
 import {
 	StreamInfoDto,
 	usePublicationChildren,
@@ -30,7 +36,7 @@ import {
 	useUnicodeStreams,
 } from 'api/publicationsApi';
 
-import { ModelToText } from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 
 const ViewImage: FC<{ uuid: string; stream: string }> = ({ stream, uuid }) => {
 	const path = `api/item/${uuid}/streams/${stream}`;
@@ -88,9 +94,6 @@ const ViewStream: FC<{
 		? responseUTF16.data ?? ''
 		: response.data ?? '';
 
-	//TODO: IMG_FULL_ADM => niekedy vracia obrazok... pozor mrzne to
-	//TODO: napr http://localhost:3000/view/uuid:93d73550-7099-11e5-99af-005056827e52?page=uuid%3A2f66a5f0-766c-11e5-83b9-5ef3fc9bb22f
-	//TEXT_OCR_ADM => niekedy je OCR a niekedy XML
 	//TODO: FIXME: DUPLICITNY KOD, zobecnit, riadit sa mimetype / content type
 	if (stream === 'SOLR' || stream === 'SOLR_PLUS') {
 		const ITEM_HEIGHT = 20;
@@ -264,6 +267,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 	const [selectedStream, setSelectedStream] = useState<StreamInfoDto | null>(
 		itemStream,
 	);
+	const { t } = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
 	const contentRef = useRef<string>('');
@@ -339,7 +343,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 										mx={0}
 										px={1}
 									>
-										{ModelToText[c.model]}
+										{t(`model:${modelToText(c.model as ModelsEnum)}`)}
 									</Button>
 								),
 							})),
@@ -369,8 +373,6 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 					my={0}
 					py={0}
 					onClick={() => {
-						//TODO: vyzaduje https spojenie, skryt/upozornit ked neni https?
-						//navigator.clipboard.writeText(ref2.current?.innerText ?? '');
 						navigator.clipboard.writeText(contentRef.current ?? '');
 					}}
 					title="Kopírovat do schránky"
@@ -444,7 +446,8 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 				) : (
 					<Text>
 						Stream <b>{selectedStream?.key ?? '--'}</b> není pro{' '}
-						<b>{ModelToText[source?.model ?? '']}</b> dostupný.
+						<b>{t(`model_2p:${modelToText(source.model as ModelsEnum)}`)}</b>{' '}
+						dostupný.
 					</Text>
 				)}
 			</Flex>

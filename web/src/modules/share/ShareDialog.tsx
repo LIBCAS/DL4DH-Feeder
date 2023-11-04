@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MdClose, MdCopyAll, MdShare } from 'react-icons/md';
 import { css } from '@emotion/core';
 import { uniqWith } from 'lodash-es';
+import { useTranslation } from 'react-i18next';
 
 import ModalDialog from 'components/modal';
 import IconButton from 'components/styled/IconButton';
@@ -16,10 +17,10 @@ import Divider from 'components/styled/Divider';
 
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
-import { PublicationContext } from 'api/models';
+import { ModelsEnum, PublicationContext } from 'api/models';
 import { usePublicationDetail } from 'api/publicationsApi';
 
-import { ModelToText } from 'utils/enumsMap';
+import { modelToText } from 'utils/enumsMap';
 
 //TODO:
 // skontrolovat sharovanie tohto periodika, porovnat s ndk, ked sharujem rocnik tak to blbne
@@ -32,7 +33,9 @@ const ShareDialog = () => {
 	const rootDetailResponse = usePublicationDetail(
 		pageId ?? id ?? 'pageId_rootId_undefined',
 	);
+	const [isMonographBundle, setIsMonohraphBundle] = useState(false);
 	const rootDetail = rootDetailResponse.data ?? null;
+	const { t } = useTranslation();
 
 	const [source, setSource] = useState<PublicationContext | undefined>();
 	const rootContext = useMemo(
@@ -46,6 +49,12 @@ const ShareDialog = () => {
 
 	useEffect(() => {
 		setSource(rootContext[0]);
+	}, [rootContext]);
+
+	useEffect(() => {
+		if (rootContext.find(rc => rc.model === 'monographunit')) {
+			setIsMonohraphBundle(true);
+		}
 	}, [rootContext]);
 
 	if (rootDetailResponse.isLoading || !rootDetail) {
@@ -87,7 +96,27 @@ const ShareDialog = () => {
 												my={0}
 												py={0}
 											>
-												{ModelToText[c.model]}
+												{isMonographBundle ? (
+													<>
+														{c.model === 'monograph' ? (
+															<>{t(`model_4p:monographbundle`)}</>
+														) : (
+															<>
+																{t(
+																	`model_4p:${modelToText(
+																		c.model as ModelsEnum,
+																	)}`,
+																)}
+															</>
+														)}
+													</>
+												) : (
+													<>
+														{t(
+															`model_4p:${modelToText(c.model as ModelsEnum)}`,
+														)}
+													</>
+												)}
 											</Button>
 										),
 									})),

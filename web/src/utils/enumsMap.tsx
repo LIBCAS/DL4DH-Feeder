@@ -160,30 +160,6 @@ export const OperationCode: Record<'EQUAL' | 'NOT_EQUAL', string> = {
 
 export const PUBLICATION_EXPORT_STORE_KEY = 'feeder-pub-to-export-key';
 
-export const ModelToText = {
-	monograph: 'Kniha',
-	monographunit: 'Kniha (unit)',
-	monographbundle: 'Svazek knih',
-	periodical: 'Noviny a časopisy',
-	map: 'Mapa',
-	sheetmusic: 'Hudebniny',
-	graphic: 'Grafika',
-	archive: 'Archiválie',
-	soundrecording: 'Zvukové nahrávky',
-	periodicalvolume: 'Ročník periodika',
-	periodicalitem: 'Číslo periodika',
-	clippingsvolume: 'Sbírka výstřižků',
-	manuscript: 'Rukopis',
-	page: 'Stránka',
-	supplement: 'Příloha',
-	article: 'Článek',
-	internalpart: 'Kapitola',
-	soundunit: 'Album',
-	track: 'Nahrávka',
-	collection: 'Sbírka',
-	convolute: 'Konvolut',
-};
-
 export enum CUSTOM_URL_PARAMS {
 	HISTORY_ID = 'historyId',
 }

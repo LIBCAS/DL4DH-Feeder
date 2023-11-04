@@ -16,6 +16,8 @@ import {
 	useSearchThroughContext,
 } from 'hooks/useSearchThroughContext';
 
+import { CUSTOM_URL_PARAMS } from 'utils/enumsMap';
+
 const DashboardSearchThroughSwitch = () => {
 	const theme = useTheme();
 	const { variant, setVariant, setShowModal } = useSearchThroughContext();
@@ -56,10 +58,12 @@ const DashboardSearchThroughSwitch = () => {
 					if (variant === 'pages') {
 						sp.set('enrichment', 'ENRICHED');
 						sp.set('page', '1');
+						sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 						setSp(sp);
 						setShowModal(true);
 					} else {
 						sp.set('page', '1');
+						sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 						setSp(sp);
 						setShowModal(false);
 					}

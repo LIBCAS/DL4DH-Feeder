@@ -60,7 +60,7 @@ const TagNameDropDown: React.FC<Props> = ({
 									const Icon = NameTagIcon[item];
 									return (
 										<IconButton
-											tooltip={t(`nametag:labels:${item}`)}
+											tooltip={localizeNameTag(item)}
 											css={css`
 												color: ${theme.colors.primary};
 												&:hover {
@@ -106,7 +106,7 @@ const TagNameDropDown: React.FC<Props> = ({
 								fontWeight={item === currentValue ? 'bold' : 'normal'}
 								ml={2}
 							>
-								{t(`nametag:labels:${item}`)}
+								{localizeNameTag(item)}
 							</Text>
 						</Flex>
 					);

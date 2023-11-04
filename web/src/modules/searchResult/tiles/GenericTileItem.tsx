@@ -46,11 +46,13 @@ type Props = {
 	publication: PublicationDto;
 	onSelect?: (uuid: string) => void;
 	tileWrapperCss?: (uuid: string) => SerializedStyles;
+	disableExportMode?: boolean;
 };
 const GenericTileItem: React.FC<Props> = ({
 	publication,
 	onSelect,
 	tileWrapperCss,
+	disableExportMode,
 }) => {
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
 	const { variant } = useSearchThroughContext();
@@ -63,7 +65,8 @@ const GenericTileItem: React.FC<Props> = ({
 		// eslint-disable-next-line no-nested-ternary
 		isPage ? 'uuid' : isPeriodical ? 'periodical' : 'view'
 	}/${publication.pid}`;
-	const isSelected = exportModeOn && uuidHeap[publication.pid]?.selected;
+	const isSelected =
+		!disableExportMode && exportModeOn && uuidHeap[publication.pid]?.selected;
 
 	return (
 		<AspectRatio
@@ -71,10 +74,10 @@ const GenericTileItem: React.FC<Props> = ({
 			as="a"
 			ratio={[2.5, 1]}
 			width="100%"
-			opacity={!exportModeOn || isSelected ? 1 : 0.6}
+			opacity={disableExportMode || !exportModeOn || isSelected ? 1 : 0.6}
 			onClick={e => {
 				e.preventDefault();
-				if (exportModeOn) {
+				if (!disableExportMode && exportModeOn) {
 					const selected = !(uuidHeap[publication.pid]?.selected ?? false);
 
 					updateExportHeap?.(p => ({
@@ -125,7 +128,7 @@ const GenericTileItem: React.FC<Props> = ({
 						${tileWrapperCss?.(publication.pid) ?? ``}
 					`}
 				>
-					{exportModeOn && (
+					{!disableExportMode && exportModeOn && (
 						<Flex
 							display="none"
 							bg="#E4F0F3"

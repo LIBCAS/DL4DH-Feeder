@@ -28,6 +28,7 @@ import {
 	Delimiter,
 	ExportFieldOption,
 } from './exportModels';
+import ExportDetailItemsTable from './ExportDetailItemsTable';
 
 type SerializedExportParameters = {
 	includeFields: string[];
@@ -260,9 +261,10 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						)}
 					</Box>
 					<Divider my={3} />
-					<Flex my={1} justifyContent="flex-end" alignItems="center">
+					<ExportDetailItemsTable exportDto={exportDto} />
+					<Flex my={1} justifyContent="flex-end" alignItems="center" mt={2}>
 						<Button variant="primary" ml={3} onClick={closeModal}>
-							{t('common:cancel')}
+							{t('common:close')}
 						</Button>
 					</Flex>
 				</Box>

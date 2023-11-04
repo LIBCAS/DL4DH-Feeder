@@ -11,7 +11,11 @@ import { nameTagQueryCtor } from 'utils';
 
 import { AvailableNameTagFilters, TagNameEnum } from 'api/models';
 
-import { NameTagFilterToNameTagEnum, NameTagIcon } from 'utils/enumsMap';
+import {
+	CUSTOM_URL_PARAMS,
+	NameTagFilterToNameTagEnum,
+	NameTagIcon,
+} from 'utils/enumsMap';
 
 export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 	nameTagData,
@@ -46,6 +50,7 @@ export const NameTagList: FC<{ nameTagData?: AvailableNameTagFilters }> = ({
 					searchParams.append(nameTagQuery.name, nameTagQuery.value);
 				}
 				searchParams.delete('page');
+				searchParams.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 				setSearchParams(searchParams);
 			},
 		[setSearchParams, searchParams],

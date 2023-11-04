@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import _ from 'lodash';
 import { debounce } from 'lodash-es';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MdBolt, MdClear, MdSearch } from 'react-icons/md';
+import { MdBolt, MdClear, MdPlayArrow, MdSearch } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import useMeasure from 'react-use-measure';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +21,11 @@ import { Loader } from 'modules/loader';
 import { api } from 'api';
 import { useTheme } from 'theme';
 
-import { useAvailableFilters } from 'api/publicationsApi';
+import { AvailableNameTagFilters } from 'api/models';
 
 import { useSearchContext } from 'hooks/useSearchContext';
+import { useAvailableFiltersContext } from 'hooks/useAvailableFiltersContext';
+import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import { NameTagList } from './NameTagList';
 
@@ -35,6 +37,12 @@ const NameTagFilter = () => {
 		debounce: 100,
 	});
 
+	const { variant } = useSearchThroughContext();
+
+	const [searchResult, setSearchResult] = useState<{
+		availableNameTagFilters: AvailableNameTagFilters;
+	}>();
+
 	const { t } = useTranslation('nametag');
 
 	useEffect(() => {
@@ -45,10 +53,8 @@ const NameTagFilter = () => {
 	const theme = useTheme();
 	const { state } = useSearchContext();
 
-	const { data, dataUpdatedAt, isLoading } = useAvailableFilters({
-		..._.omit(state.searchQuery, 'page'),
-		nameTagFacet,
-	});
+	const { availableNameTagFilters, filtersLoading } =
+		useAvailableFiltersContext();
 
 	const getHint = useCallback(async (q: string) => {
 		const hints = await api()
@@ -72,21 +78,38 @@ const NameTagFilter = () => {
 			if (values.query === '') {
 				sp.delete('nameTagFacet');
 			} else {
+				console.log('adddingg');
 				sp.set('nameTagFacet', values.query);
 			}
 
-			setSp(sp);
 			setNameTagFacet(values.query);
+			const json = {
+				..._.omit(state.searchQuery, 'page'),
+				query: state.searchQuery?.query ?? '',
+				pageSize: 1,
+				nameTagFacet: values?.query,
+				searchThroughPages: variant === 'pages',
+			};
+
+			const response = await api().post('search', { json }).json<{
+				availableNameTagFilters: AvailableNameTagFilters;
+			}>();
+			if (response) {
+				setSearchResult({
+					availableNameTagFilters: response.availableNameTagFilters,
+				});
+			}
+			setSp(sp);
 		},
 	});
 
-	const debouncedSubmit = useMemo(
-		() => debounce(formik.submitForm, 500),
-		[formik.submitForm],
-	);
+	// const debouncedSubmit = useMemo(
+	// 	() => debounce(formik.submitForm, 500),
+	// 	[formik.submitForm],
+	// );
 
 	//const availableNameTagFilters = data?.pages?.[0].availableNameTagFilters;
-	const availableNameTagFilters = data?.availableNameTagFilters;
+	// const availableNameTagFilters = data?.availableNameTagFilters;
 	const {
 		handleSubmit,
 		handleChange,
@@ -95,6 +118,7 @@ const NameTagFilter = () => {
 		values,
 		errors,
 		touched,
+		isSubmitting,
 	} = formik;
 
 	const hasNameTags = useMemo(
@@ -108,7 +132,6 @@ const NameTagFilter = () => {
 	if (!hasNameTags && !nameTagFacet) {
 		return <></>;
 	}
-	//TODO: pouzit QuerySearchInput a tiez tam nastavit eclipse na text asi
 	return (
 		<Box
 			bg="#E4F0F3"
@@ -167,15 +190,17 @@ const NameTagFilter = () => {
 								onChange={e => {
 									e.stopPropagation();
 									debouncedHint(e.target.value);
-									debouncedSubmit();
-
 									handleChange(e);
 								}}
 								value={values.query}
 								onKeyDown={e => {
 									e.stopPropagation();
 									if (e.key === 'Enter') {
+										setHints([]);
 										formik.submitForm();
+									}
+									if (e.key === 'Escape') {
+										setHints([]);
 									}
 								}}
 								inputPadding="8px 0px"
@@ -186,12 +211,13 @@ const NameTagFilter = () => {
 											<IconButton
 												color="primary"
 												tooltip="Smazat filtr"
-												//variant="outlined"
 												onClick={() => {
 													sp.delete('nameTagFacet');
 													setSp(sp);
 													setNameTagFacet('');
 													setFieldValue('query', '');
+													setSearchResult(undefined);
+													formik.submitForm();
 												}}
 											>
 												<MdClear
@@ -203,7 +229,26 @@ const NameTagFilter = () => {
 											</IconButton>
 										</Flex>
 									) : (
-										<></>
+										<>
+											{values.query !== '' && (
+												<Flex color="primary" mr={1}>
+													<IconButton
+														color="primary"
+														tooltip="Použít"
+														onClick={() => {
+															formik.submitForm();
+														}}
+													>
+														<MdPlayArrow
+															size={22}
+															css={css`
+																cursor: pointer;
+															`}
+														/>
+													</IconButton>
+												</Flex>
+											)}
+										</>
 									)
 								}
 							/>
@@ -264,21 +309,18 @@ const NameTagFilter = () => {
 						<Box>
 							<Text>{errors.query}</Text>
 						</Box>
-						{/* <Box alignSelf="end" mt={1}>
-							<Button type="submit" variant="primary">
-								Použít
-							</Button>
-						</Box> */}
 					</Flex>
 				</form>
 			</Accordion>
 
-			{isLoading ? (
+			{filtersLoading || isSubmitting ? (
 				<Loader />
 			) : (
 				<NameTagList
-					key={dataUpdatedAt}
-					nameTagData={availableNameTagFilters}
+					// key={dataUpdatedAt}
+					nameTagData={
+						searchResult?.availableNameTagFilters ?? availableNameTagFilters
+					}
 				/>
 			)}
 		</Box>

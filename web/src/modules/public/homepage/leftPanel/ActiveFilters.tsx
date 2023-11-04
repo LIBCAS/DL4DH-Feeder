@@ -32,6 +32,7 @@ import {
 	availabilityToText,
 	modelToText,
 	enrichmentToText,
+	CUSTOM_URL_PARAMS,
 } from 'utils/enumsMap';
 import { mapLangToCS } from 'utils/languagesMap';
 
@@ -97,6 +98,7 @@ function removeParam(
 	value: string,
 	unique: boolean,
 ) {
+	sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 	if (key === 'yearsInterval') {
 		sp.delete('from');
 		sp.delete('to');
@@ -107,9 +109,7 @@ function removeParam(
 		sp.delete('value');
 	}
 	const entries = sp.getAll(key).map(e => (unique ? e.toUpperCase() : e));
-
 	const newEntries = entries.filter(entry => entry !== value);
-
 	sp.delete(key);
 	newEntries.forEach(newEntry => sp.append(key, newEntry));
 	sp.delete('page');

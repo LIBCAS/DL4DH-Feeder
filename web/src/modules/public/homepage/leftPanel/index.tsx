@@ -13,6 +13,8 @@ import PublishDateFilter from 'components/filters/Accordions/publishDateFilter';
 
 import { AvailableFilters } from 'api/models';
 
+import { CUSTOM_URL_PARAMS } from 'utils/enumsMap';
+
 import ActiveFilters from './ActiveFilters';
 import NameTagFilter from './NameTagFilter';
 
@@ -28,6 +30,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		(type: string) => (key: string) => {
 			searchParams.append(type, key);
 			searchParams.delete('page');
+			searchParams.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],
@@ -37,6 +40,7 @@ const SearchResultLeftPanel: FC<Props> = ({ data, isLoading }) => {
 		(type: string) => (key: string) => {
 			searchParams.set(type, key);
 			searchParams.delete('page');
+			searchParams.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 			setSearchParams(searchParams);
 		},
 		[searchParams, setSearchParams],

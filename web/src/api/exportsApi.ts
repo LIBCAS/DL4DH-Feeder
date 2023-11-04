@@ -15,13 +15,18 @@ export type ExportApiResponse = {
 
 export type JobStatusEnum =
 	| 'CREATED'
+	| 'ENQUEUED'
+	| 'RUNNING'
 	| 'COMPLETED'
 	| 'SUCCESSFUL'
+	| 'FAILED'
+	| 'FAILED_FATALLY'
+	| 'CANCELLED'
+	| 'PARTIAL'
 	| 'STARTING'
 	| 'STARTED'
 	| 'STOPPING'
 	| 'STOPPED'
-	| 'FAILED'
 	| 'ABANDONED'
 	| 'UNKNOWN';
 
@@ -51,6 +56,16 @@ export type JobEventDto = {
 	config: JobEventConfigDto;
 };
 
+export type ExportItem = {
+	id: string;
+	createdAt?: string;
+	username: string;
+	publicationId: string;
+	status: JobStatusEnum;
+	publicationTitle: string;
+	finished: boolean;
+};
+
 export type ExportDto = {
 	id: string;
 	created?: string;
@@ -62,6 +77,8 @@ export type ExportDto = {
 	parameters: string;
 	teiParameters: string;
 	delimiter: string;
+	items: ExportItem[];
+	finished: boolean;
 };
 
 export type PageExportDto = PagableResponse<ExportDto>;

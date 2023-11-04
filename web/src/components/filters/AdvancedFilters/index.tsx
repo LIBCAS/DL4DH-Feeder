@@ -18,6 +18,8 @@ import { useTheme } from 'theme';
 
 import { AdvancedFilterFieldEnum } from 'api/models';
 
+import { CUSTOM_URL_PARAMS } from 'utils/enumsMap';
+
 const B: FC = ({ children }) => (
 	<Text color="primary" fontWeight="normal" as="span">
 		{children}
@@ -130,6 +132,7 @@ export const AdvancedFilter: React.FC = () => {
 									onClick={() => {
 										sp.set('field', field?.id ?? 'NONE');
 										sp.set('value', query ?? '');
+										sp.delete(CUSTOM_URL_PARAMS.HISTORY_ID);
 										setSp(sp);
 										closeModal();
 									}}

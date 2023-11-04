@@ -32,8 +32,7 @@ export type PublicationContextSingleType = {
 	setCurrentPage?: React.Dispatch<React.SetStateAction<CurrentPage | null>>;
 	ocrMode?: OcrMode | null;
 	setOcrMode?: React.Dispatch<React.SetStateAction<OcrMode | null>>;
-	// returns children respecting filtered result
-	/** @abstract returns children respecting filter */
+	/** returns children respecting filter */
 	getChildren?: () => PublicationChild[];
 	filtered: {
 		isLoading: boolean;
