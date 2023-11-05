@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { MdArrowDropDown, MdDownload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 import { Box, Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -164,18 +165,26 @@ const Exportslist = () => {
 								</IconButton>
 								{(row.status === 'COMPLETED' || row.status == 'SUCCESSFUL') && (
 									<IconButton
-										onClick={async e => {
+										onClick={async (e: MouseEvent) => {
 											e.stopPropagation();
-											const file = await api().get(
-												`exports/download/${row.id}`,
-												{ headers: { Accept: 'application/zip' } },
-											);
-											const blob = await file.blob();
-											const url = URL.createObjectURL(blob);
-											downloadFile(
-												url,
-												`${row.publicationTitle ?? row.id}.zip`,
-											);
+											try {
+												const file = await api().get(
+													`exports/download/${row.id}`,
+													{ headers: { Accept: 'application/zip' } },
+												);
+												const blob = await file.blob();
+												const url = URL.createObjectURL(blob);
+												downloadFile(
+													url,
+													`${row.publicationTitle ?? row.id}.zip`,
+												);
+											} catch (error) {
+												toast.error(
+													`Při stahování došlo k chybě: ${
+														error as unknown as string
+													}`,
+												);
+											}
 										}}
 									>
 										<Flex alignItems="center" pr={1} py={0} color="black">

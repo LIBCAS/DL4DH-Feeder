@@ -4,12 +4,14 @@ import { FC, MouseEvent } from 'react';
 import { MdDownload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { BiLinkExternal } from 'react-icons/bi';
 
-import ClassicTable from 'components/table/ClassicTable';
-import { Flex } from 'components/styled';
+import ClassicTable, { Cell } from 'components/table/ClassicTable';
+import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import IconButton from 'components/styled/IconButton';
 import Divider from 'components/styled/Divider';
+import { NavLinkButton } from 'components/styled/Button';
 
 import { api } from 'api';
 import { downloadFile } from 'utils';
@@ -58,7 +60,27 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 						bg="white"
 					>
 						<Flex flex={3}>
-							<Text>{row.publicationTitle} </Text>
+							<NavLinkButton
+								variant="text"
+								target="_blank"
+								to={`/uuid/${row.publicationId}`}
+								px={0}
+								mx={0}
+								color="text"
+								fontSize="md"
+								textAlign="left"
+								maxWidth={500}
+								title={row.publicationTitle}
+							>
+								<Cell>
+									<Text as="span" mr={2}>
+										{row.publicationTitle}
+									</Text>
+								</Cell>
+								<Box minWidth={16} maxWidth={16}>
+									<BiLinkExternal size={16} />
+								</Box>
+							</NavLinkButton>
 						</Flex>
 						<Flex
 							minWidth={180}

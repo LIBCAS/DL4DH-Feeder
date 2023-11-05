@@ -4,6 +4,7 @@ import Dialog from '@reach/dialog';
 import { FC } from 'react';
 import { MdClose, MdDownload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -27,6 +28,7 @@ import {
 	TagParam,
 	Delimiter,
 	ExportFieldOption,
+	useNameTagParamExportOptions,
 } from './exportModels';
 import ExportDetailItemsTable from './ExportDetailItemsTable';
 
@@ -98,6 +100,9 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 		'teiParameters',
 	);
 
+	const { labelFromOption, nameTagParamsExportOptions } =
+		useNameTagParamExportOptions();
+
 	const { t } = useTranslation();
 
 	return (
@@ -138,16 +143,24 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 							<IconButton
 								onClick={async e => {
 									e.stopPropagation();
-									const file = await api().get(
-										`exports/download/${exportDto.id}`,
-									);
+									try {
+										const file = await api().get(
+											`exports/download/${exportDto.id}`,
+										);
 
-									const blob = await file.blob();
-									const url = URL.createObjectURL(blob);
-									downloadFile(
-										url,
-										`${exportDto?.publicationTitle ?? exportDto.id}.zip`,
-									);
+										const blob = await file.blob();
+										const url = URL.createObjectURL(blob);
+										downloadFile(
+											url,
+											`${exportDto?.publicationTitle ?? exportDto.id}.zip`,
+										);
+									} catch (error) {
+										toast.error(
+											`Při stahování došlo k chybě: ${
+												error as unknown as string
+											}`,
+										);
+									}
 								}}
 							>
 								<Flex
@@ -239,7 +252,10 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 								<Flex flexWrap="wrap">
 									{nameTagParams?.map((p, i) => (
 										<Chip mx={2} mb={2} px={2} py={1} key={`${p}${i}`}>
-											{p}
+											{labelFromOption(
+												nameTagParamsExportOptions.find(ntp => ntp.id === p) ??
+													null,
+											)}
 										</Chip>
 									))}
 								</Flex>
