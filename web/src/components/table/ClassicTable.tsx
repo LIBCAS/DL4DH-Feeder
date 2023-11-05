@@ -2,6 +2,7 @@
 
 import { css, SerializedStyles } from '@emotion/core';
 import React, { FC, useCallback } from 'react';
+import styled from '@emotion/styled/macro';
 
 import Text from 'components/styled/Text';
 import { Box, Dot, Flex } from 'components/styled';
@@ -21,6 +22,16 @@ type TableItem = {
 	pid?: string;
 	id?: string;
 };
+
+/** Table cell */
+
+export const Cell = styled(Text)`
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 0;
+	margin: 0;
+`;
 
 /** Table interface */
 
