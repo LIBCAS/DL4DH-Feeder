@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 public class ExportServiceImpl implements ExportService {
 
     private static final Logger log = LoggerFactory.getLogger(ExportServiceImpl.class);
+    public static final int REFRESH_MIN_INTERVAL_SECONDS = 5;
 
     private WebClient kramerius;
 
@@ -159,7 +160,7 @@ public class ExportServiceImpl implements ExportService {
     @Override
     public void refreshState(Export export) {
         // Refresh only if 30 seconds elapsed from the previous refresh
-        Date limitDate = new Date(System.currentTimeMillis() - 30 * 1000);
+        Date limitDate = new Date(System.currentTimeMillis() - REFRESH_MIN_INTERVAL_SECONDS * 1000);
         if (export.isFinished() || export.getUpdatedAt().after(limitDate)) {
             return;
         }

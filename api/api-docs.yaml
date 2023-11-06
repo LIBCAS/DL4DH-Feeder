@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 1.4.0
+  version: 1.5.0
 servers:
 - url: https://feeder.dev.inqool.cz
   description: Generated server url
@@ -564,6 +564,34 @@ paths:
                 items:
                   type: string
                   format: byte
+  /api/exports/download/{id}/item/{itemId}:
+    get:
+      tags:
+      - export-api
+      operationId: download_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
 components:
   schemas:
     Filter:
@@ -1065,10 +1093,12 @@ components:
       properties:
         name:
           type: string
+          example: Muj export
         publicationIds:
           type: array
           items:
             type: string
+            example: uuid:df196150-64dd-11e4-b42a-005056827e52
         config:
           oneOf:
           - $ref: '#/components/schemas/ExportAltoJobConfigDto'
@@ -1137,10 +1167,14 @@ components:
       properties:
         page:
           type: integer
+          description: Paging current page
           format: int32
+          default: 0
         pageSize:
           type: integer
+          description: Paging size
           format: int32
+          default: 10
     ParamsDto:
       type: object
       properties:
@@ -1236,34 +1270,42 @@ components:
           type: integer
           format: int64
           readOnly: true
-        username:
-          type: string
+          example: 152
         publicationIds:
           uniqueItems: true
           type: array
           items:
             type: string
+            example: uuid:df196150-64dd-11e4-b42a-005056827e52
         publicationTitle:
           type: string
+          example: Anatomický atlas koně a krávy
         created:
           type: string
           readOnly: true
+          example: 2023-06-28T17:31:00.764+02:00
         delimiter:
           type: string
           example: ","
         parameters:
           type: string
+          example: "{\"sorting\":[],\"filters\":[],\"includeFields\":[],\"excludeFields\"\
+            :[]}"
         teiParameters:
           type: string
+          example: "{}"
         status:
           type: string
           readOnly: true
           enum:
           - CREATED
+          - ENQUEUED
           - RUNNING
           - COMPLETED
           - SUCCESSFUL
           - FAILED
+          - FAILED_FATALLY
+          - CANCELLED
           - PARTIAL
           - STARTING
           - STARTED
@@ -1279,6 +1321,48 @@ components:
           - JSON
           - CSV
           - ALTO
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExportItem'
+        finished:
+          type: boolean
+    ExportItem:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        publicationId:
+          type: string
+          readOnly: true
+        publicationTitle:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+          enum:
+          - CREATED
+          - ENQUEUED
+          - RUNNING
+          - COMPLETED
+          - SUCCESSFUL
+          - FAILED
+          - FAILED_FATALLY
+          - CANCELLED
+          - PARTIAL
+          - STARTING
+          - STARTED
+          - STOPPING
+          - STOPPED
+          - ABANDONED
+          - UNKNOWN
         finished:
           type: boolean
     CurrentUserDto:
@@ -1286,10 +1370,12 @@ components:
       properties:
         name:
           type: string
+          example: user@example.com
         roles:
           type: array
           items:
             type: string
+            example: dl4dh-admin
     PageFilter:
       type: object
       properties:
@@ -1299,6 +1385,17 @@ components:
         totalElements:
           type: integer
           format: int64
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
         size:
           type: integer
           format: int32
@@ -1309,45 +1406,34 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: '#/components/schemas/SortObject'
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        offset:
+          type: integer
+          format: int64
     SortObject:
       type: object
       properties:
-        empty:
+        unsorted:
           type: boolean
         sorted:
           type: boolean
-        unsorted:
+        empty:
           type: boolean
     CollectionDto:
       required:
@@ -1445,6 +1531,17 @@ components:
         totalElements:
           type: integer
           format: int64
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
         size:
           type: integer
           format: int32
@@ -1453,17 +1550,6 @@ components:
           items:
             $ref: '#/components/schemas/Export'
         number:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
           type: integer
           format: int32
         empty:
