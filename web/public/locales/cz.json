@@ -403,10 +403,10 @@
     }
   },
   "graph_view": {
-    "title": "Záznamy v grafickej podobe",
+    "title": "Záznamy v grafické podobě",
     "axis_x": {
-      "label": "Os X",
-      "years": "Léta",
+      "label": "Osa X",
+      "years": "Roky",
       "authors": "Autor",
       "keywords": "Klíčové slovo",
       "models": "Typ dokumentu",
