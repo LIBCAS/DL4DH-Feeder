@@ -103,7 +103,7 @@ public class SearchServiceImpl implements SearchService {
                 .bodyToMono(SolrQueryResponseDto.class)
                 .blockOptional()
                 .orElseThrow();
-        return result.getResponse().getDocs().stream().map(d -> (String) d.get("dc.title")).collect(Collectors.toList());
+        return result.getResponse().getDocs().stream().map(d -> (String) d.get("dc.title")).distinct().collect(Collectors.toList());
     }
 
     @Override

@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: DL4DH Feeder APIs
   description: API endpoints
-  version: 1.5.0
+  version: 1.5.1
 servers:
 - url: https://feeder.dev.inqool.cz
   description: Generated server url
