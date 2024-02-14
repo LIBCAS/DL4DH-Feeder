@@ -290,7 +290,7 @@ const QuerySearchInput: FC<Props> = ({
 									const part1 = h.slice(0, qindex);
 									const part2 = h.slice(qindex, qEnd);
 									const part3 = h.slice(qEnd);
-
+									//TODO: fixnut, nefunguje ked nie su pri sebe najdene vyrazy
 									return (
 										<Flex
 											px={3}
