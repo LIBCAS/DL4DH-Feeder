@@ -285,9 +285,11 @@ const QuerySearchInput: FC<Props> = ({
 									const hintWords = (h ?? '').split(' ');
 
 									const result = hintWords.map(hw => ({
-										highlight: query
-											?.toLocaleUpperCase()
-											?.includes(hw.toLocaleUpperCase()),
+										highlight:
+											hw.length > 2 &&
+											query
+												?.toLocaleUpperCase()
+												?.includes(hw.toLocaleUpperCase()),
 										word: hw + ' ',
 									}));
 									return (

@@ -440,9 +440,11 @@ const MainSearchInput = () => {
 										const query = localState;
 
 										const result = hintWords.map(hw => ({
-											highlight: query
-												?.toLocaleUpperCase()
-												?.includes(hw.toLocaleUpperCase()),
+											highlight:
+												hw.length > 2 &&
+												query
+													?.toLocaleUpperCase()
+													?.includes(hw.toLocaleUpperCase()),
 											word: hw + ' ',
 										}));
 										return (
