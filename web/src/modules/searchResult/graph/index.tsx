@@ -110,9 +110,6 @@ const GraphView: FC<Props> = ({ data }) => {
 						options={['key', 'count']}
 						nameFromOption={item => t(`sorting.${item ?? 'key'}`)}
 						onChange={newVal => setSorting(newVal)}
-						// renderSelectedItem={(item, nameFromOption) => (
-						// 	<Text>{nameFromOption(item)}</Text>
-						// )}
 						value={sorting}
 						width={100}
 						variant="outlined"
@@ -147,44 +144,6 @@ const GraphView: FC<Props> = ({ data }) => {
 							</IconButton>
 						</Flex>
 					</Flex>
-					{/* <Flex
-						ml={3}
-						pl={3}
-						css={css`
-							border-left: 1px solid ${theme.colors.border};
-						`}
-					>
-						<Flex
-							bg="primaryLight"
-							alignItems="center"
-							justifyContent="center"
-							width={40}
-							height={36}
-						>
-							<IconButton
-								color="primary"
-								onClick={() => setZoom(z => (z > 10 ? z / 2 : z / 2))}
-							>
-								<MdZoomOut size={24} />
-							</IconButton>
-						</Flex>
-						<Flex
-							width={40}
-							height={36}
-							bg="primary"
-							ml={2}
-							alignItems="center"
-							justifyContent="center"
-						>
-							<IconButton
-								m={0}
-								color="white"
-								onClick={() => setZoom(z => (z > 10 ? z * 2 : z * 2))}
-							>
-								<MdZoomIn size={24} />
-							</IconButton>
-						</Flex>
-					</Flex> */}
 				</Flex>
 			</Flex>
 
@@ -197,14 +156,8 @@ const GraphView: FC<Props> = ({ data }) => {
 				fontSize="xl"
 				fontWeight="bold"
 				width={1}
-				//width={`calc(100% + ${0}px)`}
 			>
-				<ResponsiveContainer
-					height="90%"
-					/* width={`calc(100% + 150px)`} */
-					//width={3500 + zoom}
-					width="99%"
-				>
+				<ResponsiveContainer height="90%" width="99%">
 					<BarChart data={chartData}>
 						<XAxis dataKey="label" fontSize={12} />
 						<YAxis
@@ -219,12 +172,10 @@ const GraphView: FC<Props> = ({ data }) => {
 						<CartesianGrid
 							stroke={theme.colors.textLight}
 							vertical={false}
-							//	horizontalPoints={[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-							// strokeDasharray="4"
 							strokeDasharray="3 3"
 						/>
 						<Bar dataKey="count" fill={theme.colors.primary} barSize={20} />
-						<Brush dataKey="index" height={40} stroke={theme.colors.primary} />
+						<Brush dataKey="label" height={40} stroke={theme.colors.primary} />
 					</BarChart>
 				</ResponsiveContainer>
 			</Flex>
