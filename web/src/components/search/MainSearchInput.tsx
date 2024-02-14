@@ -436,14 +436,15 @@ const MainSearchInput = () => {
 									width={wrapperWidth - 16}
 								>
 									{hints.map((h, index) => {
-										const qindex = h
-											.toLocaleUpperCase()
-											.indexOf(localState?.toUpperCase() ?? '');
+										const hintWords = (h ?? '').split(' ');
+										const query = localState;
 
-										const qEnd = qindex + (localState?.length ?? 0);
-										const part1 = h.slice(0, qindex);
-										const part2 = h.slice(qindex, qEnd);
-										const part3 = h.slice(qEnd);
+										const result = hintWords.map(hw => ({
+											highlight: query
+												?.toLocaleUpperCase()
+												?.includes(hw.toLocaleUpperCase()),
+											word: hw + ' ',
+										}));
 										return (
 											<Flex
 												px={3}
@@ -464,11 +465,15 @@ const MainSearchInput = () => {
 												`}
 											>
 												<Text fontSize="md" my="2px">
-													{part1}
-													<Text as="span" color="primary" fontWeight="bold">
-														{part2}
-													</Text>
-													{part3}
+													{result.map(w =>
+														w.highlight ? (
+															<Text as="span" color="primary" fontWeight="bold">
+																{w.word}
+															</Text>
+														) : (
+															<>{w.word}</>
+														),
+													)}
 												</Text>
 											</Flex>
 										);

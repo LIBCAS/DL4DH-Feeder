@@ -282,25 +282,14 @@ const QuerySearchInput: FC<Props> = ({
 								width={wrapperWidth}
 							>
 								{hints.map((h, index) => {
-									// const qindex = h
-									// 	.toLocaleUpperCase()
-									// 	.indexOf(query?.toUpperCase() ?? '');
-
-									//const qEnd = qindex + (query?.length ?? 0);
-									// const part1 = h.slice(0, qindex);
-									// const part2 = h.slice(qindex, qEnd);
-									// const part3 = h.slice(qEnd);
-									//const queryWords = (query ?? '').split(' ');
 									const hintWords = (h ?? '').split(' ');
 
 									const result = hintWords.map(hw => ({
 										highlight: query
 											?.toLocaleUpperCase()
 											?.includes(hw.toLocaleUpperCase()),
-										word: hw,
+										word: hw + ' ',
 									}));
-
-									//TODO: fixnut, nefunguje ked nie su pri sebe najdene vyrazy
 									return (
 										<Flex
 											px={3}
@@ -324,10 +313,10 @@ const QuerySearchInput: FC<Props> = ({
 												{result.map(w =>
 													w.highlight ? (
 														<Text as="span" color="primary" fontWeight="bold">
-															{w}
+															{w.word}
 														</Text>
 													) : (
-														<>{w}</>
+														<>{w.word}</>
 													),
 												)}
 											</Text>
