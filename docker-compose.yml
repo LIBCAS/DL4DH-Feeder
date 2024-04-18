@@ -106,6 +106,8 @@ services:
           memory: 600m
     environment:
       SOLR_PORT: 8983 
+      SOLR_HEAP: "2g" 
+      SOLR_JAVA_MEM: "-Xms1g -Xmx2g" 
     networks:
       - backend
     volumes:
