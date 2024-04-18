@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public class ImportServiceImpl implements ImportService {
     private static final Logger log = LoggerFactory.getLogger(ImportService.class);
     private static final String LAST_SYNC_DATE_KEY = "LAST_SYNC";
+    private static final String LAST_SYNC_PAGE_KEY = "LAST_SYNC_PAGE";
 
     private WebClient kramerius;
     private WebClient krameriusPlus;
@@ -49,11 +50,12 @@ public class ImportServiceImpl implements ImportService {
     @Override
     public void sync() {
         Setting lastSync = settingRepository.findById(LAST_SYNC_DATE_KEY).orElse(new Setting(LAST_SYNC_DATE_KEY, "2022-01-01T00:00:00.000"));
+        Setting lastPage = settingRepository.findById(LAST_SYNC_PAGE_KEY).orElse(new Setting(LAST_SYNC_PAGE_KEY, "0"));
 
         ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
 
         int processed = 0;
-        int page = 0;
+        int page = Integer.parseInt(lastPage.getValue());
         KrameriusPlusPaging<KrameriusPlusDocumentDto> publications;
         do  {
             publications = krameriusPlus.get()
@@ -78,13 +80,17 @@ public class ImportServiceImpl implements ImportService {
                 }
             }
             page += 1;
+            lastPage.setValue(String.valueOf(page));
+            settingRepository.saveAndFlush(lastPage);
         } while ((10*page <= publications.getTotal()));
         if (processed > 0) {
             log.info("Processed "+processed+" elements");
         }
 
-        lastSync.setValue(currentDate.toString());
+        lastPage.setValue("0");
+        settingRepository.saveAndFlush(lastPage);
 
+        lastSync.setValue(currentDate.toString());
         settingRepository.saveAndFlush(lastSync);
     }
 
