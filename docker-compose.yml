@@ -100,6 +100,7 @@ services:
     image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
     depends_on:
       - solr_initializer
+    restart: always
     deploy:
       resources:
         limits:
