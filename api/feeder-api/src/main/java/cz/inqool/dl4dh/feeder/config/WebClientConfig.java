@@ -11,8 +11,10 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import javax.net.ssl.SSLException;
@@ -37,10 +39,22 @@ public class WebClientConfig {
                         .defaultCodecs()
                         .maxInMemorySize(MAX_MEMORY_SIZE))
                 .baseUrl(url)
+                .filters(exchangeFilterFunctions -> {
+                    exchangeFilterFunctions.add(logRequest());
+                })
                 .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
                             configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
                             configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder(MimeTypeUtils.TEXT_XML, MimeTypeUtils.TEXT_PLAIN)); })
                         .build());
+    }
+
+    private ExchangeFilterFunction logRequest() {
+        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+            if (log.isDebugEnabled()) {
+                log.debug("WEBCLIENT REQUEST: {}", clientRequest.url());
+            }
+            return Mono.just(clientRequest);
+        });
     }
 
     private WebClient getWebClient(String url) throws SSLException {

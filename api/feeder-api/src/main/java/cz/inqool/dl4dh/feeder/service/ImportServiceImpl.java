@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ImportServiceImpl implements ImportService {
@@ -70,7 +69,7 @@ public class ImportServiceImpl implements ImportService {
             log.info("Syncing from "+lastSync.getValue()+" to "+currentDate+", found "+publicationsOnPage+" of "+publications.getTotal() + " publications on page "+ page +".");
 
             AtomicInteger crashed = new AtomicInteger(0);
-            ExecutorService es = Executors.newFixedThreadPool(5);
+            ExecutorService es = Executors.newFixedThreadPool(2);
             publications.getItems().stream().map(publication -> new ImportDocumentThread(publication, kramerius, krameriusPlus, solrHost, crashed)).forEach(es::execute);
             es.shutdown();
             try {
