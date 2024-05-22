@@ -12,12 +12,13 @@ import { Wrapper } from 'components/styled/Wrapper';
 import ClassicTable from 'components/table/ClassicTable';
 import Pagination from 'components/table/Pagination';
 
+import { UserRequestType } from 'models/user-requests';
 import { PagableParams } from 'models/solr';
 
-import { useExportList } from 'api/exportsApi';
+import { useUserRequestsList } from 'api/userRequestsApi';
 
-import ExportDetailDialog from './ExportDetailDialog';
 import { columns } from './table/columns';
+import UserRequestDetailDialog from './detail/detail';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
@@ -27,8 +28,8 @@ const Cell = styled(Text)`
 	margin: 0;
 `;
 
-const ExportsDashboard = () => {
-	const { t } = useTranslation('exports');
+const UserRequestsDashboard = () => {
+	const { t } = useTranslation('requests');
 
 	return (
 		<Wrapper height="100vh" alignItems="flex-start" bg="paper">
@@ -40,9 +41,9 @@ const ExportsDashboard = () => {
 						color="#444444!important"
 						fontWeight="normal"
 					>
-						{t('exports_dashboard.page_title')}
+						{t('dashboard.title')}
 					</H1>
-					<Exportslist />
+					<UserRequestsList />
 				</Box>
 			</Box>
 		</Wrapper>
@@ -51,15 +52,15 @@ const ExportsDashboard = () => {
 
 const HeaderCell: FC<{
 	field: string;
+
 	label: string;
 	params: PagableParams;
 	updateParams: React.Dispatch<React.SetStateAction<PagableParams>>;
 	flex: number;
-	maxWidth?: number;
-}> = ({ flex, field, params, label, updateParams, maxWidth }) => {
+}> = ({ flex, field, params, label, updateParams }) => {
 	const { t } = useTranslation('exports');
 	return (
-		<Box flex={flex} maxWidth={maxWidth}>
+		<Box flex={flex}>
 			<Button
 				variant="text"
 				p={0}
@@ -92,17 +93,21 @@ const HeaderCell: FC<{
 	);
 };
 
-const Exportslist = () => {
+const UserRequestsList = () => {
 	const [params, setParams] = useState<PagableParams>({
 		sort: { field: 'created', direction: 'DESC' },
 		size: 10,
 		page: 0,
 	});
-	const [enabled, setEnabled] = useState<string | undefined>(undefined);
-	const response = useExportList(params, enabled === undefined);
+	const [openDetail, setOpenDetail] = useState<string | undefined>(undefined);
+	const response = useUserRequestsList({
+		params,
+		enabled: openDetail === undefined,
+		type: UserRequestType.ENRICHMENT,
+	});
 	const data = response.data?.content ?? [];
-	const { t } = useTranslation('exports');
-	console.log({ enabled });
+	const { t } = useTranslation();
+	console.log({ openDetail });
 	return (
 		<Box width={1}>
 			<Flex
@@ -122,35 +127,37 @@ const Exportslist = () => {
 							alignItems="center"
 							px={2}
 							minHeight={40}
-							onClick={() => setEnabled(row.id)}
+							onClick={() => setOpenDetail(row.id)}
 							css={css`
 								cursor: pointer;
 								box-sizing: border-box;
+								&:hover {
+									background-color: rgba(0, 0, 0, 0.05);
+								}
 							`}
 						>
-							<ExportDetailDialog
-								exportDto={row}
-								isOpen={enabled === row.id}
-								onDismiss={() => {
-									setEnabled(undefined);
-									response.refetch();
-								}}
+							<UserRequestDetailDialog
+								isOpen={openDetail === row.id}
+								onDismiss={() => setOpenDetail(undefined)}
+								requestDto={row}
 							/>
-							{columns.map(({ CellComponent, datakey, dataMapper, flex }) => {
-								if (CellComponent) {
-									return CellComponent({ row, onClick: setEnabled });
-								} else {
-									return (
-										<Box flex={flex}>
-											<Cell>
-												{dataMapper
-													? dataMapper(row, t as TFunction<string>)
-													: row[datakey] ?? '--'}
-											</Cell>
-										</Box>
-									);
-								}
-							})}
+							{columns
+								.filter(c => c.visible)
+								.map(({ CellComponent, datakey, dataMapper, flex }) => {
+									if (CellComponent) {
+										return CellComponent({ row, onClick: setOpenDetail });
+									} else {
+										return (
+											<Box flex={flex}>
+												<Cell>
+													{dataMapper
+														? dataMapper(row, t as TFunction<string>)
+														: row[datakey] ?? '--'}
+												</Cell>
+											</Box>
+										);
+									}
+								})}
 						</Flex>
 					)}
 					renderHeader={() => (
@@ -164,17 +171,18 @@ const Exportslist = () => {
 								box-sizing: border-box;
 							`}
 						>
-							{columns.map((col, index) => (
-								<HeaderCell
-									key={`${col.datakey}-${index}`}
-									flex={col?.flex ?? 0}
-									field={col.datakey}
-									updateParams={setParams}
-									params={params}
-									label={col.label ? t(col.label) : ''}
-									maxWidth={col.maxWidth}
-								/>
-							))}
+							{columns
+								.filter(c => c.visible)
+								.map((col, index) => (
+									<HeaderCell
+										key={`${col.datakey}-${index}`}
+										flex={col?.flex ?? 0}
+										field={col.datakey}
+										updateParams={setParams}
+										params={params}
+										label={col.label ? t(col.label) : ''}
+									/>
+								))}
 						</Flex>
 					)}
 					hideEditButton
@@ -206,7 +214,7 @@ const Exportslist = () => {
 						offset={params.page * params.size}
 						loading={response.isLoading}
 						limitOptions={[10, 20, 30]}
-						localStorageKey="feeder-export-list-pagination"
+						localStorageKey="feeder-user-requests-list-pagination"
 					/>
 				</Flex>
 			)}
@@ -214,4 +222,4 @@ const Exportslist = () => {
 	);
 };
 
-export default ExportsDashboard;
+export default UserRequestsDashboard;

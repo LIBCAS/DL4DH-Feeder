@@ -331,6 +331,7 @@ const PubThumbnails: FC<Props> = ({
 										>
 											<Text my={0} fontSize="sm">
 												{pagesRaw[index].title}
+												{/* {pagesRaw[index].details.page_type} */}
 											</Text>
 										</Box>
 									</Flex>

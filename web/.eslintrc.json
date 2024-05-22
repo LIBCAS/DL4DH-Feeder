@@ -37,12 +37,20 @@
 		"react/react-in-jsx-scope": "off",
 		"curly": "error",
 		"@typescript-eslint/no-explicit-any": "warn",
-		"@typescript-eslint/consistent-type-definitions": ["error", "type"],
+		//"@typescript-eslint/consistent-type-definitions": ["error", "type"],
 		"@typescript-eslint/prefer-optional-chain": "error",
 		"@typescript-eslint/prefer-nullish-coalescing": "error",
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "warn",
-		"react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
+		"react/jsx-filename-extension": [
+			1,
+			{
+				"extensions": [
+					".ts",
+					".tsx"
+				]
+			}
+		],
 		"@typescript-eslint/explicit-module-boundary-types": "off",
 		"no-console": "off",
 		"no-nested-ternary": "error",
@@ -55,13 +63,18 @@
 						"message": "Please import from @emotion/styled/macro."
 					}
 				],
-				"patterns": ["!@emotion/styled/macro"]
+				"patterns": [
+					"!@emotion/styled/macro"
+				]
 			}
 		],
 		"@emotion/no-vanilla": "error",
 		"@emotion/import-from-emotion": "error",
 		"@emotion/styled-import": "error",
-		"@emotion/syntax-preference": ["error", "string"],
+		"@emotion/syntax-preference": [
+			"error",
+			"string"
+		],
 		"import/order": [
 			"error",
 			{
@@ -141,7 +154,9 @@
 	},
 	"overrides": [
 		{
-			"files": ["**/*.tsx"],
+			"files": [
+				"**/*.tsx"
+			],
 			"rules": {
 				"react/prop-types": "off"
 			}

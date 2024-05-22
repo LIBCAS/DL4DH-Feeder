@@ -1,92 +1,11 @@
 import { useQuery } from 'react-query';
 
-import { ExportSort } from 'modules/export/exportModels';
-
+import { PagableParams, PagableResponse } from 'models/solr';
 import { api } from 'api';
-
-import { PagableResponse } from './models';
-
-export type ExportApiResponse = {
-	limit: number;
-	offset: number;
-	total: number;
-	empty: boolean;
-};
-
-export type JobStatusEnum =
-	| 'CREATED'
-	| 'ENQUEUED'
-	| 'RUNNING'
-	| 'COMPLETED'
-	| 'SUCCESSFUL'
-	| 'FAILED'
-	| 'FAILED_FATALLY'
-	| 'CANCELLED'
-	| 'PARTIAL'
-	| 'STARTING'
-	| 'STARTED'
-	| 'STOPPING'
-	| 'STOPPED'
-	| 'ABANDONED'
-	| 'UNKNOWN';
-
-export type JobEventConfigDto = {
-	parameters: unknown;
-	krameriusJob:
-		| 'ENRICHMENT_KRAMERIUS'
-		| 'ENRICHMENT_EXTERNAL'
-		| 'ENRICHMENT_NDK'
-		| 'ENRICHMENT_TEI'
-		| 'EXPORT_JSON'
-		| 'EXPORT_CSV'
-		| 'EXPORT_TEI'
-		| 'EXPORT_ALTO'
-		| 'EXPORT_TEXT';
-};
-
-export type JobEventDto = {
-	id: string;
-	created: string;
-	updated: string;
-	deleted: string;
-	jobName: string;
-	publicationId: string;
-	lastExecutionStatus: JobStatusEnum;
-	parenet: unknown;
-	config: JobEventConfigDto;
-};
-
-export type ExportItem = {
-	id: string;
-	createdAt?: string;
-	username: string;
-	publicationId: string;
-	status: JobStatusEnum;
-	publicationTitle: string;
-	finished: boolean;
-};
-
-export type ExportDto = {
-	id: string;
-	created?: string;
-	username: string;
-	publicationId: string;
-	status: JobStatusEnum;
-	publicationTitle: string;
-	format: string;
-	parameters: string;
-	teiParameters: string;
-	delimiter: string;
-	items: ExportItem[];
-	finished: boolean;
-};
-
-export type PageExportDto = PagableResponse<ExportDto>;
-
-export type ExportListParams = { sort: ExportSort; size: number; page: number };
+import { ExportDto } from 'models/exports';
 
 export const useExportList = (
-	{ sort, size, page }: ExportListParams,
+	{ sort, size, page }: PagableParams,
 	enabled?: boolean,
 ) =>
 	useQuery(
@@ -96,7 +15,7 @@ export const useExportList = (
 				.get(
 					`exports?sort=${sort.field},${sort.direction}&page=${page}&size=${size}`,
 				)
-				.json<PageExportDto>(),
+				.json<PagableResponse<ExportDto>>(),
 		{
 			refetchOnMount: 'always',
 			refetchOnWindowFocus: 'always',

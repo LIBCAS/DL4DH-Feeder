@@ -11,7 +11,6 @@
     }
   },
   "common": {
-    
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
@@ -25,9 +24,10 @@
     "clear": "Smazat",
     "back": "Zpět",
     "confirm": "Potvrdit výběr",
+    "created": "Vytvořeno",
     "warning": "Varování",
     "of_pages": "stránek",
-    "check":"Zkontrolovat",
+    "check": "Zkontrolovat",
     "yes": "Ano",
     "no": "Ne",
     "n_pages": {
@@ -42,7 +42,7 @@
       "few": "výskyty",
       "many": "výskytů"
     },
-    "edit":"Upravit",
+    "edit": "Upravit",
     "set_page_number": "Zadejte číslo stránky",
     "show_whole_title": "Ukaž celý titulek",
     "hide_whole_title": "Skryj celý titulek",
@@ -121,6 +121,7 @@
     "login": "Přihlásit",
     "logout": "Odhlásit",
     "exports": "Exporty",
+    "user-requests": "Žádosti",
     "history": "Historie dotazů",
     "account": "Uživatel",
     "go_to_kramerius": "Přejít do Krameria",
@@ -201,7 +202,7 @@
       "to": "Do",
       "apply": "Použít"
     },
-    "query":"Řetězec",
+    "query": "Řetězec",
     "yearsInterval": "Léta"
   },
   "advanced_search": {
@@ -221,55 +222,77 @@
       "mdt": "MDT",
       "geoname": "Geografický název",
       "search": "Vyhledat",
-      "ALL_BASIC_METADATA":"Všechna základní metadata",
-      "ALL_NAMETAG_DATA":"Všechna obohacené data"
+      "ALL_BASIC_METADATA": "Všechna základní metadata",
+      "ALL_NAMETAG_DATA": "Všechna obohacené data"
     },
     "query": {
       "tab": "Dotaz"
+    }
+  },
+  "requests": {
+    "dashboard": {
+      "title": "Žádosti"
+    },
+    "detail": {
+      "title": "Detail žádosti"
+    },
+    
+    "type": {
+      "label": "Typ",
+      "ENRICHMENT": "Obohacení",
+      "EXPORT": "Spřístupnění"
+    },
+    "state": {
+      "label": "Stav",
+      "CREATED": "Vytvořen",
+      "IN_PROGRESS": "Zpracovává se",
+      "WAITING_FOR_USER": "",
+      "APPROVED": "Schváleno",
+      "PROLONGING": "Prodlužováno",
+      "REJECTED": "Odmítnuto"
     }
   },
   "exports": {
     "export_mode_switch_on": "Exportovat",
     "export_mode_switch_off": "Zrušit export",
     "export_mode_switch_tooltip": "Označit publikace pro export",
-    "selected_count":"Označených",
-    "add_all_displayed":"Přidat všechny zobrazené",
-    "remove_all_displayed":"Odebrat všechny zobrazené",
-    "remove_all":"Odebrat všechny",
+    "selected_count": "Označených",
+    "add_all_displayed": "Přidat všechny zobrazené",
+    "remove_all_displayed": "Odebrat všechny zobrazené",
+    "remove_all": "Odebrat všechny",
     "export_dialog_button": "Exportovat publikace",
     "export_dialog_title": "Exportovat publikace",
-    "export_dialog_login_request":"Pro export je nutné se přihlásit.",
-    "export_dialog_select_request":"Pro export je nutné vybrat aspoň jednu publikaci.",
+    "export_dialog_login_request": "Pro export je nutné se přihlásit.",
+    "export_dialog_select_request": "Pro export je nutné vybrat aspoň jednu publikaci.",
     "export_dialog_list": {
       "title": "Seznam publikací pro export",
       "tooltip_sort_on": "Seřadit od zvolených pro export",
       "tooltip_sort_off": "Zrušit seřazení"
     },
-    "dialog":{
+    "dialog": {
       "export_publication": "Exportovat publikaci",
       "edit_export_list": "Upravit seznam stránek pro export",
-      "all_enriched":"Všechny obohacené",
-      "all_alto_available":"ALTO dostupné u všech označených publikací",
-      "export_name":"Název exportu",
-      "format":"Formát",
-      "parameters":"Parametry",
-      "limit_enrichment_parameters":"Omezit obohacení na:",
-      "altoParams":"ALTO atributy",
-      "nameTagParams":"NameTag rozpoznané entity",
-      "udPipeParams":"udPipe atributy",
-      "delimiter":"Rozdělovač",
-      "comma":"Čárka",
-      "tab":"Tabulátor",
-      "choose_field":"Zvolte pole",
-      "include_fields":"Zahrnout pole",
-      "exclude_fields":"Nezahrnout pole",
-      "finish_export_button":"Exportovat",
-      "cancel":"Zrušit",
-      "publications_count":"publikací",
-      "json_csv_only":"Dostupné jen pro JSON a CSV",
-      "pub_title":"Název publikace",
-      "pub_id":"ID publikace"
-      
+      "all_enriched": "Všechny obohacené",
+      "all_alto_available": "ALTO dostupné u všech označených publikací",
+      "export_name": "Název exportu",
+      "format": "Formát",
+      "parameters": "Parametry",
+      "limit_enrichment_parameters": "Omezit obohacení na:",
+      "altoParams": "ALTO atributy",
+      "nameTagParams": "NameTag rozpoznané entity",
+      "udPipeParams": "udPipe atributy",
+      "delimiter": "Rozdělovač",
+      "comma": "Čárka",
+      "tab": "Tabulátor",
+      "choose_field": "Zvolte pole",
+      "include_fields": "Zahrnout pole",
+      "exclude_fields": "Nezahrnout pole",
+      "finish_export_button": "Exportovat",
+      "cancel": "Zrušit",
+      "publications_count": "publikací",
+      "json_csv_only": "Dostupné jen pro JSON a CSV",
+      "pub_title": "Název publikace",
+      "pub_id": "ID publikace"
     },
     "exports_dashboard": {
       "page_title": "Exporty",
@@ -282,20 +305,20 @@
       "created": "Vytvořeno",
       "format": "Formát",
       "action": "Akce",
-      "detail":"Detail exportu publikace"
+      "detail": "Detail exportu publikace"
     },
     "status_enum": {
       "CREATED": "Vytvořen",
-      "ENQUEUED":"Zařazen",
-      "RUNNING":"Zpracovává se",
+      "ENQUEUED": "Zařazen",
+      "RUNNING": "Zpracovává se",
       "COMPLETED": "Úspěšně dokončen",
-			"SUCCESSFUL": "Úspěšně dokončen",
+      "SUCCESSFUL": "Úspěšně dokončen",
       "STARTING": "Začíná",
       "STARTED": "Započatý",
       "STOPPING": "Zastavuje",
       "STOPPED": "Zastaven",
       "FAILED": "Neúspěšně ukončen",
-      "FAILED_FATALLY":"Neúspěšně ukončen",
+      "FAILED_FATALLY": "Neúspěšně ukončen",
       "ABANDONED": "Opuštěn",
       "UNKNOWN": "Neznámý",
       "PARTIAL": "Částečně dokončen"
@@ -1342,10 +1365,10 @@
   },
   "user": {
     "user-info-dialog": {
-      "title":"Informace o uživateli",
-      "name":"Jméno",
-      "email":"E-mail",
-      "roles":"Role"
+      "title": "Informace o uživateli",
+      "name": "Jméno",
+      "email": "E-mail",
+      "roles": "Role"
     }
   }
 }

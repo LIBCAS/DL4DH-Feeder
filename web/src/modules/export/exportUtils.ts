@@ -1,12 +1,128 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useQueries } from 'react-query';
+import { useTranslation } from 'react-i18next';
 
 import { api } from 'api';
+import { LabeledObject } from 'models/common';
+import {
+	AltoCheckProgress,
+	AltoParam,
+	NameTagExportOption,
+	PipeParam,
+} from 'models/exports';
 
 import { StreamsRecord } from 'api/publicationsApi';
 import { PublicationChild } from 'api/models';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
+
+export const exportFieldOptions: LabeledObject[] = [
+	{
+		id: 'title',
+		label: 'Nadpis',
+	},
+	{
+		id: 'index',
+		label: 'Číslo strany',
+	},
+	{
+		id: 'nameTagMetadata',
+		label: 'NameTag - úroveň stránky',
+	},
+	{
+		id: 'tokens.ti',
+		label: 'Číslo tokenu na stránce',
+	},
+	{
+		id: 'tokens.c',
+		label: 'Obsah tokenu',
+	},
+	{
+		id: 'tokens.lm.p',
+		label: 'Číslo tokenu vo vete',
+	},
+	{
+		id: 'tokens.lm.l',
+		label: 'Lemma',
+	},
+	{
+		id: 'tokens.lm.u',
+		label: 'UPosTag',
+	},
+	{
+		id: 'tokens.lm.x',
+		label: 'XPosTag',
+	},
+	{
+		id: 'tokens.lm.f',
+		label: 'Feats',
+	},
+	{
+		id: 'tokens.ntm',
+		label: 'NameTag - úroveň tokenu',
+	},
+];
+
+export const fieldIdToLabel = (id: string) =>
+	exportFieldOptions.find(fo => fo.id === id)?.label ?? 'Neznámy';
+
+export const udPipeParamsOptions: PipeParam[] = [
+	'n',
+	'lemma',
+	'pos',
+	'msd',
+	'join',
+	//	'?',
+];
+
+export const nameTagParamsExportOptions: NameTagExportOption[] = [
+	{ id: 'a', labelCode: 'NUMBERS_IN_ADDRESSES', label: '' },
+	{ id: 'g', labelCode: 'GEOGRAPHICAL_NAMES', label: '' },
+	{ id: 'i', labelCode: 'INSTITUTIONS', label: '' },
+	{ id: 'm', labelCode: 'MEDIA_NAMES', label: '' },
+	{ id: 'n', labelCode: 'NUMBER_EXPRESSIONS', label: '' },
+	{ id: 'o', labelCode: 'ARTIFACT_NAMES', label: '' },
+	{ id: 'p', labelCode: 'PERSONAL_NAMES', label: '' },
+	{ id: 't', labelCode: 'TIME_EXPRESSIONS', label: '' },
+	// TODO temporary disabled, because K+ is not able to process them
+	// { id: 'P', labelCode: 'COMPLEX_PERSON_NAMES', label: '' },
+	// { id: 'T', labelCode: 'COMPLEX_TIME_EXPRESSION', label: '' },
+	// { id: 'A', labelCode: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
+	// { id: 'C', labelCode: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
+];
+
+export const useNameTagParamExportOptions = () => {
+	const { t } = useTranslation();
+	return useMemo(
+		() => ({
+			nameTagParamsExportOptions: nameTagParamsExportOptions.map(ntp => ({
+				...ntp,
+				label: t(`nametag:labels.${ntp.labelCode}`) ?? '',
+			})),
+			labelFromOption: (item: NameTagExportOption | null) =>
+				item ? item.label : '',
+		}),
+
+		[t],
+	);
+};
+
+export const altoParamsOptions: AltoParam[] = [
+	'height',
+	'width',
+	'vpos',
+	'hpos',
+	//'?',
+];
+
+export const parseFieldOptions = (
+	fieldIds?: string[],
+): LabeledObject[] | undefined =>
+	fieldIds && fieldIds?.length > 0
+		? (fieldIds.map(id =>
+				exportFieldOptions.find(fo => fo.id === id),
+		  ) as LabeledObject[])
+		: undefined;
 
 export const generateExportName = () => {
 	const formatNumber = (x: number): string => (x < 10 ? `0${x}` : x.toString());
@@ -18,15 +134,6 @@ export const generateExportName = () => {
 	const mins = formatNumber(date.getMinutes());
 	const ss = formatNumber(date.getSeconds());
 	return `export-${yy}${mm}${dd}-${hh}${mins}${ss}`;
-};
-
-//bez ALTA  http://localhost:3000/view/uuid:0e5a5df0-4462-11dd-aadb-000d606f5dc6
-
-export type AltoCheckProgress = {
-	current: number;
-	total: number;
-	msg: string;
-	mode: 'CHILDREN' | 'ALTO';
 };
 
 //with caching

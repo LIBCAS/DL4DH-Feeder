@@ -1,8 +1,9 @@
 import { useQuery } from 'react-query';
 
 import { api } from 'api';
+import { PagableParams, PagableResponse } from 'models/solr';
 
-import { FiltersDto, PagableParams, PageFilter } from './models';
+import { FiltersDto } from './models';
 
 export const useSearchHistory = (
 	{ sort, size, page }: PagableParams,
@@ -15,7 +16,7 @@ export const useSearchHistory = (
 				.get(
 					`search/history?sort=${sort.field},${sort.direction}&page=${page}&size=${size}`,
 				)
-				.json<PageFilter>(),
+				.json<PagableResponse<FiltersDto>>(),
 		{
 			staleTime: 1,
 			refetchInterval: 600000,
