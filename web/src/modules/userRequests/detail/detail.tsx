@@ -22,6 +22,7 @@ import { getDateString } from 'utils';
 import { useUserRequestDetail } from 'api/userRequestsApi';
 
 import { UserRequestDetailMessages } from './detail-messages';
+import { UserRequestDetailParts } from './detail-parts';
 
 type Props = {
 	closeModal: () => void;
@@ -80,6 +81,9 @@ const UserRequestDetail: FC<Props> = ({ closeModal, requestDto }) => {
 					<Divider my={1} />
 					<Accordion label="Správy" isExpanded>
 						<UserRequestDetailMessages detail={detail} />
+					</Accordion>
+					<Accordion label="Části" isExpanded>
+						<UserRequestDetailParts detail={detail} />
 					</Accordion>
 
 					{/* <ExportDetailItemsTable exportDto={exportDto} /> */}

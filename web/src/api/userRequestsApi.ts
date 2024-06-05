@@ -7,6 +7,7 @@ import {
 	UserRequestDto,
 	UserRequestListDto,
 	UserRequestState,
+	UserRequestPartDto,
 } from 'models/user-requests';
 import { later } from 'utils';
 
@@ -46,6 +47,21 @@ export const useUserRequestDetail = (id: string) =>
 		//api().get(`${REQUEST_API_BASE}/${id}`).json<UserRequestDto>(),
 	);
 
+export const postNewUserRequestMessage = (
+	userRequestId: string,
+	message: string,
+	fileIds?: string[],
+) => {
+	api().post(
+		`${REQUEST_API_BASE}/${userRequestId}/message${
+			fileIds ? 'files=' + fileIds.join(',') : ''
+		}`,
+		{
+			json: { message },
+		},
+	);
+};
+
 const MOCK_DATA_LIST: UserRequestListDto = {
 	created: new Date().toISOString(),
 	id: '1',
@@ -74,11 +90,24 @@ const PDATA: PagableResponse<UserRequestListDto> = {
 export const randomString = (length: number) =>
 	(Math.random() + 1).toString(36).substring(3).slice(0, Math.floor(length));
 
+const createMockParts = (count: number): UserRequestPartDto[] => {
+	const arr: UserRequestPartDto[] = Array.from(
+		{ length: count },
+		(_, index) => ({
+			note: randomString(10),
+			publicationId: 'publicationId-' + index,
+			state: UserRequestState.CREATED,
+			stateUntil: new Date().toISOString(),
+		}),
+	);
+	return arr;
+};
+
 const MOCK_DATA_DETAIL: UserRequestDto = {
 	created: new Date().toISOString(),
 	id: '1',
 	identification: 'iden',
-	messages: Array(15)
+	messages: Array(3)
 		.fill(0)
 		.map((_, index) => ({
 			files: Array(Math.floor(Math.random() * 5))
@@ -94,7 +123,7 @@ const MOCK_DATA_DETAIL: UserRequestDto = {
 					.fill(0)
 					.map(() => ' ' + randomString(10)),
 		})),
-	parts: [],
+	parts: createMockParts(10),
 	state: UserRequestState.CREATED,
 	type: UserRequestType.ENRICHMENT,
 	updated: '',

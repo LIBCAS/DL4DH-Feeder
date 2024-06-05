@@ -1,18 +1,22 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/core';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { MdDownload } from 'react-icons/md';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import Divider from 'components/styled/Divider';
+import Button from 'components/styled/Button';
 
 import { UserRequestDto } from 'models/user-requests';
+
+import { UserRequestDetailNewMessageForm } from './detail-new-message';
 
 export const UserRequestDetailMessages: FC<{ detail: UserRequestDto }> = ({
 	detail,
 }) => {
+	const [showNewMessageForm, setShowNewMessageForm] = useState(false);
 	return (
 		<Box
 			p={3}
@@ -23,6 +27,20 @@ export const UserRequestDetailMessages: FC<{ detail: UserRequestDto }> = ({
 				box-shadow: inset 0px 3px 6px 2px rgba(0, 0, 0, 0.05);
 			`}
 		>
+			<Flex justifyContent="end" mb={2} width={1}>
+				{showNewMessageForm ? (
+					<UserRequestDetailNewMessageForm
+						detail={detail}
+						afterSubmit={() => setShowNewMessageForm(false)}
+						onCancel={() => setShowNewMessageForm(false)}
+					/>
+				) : (
+					<Button onClick={() => setShowNewMessageForm(true)} variant="primary">
+						{' '}
+						+ Nová zpráva
+					</Button>
+				)}
+			</Flex>
 			{detail.messages.map((msg, index) => (
 				<Box key={`msg-${msg.id}-${index}`}>
 					<Box

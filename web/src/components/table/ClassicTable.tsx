@@ -52,6 +52,7 @@ type Props<T extends TableItem> = {
 	openInNewTab?: boolean;
 	rowWrapperCss?: SerializedStyles;
 	borderless?: boolean;
+	NoResultsComponent?: React.ReactNode;
 };
 
 /** Table implementation */
@@ -67,6 +68,7 @@ const ClassicTable = <T extends TableItem>({
 	hideEditButton,
 	rowWrapperCss,
 	borderless,
+	NoResultsComponent,
 }: Props<T>) => {
 	const theme = useTheme();
 	const RenderRow: FC<{ rowIndex: number }> = ({ rowIndex }) => (
@@ -194,18 +196,24 @@ const ClassicTable = <T extends TableItem>({
 			) : (
 				<>
 					{data.length < 1 ? (
-						<Flex
-							width={1}
-							height="300px"
-							alignItems="center"
-							justifyContent="center"
-							bg="formBg"
-						>
-							<Text fontSize="xl" fontWeight="600">
-								Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný
-								dotaz.
-							</Text>
-						</Flex>
+						<>
+							{NoResultsComponent ? (
+								<>{NoResultsComponent}</>
+							) : (
+								<Flex
+									width={1}
+									height="300px"
+									alignItems="center"
+									justifyContent="center"
+									bg="formBg"
+								>
+									<Text fontSize="xl" fontWeight="600">
+										Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste
+										jiný dotaz.
+									</Text>
+								</Flex>
+							)}
+						</>
 					) : (
 						<Flex flexDirection="column">
 							{data.map((d, i) => (
