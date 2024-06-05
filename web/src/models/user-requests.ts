@@ -49,3 +49,9 @@ export type UserRequestListDto = {
 	type: UserRequestType;
 	updated: string;
 };
+
+export type UserRequestCreateDto = {
+	type: UserRequestType;
+	publicationIds: string[];
+	message: string;
+};

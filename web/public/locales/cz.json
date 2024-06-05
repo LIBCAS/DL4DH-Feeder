@@ -236,8 +236,14 @@
     "detail": {
       "title": "Detail žádosti"
     },
-    
+    "new": {
+      "title": "Nová žádost"
+    },
+    "message": {
+      "label": "Zpráva"
+    },
     "type": {
+      "label_long": "Typ žádosti",
       "label": "Typ",
       "ENRICHMENT": "Obohacení",
       "EXPORT": "Spřístupnění"

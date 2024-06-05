@@ -7,6 +7,8 @@ import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
 import IconButton from 'components/styled/IconButton';
 
+import UserRequestBulkDialog from 'modules/userRequests/bulk-operation/UserRequestBulkDialog';
+
 import { PublicationChild, PublicationDto } from 'api/models';
 
 import { useBulkExportContext, UuidHeapObject } from 'hooks/useBulkExport';
@@ -128,6 +130,7 @@ const BulkExportAdditionalButtons: React.FC<Props> = ({
 				{t('selected_count')}: <b>{count}</b>
 			</Text>
 			<BulkExportDialog />
+			<UserRequestBulkDialog />
 		</Flex>
 	);
 };
