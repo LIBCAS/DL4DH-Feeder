@@ -176,3 +176,6 @@ export const downloadFile = (fileUrl: string, filename: string) => {
 		}
 	}
 };
+
+export const later = <T>(value: T, delay: number) =>
+	new Promise<T>(resolve => setTimeout(resolve, delay, value));

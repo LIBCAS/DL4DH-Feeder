@@ -35,11 +35,6 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-	// {
-	// 	to: '/browse',
-	// 	label: 'browse',
-	// 	order: 0,
-	// },
 	{
 		to: '/browse?category=collections',
 		label: 'collections',
@@ -50,13 +45,6 @@ const menuItems: MenuItem[] = [
 		label: 'about',
 		order: 2,
 	},
-
-	// {
-	// 	to: '/exports',
-	// 	label: 'exports',
-	// 	order: 3,
-	// 	private: true,
-	// },
 
 	{
 		href: 'HOOK',

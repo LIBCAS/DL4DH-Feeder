@@ -341,7 +341,11 @@ export const InfoBox: FC<
 };
 
 export const Chip: FC<
-	{ onClose?: () => void; withCross?: boolean } & FlexProps
+	{
+		onClose?: () => void;
+		withCross?: boolean;
+		onClick?: () => void;
+	} & FlexProps
 > = ({ onClose, children, withCross, ...flexProps }) => {
 	return (
 		<Flex

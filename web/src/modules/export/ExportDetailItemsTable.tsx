@@ -15,8 +15,7 @@ import { NavLinkButton } from 'components/styled/Button';
 
 import { api } from 'api';
 import { downloadFile } from 'utils';
-
-import { ExportDto } from 'api/exportsApi';
+import { ExportDto } from 'models/exports';
 
 type Props = {
 	exportDto: ExportDto;

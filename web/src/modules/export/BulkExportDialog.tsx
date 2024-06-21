@@ -23,17 +23,18 @@ import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
 import { Loader } from 'modules/loader';
 
 import { api } from 'api';
+import { LabeledObject } from 'models/common';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
 import {
 	altoParamsOptions,
 	exportFieldOptions,
-	ExportFormatOption,
 	udPipeParamsOptions,
 	useNameTagParamExportOptions,
-} from './exportModels';
-import { generateExportName, useCheckAltoStreams } from './exportUtils';
+	generateExportName,
+	useCheckAltoStreams,
+} from './exportUtils';
 import {
 	commonFormatOptions,
 	delimiterEnum,
@@ -82,7 +83,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 		);
 	}, [exportCtx.uuidHeap]);
 
-	const formatOptions: ExportFormatOption[] = allEnriched
+	const formatOptions: LabeledObject[] = allEnriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
 

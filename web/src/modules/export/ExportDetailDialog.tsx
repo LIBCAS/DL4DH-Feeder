@@ -17,25 +17,23 @@ import Text, { H1 } from 'components/styled/Text';
 import { useTheme } from 'theme';
 import { downloadFile, getDateString } from 'utils';
 import { api } from 'api';
-
-import { ExportDto } from 'api/exportsApi';
-
+import { PagableSort } from 'models/solr';
 import {
 	AltoParam,
-	ExportSort,
-	parseFieldOptions,
+	Delimiter,
+	ExportDto,
 	PipeParam,
 	TagParam,
-	Delimiter,
-	ExportFieldOption,
-	useNameTagParamExportOptions,
-} from './exportModels';
+} from 'models/exports';
+import { LabeledObject } from 'models/common';
+
+import { parseFieldOptions, useNameTagParamExportOptions } from './exportUtils';
 import ExportDetailItemsTable from './ExportDetailItemsTable';
 
 type SerializedExportParameters = {
 	includeFields: string[];
 	excludeFields: string[];
-	sorting: ExportSort[];
+	sorting: PagableSort[];
 	delimiter?: Delimiter;
 	altoParams?: AltoParam[];
 	nameTagParams?: TagParam[];
@@ -43,9 +41,9 @@ type SerializedExportParameters = {
 };
 
 type ParsedExportParameters = {
-	includeFields: ExportFieldOption[];
-	excludeFields: ExportFieldOption[];
-	sorting: ExportSort[];
+	includeFields: LabeledObject[];
+	excludeFields: LabeledObject[];
+	sorting: PagableSort[];
 	delimiter?: Delimiter;
 	altoParams?: AltoParam[];
 	nameTagParams?: TagParam[];
@@ -112,7 +110,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 			overflow="visible"
 			m={[1, 5]}
 		>
-			<Paper bg="paper" minWidth={['80%', 500]} overflow="visible">
+			<Paper bg="paper" minWidth={['80%', 800]} overflow="visible">
 				<Box>
 					<Flex width={1} justifyContent="space-between" alignItems="center">
 						<H1 my={3}>{t('exports:exports_dashboard:detail')}</H1>

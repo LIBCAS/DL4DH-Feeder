@@ -135,6 +135,9 @@ const UserBadge: FC<{ variant: 'tablet' | 'desktop' }> = ({ variant }) => {
 			</MenuButton>
 			<MenuList>
 				<MenuItem onSelect={() => nav('/exports')}>{t('exports')}</MenuItem>
+				<MenuItem onSelect={() => nav('/user-requests')}>
+					{t('user-requests')}
+				</MenuItem>
 				<MenuItem onSelect={() => nav('/search-history')}>
 					{t('history')}
 				</MenuItem>

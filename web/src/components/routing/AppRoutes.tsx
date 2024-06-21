@@ -31,6 +31,10 @@ const ExportsDashboard = React.lazy(
 	() => import('modules/export/ExportsDashboard'),
 );
 
+const UserRequestsDashboard = React.lazy(
+	() => import('modules/userRequests/UserRequestsDashboard'),
+);
+
 const AppRoutes: React.FC = () => {
 	const { search, pathname } = useLocation();
 
@@ -110,6 +114,16 @@ const AppRoutes: React.FC = () => {
 					<React.Suspense fallback={<Loader />}>
 						<ProtectedRoute>
 							<ExportsDashboard />
+						</ProtectedRoute>
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/user-requests"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<UserRequestsDashboard />
 						</ProtectedRoute>
 					</React.Suspense>
 				}

@@ -23,28 +23,29 @@ import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
 
 import { api } from 'api';
 import { pluralRules } from 'utils';
+import {
+	Delimiter,
+	AltoParam,
+	PipeParam,
+	ExportFilter,
+	TagParam,
+	ExportFilterEQ,
+	NameTagExportOption,
+} from 'models/exports';
+import { LabeledObject } from 'models/common';
+import { PagableSort } from 'models/solr';
 
 import {
-	AltoParam,
 	altoParamsOptions,
-	Delimiter,
-	ExportFieldOption,
 	exportFieldOptions,
-	ExportFilter,
-	ExportFilterEQ,
-	ExportFormatOption,
-	ExportSort,
-	NameTagExportOption,
-	PipeParam,
-	TagParam,
 	udPipeParamsOptions,
 	useNameTagParamExportOptions,
-} from './exportModels';
+} from './exportUtils';
 
 export type ExportFormType = {
-	format: ExportFormatOption;
-	includeFields: ExportFieldOption[];
-	excludeFields: ExportFieldOption[];
+	format: LabeledObject;
+	includeFields: LabeledObject[];
+	excludeFields: LabeledObject[];
 	delimiter: Delimiter;
 	exportAll: boolean;
 	isSecond?: boolean;
@@ -63,7 +64,7 @@ export type ExportParasConfig = {
 			pageSize?: number;
 		};
 
-		sorting?: ExportSort[];
+		sorting?: PagableSort[];
 		filters?: ExportFilter[];
 		includeFields?: string[];
 		excludeFields?: string[];
@@ -88,12 +89,12 @@ export enum delimiterEnum {
 	tab = '\t',
 }
 
-export const commonFormatOptions: ExportFormatOption[] = [
+export const commonFormatOptions: LabeledObject[] = [
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'ALTO', id: 'alto' },
 ];
 
-export const enrichedFormatOptions: ExportFormatOption[] = [
+export const enrichedFormatOptions: LabeledObject[] = [
 	{ label: 'JSON', id: 'json' },
 	{ label: 'TEXT', id: 'text' },
 	{ label: 'TEI', id: 'tei' },
@@ -190,7 +191,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const pubId = id ?? 'ctx-id-undefined';
 	const pubTitle = pctx.publication?.title ?? 'unknown';
 	const enriched = pctx.publication?.enriched ?? false;
-	const formatOptions: ExportFormatOption[] = enriched
+	const formatOptions: LabeledObject[] = enriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
 

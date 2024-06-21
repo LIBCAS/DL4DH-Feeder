@@ -115,7 +115,6 @@ export const useHighlightWord = (uuid: string) => {
 	const [orientation, setOrientation] = useState<
 		{ isFlipped: boolean; width: number; height: number } | undefined
 	>();
-
 	const pageResult = useMemo(
 		() => parsePageResult(results.find(r => r.pid === uuid)),
 		[results, uuid],
