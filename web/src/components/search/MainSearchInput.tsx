@@ -220,6 +220,7 @@ const MainSearchInput = () => {
 								<SimpleSelect
 									isExpanded={showTagNameMenu}
 									value={selectedTagName}
+									nameFromOption={item => (item ? localizeNameTag(item) : '')}
 									options={fieldsTuple}
 									onChange={field => {
 										setShowTagNameMenu(false);

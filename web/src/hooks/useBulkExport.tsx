@@ -3,6 +3,7 @@ import React, {
 	useContext,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from 'react';
 
@@ -23,6 +24,10 @@ export type BulkExportContextType = {
 	updateExportHeap?: React.Dispatch<React.SetStateAction<UuidHeap>>;
 	exportModeOn: boolean;
 	setExportModeOn?: React.Dispatch<React.SetStateAction<boolean>>;
+	graphRef?: React.RefObject<HTMLDivElement>;
+	setGraphRef?: React.Dispatch<
+		React.SetStateAction<React.RefObject<HTMLDivElement>>
+	>;
 };
 
 let savedBulkExport = {};
@@ -42,6 +47,7 @@ export const BulkExportContextProvider: React.FC = ({ children }) => {
 	const [uuidHeap, setUuidHeap] = useState<UuidHeap>(savedBulkExport ?? {});
 	const [exportModeOn, setExportModeOn] = useState<boolean>(false);
 	const updateExportHeap = setUuidHeap;
+	const graphRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		Store.set(Store.keys.BulkExport, JSON.stringify(uuidHeap));
@@ -53,8 +59,9 @@ export const BulkExportContextProvider: React.FC = ({ children }) => {
 			updateExportHeap,
 			exportModeOn,
 			setExportModeOn,
+			graphRef,
 		}),
-		[uuidHeap, updateExportHeap, exportModeOn],
+		[uuidHeap, updateExportHeap, exportModeOn, graphRef],
 	);
 
 	return (

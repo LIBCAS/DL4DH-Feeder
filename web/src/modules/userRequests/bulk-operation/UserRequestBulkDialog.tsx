@@ -157,7 +157,7 @@ const UserRequestBulkDialog: FC = () => {
 					onClick={openModal}
 					tooltip={t('user-request-tooltip')}
 				>
-					{t('zadost')}
+					{t('Žádost')}
 				</Button>
 			)}
 		>

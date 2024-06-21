@@ -7,7 +7,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import { space, SpaceProps, layout, LayoutProps } from 'styled-system';
 
 import Text from 'components/styled/Text';
-import { Box, BoxProps, Flex, FlexProps } from 'components/styled';
+import { Box, Flex, FlexProps } from 'components/styled';
 import ErrorFeedback from 'components/error/ErrorFeedback';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import IconButton from 'components/styled/IconButton';

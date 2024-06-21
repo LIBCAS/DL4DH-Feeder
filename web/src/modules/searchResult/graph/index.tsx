@@ -24,6 +24,8 @@ import { useTheme } from 'theme';
 
 import { AvailableFilters } from 'api/models';
 
+import { useBulkExportContext } from 'hooks/useBulkExport';
+
 type Props = {
 	data: AvailableFilters;
 };
@@ -38,6 +40,13 @@ type OptionXAxisSorting = 'key' | 'count';
 const GraphView: FC<Props> = ({ data }) => {
 	const theme = useTheme();
 	const { t } = useTranslation('graph_view');
+
+	const { graphRef } = useBulkExportContext();
+
+	const [zoom, setZoom] = useState<{ startIndex?: number; endIndex?: number }>({
+		startIndex: undefined,
+		endIndex: undefined,
+	});
 
 	const OptionsXAxis: OptionXAxisType[] = useMemo(
 		() => [
@@ -87,12 +96,16 @@ const GraphView: FC<Props> = ({ data }) => {
 				<TitleText textAlign="left" ml={1} fontSize="xl">
 					{t('title')}
 				</TitleText>
+
 				<Flex alignItems="center">
 					<Text mr={2}>{t('axis_x.label')}</Text>
 					<SimpleSelect
 						label=""
 						options={OptionsXAxis}
-						onChange={item => setAxisX(item)}
+						onChange={item => {
+							setAxisX(item);
+							setZoom({});
+						}}
 						nameFromOption={item => t(`${item ? item.label : 'axis_x.years'}`)}
 						keyFromOption={item => item?.key ?? ''}
 						value={axisX}
@@ -109,7 +122,10 @@ const GraphView: FC<Props> = ({ data }) => {
 					<SimpleSelect<OptionXAxisSorting>
 						options={['key', 'count']}
 						nameFromOption={item => t(`sorting.${item ?? 'key'}`)}
-						onChange={newVal => setSorting(newVal)}
+						onChange={newVal => {
+							setSorting(newVal);
+							setZoom({});
+						}}
 						value={sorting}
 						width={100}
 						variant="outlined"
@@ -156,6 +172,8 @@ const GraphView: FC<Props> = ({ data }) => {
 				fontSize="xl"
 				fontWeight="bold"
 				width={1}
+				ref={graphRef}
+				backgroundColor="paper"
 			>
 				<ResponsiveContainer height="90%" width="99%">
 					<BarChart data={chartData}>
@@ -175,7 +193,18 @@ const GraphView: FC<Props> = ({ data }) => {
 							strokeDasharray="3 3"
 						/>
 						<Bar dataKey="count" fill={theme.colors.primary} barSize={20} />
-						<Brush dataKey="label" height={40} stroke={theme.colors.primary} />
+
+						<Brush
+							dataKey="label"
+							height={40}
+							stroke={theme.colors.primary}
+							className="GRAPH_EXPORT_BRUSH"
+							startIndex={zoom.startIndex}
+							endIndex={zoom.endIndex}
+							onChange={({ startIndex, endIndex }) => {
+								setZoom({ startIndex, endIndex });
+							}}
+						/>
 					</BarChart>
 				</ResponsiveContainer>
 			</Flex>

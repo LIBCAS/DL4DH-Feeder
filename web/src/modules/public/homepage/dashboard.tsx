@@ -16,6 +16,7 @@ import Results from 'modules/searchResult/index';
 import Sorting from 'modules/sorting/Sorting';
 import { BulkExportModeSwitch } from 'modules/export/BulkExportDialog';
 import BulkExportAdditionalButtons from 'modules/export/BulkExportAdditionalButtons';
+import GraphExportDialog from 'modules/export/GraphExportDialog';
 
 import { useSearchPublications } from 'api/publicationsApi';
 
@@ -131,7 +132,7 @@ const Dashboard: FC = () => {
 											<BulkExportModeSwitch />
 										</>
 									)}
-									{/* state.viewMode === 'graph' && <GraphExportDialog /> */}
+									{state.viewMode === 'graph' && <GraphExportDialog />}
 								</Flex>
 							</Flex>
 						</Flex>
