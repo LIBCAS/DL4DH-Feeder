@@ -104,7 +104,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 600m
+          memory: 1000m
     environment:
       SOLR_PORT: 8983 
       SOLR_HEAP: "2g" 
