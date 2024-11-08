@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MdClose, MdInfo } from 'react-icons/md';
 import { FormikProvider, useFormik } from 'formik';
 import { noop } from 'lodash-es';
+import { toast } from 'react-toastify';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -18,6 +19,8 @@ import Divider from 'components/styled/Divider';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
 
 import { UserRequestCreateDto, UserRequestType } from 'models/user-requests';
+
+import { userRequestCreateNew } from 'api/userRequestsApi';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
@@ -41,8 +44,16 @@ const RequestForm: FC<{
 			message: '',
 			type: UserRequestType.ENRICHMENT,
 		},
-		onSubmit: values => {
-			console.log(values);
+		onSubmit: async values => {
+			const response = await userRequestCreateNew(values);
+			if (response.ok) {
+				closeModal();
+			} else {
+				console.log(response);
+				toast.error(
+					`Unable to create request: ${response.status}: ${response.statusText}`,
+				);
+			}
 		},
 	});
 

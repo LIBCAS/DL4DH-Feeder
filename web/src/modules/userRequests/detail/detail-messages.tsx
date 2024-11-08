@@ -2,6 +2,7 @@
 import { css } from '@emotion/core';
 import { FC, useState } from 'react';
 import { MdDownload } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -10,6 +11,9 @@ import Divider from 'components/styled/Divider';
 import Button from 'components/styled/Button';
 
 import { UserRequestDto } from 'models/user-requests';
+import { downloadFile } from 'utils';
+
+import { getUserRequestFiles } from 'api/userRequestsApi';
 
 import { UserRequestDetailNewMessageForm } from './detail-new-message';
 
@@ -64,7 +68,20 @@ export const UserRequestDetailMessages: FC<{ detail: UserRequestDto }> = ({
 												filter: brightness(0.95);
 											}
 										`}
-										onClick={() => console.log({ file })}
+										onClick={async () => {
+											try {
+												const response = await getUserRequestFiles(
+													detail.id,
+													file.id,
+												);
+												const blob = await response.blob();
+												const url = URL.createObjectURL(blob);
+												downloadFile(url, file.name);
+											} catch (error) {
+												toast.error('Unable to download file.');
+												console.log(error);
+											}
+										}}
 										py={1}
 										px={2}
 										mr={1}

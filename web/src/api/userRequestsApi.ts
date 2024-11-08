@@ -8,6 +8,7 @@ import {
 	UserRequestListDto,
 	UserRequestState,
 	UserRequestPartDto,
+	UserRequestCreateDto,
 } from 'models/user-requests';
 import { later } from 'utils';
 
@@ -18,6 +19,9 @@ type Props = {
 };
 
 const REQUEST_API_BASE = 'user-requests';
+
+export const userRequestCreateNew = (json: UserRequestCreateDto) =>
+	api().post(REQUEST_API_BASE + '/', { json, throwHttpErrors: false });
 
 export const useUserRequestsList = ({
 	params: { page, sort, size },
@@ -47,21 +51,29 @@ export const useUserRequestDetail = (id: string) =>
 		//api().get(`${REQUEST_API_BASE}/${id}`).json<UserRequestDto>(),
 	);
 
+export const getUserRequestFiles = (userRequestId: string, fileId: string) =>
+	api().get(`${REQUEST_API_BASE}/${userRequestId}/file/${fileId}`, {
+		retry: 0,
+	});
+
 export const postNewUserRequestMessage = (
 	userRequestId: string,
 	message: string,
 	fileIds?: string[],
-) => {
+) =>
 	api().post(
-		`${REQUEST_API_BASE}/${userRequestId}/message${
+		`${REQUEST_API_BASE}/${userRequestId}/message/${
 			fileIds ? 'files=' + fileIds.join(',') : ''
 		}`,
 		{
 			json: { message },
 		},
 	);
-};
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const MOCK_DATA_LIST: UserRequestListDto = {
 	created: new Date().toISOString(),
 	id: '1',
