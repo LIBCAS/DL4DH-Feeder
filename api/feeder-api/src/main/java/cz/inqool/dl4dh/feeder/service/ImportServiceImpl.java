@@ -297,6 +297,7 @@ public class ImportServiceImpl implements ImportService {
                             solr.commit();
                         }
                     }
+                    newObjects.clear();
 
                     // Stop if pages were processed or more than 10 000 pages were processed
                     // (hard break if there is a bug on K+)
