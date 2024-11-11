@@ -44,7 +44,7 @@ public class UserRequestApi {
             for (MultipartFile file : multipartFiles) {
                 builder.part("files", file.getResource())
                         .header("Content-Type", file.getContentType())
-                        .header("Content-Disposition", "form-data; name=\"files\"; filename=\""+file.getName()+"\"");
+                        .header("Content-Disposition", "form-data; name=\""+file.getName()+"\"; filename=\""+file.getOriginalFilename()+"\"");
             }
         }
         builder.part("message", createDto.getMessage());
@@ -140,7 +140,7 @@ public class UserRequestApi {
             for (MultipartFile file : multipartFiles) {
                 builder.part("files", file.getResource())
                         .header("Content-Type", file.getContentType())
-                        .header("Content-Disposition", "form-data; name=\"files\"; filename=\""+file.getName()+"\"");
+                        .header("Content-Disposition", "form-data; name=\""+file.getName()+"\"; filename=\""+file.getOriginalFilename()+"\"");
             }
         }
         builder.part("message", messageCreateDto.getMessage());
