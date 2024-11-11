@@ -11,6 +11,13 @@ export enum UserRequestState {
 	REJECTED = 'REJECTED',
 }
 
+export type UserRequestStateChange = {
+	created: Date;
+	username: string;
+	before: UserRequestState;
+	after: UserRequestState;
+};
+
 export type UserRequestDto = {
 	id: string;
 	created: string;
@@ -21,6 +28,7 @@ export type UserRequestDto = {
 	identification: string;
 	parts: UserRequestPartDto[];
 	messages: MessageDto[];
+	stateChanges?: UserRequestStateChange[];
 };
 
 export type UserRequestPartDto = {
@@ -54,4 +62,5 @@ export type UserRequestCreateDto = {
 	type: UserRequestType;
 	publicationIds: string[];
 	message: string;
+	files: File[];
 };

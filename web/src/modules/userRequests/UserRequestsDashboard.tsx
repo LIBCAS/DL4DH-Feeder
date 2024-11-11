@@ -105,7 +105,7 @@ const UserRequestsList = () => {
 		enabled: openDetail === undefined,
 		type: UserRequestType.ENRICHMENT,
 	});
-	const data = response.data?.content ?? [];
+	const data = response.data?.items ?? [];
 	const { t } = useTranslation();
 	console.log({ openDetail });
 	return (
@@ -198,7 +198,7 @@ const UserRequestsList = () => {
 			{!response.isLoading && (
 				<Flex px={2} my={3}>
 					<Pagination
-						page={(response.data?.pageable.page ?? 0) + 1}
+						page={(response.data?.page ?? 0) + 1}
 						changePage={page => setParams(p => ({ ...p, page: page - 1 }))}
 						changeLimit={limit =>
 							limit !== params.size
@@ -206,10 +206,9 @@ const UserRequestsList = () => {
 								: null
 						}
 						pageLimit={params.size}
-						totalCount={response.data?.totalElements ?? 0}
+						totalCount={response.data?.total ?? 0}
 						hasMore={
-							(response.data?.totalPages ?? 0) !==
-							(response.data?.pageable.page ?? 0) + 1
+							(response.data?.total ?? 0) !== (response.data?.page ?? 0) + 1
 						}
 						offset={params.page * params.size}
 						loading={response.isLoading}

@@ -10,7 +10,7 @@ import Button from 'components/styled/Button';
 import Divider from 'components/styled/Divider';
 import IconButton from 'components/styled/IconButton';
 import Paper from 'components/styled/Paper';
-import Text, { H1 } from 'components/styled/Text';
+import Text, { H1, H4 } from 'components/styled/Text';
 import Accordion from 'components/accordion';
 
 import { Loader } from 'modules/loader';
@@ -78,15 +78,24 @@ const UserRequestDetail: FC<Props> = ({ closeModal, requestDto }) => {
 						</b>
 					</Text>
 
-					<Divider my={1} />
-					<Accordion label="Správy" isExpanded>
-						<UserRequestDetailMessages detail={detail} />
-					</Accordion>
+					<Divider my={3} />
+					{/* <Accordion
+						label="Správy"
+						//isExpanded
+						css={css`
+							min-height: 600px;
+						`}
+					> */}
+					<H4>{t('detail.messages')}</H4>
+					<UserRequestDetailMessages
+						detail={detail}
+						refetchDetail={response.refetch}
+					/>
+					{/* </Accordion> */}
 					<Accordion label="Části" isExpanded>
 						<UserRequestDetailParts detail={detail} />
 					</Accordion>
 
-					{/* <ExportDetailItemsTable exportDto={exportDto} /> */}
 					<Flex my={1} justifyContent="flex-end" alignItems="center" mt={5}>
 						<Button variant="primary" ml={3} onClick={closeModal}>
 							{tCommon('close')}

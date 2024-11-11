@@ -520,7 +520,7 @@ export const BulkExportModeSwitch: FC = () => {
 			variant="primary"
 			backgroundColor={exportModeOn ? 'enriched' : 'primary'}
 			color={exportModeOn ? 'textH4' : 'white'}
-			px={0}
+			px={2}
 			tooltip={t('export_mode_switch_tooltip')}
 		>
 			{exportModeOn ? (

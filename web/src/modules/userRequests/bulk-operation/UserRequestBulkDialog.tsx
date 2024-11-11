@@ -3,8 +3,9 @@ import { css } from '@emotion/core';
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose, MdInfo } from 'react-icons/md';
-import { FormikProvider, useFormik } from 'formik';
+import { FormikConsumer, FormikProvider, useFormik } from 'formik';
 import { noop } from 'lodash-es';
+import { toast } from 'react-toastify';
 
 import { Flex } from 'components/styled';
 import Button from 'components/styled/Button';
@@ -16,8 +17,11 @@ import TextAreaInput from 'components/form/input/TextAreaInput';
 import RadioButton from 'components/styled/RadioButton';
 import Divider from 'components/styled/Divider';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
+import TextInput, { Chip } from 'components/form/input/TextInput';
 
 import { UserRequestCreateDto, UserRequestType } from 'models/user-requests';
+
+import { userRequestCreateNew } from 'api/userRequestsApi';
 
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
@@ -25,6 +29,7 @@ const RequestForm: FC<{
 	closeModal: () => void;
 }> = ({ closeModal }) => {
 	const { t } = useTranslation('requests');
+	const { t: tCommon } = useTranslation('common');
 	const exportCtx = useBulkExportContext();
 	const data = useMemo(
 		() =>
@@ -40,9 +45,18 @@ const RequestForm: FC<{
 			publicationIds: data.map(d => d.id),
 			message: '',
 			type: UserRequestType.ENRICHMENT,
+			files: [],
 		},
-		onSubmit: values => {
-			console.log(values);
+		onSubmit: async values => {
+			const response = await userRequestCreateNew(values);
+			if (response.ok) {
+				closeModal();
+			} else {
+				console.log(response);
+				toast.error(
+					`Unable to create request: ${response.status}: ${response.statusText}`,
+				);
+			}
 		},
 	});
 
@@ -106,6 +120,43 @@ const RequestForm: FC<{
 							name="message"
 							minRows={10}
 						/>
+						<FormikConsumer>
+							{({ setFieldValue, values }) => (
+								<>
+									<TextInput
+										mt={2}
+										type="file"
+										multiple
+										name="files"
+										id="files"
+										label={t('attachments.label')}
+										onChange={e => {
+											if (e.target.files && e.target.files.length > 0) {
+												setFieldValue('files', Array.from(e.target.files));
+											}
+										}}
+									/>
+
+									<Flex m={2} flexWrap="wrap" style={{ gap: 16 }}>
+										{values.files.map((file, index) => (
+											<Chip
+												p={2}
+												key={`file-${index}`}
+												onClose={() =>
+													setFieldValue('files', [
+														...values.files.filter((file, i) => i !== index),
+													])
+												}
+												withCross
+											>
+												{file.name}
+											</Chip>
+										))}
+									</Flex>
+								</>
+							)}
+						</FormikConsumer>
+
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>
@@ -115,7 +166,7 @@ const RequestForm: FC<{
 									disabled={formik.isSubmitting || data.length < 1}
 									loading={formik.isSubmitting}
 								>
-									{t('exports:dialog.finish_export_button')}
+									{tCommon('submit')}
 								</Button>
 								<Button
 									variant="outlined"
@@ -125,7 +176,7 @@ const RequestForm: FC<{
 										z-index: 3;
 									`}
 								>
-									{t('exports:dialog.cancel')}
+									{tCommon('cancel')}
 								</Button>
 							</Flex>
 							<Flex alignItems="center">
@@ -144,7 +195,7 @@ const RequestForm: FC<{
 };
 
 const UserRequestBulkDialog: FC = () => {
-	const { t } = useTranslation('exports');
+	const { t } = useTranslation('requests');
 	return (
 		<ModalDialog
 			label="Info"
@@ -155,9 +206,9 @@ const UserRequestBulkDialog: FC = () => {
 					minWidth={60}
 					variant="primary"
 					onClick={openModal}
-					tooltip={t('user-request-tooltip')}
+					tooltip={t('new.title')}
 				>
-					{t('Žádost')}
+					{t('new.title')}
 				</Button>
 			)}
 		>

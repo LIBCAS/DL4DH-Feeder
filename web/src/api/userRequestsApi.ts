@@ -1,15 +1,14 @@
 import { useQuery } from 'react-query';
 
 import { api } from 'api';
-import { PagableParams, PagableResponse } from 'models/solr';
+import { PagableParams } from 'models/solr';
 import {
 	UserRequestType,
 	UserRequestDto,
 	UserRequestListDto,
-	UserRequestState,
-	UserRequestPartDto,
+	UserRequestCreateDto,
 } from 'models/user-requests';
-import { later } from 'utils';
+import { Result } from 'models/common';
 
 type Props = {
 	params: PagableParams;
@@ -19,6 +18,19 @@ type Props = {
 
 const REQUEST_API_BASE = 'user-requests';
 
+export const userRequestCreateNew = (json: UserRequestCreateDto) => {
+	const formData = new FormData();
+	formData.append('type', json.type);
+	formData.append('message', json.message);
+	json.publicationIds.forEach(id => formData.append('publicationIds', id));
+	json.files.forEach(file => formData.append('files', file));
+
+	return api().post(REQUEST_API_BASE + '/', {
+		body: formData,
+		throwHttpErrors: false,
+	});
+};
+
 export const useUserRequestsList = ({
 	params: { page, sort, size },
 	type,
@@ -26,12 +38,13 @@ export const useUserRequestsList = ({
 }: Props) =>
 	useQuery(
 		['requests-list', { page, sort, size, type }],
-		() => later(PDATA, 100),
-		// api()
-		// 	.get(
-		// 		`${REQUEST_API_BASE}?sort=${sort.field},${sort.direction}&page=${page}&size=${size}`,
-		// 	)
-		// 	.json<PagableResponse<UserRequestListDto>>(),
+		() =>
+			//later(PDATA, 100),
+			api()
+				.get(
+					`${REQUEST_API_BASE}/?sort=${sort.field},${sort.direction}&page=${page}&size=${size}`,
+				)
+				.json<Result<UserRequestListDto>>(),
 		{
 			refetchOnMount: 'always',
 			refetchOnWindowFocus: 'always',
@@ -43,24 +56,35 @@ export const useUserRequestsList = ({
 export const useUserRequestDetail = (id: string) =>
 	useQuery(
 		['request-detail', id],
-		() => later(MOCK_DATA_DETAIL, 100),
-		//api().get(`${REQUEST_API_BASE}/${id}`).json<UserRequestDto>(),
+		() => api().get(`${REQUEST_API_BASE}/${id}`).json<UserRequestDto>(),
+		//later(MOCK_DATA_DETAIL, 100),
 	);
+
+export const getUserRequestFiles = (userRequestId: string, fileId: string) =>
+	api().get(`${REQUEST_API_BASE}/${userRequestId}/file/${fileId}`, {
+		retry: 0,
+	});
 
 export const postNewUserRequestMessage = (
 	userRequestId: string,
 	message: string,
-	fileIds?: string[],
+	files: File[],
 ) => {
-	api().post(
-		`${REQUEST_API_BASE}/${userRequestId}/message${
-			fileIds ? 'files=' + fileIds.join(',') : ''
-		}`,
-		{
-			json: { message },
-		},
-	);
+	const formData = new FormData();
+
+	formData.append('message', message);
+	files.forEach(file => formData.append('files', file));
+	return api().post(`${REQUEST_API_BASE}/${userRequestId}/message`, {
+		body: formData,
+	});
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
 
 const MOCK_DATA_LIST: UserRequestListDto = {
 	created: new Date().toISOString(),
@@ -129,3 +153,4 @@ const MOCK_DATA_DETAIL: UserRequestDto = {
 	updated: '',
 	username: 'username',
 };
+*/

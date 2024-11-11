@@ -11,6 +11,7 @@
     }
   },
   "common": {
+    "submit": "Submit",
     "pagination": {
       "prev_page": "Previous page",
       "next_page": "Next page",
@@ -26,7 +27,7 @@
     "confirm": "Confirm selection",
     "warning": "Warning",
     "of_pages": "pages",
-    "check":"Check",
+    "check": "Check",
     "yes": "Yes",
     "no": "No",
     "n_pages": {
@@ -39,7 +40,7 @@
       "few": "occurrences",
       "many": "occurrences"
     },
-    "edit":"Edit",
+    "edit": "Edit",
     "public": "Public",
     "private": "Private",
     "set_page_number": "Set page number",
@@ -200,7 +201,7 @@
       "to": "To",
       "apply": "Apply"
     },
-    "query":"String",
+    "query": "String",
     "yearsInterval": "Years"
   },
   "advanced_search": {
@@ -220,51 +221,83 @@
       "mdt": "MDT",
       "geoname": "Geographic name",
       "search": "Search",
-      "ALL_BASIC_METADATA":"All basic metadata",
-      "ALL_NAMETAG_DATA":"All nametag data"
+      "ALL_BASIC_METADATA": "All basic metadata",
+      "ALL_NAMETAG_DATA": "All nametag data"
     },
     "query": {
       "tab": "Query"
     }
   },
+  "requests": {
+    "dashboard": {
+      "title": "Requests"
+    },
+    "attachments": {
+      "label": "Attachments"
+    },
+    "detail": {
+      "title": "Request detail",
+      "messages": "Messages"
+    },
+    "new": {
+      "title": "New request"
+    },
+    "message": {
+      "label": "Message"
+    },
+    "type": {
+      "label_long": "Request type",
+      "label": "Type",
+      "ENRICHMENT": "Enrichment",
+      "EXPORT": "Export"
+    },
+    "state": {
+      "label": "State",
+      "CREATED": "Created",
+      "IN_PROGRESS": "In progress",
+      "WAITING_FOR_USER": "Waiting for user",
+      "APPROVED": "Approved",
+      "PROLONGING": "Prolonging",
+      "REJECTED": "Rejected",
+      "WAITING": "Waiting"
+    }
+  },
   "exports": {
-    "export_mode_switch_on": "Export",
-    "export_mode_switch_off": "Cancel export",
+    "export_mode_switch_on": "Export/Request",
+    "export_mode_switch_off": "Cancel export/request",
     "export_mode_switch_tooltip": "Choose publications for export",
     "export_dialog_button": "Export publications",
     "export_dialog_title": "Export publications",
-    "export_dialog_login_request":"You need to be logged in to export publications.",
-    "export_dialog_select_request":"To export publications at least one has to be selected.",
-    
-    "selected_count":"Count",
-    "add_all_displayed":"Add all currently displayed",
-    "remove_all_displayed":"Remove all currently displayed",
-    "remove_all":"Remove all",
-
-    "dialog":{
+    "export_dialog_login_request": "You need to be logged in to export publications.",
+    "export_dialog_select_request": "To export publications at least one has to be selected.",
+    "selected_count": "Count",
+    "add_all_displayed": "Add all currently displayed",
+    "remove_all_displayed": "Remove all currently displayed",
+    "remove_all": "Remove all",
+    "dialog": {
       "export_publication": "Export publication",
       "edit_export_list": "Edit page list for export",
-      "all_enriched":"All enriched",
-      "all_alto_available":"ALTO available for all selected publications",
-      "export_name":"Export name",
-      "format":"Format",
-      "parameters":"Parameters",
-      "limit_enrichment_parameters":"Limit enrichment to:",
-      "altoParams":"ALTO attributes",
-      "nameTagParams":"NameTag recognized entities",
-      "udPipeParams":"udPipe attributes",
-      "delimiter":"Delimiter",
-      "comma":"Comma",
-      "tab":"Tab",
-      "choose_field":"Choose field",
-      "include_fields":"Include fields",
-      "exclude_fields":"Exclude fields",
-      "finish_export_button":"Export",
-      "cancel":"Cancel",
-      "publications_count":"publications",
-      "json_csv_only":"Available for JSON and CSV only",
-      "pub_title":"Publication title",
-      "pub_id":"Publication ID"
+      "all_enriched": "All enriched",
+      "all_alto_available": "ALTO available for all selected publications",
+      "export_name": "Export name",
+      "format": "Format",
+      "parameters": "Parameters",
+      "limit_enrichment_parameters": "Limit enrichment to:",
+      "altoParams": "ALTO attributes",
+      "nameTagParams": "NameTag recognized entities",
+      "udPipeParams": "udPipe attributes",
+      "delimiter": "Delimiter",
+      "comma": "Comma",
+      "tab": "Tab",
+      "choose_field": "Choose field",
+      "include_fields": "Include fields",
+      "exclude_fields": "Exclude fields",
+      "finish_export_button": "Export",
+      "cancel": "Cancel",
+      "publications_count": "publications",
+      "json_csv_only": "Available for JSON and CSV only",
+      "pub_title": "Publication title",
+      "pub_id": "Publication ID"
     },
     "exports_dashboard": {
       "page_title": "Exports",
@@ -277,21 +310,21 @@
       "created": "Created",
       "format": "Format",
       "action": "Actions",
-      "detail":"Export detail"
+      "detail": "Export detail"
     },
     "status_enum": {
       "CREATED": "Created",
-      "ENQUEUED":"Enqueued",
-      "RUNNING":"Running",
+      "ENQUEUED": "Enqueued",
+      "RUNNING": "Running",
       "COMPLETED": "Completed",
-			"SUCCESSFUL": "Successful",
+      "SUCCESSFUL": "Successful",
       "STARTING": "Starting",
       "STARTED": "Started",
       "STOPPING": "Stopping",
       "STOPPED": "Stopped",
       "FAILED": "Failed",
-      "FAILED_FATALLY":"Failed fatally",
-      "CANCELLED":"Cancelled",
+      "FAILED_FATALLY": "Failed fatally",
+      "CANCELLED": "Cancelled",
       "ABANDONED": "Abandoned",
       "UNKNOWN": "Unknown",
       "PARTIAL": "Partially finished"
@@ -337,7 +370,6 @@
   "search_history": {
     "page_title": "Search history"
   },
-
   "music": {
     "toolbar": {
       "playing": "Playing"
@@ -1703,10 +1735,10 @@
   },
   "user": {
     "user-info-dialog": {
-      "title":"User information",
-      "name":"Name",
-      "email":"E-mail",
-      "roles":"Roles"
+      "title": "User information",
+      "name": "Name",
+      "email": "E-mail",
+      "roles": "Roles"
     }
   }
 }

@@ -11,6 +11,7 @@
     }
   },
   "common": {
+    "submit": "Odeslat",
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
@@ -233,8 +234,12 @@
     "dashboard": {
       "title": "Žádosti"
     },
+    "attachments": {
+      "label": "Přílohy"
+    },
     "detail": {
-      "title": "Detail žádosti"
+      "title": "Detail žádosti",
+      "messages": "Zprávy"
     },
     "new": {
       "title": "Nová žádost"
@@ -252,15 +257,16 @@
       "label": "Stav",
       "CREATED": "Vytvořen",
       "IN_PROGRESS": "Zpracovává se",
-      "WAITING_FOR_USER": "",
+      "WAITING_FOR_USER": "Čeká na uživatele",
       "APPROVED": "Schváleno",
       "PROLONGING": "Prodlužováno",
-      "REJECTED": "Odmítnuto"
+      "REJECTED": "Odmítnuto",
+      "WAITING": "Čeká"
     }
   },
   "exports": {
-    "export_mode_switch_on": "Exportovat",
-    "export_mode_switch_off": "Zrušit export",
+    "export_mode_switch_on": "Export/Žádost",
+    "export_mode_switch_off": "Zrušit export/žádost",
     "export_mode_switch_tooltip": "Označit publikace pro export",
     "selected_count": "Označených",
     "add_all_displayed": "Přidat všechny zobrazené",
