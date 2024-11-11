@@ -236,20 +236,17 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				const response = await api().post(`exports/generate`, { json });
 
 				if (response.status === 200) {
-					toast.info(
-						'Požadavek na export byl úspěšně uzavřen. Jeho stav můžete zkontrolovat na podstránce Exporty.',
-						{ autoClose: 10000 },
-					);
+					toast.info(t('exports:export_create_success'), { autoClose: 10000 });
 					closeModal();
 				} else {
 					toast.error(
-						`Při zadávaní exporto nastala chyba. \n ${response.status}`,
+						`${t('exports:export_create_error')} \n ${response.status}`,
 					);
 				}
 
 				closeModal();
 			} catch (error) {
-				toast.error(`Při zadávaní exporto nastala chyba. \n ${error}`);
+				toast.error(`${t('exports:export_create_error')} \n ${error}`);
 				console.log({ error });
 			}
 		},

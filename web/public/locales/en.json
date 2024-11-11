@@ -235,6 +235,8 @@
       "title": "Requests"
     },
     "identification": "Identification",
+    "create_error": "An error occurred while submitting the request.",
+    "create_msg_error": "An error occurred while sending the message",
     "attachments": {
       "label": "Attachments"
     },
@@ -269,6 +271,8 @@
     }
   },
   "exports": {
+    "export_create_success": "The export request has been successfully completed. You can check its status on the Exports subpage.",
+    "export_create_error": "An error occurred while submitting the export request.",
     "export_mode_switch_on": "Export/Request",
     "export_mode_switch_off": "Cancel export/request",
     "export_mode_switch_tooltip": "Choose publications for export",

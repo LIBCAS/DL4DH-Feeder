@@ -235,6 +235,8 @@
       "title": "Žádosti"
     },
     "identification": "Identifikace",
+    "create_error": "Při zadávaní požadavku nastala chyba",
+    "create_msg_error": "Při posílaní zprávy nastala chyba",
     "attachments": {
       "label": "Přílohy"
     },
@@ -269,6 +271,8 @@
     }
   },
   "exports": {
+    "export_create_success": "Požadavek na export byl úspěšně uzavřen. Jeho stav můžete zkontrolovat na podstránce Exporty.",
+    "export_create_error": "Při zadávaní exportu nastala chyba.",
     "export_mode_switch_on": "Export/Žádost",
     "export_mode_switch_off": "Zrušit export/žádost",
     "export_mode_switch_tooltip": "Označit publikace pro export",

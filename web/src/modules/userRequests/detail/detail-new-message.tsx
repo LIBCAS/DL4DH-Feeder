@@ -43,7 +43,9 @@ export const UserRequestDetailNewMessageForm: FC<{
 			} else {
 				console.log(response);
 				toast.error(
-					`Unable to create message: ${response.status}: ${response.statusText}`,
+					`${t('create_msg_error')}: ${response.status}: ${
+						response.statusText
+					}`,
 				);
 			}
 			afterSubmit();
