@@ -1,14 +1,18 @@
 package cz.inqool.dl4dh.feeder.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 @Data
 public class Result<T> {
 
-    private final long page;
-    private final long pageSize;
-    private final long total;
-    private final List<T> items;
+    private long page;
+    private long pageSize;
+    private long total;
+    private List<T> items;
 }

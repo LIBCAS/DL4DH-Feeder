@@ -11,13 +11,16 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 
@@ -31,20 +34,34 @@ public class UserRequestApi {
 
     private WebClient krameriusPlus;
 
-    @PostMapping(value = "/")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRequestDto createUserRequest(@Valid @ModelAttribute UserRequestCreateDto createDto,
-                                                            @RequestParam("files") MultipartFile[] multipartFiles) {
+                                            @RequestParam(name = "files", required = false) MultipartFile[] multipartFiles,
+                                            @RequestHeader(value = "Authorization") String token) throws IOException {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("files", multipartFiles);
+        if (multipartFiles != null) {
+            for (MultipartFile file : multipartFiles) {
+                builder.part("files", file.getResource())
+                        .header("Content-Type", file.getContentType())
+                        .header("Content-Disposition", "form-data; name=\"files\"; filename=\""+file.getName()+"\"");
+            }
+        }
         builder.part("message", createDto.getMessage());
-        builder.part("type", createDto.getType());
-        builder.part("publicationIds", createDto.getPublicationIds());
+        builder.part("type", createDto.getType().toString());
+        if (createDto.getPublicationIds() != null) {
+            for (String publicationId : createDto.getPublicationIds()) {
+                builder.part("publicationIds", publicationId);
+            }
+        }
         return krameriusPlus.post()
-                .uri("/user-requests/").body(BodyInserters.fromMultipartData(builder.build())).retrieve().bodyToMono(UserRequestDto.class).block();
+                .uri("/user-requests/")
+                .header("Authorization", token).body(BodyInserters.fromMultipartData(builder.build())).retrieve().bodyToMono(UserRequestDto.class).block();
 
     }
 
-    @GetMapping("/")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Result<UserRequestListDto> userRequest(Principal principal,
                                                   @RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -52,39 +69,48 @@ public class UserRequestApi {
                                                   @RequestParam(value = "identification", required = false) Integer identification,
                                                   @RequestParam(value = "state", required = false) UserRequestState state,
                                                   @RequestParam(value = "type", required = false) UserRequestType type,
-                                                  @RequestParam(value = "username", required = false) String username,
                                                   @RequestParam(value = "sortOrder", defaultValue = "DESC") Sort.Order order,
                                                   @RequestParam(value = "sortField", defaultValue = "CREATED") Sort.Field field,
-                                                  @RequestParam(value = "rootFilterOperation", defaultValue = "AND") ListFilterDto.RootFilterOperation operation,
-                                                  @RequestParam(value = "viewDeleted", defaultValue = "false") boolean viewDeleted) {
+                                                  @RequestHeader(value = "Authorization") String token) {
         return krameriusPlus.get()
-                .uri("/user-requests", uriBuilder -> uriBuilder
-                        .queryParam("page", page)
-                        .queryParam("pageSize", pageSize)
-                        .queryParam("year", year)
-                        .queryParam("identification", identification)
-                        .queryParam("state", state)
-                        .queryParam("type", type)
-                        .queryParam("username", principal.getName())
-                        .queryParam("sortOrder", order)
-                        .queryParam("sortField", field)
-                        .build())
+                .uri("/user-requests/", uriBuilder -> {
+                    if (year != null) uriBuilder.queryParam("page", page);
+                    if (identification != null) uriBuilder.queryParam("identification", identification);
+                    if (state != null) uriBuilder.queryParam("state", state);
+                    if (type != null) uriBuilder.queryParam("type", type);
+                    if (order != null) uriBuilder.queryParam("sortOrder", order);
+                    if (field != null) uriBuilder.queryParam("sortField", field);
+                    uriBuilder.queryParam("username", principal.getName());
+                    return uriBuilder.build();
+                })
+                .header("Authorization", token)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(new ParameterizedTypeReference<Result<UserRequestListDto>>() {}).block();
     }
 
-    @GetMapping("/{requestId}")
-    public UserRequestDto findUserRequest(@PathVariable String requestId) {
-        return krameriusPlus.get()
-                .uri("/user-requests/"+requestId).retrieve().bodyToMono(UserRequestDto.class).block();
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/{requestId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserRequestDto> findUserRequest(@PathVariable String requestId, @RequestHeader(value = "Authorization") String token) {
+        try {
+            return ResponseEntity.ok().body(krameriusPlus.get()
+                .uri("/user-requests/"+requestId)
+                .header("Authorization", token)
+                .retrieve().bodyToMono(UserRequestDto.class).block());
+        }
+        catch (WebClientResponseException.NotFound e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/{requestId}/file/{fileId}")
-    public @ResponseBody ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String requestId, @PathVariable String fileId) {
-
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/{requestId}/file/{fileId}")
+    public @ResponseBody ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String requestId,
+                                                                        @PathVariable String fileId,
+                                                                        @RequestHeader(value = "Authorization") String token) {
         // Get the stream
-        ResponseEntity<ByteArrayResource> entity = krameriusPlus.get().uri("/user-requests/"+requestId+"/file/"+fileId).retrieve().toEntity(ByteArrayResource.class).block();
+        ResponseEntity<ByteArrayResource> entity = krameriusPlus.get().uri("/user-requests/"+requestId+"/file/"+fileId)
+                .header("Authorization", token).retrieve().toEntity(ByteArrayResource.class).block();
         if (entity == null) {
             return ResponseEntity.notFound().build();
         }
@@ -103,15 +129,24 @@ public class UserRequestApi {
         return ResponseEntity.ok().contentType(mediaType).body(body);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{requestId}/message", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createMessage(@PathVariable String requestId,
                                               @Valid @ModelAttribute MessageCreateDto messageCreateDto,
-                                              @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles) {
+                                              @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+                                              @RequestHeader(value = "Authorization") String token) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("files", multipartFiles);
+        if (multipartFiles != null) {
+            for (MultipartFile file : multipartFiles) {
+                builder.part("files", file.getResource())
+                        .header("Content-Type", file.getContentType())
+                        .header("Content-Disposition", "form-data; name=\"files\"; filename=\""+file.getName()+"\"");
+            }
+        }
         builder.part("message", messageCreateDto.getMessage());
         return krameriusPlus.post()
-                .uri("/user-requests/"+requestId+"/message").body(BodyInserters.fromMultipartData(builder.build())).retrieve().toBodilessEntity().block();
+                .uri("/user-requests/"+requestId+"/message")
+                .header("Authorization", token).body(BodyInserters.fromMultipartData(builder.build())).retrieve().toBodilessEntity().block();
     }
 
     @Resource(name = "krameriusPlusWebClient")
