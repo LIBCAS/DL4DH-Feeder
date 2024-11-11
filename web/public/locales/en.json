@@ -232,6 +232,9 @@
     "dashboard": {
       "title": "Requests"
     },
+    "attachments": {
+      "label": "Attachments"
+    },
     "detail": {
       "title": "Request detail",
       "messages": "Messages"
@@ -260,8 +263,8 @@
     }
   },
   "exports": {
-    "export_mode_switch_on": "Export",
-    "export_mode_switch_off": "Cancel export",
+    "export_mode_switch_on": "Export/Request",
+    "export_mode_switch_off": "Cancel export/request",
     "export_mode_switch_tooltip": "Choose publications for export",
     "export_dialog_button": "Export publications",
     "export_dialog_title": "Export publications",

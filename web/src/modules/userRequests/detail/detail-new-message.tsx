@@ -71,7 +71,7 @@ export const UserRequestDetailNewMessageForm: FC<{
 									multiple
 									name="files"
 									id="files"
-									label="Přílohy"
+									label={t('attachments.label')}
 									onChange={e => {
 										if (e.target.files && e.target.files.length > 0) {
 											setFieldValue('files', Array.from(e.target.files));

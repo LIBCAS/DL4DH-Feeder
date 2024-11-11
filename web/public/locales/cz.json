@@ -12,14 +12,12 @@
   },
   "common": {
     "submit": "Odeslat",
-    
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
       "page_limit": "Záznamů na stránku:",
       "total_count": "Celkem záznamů: "
     },
-    
     "of": "z",
     "all": "Vše",
     "cancel": "Zrušit",
@@ -236,6 +234,9 @@
     "dashboard": {
       "title": "Žádosti"
     },
+    "attachments": {
+      "label": "Přílohy"
+    },
     "detail": {
       "title": "Detail žádosti",
       "messages": "Zprávy"
@@ -264,8 +265,8 @@
     }
   },
   "exports": {
-    "export_mode_switch_on": "Exportovat",
-    "export_mode_switch_off": "Zrušit export",
+    "export_mode_switch_on": "Export/Žádost",
+    "export_mode_switch_off": "Zrušit export/žádost",
     "export_mode_switch_tooltip": "Označit publikace pro export",
     "selected_count": "Označených",
     "add_all_displayed": "Přidat všechny zobrazené",

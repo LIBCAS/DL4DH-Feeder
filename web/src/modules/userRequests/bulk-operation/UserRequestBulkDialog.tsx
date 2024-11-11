@@ -29,6 +29,7 @@ const RequestForm: FC<{
 	closeModal: () => void;
 }> = ({ closeModal }) => {
 	const { t } = useTranslation('requests');
+	const { t: tCommon } = useTranslation('common');
 	const exportCtx = useBulkExportContext();
 	const data = useMemo(
 		() =>
@@ -128,15 +129,15 @@ const RequestForm: FC<{
 										multiple
 										name="files"
 										id="files"
-										label="Přílohy"
+										label={t('attachments.label')}
 										onChange={e => {
-											if (e.target.files) {
+											if (e.target.files && e.target.files.length > 0) {
 												setFieldValue('files', Array.from(e.target.files));
 											}
 										}}
 									/>
 
-									<Flex m={2}>
+									<Flex m={2} flexWrap="wrap" style={{ gap: 16 }}>
 										{values.files.map((file, index) => (
 											<Chip
 												p={2}
@@ -165,7 +166,7 @@ const RequestForm: FC<{
 									disabled={formik.isSubmitting || data.length < 1}
 									loading={formik.isSubmitting}
 								>
-									{t('exports:dialog.finish_export_button')}
+									{tCommon('submit')}
 								</Button>
 								<Button
 									variant="outlined"
@@ -175,7 +176,7 @@ const RequestForm: FC<{
 										z-index: 3;
 									`}
 								>
-									{t('exports:dialog.cancel')}
+									{tCommon('cancel')}
 								</Button>
 							</Flex>
 							<Flex alignItems="center">
@@ -194,7 +195,7 @@ const RequestForm: FC<{
 };
 
 const UserRequestBulkDialog: FC = () => {
-	const { t } = useTranslation('exports');
+	const { t } = useTranslation('requests');
 	return (
 		<ModalDialog
 			label="Info"
@@ -205,9 +206,9 @@ const UserRequestBulkDialog: FC = () => {
 					minWidth={60}
 					variant="primary"
 					onClick={openModal}
-					tooltip={t('user-request-tooltip')}
+					tooltip={t('new.title')}
 				>
-					{t('Žádost')}
+					{t('new.title')}
 				</Button>
 			)}
 		>
