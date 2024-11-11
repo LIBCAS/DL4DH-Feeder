@@ -100,12 +100,15 @@ services:
     image: eu.gcr.io/inqool-1301/dl4dh-feeder-solr:${FEEDER_TAG}
     depends_on:
       - solr_initializer
+    restart: always
     deploy:
       resources:
         limits:
-          memory: 600m
+          memory: 1000m
     environment:
       SOLR_PORT: 8983 
+      SOLR_HEAP: "2g" 
+      SOLR_JAVA_MEM: "-Xms1g -Xmx2g" 
     networks:
       - backend
     volumes:

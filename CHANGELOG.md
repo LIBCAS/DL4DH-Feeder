@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.6.0
+
+- User requests
+- Import service loop fix
+
+## v1.5.2
+
+- OpenAPI documentation improments with OpenIDConnect authorization
+- Bibliography - genre added, page routing fix, fetch timeout changed
+- Refactoring backend classes
+- Export dialog teiParams fix
+- Export name to payload
+- History GET and DELETE endpoint
+- History elements can be named
+- Write a number of found documents when a search query is saved
+
 ## v1.4.0
 
 - OpenAPI documentation improments with OpenIDConnect authorization

@@ -90,7 +90,7 @@ public class SearchServiceImpl implements SearchService {
                 .uri("/search", uriBuilder -> uriBuilder
                         .queryParam("defType", "edismax")
                         .queryParam("fl", "PID,dc.title")
-                        .queryParam("q", "dc.title:" + query.replaceAll(":", "\\\\:") + "*")
+                        .queryParam("q", "dc.title:" + String.join(" AND ", query.replaceAll(":", "\\\\:").split(" ")) + "*")
                         .queryParam("fq", filters.toFqQuery(List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"), false))
                         .queryParam("bq", "fedora.model:monograph^5")
                         .queryParam("bq", "fedora.model:periodical^5")

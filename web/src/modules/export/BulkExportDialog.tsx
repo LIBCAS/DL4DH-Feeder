@@ -118,7 +118,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 				if (response.status === 200) {
 					toast.info(
-						'Požadavka na export byla úspěšně vytvořena. Její stav můžete zkontrolovat na podstránke Exporty.',
+						'Požadavek na export byl úspěšně uzavřen. Jeho stav můžete zkontrolovat na podstránce Exporty.',
 						{ autoClose: 10000 },
 					);
 					closeModal();
