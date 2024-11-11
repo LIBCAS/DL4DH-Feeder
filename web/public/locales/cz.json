@@ -234,18 +234,22 @@
     "dashboard": {
       "title": "Žádosti"
     },
+    "identification": "Identifikace",
     "attachments": {
       "label": "Přílohy"
     },
     "detail": {
       "title": "Detail žádosti",
-      "messages": "Zprávy"
+      "messages": "Zprávy",
+      "parts": "Části",
+      "new_message": "Nová zpráva"
     },
     "new": {
       "title": "Nová žádost"
     },
     "message": {
-      "label": "Zpráva"
+      "label": "Zpráva",
+      "author": "Autor"
     },
     "type": {
       "label_long": "Typ žádosti",

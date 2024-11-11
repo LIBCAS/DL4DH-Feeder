@@ -25,6 +25,7 @@
     "close": "Close",
     "back": "Back",
     "confirm": "Confirm selection",
+    "created": "Created",
     "warning": "Warning",
     "of_pages": "pages",
     "check": "Check",
@@ -121,6 +122,7 @@
     "login": "Log in",
     "logout": "Log out",
     "exports": "Exports",
+    "user-requests": "Requests",
     "history": "Request history",
     "account": "User",
     "go_to_kramerius": "Go to Kramerius",
@@ -232,18 +234,22 @@
     "dashboard": {
       "title": "Requests"
     },
+    "identification": "Identification",
     "attachments": {
       "label": "Attachments"
     },
     "detail": {
       "title": "Request detail",
-      "messages": "Messages"
+      "messages": "Messages",
+      "parts": "Parts",
+      "new_message": "New message"
     },
     "new": {
       "title": "New request"
     },
     "message": {
-      "label": "Message"
+      "label": "Message",
+      "author": "Author"
     },
     "type": {
       "label_long": "Request type",

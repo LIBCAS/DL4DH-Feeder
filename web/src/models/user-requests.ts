@@ -41,6 +41,8 @@ export type MessageDto = {
 	id: string;
 	message: string;
 	files: FileRefDto[];
+	author: string;
+	created: string;
 };
 
 export type FileRefDto = {
