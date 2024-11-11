@@ -11,12 +11,15 @@
     }
   },
   "common": {
+    "submit": "Odeslat",
+    
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
       "page_limit": "Záznamů na stránku:",
       "total_count": "Celkem záznamů: "
     },
+    
     "of": "z",
     "all": "Vše",
     "cancel": "Zrušit",
@@ -234,7 +237,8 @@
       "title": "Žádosti"
     },
     "detail": {
-      "title": "Detail žádosti"
+      "title": "Detail žádosti",
+      "messages": "Zprávy"
     },
     "new": {
       "title": "Nová žádost"
@@ -252,10 +256,11 @@
       "label": "Stav",
       "CREATED": "Vytvořen",
       "IN_PROGRESS": "Zpracovává se",
-      "WAITING_FOR_USER": "",
+      "WAITING_FOR_USER": "Čeká na uživatele",
       "APPROVED": "Schváleno",
       "PROLONGING": "Prodlužováno",
-      "REJECTED": "Odmítnuto"
+      "REJECTED": "Odmítnuto",
+      "WAITING": "Čeká"
     }
   },
   "exports": {
