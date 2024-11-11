@@ -17,9 +17,10 @@ import { getUserRequestFiles } from 'api/userRequestsApi';
 
 import { UserRequestDetailNewMessageForm } from './detail-new-message';
 
-export const UserRequestDetailMessages: FC<{ detail: UserRequestDto }> = ({
-	detail,
-}) => {
+export const UserRequestDetailMessages: FC<{
+	detail: UserRequestDto;
+	refetchDetail: () => void;
+}> = ({ detail, refetchDetail }) => {
 	const [showNewMessageForm, setShowNewMessageForm] = useState(false);
 	return (
 		<Box
@@ -28,14 +29,17 @@ export const UserRequestDetailMessages: FC<{ detail: UserRequestDto }> = ({
 			css={css`
 				max-height: 500px;
 				overflow-y: auto;
-				box-shadow: inset 0px 3px 6px 2px rgba(0, 0, 0, 0.05);
+				//box-shadow: inset 0px 3px 6px 2px rgba(0, 0, 0, 0.05);
 			`}
 		>
 			<Flex justifyContent="end" mb={2} width={1}>
 				{showNewMessageForm ? (
 					<UserRequestDetailNewMessageForm
 						detail={detail}
-						afterSubmit={() => setShowNewMessageForm(false)}
+						afterSubmit={() => {
+							setShowNewMessageForm(false);
+							refetchDetail();
+						}}
 						onCancel={() => setShowNewMessageForm(false)}
 					/>
 				) : (

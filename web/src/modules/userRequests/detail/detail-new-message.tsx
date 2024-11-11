@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FC } from 'react';
 import { FormikConsumer, FormikProvider, useFormik } from 'formik';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import Divider from 'components/styled/Divider';
@@ -21,7 +22,9 @@ export const UserRequestDetailNewMessageForm: FC<{
 	onCancel: () => void;
 }> = ({ detail, afterSubmit, onCancel }) => {
 	const theme = useTheme();
-	const { handleSubmit, ...rest } = useFormik<{
+	const { t } = useTranslation('requests');
+	const { t: tCommon } = useTranslation('common');
+	const { handleSubmit, isSubmitting, ...rest } = useFormik<{
 		message: string;
 		files: File[];
 	}>({
@@ -30,15 +33,10 @@ export const UserRequestDetailNewMessageForm: FC<{
 			files: [],
 		},
 		onSubmit: async values => {
-			console.log(values);
-
-			const url = URL.createObjectURL(values.files?.[0]);
-			console.log({ url });
-
 			const response = await postNewUserRequestMessage(
 				detail.id,
 				values.message,
-				[],
+				values.files,
 			);
 			if (response.ok) {
 				afterSubmit();
@@ -48,7 +46,6 @@ export const UserRequestDetailNewMessageForm: FC<{
 					`Unable to create message: ${response.status}: ${response.statusText}`,
 				);
 			}
-
 			afterSubmit();
 		},
 	});
@@ -62,12 +59,13 @@ export const UserRequestDetailNewMessageForm: FC<{
 			`}
 		>
 			<form onSubmit={handleSubmit}>
-				<FormikProvider value={{ handleSubmit, ...rest }}>
-					<TextAreaInput name="message" minRows={10} />
+				<FormikProvider value={{ handleSubmit, isSubmitting, ...rest }}>
+					<TextAreaInput name="message" minRows={10} disabled={isSubmitting} />
 					<FormikConsumer>
-						{({ setFieldValue, values }) => (
+						{({ setFieldValue, values, isSubmitting }) => (
 							<>
 								<TextInput
+									disabled={isSubmitting}
 									mt={2}
 									type="file"
 									multiple
@@ -75,7 +73,7 @@ export const UserRequestDetailNewMessageForm: FC<{
 									id="files"
 									label="Přílohy"
 									onChange={e => {
-										if (e.target.files) {
+										if (e.target.files && e.target.files.length > 0) {
 											setFieldValue('files', Array.from(e.target.files));
 										}
 									}}
@@ -95,11 +93,21 @@ export const UserRequestDetailNewMessageForm: FC<{
 
 					<Divider my={2} />
 					<Flex justifyContent="space-between">
-						<Button onClick={onCancel} variant="text">
-							Zrušit
+						<Button
+							onClick={onCancel}
+							variant="text"
+							disabled={isSubmitting}
+							loading={isSubmitting}
+						>
+							{tCommon('cancel')}
 						</Button>
-						<Button type="submit" variant="primary">
-							Odeslat
+						<Button
+							type="submit"
+							variant="primary"
+							disabled={isSubmitting}
+							loading={isSubmitting}
+						>
+							{tCommon('submit')}
 						</Button>
 					</Flex>
 				</FormikProvider>
@@ -113,7 +121,7 @@ const RenderFileList: FC<{
 	onRemove: (fileIndex: number) => void;
 }> = ({ files, onRemove }) => {
 	return (
-		<Flex m={2}>
+		<Flex m={2} flexWrap="wrap" style={{ gap: 16 }}>
 			{files.map((file, index) => (
 				<Chip
 					p={2}

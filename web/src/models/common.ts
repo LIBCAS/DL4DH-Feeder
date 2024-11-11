@@ -20,3 +20,10 @@ export interface DomainObject {
 export interface LabeledObject extends DomainObject {
 	label: string;
 }
+
+export type Result<T> = {
+	page: number;
+	pageSize: number;
+	total: number;
+	items: T[];
+};

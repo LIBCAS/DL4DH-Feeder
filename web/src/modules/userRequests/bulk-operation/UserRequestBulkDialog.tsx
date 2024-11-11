@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose, MdInfo } from 'react-icons/md';
-import { FormikProvider, useFormik } from 'formik';
+import { FormikConsumer, FormikProvider, useFormik } from 'formik';
 import { noop } from 'lodash-es';
 import { toast } from 'react-toastify';
 
@@ -17,6 +17,7 @@ import TextAreaInput from 'components/form/input/TextAreaInput';
 import RadioButton from 'components/styled/RadioButton';
 import Divider from 'components/styled/Divider';
 import { EditSelectedPublications } from 'components/tiles/TilesWithCheckbox';
+import TextInput, { Chip } from 'components/form/input/TextInput';
 
 import { UserRequestCreateDto, UserRequestType } from 'models/user-requests';
 
@@ -43,6 +44,7 @@ const RequestForm: FC<{
 			publicationIds: data.map(d => d.id),
 			message: '',
 			type: UserRequestType.ENRICHMENT,
+			files: [],
 		},
 		onSubmit: async values => {
 			const response = await userRequestCreateNew(values);
@@ -117,6 +119,43 @@ const RequestForm: FC<{
 							name="message"
 							minRows={10}
 						/>
+						<FormikConsumer>
+							{({ setFieldValue, values }) => (
+								<>
+									<TextInput
+										mt={2}
+										type="file"
+										multiple
+										name="files"
+										id="files"
+										label="Přílohy"
+										onChange={e => {
+											if (e.target.files) {
+												setFieldValue('files', Array.from(e.target.files));
+											}
+										}}
+									/>
+
+									<Flex m={2}>
+										{values.files.map((file, index) => (
+											<Chip
+												p={2}
+												key={`file-${index}`}
+												onClose={() =>
+													setFieldValue('files', [
+														...values.files.filter((file, i) => i !== index),
+													])
+												}
+												withCross
+											>
+												{file.name}
+											</Chip>
+										))}
+									</Flex>
+								</>
+							)}
+						</FormikConsumer>
+
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>

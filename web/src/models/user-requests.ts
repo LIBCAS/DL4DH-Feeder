@@ -62,4 +62,5 @@ export type UserRequestCreateDto = {
 	type: UserRequestType;
 	publicationIds: string[];
 	message: string;
+	files: File[];
 };
