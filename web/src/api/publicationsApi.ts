@@ -71,7 +71,7 @@ export const useAvailableFilters2 = (searchQuery?: TSearchQuery) => {
 	const page = isNaN(parsedPage) ? 1 : parsedPage;
 
 	const body: Partial<FiltersDto> = {
-		start: (page - 1) * state.pageSize ?? 0,
+		start: (page - 1) * (state?.pageSize ?? 0),
 		pageSize: state.pageSize,
 		sort: state.sorting.id,
 		searchThroughPages: searchVariant === 'pages',
@@ -92,11 +92,6 @@ export const useAvailableFilters2 = (searchQuery?: TSearchQuery) => {
 		}>(),
 	);
 };
-
-// api().post('search', { json }).json<{
-// 	availableFilters: AvailableFilters;
-// 	availableNameTagFilters: AvailableNameTagFilters;
-// }>(),
 
 export const usePublicationDetailWithRoot = (
 	uuid: string,
