@@ -6,14 +6,36 @@ import { TFunction, useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import ClassicTable, { Cell } from 'components/table/ClassicTable';
-import Button from 'components/styled/Button';
+import Button, { NavLinkButton } from 'components/styled/Button';
 
-import { useTheme } from 'theme';
 import { UserRequestDto, UserRequestPartDto } from 'models/user-requests';
 import { TableColumn } from 'models/common';
 
+import { usePublicationDetail } from 'api/publicationsApi';
+
 const columns: TableColumn<UserRequestPartDto>[] = [
-	{ datakey: 'publicationId', visible: true, flex: 3, label: 'Publikace' },
+	{
+		datakey: 'publicationId',
+		visible: true,
+		flex: 3,
+		label: 'Publikace',
+		CellComponent: function Cell({ row }) {
+			const detail = usePublicationDetail(row.publicationId);
+			return (
+				<Box flex={3}>
+					<NavLinkButton
+						to={`/uuid/${row.publicationId}`}
+						target="_blank"
+						variant="text"
+						mx={0}
+						px={0}
+					>
+						{detail.data?.title ?? row.publicationId}
+					</NavLinkButton>
+				</Box>
+			);
+		},
+	},
 	{
 		datakey: 'state',
 		visible: true,
@@ -42,7 +64,6 @@ const HeaderCell: FC<{
 export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 	detail,
 }) => {
-	const theme = useTheme();
 	const { t } = useTranslation();
 	const data = detail.parts.map(p => ({
 		...p,
@@ -52,7 +73,6 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 		<Box
 			p={3}
 			css={css`
-				//border: 1px solid ${theme.colors.border};
 				max-height: 500px;
 				overflow-y: auto;
 				overflow-x: hidden;
@@ -91,7 +111,6 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 						alignItems="center"
 						px={2}
 						minHeight={40}
-						//onClick={() => setOpenDetail(row.id)}
 						css={css`
 							// cursor: pointer;
 							box-sizing: border-box;
