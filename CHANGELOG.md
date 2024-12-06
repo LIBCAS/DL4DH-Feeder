@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.1
+
+- UI and fixes in user requests
+
 ## v1.6.0
 
 - User requests
