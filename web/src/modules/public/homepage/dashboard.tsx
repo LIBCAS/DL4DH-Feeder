@@ -45,7 +45,7 @@ const Dashboard: FC = () => {
 	const page = isNaN(parsedPage) ? 1 : parsedPage;
 
 	const params = {
-		start: (page - 1) * state.pageSize ?? 0,
+		start: (page - 1) * (state.pageSize || 0),
 		pageSize: Store.get<number>('feeder-pagination-limit') ?? state.pageSize,
 		sort: state.sorting.id,
 		searchThroughPages: searchVariant === 'pages',
