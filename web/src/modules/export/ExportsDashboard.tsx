@@ -56,38 +56,45 @@ const HeaderCell: FC<{
 	updateParams: React.Dispatch<React.SetStateAction<PagableParams>>;
 	flex: number;
 	maxWidth?: number;
-}> = ({ flex, field, params, label, updateParams, maxWidth }) => {
+	sortable?: boolean;
+}> = ({ flex, field, params, label, updateParams, maxWidth, sortable }) => {
 	const { t } = useTranslation('exports');
 	return (
 		<Box flex={flex} maxWidth={maxWidth}>
-			<Button
-				variant="text"
-				p={0}
-				onClick={() =>
-					updateParams(p => ({
-						...p,
-						sort: {
-							field,
-							direction: p.sort.direction === 'ASC' ? 'DESC' : 'ASC',
-						},
-					}))
-				}
-				color="white"
-				fontSize="lg"
-				tooltip={`${t('exports_dashboard.tooltip_sort_by')} ${label}`}
-			>
-				{label}{' '}
-				{params.sort.field === field && (
-					<MdArrowDropDown
-						size={24}
-						css={css`
-							transform: rotate(
-								${params.sort.direction === 'ASC' ? 180 : 0}deg
-							);
-						`}
-					/>
-				)}
-			</Button>
+			{sortable ? (
+				<Button
+					variant="text"
+					p={0}
+					onClick={() =>
+						updateParams(p => ({
+							...p,
+							sort: {
+								field,
+								direction: p.sort.direction === 'ASC' ? 'DESC' : 'ASC',
+							},
+						}))
+					}
+					color="white"
+					fontSize="lg"
+					tooltip={`${t('exports_dashboard.tooltip_sort_by')} ${label}`}
+				>
+					{label}{' '}
+					{params.sort.field === field && (
+						<MdArrowDropDown
+							size={24}
+							css={css`
+								transform: rotate(
+									${params.sort.direction === 'ASC' ? 180 : 0}deg
+								);
+							`}
+						/>
+					)}
+				</Button>
+			) : (
+				<Text fontSize="lg" color="white">
+					{label}
+				</Text>
+			)}
 		</Box>
 	);
 };
@@ -102,7 +109,7 @@ const Exportslist = () => {
 	const response = useExportList(params, enabled === undefined);
 	const data = response.data?.content ?? [];
 	const { t } = useTranslation('exports');
-	console.log({ enabled });
+
 	return (
 		<Box width={1}>
 			<Flex
@@ -173,6 +180,7 @@ const Exportslist = () => {
 									params={params}
 									label={col.label ? t(col.label) : ''}
 									maxWidth={col.maxWidth}
+									sortable={col.sortable}
 								/>
 							))}
 						</Flex>

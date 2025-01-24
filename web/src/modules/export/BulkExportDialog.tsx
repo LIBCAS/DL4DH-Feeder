@@ -34,6 +34,7 @@ import {
 	useNameTagParamExportOptions,
 	generateExportName,
 	useCheckAltoStreams,
+	useExportIncludeExcludeOptionsLabel,
 } from './exportUtils';
 import {
 	commonFormatOptions,
@@ -57,6 +58,8 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 	const [checkAltoStream, setCheckAltoStream] = useState<boolean>(false);
 	const { labelFromOption, nameTagParamsExportOptions } =
 		useNameTagParamExportOptions();
+
+	const includeExcludeOptionsLabel = useExportIncludeExcludeOptionsLabel();
 
 	const exportCtx = useBulkExportContext();
 
@@ -117,20 +120,17 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				const response = await api().post(`exports/generate`, { json });
 
 				if (response.status === 200) {
-					toast.info(
-						'Požadavek na export byl úspěšně uzavřen. Jeho stav můžete zkontrolovat na podstránce Exporty.',
-						{ autoClose: 10000 },
-					);
+					toast.info(t('exports:form_response.success'), { autoClose: 10000 });
 					closeModal();
 				} else {
 					toast.error(
-						`Při zadávaní exporto nastala chyba. \n ${response.status}`,
+						`${t('exports:form_response.error')} \n ${response.status}`,
 					);
 				}
 
 				closeModal();
 			} catch (error) {
-				toast.error(`Při zadávaní exporto nastala chyba. \n ${error}`);
+				toast.error(`${t('exports:form_response.error')} \n ${error}`);
 				console.log({ error });
 			}
 		},
@@ -237,7 +237,6 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								<H1>
 									{progress.msg} ... {progress.current} / {progress.total}
 								</H1>
-
 								<Loader />
 							</Box>
 						</Flex>
@@ -283,8 +282,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								options={altoResult.uuidsWithoutAlto}
 								value={null}
 								onChange={() => null}
-								placeholder="Seznam publikací neobsahující ALTO stream"
-								//variant="borderless"
+								placeholder={t('exports:dialog.no_alto')}
 								nameFromOption={item =>
 									item ? exportCtx.uuidHeap[item]?.title ?? item : '---'
 								}
@@ -379,8 +377,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 										id="includeFields"
 										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
-										nameFromOption={item => item?.label ?? ''}
-										labelFromOption={item => item?.label ?? ''}
+										labelFromOption={item =>
+											includeExcludeOptionsLabel(item?.id as string)
+										}
 										keyFromOption={item => item?.id ?? ''}
 										value={values.includeFields}
 										onSetValue={setFieldValue}
@@ -397,8 +396,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 										id="excludeFields"
 										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
-										nameFromOption={item => item?.label ?? ''}
-										labelFromOption={item => item?.label ?? ''}
+										labelFromOption={item =>
+											includeExcludeOptionsLabel(item?.id as string)
+										}
 										keyFromOption={item => item?.id ?? ''}
 										value={values.excludeFields}
 										onSetValue={setFieldValue}
