@@ -2,6 +2,7 @@
 
 import { css } from '@emotion/react';
 import { Dialog } from '@reach/dialog';
+import { useTranslation } from 'react-i18next';
 
 import Paper from 'components/styled/Paper';
 import TitleText from 'components/styled/TitleText';
@@ -17,6 +18,7 @@ const SearchThoroughPagesModal = () => {
 	const { variant, showModal, setShowModal } = useSearchThroughContext();
 
 	const theme = useTheme();
+	const { t } = useTranslation('search');
 
 	if (variant !== 'pages') {
 		return <></>;
@@ -40,10 +42,11 @@ const SearchThoroughPagesModal = () => {
 					justifyContent="center"
 					alignItems="center"
 				>
-					<TitleText>Upozornění</TitleText>
+					<TitleText>{t('search_through.modal_warning')}</TitleText>
 					<Text>
-						Při vyhledávání ve stránkách bude automaticky zapnutý filtr:{' '}
-						<b>pouze obohacené</b> publikace.
+						{t('search_through.modal_warning1')}{' '}
+						<b>{t('search_through.modal_warning2')}</b>{' '}
+						{t('search_through.modal_warning3')}
 					</Text>
 
 					<Button mt={3} variant="primary" onClick={() => setShowModal(false)}>

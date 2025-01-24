@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { BsGridFill } from 'react-icons/bs';
 import { ImMenu } from 'react-icons/im';
 import { MdEqualizer } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import Tabs from 'components/tabs';
 import IconButton from 'components/styled/IconButton';
@@ -19,6 +20,7 @@ type Props = {
 const DashboardModeSwither: React.FC<Props> = ({ graphViewHidden }) => {
 	const theme = useTheme();
 	const { state, dispatch } = useSearchContext();
+	const { t } = useTranslation('view_options');
 
 	return (
 		<Flex
@@ -33,7 +35,7 @@ const DashboardModeSwither: React.FC<Props> = ({ graphViewHidden }) => {
 						key: 'tiles',
 						jsx: (
 							<Flex mx={2}>
-								<IconButton color="inherit" tooltip="Zobrazení dlažice">
+								<IconButton color="inherit" tooltip={t('tiles')}>
 									<BsGridFill size={20} />
 								</IconButton>
 							</Flex>
@@ -43,7 +45,7 @@ const DashboardModeSwither: React.FC<Props> = ({ graphViewHidden }) => {
 						key: 'list',
 						jsx: (
 							<Flex mx={2}>
-								<IconButton color="inherit" tooltip="Zobrazení seznam">
+								<IconButton color="inherit" tooltip={t('list')}>
 									<ImMenu size={20} />
 								</IconButton>
 							</Flex>
@@ -56,7 +58,7 @@ const DashboardModeSwither: React.FC<Props> = ({ graphViewHidden }) => {
 								mx={2}
 								display={graphViewHidden ? 'none!important' : 'flex'}
 							>
-								<IconButton color="inherit" tooltip="Zobrazení grafu statistik">
+								<IconButton color="inherit" tooltip={t('graph')}>
 									<MdEqualizer size={20} />
 								</IconButton>
 							</Flex>
