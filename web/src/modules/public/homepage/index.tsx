@@ -52,7 +52,7 @@ const Homepage: FC = () => {
 						</Text>
 						<Flex my={2} width={1} maxWidth={200} height={1} bg="border"></Flex>
 
-						<Text fontSize="md">DL4DH Feeder</Text>
+						<Text fontSize="md">{t('title')}</Text>
 					</Flex>
 					<Flex
 						px={3}
@@ -77,13 +77,12 @@ const Homepage: FC = () => {
 									const formatted = `${q ? `query=${q}` : ''}${
 										publicOnly ? `${q ? '&' : ''}availability=PUBLIC` : ''
 									}`;
-									nav(`/search${formatted ? `?${formatted}` : ''}`);
+									setQuery(formatted);
 								}}
+								onQuerySubmit={() => nav(`/search${query ? `?${query}` : ''}`)}
 								placeholder={t('search:search_in_publication')}
-								onQueryClear={() => {
-									setQuery('');
-								}}
-								//customWrapperCss={css``}
+								onQueryClear={() => setQuery('')}
+								externalState
 							/>
 						</Flex>
 
@@ -96,7 +95,6 @@ const Homepage: FC = () => {
 							/>
 						</Flex>
 					</Flex>
-					{/* //TODO: treba updatovat aj toto query */}
 					<NavLinkButton
 						mt={4}
 						to={`/search${query ? `?${query}` : ''}`}
@@ -125,22 +123,12 @@ const Homepage: FC = () => {
 							{t('about')}
 						</Text>
 					</Flex>
-					<Text textAlign="center" fontSize="sm" px={[3, 5]}>
-						DL4DH Feeder nabízí výzkumným pracovníkům přehledné grafické
-						rozhraní pro práci s daty uloženými v modulu Kramerius+ i digitální
-						knihovně Kramerius. Umožňuje vyhledání, selekci a následný export
-						digitálních dat (opticky rozpoznaný text a metadata) jak v původní
-						podobě, tak v některém z dalších formátů, umožňujících mimo jiné
-						také efektivní strojové zpracování.
+					<Text textAlign="center" fontSize="md" px={[3, 5]}>
+						{t('about_content')}
 					</Text>
 				</Flex>
 			</Flex>
-			<Flex
-				position="sticky"
-				bottom={10}
-				width={1}
-				justifyContent="center"
-			></Flex>
+			<Flex position="sticky" bottom={10} width={1} justifyContent="center" />
 		</ResponsiveWrapper>
 	);
 };
