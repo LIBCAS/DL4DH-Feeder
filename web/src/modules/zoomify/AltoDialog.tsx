@@ -6,6 +6,7 @@ import XML from 'xml2js';
 import get from 'lodash-es/get';
 import { Extent } from 'ol/extent';
 import { MdCopyAll } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import Paper from 'components/styled/Paper';
 import Button from 'components/styled/Button';
@@ -32,6 +33,7 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	const [parsedAlto, setParsedAlto] = useState<Record<string, unknown>>({});
 	const altoStream = useStreams(uuid, 'ALTO', 'text/plain');
 	const { fullscreen, setFullscreen } = useFullscreenContext();
+	const { t } = useTranslation();
 	let msg = '';
 	useEffect(() => {
 		XML.parseString(altoStream.data, (err, result) => setParsedAlto(result));
@@ -55,13 +57,13 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 	}
 
 	if (!altoStream.data) {
-		msg = 'Nepodarilo sa nacitat ALTO stream.';
+		msg = '';
 	}
 
 	const printSpace1 = get(parsedAlto, 'alto.Layout[0].Page[0]');
 	const printSpace2 = get(parsedAlto, 'alto.Layout[0].Page[0].PrintSpace[0]');
 	const printSpace = printSpace1;
-	//console.log({ printSpace });
+
 	const altoHeight =
 		get(printSpace, '$.HEIGHT') ?? get(printSpace2, '$.HEIGHT');
 	const altoWidth = get(printSpace, '$.WIDTH') ?? get(printSpace2, '$.WIDTH');
@@ -113,7 +115,7 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 						onClick={() => {
 							navigator.clipboard.writeText(text);
 						}}
-						title="Kopírovat do schránky"
+						title={t('common:copy_to_clipboard')}
 						css={css`
 							&:hover {
 								color: black;
@@ -121,10 +123,10 @@ const AltoDialog: FC<Props> = ({ uuid, onClose, box, width, height }) => {
 						`}
 					>
 						<MdCopyAll size={26} />
-						<Text>Kopírovat do schránky</Text>
+						<Text>{t('common:copy_to_clipboard')}</Text>
 					</Button>
 					<Button variant="text" onClick={onClose}>
-						Zavřít
+						{t('common:close')}
 					</Button>
 				</Flex>
 			</Paper>

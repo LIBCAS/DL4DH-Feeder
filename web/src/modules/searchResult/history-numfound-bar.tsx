@@ -1,6 +1,7 @@
 import { MdClose, MdWarning } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
 import { FC } from 'react';
+import { Trans } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -17,6 +18,7 @@ const HistoryNumFoundBar: FC<{
 	const [sp, setSp] = useSearchParams();
 	const id = sp.get(CUSTOM_URL_PARAMS.HISTORY_ID);
 	const { data, isLoading, isError } = useSearchHistoryDetail(id);
+
 	const numFoundEmpty =
 		data?.numFound === undefined ||
 		data.numFound === null ||
@@ -45,18 +47,14 @@ const HistoryNumFoundBar: FC<{
 			<Flex alignItems="center">
 				<MdWarning />
 				<Text ml={2}>
-					<b>Upozornění:</b> Je aktivován filtr z historie dotazů. Počet
-					výsledků se od uložení filtru{' '}
+					<Trans i18nKey="search_history:info_msg_count" />
 					{currentCount !== data.numFound ? (
-						<>
-							{' '}
-							<b>změnil</b>. Aktuální počet: <b>{currentCount}</b>. Počet z
-							historie: <b> {data.numFound}</b>
-						</>
+						<Trans
+							i18nKey="search_history:info_msg_count_changed"
+							values={{ currentCount, historyCount: data.numFound }}
+						/>
 					) : (
-						<>
-							<b>nezměnil.</b>
-						</>
+						<Trans i18nKey="search_history:info_msg_count_unchanged" />
 					)}
 				</Text>
 			</Flex>
