@@ -17,13 +17,22 @@ const columns: TableColumn<UserRequestPartDto>[] = [
 	{
 		datakey: 'publicationId',
 		visible: true,
-		flex: 3,
+		flex: 4,
 		label: 'Publikace',
 		CellComponent: function Cell({ row }) {
 			const detail = usePublicationDetail(row.publicationId);
 			return (
-				<Box flex={3}>
+				<Box flex={4}>
 					<NavLinkButton
+						title={detail.data?.title ?? row.publicationId}
+						css={css`
+							overflow: hidden;
+							text-overflow: ellipsis;
+							max-width: 95%;
+							white-space: nowrap;
+							text-align: left;
+							justify-content: flex-start;
+						`}
 						to={`/uuid/${row.publicationId}`}
 						target="_blank"
 						variant="text"
@@ -39,7 +48,7 @@ const columns: TableColumn<UserRequestPartDto>[] = [
 	{
 		datakey: 'state',
 		visible: true,
-		flex: 2,
+		flex: 1,
 		label: 'Stav',
 		dataMapper(row, translate) {
 			return translate?.(`requests:state.${row.state}`) ?? '--';

@@ -17,7 +17,7 @@ import { Loader } from 'modules/loader';
 
 import { UserRequestListDto } from 'models/user-requests';
 import { useTheme } from 'theme';
-import { getDateString } from 'utils';
+import { getDateString, getTimeString } from 'utils';
 
 import { useUserRequestDetail } from 'api/userRequestsApi';
 
@@ -61,19 +61,21 @@ const UserRequestDetail: FC<Props> = ({ closeModal, requestDto }) => {
 						</IconButton>
 					</Flex>
 
-					<Text fontSize="sm">
-						Status: <b>{t(`state.${detail.state}`)}</b>
+					<Text>
+						{t(`state.label`)}: <b>{t(`state.${detail.state}`)}</b>
 					</Text>
-					<Box fontSize="md" mt={2}>
+					<Box mt={2}>
 						<Text my={2}>
 							{t(`type.label`)}: <b>{t(`type.${detail.type}`)}</b>
 						</Text>
 					</Box>
-					<Text fontSize="sm">
+					<Text>
 						{tCommon('created')}:{' '}
 						<b>
 							{requestDto.created
-								? getDateString(new Date(detail.created))
+								? `${getDateString(new Date(detail.created))} ${getTimeString(
+										new Date(detail.created),
+								  )}`
 								: '--'}
 						</b>
 					</Text>
@@ -92,7 +94,7 @@ const UserRequestDetail: FC<Props> = ({ closeModal, requestDto }) => {
 						refetchDetail={response.refetch}
 					/>
 					{/* </Accordion> */}
-					<Accordion label="Části" isExpanded>
+					<Accordion label={t('detail.parts')} isExpanded>
 						<UserRequestDetailParts detail={detail} />
 					</Accordion>
 

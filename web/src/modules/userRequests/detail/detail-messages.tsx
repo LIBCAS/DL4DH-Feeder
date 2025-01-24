@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { FC, useState } from 'react';
 import { MdDownload } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Chip } from 'components/form/input/TextInput';
 import { Box, Flex } from 'components/styled';
@@ -11,7 +12,7 @@ import Divider from 'components/styled/Divider';
 import Button from 'components/styled/Button';
 
 import { UserRequestDto } from 'models/user-requests';
-import { downloadFile } from 'utils';
+import { downloadFile, getDateString, getTimeString } from 'utils';
 
 import { getUserRequestFiles } from 'api/userRequestsApi';
 
@@ -22,6 +23,7 @@ export const UserRequestDetailMessages: FC<{
 	refetchDetail: () => void;
 }> = ({ detail, refetchDetail }) => {
 	const [showNewMessageForm, setShowNewMessageForm] = useState(false);
+	const { t } = useTranslation('requests');
 	return (
 		<Box
 			p={3}
@@ -45,7 +47,7 @@ export const UserRequestDetailMessages: FC<{
 				) : (
 					<Button onClick={() => setShowNewMessageForm(true)} variant="primary">
 						{' '}
-						+ Nová zpráva
+						+ {t('detail.new_message')}
 					</Button>
 				)}
 			</Flex>
@@ -59,11 +61,23 @@ export const UserRequestDetailMessages: FC<{
 							box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.02);
 						`}
 					>
+						<Flex justifyContent="space-between">
+							<Text>
+								{t('message.author')}:{' '}
+								<Text ml={1} as="span" fontWeight={'bold'}>
+									{msg.author}
+								</Text>
+							</Text>
+							<Text mr={1}>
+								{getDateString(new Date(msg.created))}{' '}
+								{getTimeString(new Date(msg.created))}
+							</Text>
+						</Flex>
 						<Text>{msg.message}</Text>
 						<Divider my={3} />
 						{msg.files.length > 0 && (
 							<Flex mt={2} fontWeight="bold">
-								<Text mr={2}>Přílohy:</Text>
+								<Text mr={2}>{t('attachments.label')}:</Text>
 								{msg.files.map((file, index) => (
 									<Chip
 										css={css`
