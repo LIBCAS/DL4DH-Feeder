@@ -135,7 +135,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 									>
 										<Flex px={3} alignItems="center">
 											<MdRefresh size={20} />
-											<Text ml={2}>Vrátit původní filtr</Text>
+											<Text ml={2}>{t('multiview:set_original_filter')}</Text>
 										</Flex>
 									</IconButton>
 								)}
@@ -146,7 +146,7 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 										onClick={() => setShowDashboardFilters(p => !p)}
 									>
 										<Flex px={3} alignItems="center">
-											<Text ml={2}>Zobrazit původní filtr</Text>
+											<Text ml={2}>{t('multiview:show_original_filter')}</Text>
 										</Flex>
 									</IconButton>
 								)}
@@ -192,8 +192,8 @@ const PubChooseSecond: FC<{ onClose: () => void; variant: 'left' | 'right' }> =
 												setOmitDashboardFilters(p => !p);
 												setPage(1);
 											}}
-											aria-label={'Nepoužít filtr'}
-											label={'Nepoužít filtr'}
+											aria-label={t('multiview:omit_filter')}
+											label={t('multiview:omit_filter')}
 										/>
 									</Flex>
 								)}
@@ -268,7 +268,7 @@ const ChoosePeriodical: FC<{
 
 	const { isSingleView, getApropriateIds, formatViewLink } =
 		useParseUrlIdsAndParams();
-
+	const { t } = useTranslation();
 	const { id: currentId } = getApropriateIds();
 	const { setOcrMode } = usePublicationContext2();
 	const [newId, setNewId] = useState(newIdProp);
@@ -326,7 +326,7 @@ const ChoosePeriodical: FC<{
 
 	return (
 		<Wrapper>
-			<H2>Vyberte se seznamu:</H2>
+			<H2>{t('multiview:choose_from_list')}</H2>
 			<PeriodicalTiles
 				data={children.notDataNodes}
 				onSelect={id => setNewId(id)}

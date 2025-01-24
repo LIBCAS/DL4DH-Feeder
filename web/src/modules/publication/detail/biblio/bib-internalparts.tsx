@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { MdOutlineMore, MdClose } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import Button, { NavLinkButton } from 'components/styled/Button';
@@ -94,6 +95,8 @@ export const BibInternalPartsDialog: FC = () => {
 	const { loading, hasInternalParts, children, formatLink, id, parent } =
 		useInternalParts();
 
+	const { t } = useTranslation('bibliography');
+
 	if (loading) {
 		return <Loader />;
 	}
@@ -103,13 +106,13 @@ export const BibInternalPartsDialog: FC = () => {
 	}
 	return (
 		<ModalDialog
-			label="Chapters"
+			label=""
 			control={openModal => (
 				<Flex>
 					<IconButton
 						onClick={openModal}
 						color="#9e9e9e"
-						tooltip="Zvolit jinou kapitolu"
+						tooltip={t('internal_parts_choose_different')}
 					>
 						<MdOutlineMore size={18} />
 					</IconButton>
@@ -123,7 +126,7 @@ export const BibInternalPartsDialog: FC = () => {
 								fontWeight="bold"
 								to={parent.link}
 							>
-								Přejít na celou publikaci
+								{t('internal_parts_parent')}
 							</NavLinkButton>
 						</Box>
 					)}
@@ -133,7 +136,7 @@ export const BibInternalPartsDialog: FC = () => {
 			{closeModal => (
 				<Paper>
 					<Flex width={1} justifyContent="space-between" alignItems="center">
-						<H5 my={2}>Zvolit jinou kapitolu</H5>
+						<H5 my={2}>{t('internal_parts_choose_different')}</H5>
 						<IconButton color="primary" onClick={closeModal}>
 							<MdClose size={20} />
 						</IconButton>
@@ -151,6 +154,7 @@ export const BibInternalPartsDialog: FC = () => {
 
 const BibInternalParts: FC = ({ children }) => {
 	const [open, setOpen] = useState(false);
+	const { t } = useTranslation('bibliography');
 	const {
 		loading,
 		hasInternalParts,
@@ -177,7 +181,7 @@ const BibInternalParts: FC = ({ children }) => {
 					variant={open ? 'outlined' : 'primary'}
 					onClick={() => setOpen(false)}
 				>
-					Stránky
+					{t('pages')}
 				</Button>
 				<Button
 					mx={1}
@@ -185,14 +189,14 @@ const BibInternalParts: FC = ({ children }) => {
 					variant={!open ? 'outlined' : 'primary'}
 					onClick={() => setOpen(true)}
 				>
-					Zobrazit kapitoly
+					{t('show_chapters')}
 				</Button>
 			</Flex>
 
 			{open ? (
 				<Wrapper px={2}>
 					<Text color="#616161" fontSize="16.5px" fontWeight="bold">
-						Kapitoly
+						{t('chapters')}
 					</Text>
 
 					{parent && (
@@ -205,7 +209,7 @@ const BibInternalParts: FC = ({ children }) => {
 								fontWeight="bold"
 								to={parent.link}
 							>
-								Přejít na celou publikaci
+								{t('internal_parts_parent')}
 							</NavLinkButton>
 						</Box>
 					)}

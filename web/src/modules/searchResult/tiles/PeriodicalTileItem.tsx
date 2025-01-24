@@ -3,6 +3,7 @@ import { css, SerializedStyles } from '@emotion/core';
 import { MdLock } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -29,6 +30,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 	const nav = useNavigate();
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
 	const pctx = usePublicationContext2();
+	const { t } = useTranslation('periodical');
 
 	const isMonograph = child.model === 'monographunit';
 	const isPeriodical = child.model.includes('periodical'); //TODO:FIXME: check child node
@@ -180,7 +182,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								white-space: nowrap;
 							`}
 						>
-							Ročník {child.details?.volumeNumber}
+							{t('periodicalvolume', { part: child.details?.volumeNumber })}
 						</Text>
 					)}
 					{child.details?.partNumber && (
@@ -192,7 +194,7 @@ const PeriodicalTileItem: React.FC<Props> = ({
 								max-width: 100%;
 							`}
 						>
-							Číslo {child.details?.partNumber}
+							{t('periodicalitem', { part: child.details?.partNumber })}
 						</Text>
 					)}
 				</Flex>

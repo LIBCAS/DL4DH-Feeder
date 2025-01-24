@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -12,6 +13,7 @@ type Props = {
 };
 const PubPageNotFound: React.FC<Props> = ({ multiview, isSecond }) => {
 	const theme = useTheme();
+	const { t } = useTranslation('alert');
 	return (
 		<Flex
 			width={multiview ? 1 / 2 : 1}
@@ -33,13 +35,13 @@ const PubPageNotFound: React.FC<Props> = ({ multiview, isSecond }) => {
 			>
 				<div>
 					<Text fontSize="xxl" fontWeight="600" color="warning">
-						Upozornění!
+						{t('warning')}
 					</Text>
 					<Text fontSize="xxl" fontWeight="600" color="warning">
-						Nebyly nalezeny žádné výsledky.
+						{t('book_no_results')}
 					</Text>
 					<Text fontSize="xxl" fontWeight="600" color="warning">
-						Prosím, zkuste jiný dotaz.
+						{t('try_different_query')}
 					</Text>
 				</div>
 			</Flex>

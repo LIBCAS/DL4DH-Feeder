@@ -14,7 +14,6 @@ import LoaderSpin from 'components/loaders/LoaderSpin';
 import Divider from 'components/styled/Divider';
 import { Metadata } from 'components/kramerius/model/metadata.model';
 import { ModsParserService } from 'components/kramerius/modsParser/modsParserService';
-//import { KRAMERIUS_ENUMS } from 'components/kramerius/enums/kenums';
 
 import { Loader } from 'modules/loader';
 import { useParseUrlIdsAndParams } from 'modules/publication/publicationUtils';
@@ -26,7 +25,7 @@ import { usePublicationDetail } from 'api/publicationsApi';
 
 import { modelToText } from 'utils/enumsMap';
 
-// TODO: use useFullContextMetadata from hook
+// TODO: use useFullContextMetadata from hook in useMetadata
 // fix http://localhost:3000/view/uuid:21426150-9e46-11dc-a259-000d606f5dc6?page=uuid%3Abdc7b117-1078-4a27-b7e4-abd12e788142
 
 const useFullContextMetadata = (context: PublicationContext[]) => {
@@ -221,7 +220,7 @@ const CitationDialog = () => {
 
 	return (
 		<ModalDialog
-			label="Info"
+			label=""
 			control={openModal => (
 				<IconButton
 					color="primary"
@@ -316,7 +315,7 @@ const CitationDialog = () => {
 					<Divider my={3} />
 					<Flex justifyContent="flex-end">
 						<Button variant="text" fontSize="lg" onClick={closeModal}>
-							Zavřít
+							{t('common:close')}
 						</Button>
 					</Flex>
 				</Paper>
