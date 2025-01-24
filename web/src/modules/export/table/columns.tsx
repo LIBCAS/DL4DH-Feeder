@@ -15,11 +15,10 @@ import { ExportDto } from 'models/exports';
 export const columns: TableColumn<ExportDto>[] = [
 	{
 		datakey: 'publicationTitle',
-
 		visible: false,
-
 		label: 'exports_dashboard.export_name',
 		flex: 3,
+		sortable: true,
 		dataMapper: row => row.publicationTitle ?? row.publicationId,
 	},
 	{
@@ -27,6 +26,7 @@ export const columns: TableColumn<ExportDto>[] = [
 		label: 'exports_dashboard.created',
 		visible: true,
 		flex: 2,
+		sortable: true,
 		dataMapper: row =>
 			row.created ? getDateString(new Date(row.created)) : '--',
 	},
@@ -35,6 +35,7 @@ export const columns: TableColumn<ExportDto>[] = [
 		label: 'exports_dashboard.status',
 		visible: true,
 		flex: 2,
+		sortable: true,
 		dataMapper: (row, translate) =>
 			translate?.(`status_enum.${row.status}`) ?? '--',
 	},
@@ -43,6 +44,7 @@ export const columns: TableColumn<ExportDto>[] = [
 		label: 'exports_dashboard.format',
 		visible: true,
 		flex: 1,
+		sortable: true,
 	},
 
 	{
@@ -51,6 +53,7 @@ export const columns: TableColumn<ExportDto>[] = [
 		visible: true,
 		flex: 2,
 		maxWidth: 250,
+		sortable: false,
 		CellComponent: function Cell({ row, ...rest }) {
 			const { t } = useTranslation('exports');
 			const onClick = _.get(rest, 'openDialog') as (id: string) => void;
@@ -58,7 +61,7 @@ export const columns: TableColumn<ExportDto>[] = [
 				<Flex flex={2} maxWidth={250} justifyContent="space-between">
 					<IconButton onClick={() => onClick?.(row.id)}>
 						<Text color="primary" fontSize="lg" px={2}>
-							Zobrazit podrobnosti
+							{t('exports_dashboard.show_details')}
 						</Text>
 					</IconButton>
 					{(row.status === 'COMPLETED' || row.status == 'SUCCESSFUL') && (
@@ -74,9 +77,7 @@ export const columns: TableColumn<ExportDto>[] = [
 									downloadFile(url, `${row.publicationTitle ?? row.id}.zip`);
 								} catch (error) {
 									toast.error(
-										`Při stahování došlo k chybě: ${
-											error as unknown as string
-										}`,
+										`${t('download_error')} ${error as unknown as string}`,
 									);
 								}
 							}}

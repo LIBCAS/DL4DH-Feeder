@@ -19,47 +19,47 @@ import { useBulkExportContext } from 'hooks/useBulkExport';
 export const exportFieldOptions: LabeledObject[] = [
 	{
 		id: 'title',
-		label: 'Nadpis',
+		label: '',
 	},
 	{
 		id: 'index',
-		label: 'Číslo strany',
+		label: '',
 	},
 	{
 		id: 'nameTagMetadata',
-		label: 'NameTag - úroveň stránky',
+		label: '',
 	},
 	{
 		id: 'tokens.ti',
-		label: 'Číslo tokenu na stránce',
+		label: '',
 	},
 	{
 		id: 'tokens.c',
-		label: 'Obsah tokenu',
+		label: '',
 	},
 	{
 		id: 'tokens.lm.p',
-		label: 'Číslo tokenu vo vete',
+		label: '',
 	},
 	{
 		id: 'tokens.lm.l',
-		label: 'Lemma',
+		label: '',
 	},
 	{
 		id: 'tokens.lm.u',
-		label: 'UPosTag',
+		label: '',
 	},
 	{
 		id: 'tokens.lm.x',
-		label: 'XPosTag',
+		label: '',
 	},
 	{
 		id: 'tokens.lm.f',
-		label: 'Feats',
+		label: '',
 	},
 	{
 		id: 'tokens.ntm',
-		label: 'NameTag - úroveň tokenu',
+		label: '',
 	},
 ];
 
@@ -90,6 +90,12 @@ export const nameTagParamsExportOptions: NameTagExportOption[] = [
 	// { id: 'A', labelCode: 'COMPLEX_ADDRESS_EXPRESSION', label: '' },
 	// { id: 'C', labelCode: 'COMPLEX_BIBLIO_EXPRESSION', label: '' },
 ];
+
+export const useExportIncludeExcludeOptionsLabel = () => {
+	const { t } = useTranslation('exports');
+	//return { labelFromOption: (id: string) => t(`field_options.${id}`) ?? '' };
+	return (id: string) => t(`field_options.${id}`) ?? '';
+};
 
 export const useNameTagParamExportOptions = () => {
 	const { t } = useTranslation();
@@ -140,6 +146,7 @@ export const generateExportName = () => {
 export const useCheckAltoStreams = (enabled: boolean) => {
 	// do not check periodicals, always allow ALTO export on periodicals
 	const { uuidHeap } = useBulkExportContext();
+	const { t } = useTranslation();
 	const uuids = useMemo(() => {
 		return enabled
 			? Object.keys(uuidHeap)
@@ -156,7 +163,7 @@ export const useCheckAltoStreams = (enabled: boolean) => {
 	const [isLoading, setIsLoading] = useState(enabled);
 	const [progress, setProgress] = useState<AltoCheckProgress>({
 		current: 0,
-		msg: 'Načítání potomků',
+		msg: t('exports:loading_children') ?? '',
 		total: uuids.length,
 		mode: 'CHILDREN',
 	});
@@ -169,12 +176,12 @@ export const useCheckAltoStreams = (enabled: boolean) => {
 			setIsLoading(true);
 			setProgress({
 				current: 0,
-				msg: 'Načítání potomků',
+				msg: t('exports:loading_children') ?? '',
 				total: uuids.length,
 				mode: 'CHILDREN',
 			});
 		}
-	}, [enabled, uuids]);
+	}, [enabled, t, uuids]);
 
 	const childrenQueries = useQueries(
 		uuids.map(uuid => ({
@@ -223,7 +230,7 @@ export const useCheckAltoStreams = (enabled: boolean) => {
 					})
 					.json<StreamsRecord>();
 				setProgress(p => ({
-					msg: 'Kontrola dostupnosti ALTO streamů',
+					msg: t('exports:checking_alto_streams') ?? '',
 					total: altoUuids.length,
 					current: p.current + 1,
 					mode: 'ALTO',
