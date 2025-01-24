@@ -155,7 +155,7 @@ const Browse = () => {
 				subHeader={{
 					leftJsx: (
 						<Flex px={2} alignItems="center" justifyContent="center">
-							Výsledky: {tableData.length}
+							{t('search:results')}: {tableData.length}
 						</Flex>
 					),
 
@@ -176,15 +176,13 @@ const Browse = () => {
 							alignItems="center"
 							justifyContent="flex-end"
 						>
-							<Text>Řazení:</Text>
+							<Text>{t('search:ordering.label')}:</Text>
 							<SimpleSelect
-								//label="Řazení:"
 								minWidth={150}
 								options={sortOptions}
 								value={sorting}
 								variant="borderless"
 								onChange={item => {
-									//setTableData(sortList([...flitersList], item, category));
 									setSorting(item);
 								}}
 								keyFromOption={item => item?.id ?? ''}
