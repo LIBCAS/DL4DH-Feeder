@@ -1,4 +1,5 @@
 import React, { FC, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex, Grid } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -9,7 +10,7 @@ import { Loader } from 'modules/loader';
 type Props = {
 	isEmpty: boolean;
 	isLoading?: boolean;
-	noResults?: string | ReactNode;
+	noResults?: string | ReactNode | null;
 	fullWidthItems?: boolean;
 	tileSize?: string;
 	gridGap?: number;
@@ -18,46 +19,57 @@ type Props = {
 const TileGrid: FC<Props> = ({
 	isEmpty,
 	isLoading,
-	noResults = 'Upozornění! Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný dotaz.',
+	noResults,
 	fullWidthItems,
 	tileSize = '320px',
 	children,
 	gridGap = 4,
-}) => (
-	<>
-		{isLoading && <Loader />}
-		{!isLoading && isEmpty && (
-			<Flex flexDirection="column" justifyContent="center" flexGrow={1} my={3}>
-				{typeof noResults === 'string' ? (
-					<Paper
-						alignItems="center"
-						justifyContent="center"
-						bg="paper"
-						color="warning"
-					>
-						<Text fontWeight="bold" textAlign="center" fontSize="xxl">
-							{noResults}
-						</Text>
-					</Paper>
-				) : (
-					noResults
-				)}
-			</Flex>
-		)}
-		{!isLoading && !isEmpty && (
-			<Grid
-				gridGap={gridGap}
-				gridTemplateColumns={[
-					`repeat(auto-fill, ${
-						fullWidthItems ? '1fr' : `minmax(${tileSize}, 1fr)`
-					})`,
-				]}
-				justifyItems={fullWidthItems ? 'stretch' : 'center'}
-				alignItems="stretch"
-			>
-				{children}
-			</Grid>
-		)}
-	</>
-);
+}) => {
+	const { t } = useTranslation('alert');
+	const noResultMessage =
+		noResults ?? `${t('warning')}! ${t('no_results_found')}`;
+
+	return (
+		<>
+			{isLoading && <Loader />}
+			{!isLoading && isEmpty && (
+				<Flex
+					flexDirection="column"
+					justifyContent="center"
+					flexGrow={1}
+					my={3}
+				>
+					{typeof noResultMessage === 'string' ? (
+						<Paper
+							alignItems="center"
+							justifyContent="center"
+							bg="paper"
+							color="warning"
+						>
+							<Text fontWeight="bold" textAlign="center" fontSize="xxl">
+								{noResultMessage}
+							</Text>
+						</Paper>
+					) : (
+						noResultMessage
+					)}
+				</Flex>
+			)}
+			{!isLoading && !isEmpty && (
+				<Grid
+					gridGap={gridGap}
+					gridTemplateColumns={[
+						`repeat(auto-fill, ${
+							fullWidthItems ? '1fr' : `minmax(${tileSize}, 1fr)`
+						})`,
+					]}
+					justifyItems={fullWidthItems ? 'stretch' : 'center'}
+					alignItems="stretch"
+				>
+					{children}
+				</Grid>
+			)}
+		</>
+	);
+};
 export default TileGrid;

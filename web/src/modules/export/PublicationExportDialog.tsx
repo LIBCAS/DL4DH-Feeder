@@ -39,6 +39,7 @@ import {
 	altoParamsOptions,
 	exportFieldOptions,
 	udPipeParamsOptions,
+	useExportIncludeExcludeOptionsLabel,
 	useNameTagParamExportOptions,
 } from './exportUtils';
 
@@ -183,17 +184,17 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 
 	const { getApropriateIds } = useParseUrlIdsAndParams();
 	const { id } = getApropriateIds();
-
-	//const { id: paramId } = useParams<{ id: string }>();
 	const { labelFromOption, nameTagParamsExportOptions } =
 		useNameTagParamExportOptions();
 	const pctx = usePublicationContext2();
 	const pubId = id ?? 'ctx-id-undefined';
-	const pubTitle = pctx.publication?.title ?? 'unknown';
+	const pubTitle = pctx.publication?.title ?? '';
 	const enriched = pctx.publication?.enriched ?? false;
 	const formatOptions: LabeledObject[] = enriched
 		? enrichedFormatOptions
 		: commonFormatOptions;
+
+	const includeExcludeOptionsLabel = useExportIncludeExcludeOptionsLabel();
 
 	const getPreselectedChildren = useCallback(
 		(pagesFilter: string[]) => {
@@ -236,17 +237,17 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 				const response = await api().post(`exports/generate`, { json });
 
 				if (response.status === 200) {
-					toast.info(t('exports:export_create_success'), { autoClose: 10000 });
+					toast.info(t('exports:form_response.success'), { autoClose: 10000 });
 					closeModal();
 				} else {
 					toast.error(
-						`${t('exports:export_create_error')} \n ${response.status}`,
+						`${t('exports:form_response.error')} \n ${response.status}`,
 					);
 				}
 
 				closeModal();
 			} catch (error) {
-				toast.error(`${t('exports:export_create_error')} \n ${error}`);
+				toast.error(`${t('exports:form_response.error')} \n ${error}`);
 				console.log({ error });
 			}
 		},
@@ -402,8 +403,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 										id="includeFields"
 										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
-										nameFromOption={item => item?.label ?? ''}
-										labelFromOption={item => item?.label ?? ''}
+										labelFromOption={item =>
+											includeExcludeOptionsLabel(item?.id as string)
+										}
 										keyFromOption={item => item?.id ?? ''}
 										value={values.includeFields}
 										onSetValue={setFieldValue}
@@ -419,8 +421,9 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 										id="excludeFields"
 										placeholder={t('exports:dialog.choose_field')}
 										options={exportFieldOptions}
-										nameFromOption={item => item?.label ?? ''}
-										labelFromOption={item => item?.label ?? ''}
+										labelFromOption={item =>
+											includeExcludeOptionsLabel(item?.id as string)
+										}
 										keyFromOption={item => item?.id ?? ''}
 										value={values.excludeFields}
 										onSetValue={setFieldValue}
@@ -474,14 +477,7 @@ export const ExportForm: FC<Props> = ({ closeModal }) => {
 								/>
 							</>
 						)}
-						{/* <Box mt={4}>
-							<Checkbox
-								id="exportAll"
-								label="Exportovat celé publikace"
-								checked={values.exportAll}
-								onChange={handleChange}
-							/>
-						</Box> */}
+
 						<Divider my={3} />
 						<Flex my={3} justifyContent="space-between" alignItems="center">
 							<Flex>

@@ -5,16 +5,14 @@ import { FormikErrors, FormikTouched } from 'formik/dist/types';
 import isEqual from 'lodash-es/isEqual';
 import React, { ReactNode } from 'react';
 import { MdClose, MdKeyboardArrowDown, MdRefresh } from 'react-icons/md';
-//import Chip from 'components/styled/Chip';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
 import LoaderSpin from 'components/loaders/LoaderSpin';
 import IconButton from 'components/styled/IconButton';
 
-//import { CrossIcon } from 'assets';
 import { assert } from 'utils';
 
-//import ErrorFeedback from '../error/ErrorFeedback';
 import { Chip, InputCss, InputWrapper, Label } from '../input/TextInput';
 
 import styled from 'theme/styled';
@@ -146,6 +144,7 @@ function SelectInput<T>({
 	};
 
 	const color = colorVariant === 'inverted' ? 'white' : 'primary';
+	const { t } = useTranslation('common');
 
 	return (
 		<Box width={1}>
@@ -326,7 +325,7 @@ function SelectInput<T>({
 								highlightedIndex={highlightedIndex}
 								inputValue={inputValue}
 								isOpen={isOpen}
-								noOptionsText={p.noOptionsText ?? 'Žádné možnosti'}
+								noOptionsText={p.noOptionsText ?? t('no_options')}
 								unsorted={unsorted}
 								isSelected={item =>
 									p.multiselect

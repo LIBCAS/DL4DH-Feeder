@@ -95,7 +95,7 @@ const PublicationSidePanel: FC<Props> = ({
 								</Button>
 								{urlParams.isMultiview && (
 									<Button
-										tooltip="vrati na zobrazenie len jednej publikacie  - treba vymysliet nazov tohto tlacitka"
+										tooltip={t('single_publication')}
 										mx={2}
 										variant="primary"
 										onClick={() =>
@@ -104,7 +104,7 @@ const PublicationSidePanel: FC<Props> = ({
 												: urlParams.navRight()
 										}
 									>
-										Jedna publikace
+										{t('single_publication')}
 									</Button>
 								)}
 							</>

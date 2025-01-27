@@ -125,7 +125,8 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 						</Text>
 					</Text>
 					<Text fontSize="sm">
-						Status: <b>{t(`exports:status_enum:${exportDto.status}`)}</b>
+						{t('exports:status')}:{' '}
+						<b>{t(`exports:status_enum:${exportDto.status}`)}</b>
 					</Text>
 					<Text fontSize="sm">
 						{t('exports:exports_dashboard:created')}:{' '}
@@ -154,7 +155,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 										);
 									} catch (error) {
 										toast.error(
-											`Při stahování došlo k chybě: ${
+											`${t('exports:download_error')} ${
 												error as unknown as string
 											}`,
 										);
@@ -194,7 +195,7 @@ const ExportDetail: FC<Props> = ({ closeModal, exportDto }) => {
 									{t('exports:dialog:delimiter')}:{' '}
 									<b>
 										{delimiterOptions.find(d => d.id === exportDto.delimiter)
-											?.label ?? 'neznámy'}
+											?.label ?? t('unknown')}
 									</b>
 								</Text>
 							</Flex>

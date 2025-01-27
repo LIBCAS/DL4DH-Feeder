@@ -1,16 +1,19 @@
 {
   "homepage": {
+    "title": "DL4DH Feeder",
     "btn_enter": "Enter DL4DH Feeder",
     "public_only": "Public only",
     "hp_search_placeholder": "Search in DL4DH Feeder",
     "main_search_placeholder": "Search in DL4DH Feeder (word or filter the results)...",
     "about": "What is DL4DH Feeder?",
+    "about_content": "The DL4DH Feeder offers researchers a user-friendly graphical interface for working with data stored in the Kramerius+ module and the Kramerius digital library. It enables searching, selecting, and subsequently exporting digital data (optically recognized text and metadata) both in its original form and in other formats that facilitate efficient machine processing, among other uses.",
     "feeds": {
       "visited": "Visited",
       "enriched": "Newest enriched"
     }
   },
   "common": {
+    "does_not_contain": "Does not contain",
     "submit": "Submit",
     "pagination": {
       "prev_page": "Previous page",
@@ -55,7 +58,8 @@
       "many": "documents"
     },
     "delete": "Delete",
-    "save": "Save"
+    "save": "Save",
+    "no_options": "No options"
   },
   "lang": {
     "cs": "Čeština",
@@ -66,8 +70,10 @@
   "share": {
     "available_from": "Available also from"
   },
-  "page-not-found": {
-    "title": "Page not found",
+  "page_not_found": {
+    "title": "Page not found (404)",
+    "page": "Page",
+    "not_found": "not found",
     "go": "Go to",
     "home": "Homepage"
   },
@@ -126,7 +132,13 @@
     "history": "Request history",
     "account": "User",
     "go_to_kramerius": "Go to Kramerius",
-    "login_request": "To access this page you have to be logged in."
+    "login_request": "To access this page you have to be logged in.",
+    "aria_label_sidebar": "Sidebar menu"
+  },
+  "view_options": {
+    "tiles": "Tiles view",
+    "list": "List view",
+    "graph": "Graph view"
   },
   "searchbar": {
     "main": {
@@ -204,10 +216,18 @@
       "apply": "Apply"
     },
     "query": "String",
-    "yearsInterval": "Years"
+    "yearsInterval": "Years",
+    "search_through": {
+      "tooltip_publications": "Search publications",
+      "tooltip_pages": "Search pages",
+      "modal_warning": "Warning",
+      "modal_warning1": "When searching the pages, a filter will be automatically enabled:",
+      "modal_warning2": "only enriched",
+      "modal_warning3": "publications."
+    }
   },
   "advanced_search": {
-    "title": "Advances Search",
+    "title": "Advanced Search",
     "field": {
       "tab": "Field",
       "field": "Where to search?",
@@ -289,6 +309,7 @@
       "edit_export_list": "Edit page list for export",
       "all_enriched": "All enriched",
       "all_alto_available": "ALTO available for all selected publications",
+      "no_alto": "List of publications without ALTO streams",
       "export_name": "Export name",
       "format": "Format",
       "parameters": "Parameters",
@@ -309,6 +330,19 @@
       "pub_title": "Publication title",
       "pub_id": "Publication ID"
     },
+    "loading_children": "Loading children",
+    "checking_alto_streams": "Checking availability of ALTO streams",
+    "form_response": {
+      "success": "The export request was successfully completed. You can check its status on the Exports subpage.",
+      "error": "An error occurred while submitting the export request."
+    },
+    "detail": {
+      "table_title": "Details",
+      "publication_name": "Publication title",
+      "status": "Status / Actions"
+    },
+    "status": "Status",
+    "download_error": "An error occurred while downloading:",
     "exports_dashboard": {
       "page_title": "Exports",
       "login_request": "To access this page you have to be logged in.",
@@ -320,7 +354,21 @@
       "created": "Created",
       "format": "Format",
       "action": "Actions",
-      "detail": "Export detail"
+      "detail": "Export detail",
+      "show_details": "Show details"
+    },
+    "field_options": {
+      "title": "Title",
+      "index": "Page index",
+      "nameTagMetadata": "NameTag - page level",
+      "tokens.ti": "Token number on page",
+      "tokens.c": "Token content",
+      "tokens.lm.p": "Token number in sentence",
+      "tokens.lm.l": "Lemma",
+      "tokens.lm.u": "UPosTag",
+      "tokens.lm.x": "XPosTag",
+      "tokens.lm.f": "Feats",
+      "tokens.ntm": "NameTag - token level"
     },
     "status_enum": {
       "CREATED": "Created",
@@ -338,6 +386,12 @@
       "ABANDONED": "Abandoned",
       "UNKNOWN": "Unknown",
       "PARTIAL": "Partially finished"
+    },
+    "graph": {
+      "title": "Export graph",
+      "width": "Image width (px)",
+      "height": "Image height (px)",
+      "format": "Format"
     }
   },
   "browse": {
@@ -378,7 +432,10 @@
     "count_suffix": "documents"
   },
   "search_history": {
-    "page_title": "Search history"
+    "page_title": "Search History",
+    "info_msg_count": "<strong>Notice:</strong> A filter from the query history is active.",
+    "info_msg_count_changed": "The number of results has <strong>changed</strong> since the filter was saved. Current count: <strong>{{currentCount}}</strong>. Count from history: <strong>{{historyCount}}</strong>.",
+    "info_msg_count_unchanged": "The number of results has not changed since the filter was saved."
   },
   "music": {
     "toolbar": {
@@ -396,12 +453,13 @@
     "metadata_licence": "Available under license"
   },
   "alert": {
-    "warning": "Attention",
+    "warning": "Attention!",
     "error": "Error",
     "no_results_found": "No results found. Please, try a different query.",
     "failed_to_load_image": "Failed to load the image",
     "failed_to_load_pdf": "Failed to load the document",
-    "book_no_results": "No results found"
+    "book_no_results": "No results found",
+    "try_different_query": "Please, try a different query."
   },
   "home": {
     "title": "Digital library Kramerius",
@@ -520,7 +578,8 @@
     "detail": "Detail",
     "search_in_set": "Search in set of records",
     "search_in_set_right": "Search publications (right)",
-    "search_in_set_left": "Search publications (left)"
+    "search_in_set_left": "Search publications (left)",
+    "single_publication": "Single publication"
   },
   "periodical": {
     "periodicalvolume": "Volume {{part}}",
@@ -1750,5 +1809,34 @@
       "email": "E-mail",
       "roles": "Roles"
     }
+  },
+  "about": {
+    "title": "Information",
+    "paragraph_1": "A new software solution connected to digital libraries, operated in the Kramerius system, enables searching, selection, and subsequent export of digital data (image data, OCR, metadata) either in its original form or in one of several formats that also allow efficient machine processing. The DL4DH Feeder offers enriched data and metadata thanks to additional software components developed within the DL4DH project, including Kramerius+ and the TEI converter. The DL4DH Feeder is primarily designed for humanities-oriented researchers, providing them the ability to extract data from digital libraries and utilize computational methods for research classified under digital humanities.",
+    "paragraph_2": "The project 'DL4DH - Development of Tools for More Effective Use and Extraction of Data from Digital Libraries to Strengthen Research in Digital Humanities' was supported by the Ministry of Culture of the Czech Republic within the NAKI II applied research program under ID DG20P02OVV002 and was carried out in the years 2020 - 2022.",
+    "kramerius": "Kramerius",
+    "kramerius_plus": "Kramerius+",
+    "dl4dh_feeder": "DL4DH Feeder",
+    "links": "Links",
+    "documentation": "DL4DH Feeder Documentation",
+    "information": "Information about the DL4DH Project",
+    "contact": "Contact"
+  },
+  "bibliography": {
+    "internal_parts_choose_different": "Choose a Different Chapter",
+    "internal_parts_parent": "Go to the Entire Publication",
+    "pages": "Pages",
+    "show_chapters": "Show Chapters",
+    "chapters": "Chapters"
+  },
+  "stream_dialog": {
+    "meta_information": "Show metadata",
+    "stream_not_available": "Stream {{streamName}} is not available for {{modelName}}."
+  },
+  "multiview": {
+    "set_original_filter": "Reset to original filter",
+    "show_original_filter": "Show original filter",
+    "omit_filter": "Omit filter",
+    "choose_from_list": "Choose from the list"
   }
 }

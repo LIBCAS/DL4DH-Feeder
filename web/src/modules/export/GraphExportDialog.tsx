@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import * as htmlToImage from 'html-to-image';
+import { useTranslation } from 'react-i18next';
 
 import ModalDialog from 'components/modal';
 import { Flex } from 'components/styled';
@@ -17,7 +18,6 @@ import { downloadFile } from 'utils';
 import { useBulkExportContext } from 'hooks/useBulkExport';
 
 const GraphExportDialog = () => {
-	//const [dataToExport, setDataToExport] = useState<'graph' | 'meta'>('graph');
 	const [format, setFormat] = useState<'PNG' | 'JPEG'>('PNG');
 
 	const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
@@ -25,6 +25,9 @@ const GraphExportDialog = () => {
 	const [loading, setLoading] = useState(false);
 
 	const { graphRef } = useBulkExportContext();
+
+	const { t } = useTranslation('exports');
+	const { t: tcmn } = useTranslation('common');
 
 	// https://www.npmjs.com/package/html-to-image
 	// react-to-pdf + https://github.com/EvHaus/react-pdf-charts
@@ -34,7 +37,7 @@ const GraphExportDialog = () => {
 			label="Info"
 			control={openModal => (
 				<Button height={30} ml={3} variant="primary" onClick={openModal} p={1}>
-					Exportovat
+					{t('graph.title')}
 				</Button>
 			)}
 		>
@@ -52,16 +55,15 @@ const GraphExportDialog = () => {
 							alignItems="center"
 							mb={3}
 						>
-							<H1 my={3}>Exportovat graf</H1>
+							<H1 my={3}>{t('graph.title')}</H1>
 							<IconButton color="primary" onClick={closeModal}>
 								<MdClose size={32} />
 							</IconButton>
 						</Flex>
-						{/* <Text my={3}>Exportujte graf ako PNG obrázek.</Text> */}
 
 						<TextInput
 							type="number"
-							label="Šířka exportovaného grafu (px)"
+							label={t('graph.width')}
 							labelType="aboveInput"
 							min={160}
 							max={10000}
@@ -82,7 +84,7 @@ const GraphExportDialog = () => {
 						<TextInput
 							mt={3}
 							type="number"
-							label="Výška exportovaného grafu (px)"
+							label={t('graph.height')}
 							labelType="aboveInput"
 							value={dimensions.height}
 							min={160}
@@ -97,28 +99,8 @@ const GraphExportDialog = () => {
 								setDimensions({ ...dimensions, height: Number(e.target.value) })
 							}
 						/>
-						{/* <Flex mb={3}>
-							<RadioButton
-								mr={5}
-								label="Graf"
-								name="radiogrp"
-								id="radio-graph"
-								checked={dataToExport === 'graph'}
-								onChange={() => {
-									setDataToExport('graph');
-								}}
-							/>
-							<RadioButton
-								label="Podkladové data"
-								name="radiogrp"
-								id="radio-meta"
-								checked={dataToExport === 'meta'}
-								onChange={() => {
-									setDataToExport('meta');
-								}}
-							/>
-						</Flex>*/}
-						<Text mt={3}>Formát</Text>
+
+						<Text mt={3}>{t('graph.format')}</Text>
 						<SimpleSelect<'PNG' | 'JPEG'>
 							mb={3}
 							options={['PNG', 'JPEG']}
@@ -135,7 +117,6 @@ const GraphExportDialog = () => {
 								disabled={loading}
 								variant="primary"
 								onClick={async () => {
-									//closeModal
 									if (!graphRef?.current) {
 										console.log('no graph ref');
 										return;
@@ -162,7 +143,7 @@ const GraphExportDialog = () => {
 									await new Promise(resolve =>
 										setTimeout(() => resolve(0), 1000),
 									);
-									console.log('done waiting');
+
 									htmlToImage[format === 'PNG' ? 'toPng' : 'toJpeg'](
 										graphRef.current,
 									)
@@ -173,9 +154,7 @@ const GraphExportDialog = () => {
 											const img = new Image();
 											img.src = blob;
 											document.body.appendChild(img);
-											//console.log({ dataUrl });
-											//const url = URL.createObjectURL(blob);
-											//window.open(url, '_blank');
+
 											downloadFile(
 												blob,
 												`graph-export.${format === 'PNG' ? 'png' : 'jpg'}`,
@@ -202,10 +181,10 @@ const GraphExportDialog = () => {
 									closeModal();
 								}}
 							>
-								Exportovat
+								{t('graph.title')}
 							</Button>
 							<Button variant="outlined" ml={3} onClick={closeModal}>
-								Zrušit
+								{tcmn('cancel')}
 							</Button>
 						</Flex>
 					</Paper>

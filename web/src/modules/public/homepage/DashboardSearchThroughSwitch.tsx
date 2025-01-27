@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import { ImBooks } from 'react-icons/im';
 import { FaBookOpen } from 'react-icons/fa';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import Tabs from 'components/tabs';
 import IconButton from 'components/styled/IconButton';
@@ -22,6 +23,7 @@ const DashboardSearchThroughSwitch = () => {
 	const theme = useTheme();
 	const { variant, setVariant, setShowModal } = useSearchThroughContext();
 	const [sp, setSp] = useSearchParams();
+	const { t } = useTranslation('search');
 
 	return (
 		<Flex
@@ -37,7 +39,10 @@ const DashboardSearchThroughSwitch = () => {
 						key: 'publications',
 						jsx: (
 							<Flex mx={2}>
-								<IconButton color="inherit" tooltip="Vyhledávat publikace">
+								<IconButton
+									color="inherit"
+									tooltip={t('search_through.tooltip_publications')}
+								>
 									<ImBooks size={20} />
 								</IconButton>
 							</Flex>
@@ -47,7 +52,10 @@ const DashboardSearchThroughSwitch = () => {
 						key: 'pages',
 						jsx: (
 							<Flex mx={2}>
-								<IconButton color="inherit" tooltip="Vyhledávat ve stránkách">
+								<IconButton
+									color="inherit"
+									tooltip={t('search_through.tooltip_pages')}
+								>
 									<FaBookOpen size={20} />
 								</IconButton>
 							</Flex>

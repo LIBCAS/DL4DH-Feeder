@@ -29,7 +29,7 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 	}
 	return (
 		<>
-			<Text>Podrobnosti:</Text>
+			<Text>{t('exports:detail.table_title')}</Text>
 			<ClassicTable
 				data={items}
 				rowHeight={60}
@@ -38,7 +38,7 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 				renderHeader={() => (
 					<Flex width={1} px={3} alignItems="center">
 						<Flex flex={3}>
-							<Text>Název publikace</Text>
+							<Text>{t('exports:detail.publication_name')}</Text>
 						</Flex>
 						<Flex
 							flex={1}
@@ -46,7 +46,7 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 							alignItems="flex-end"
 							justifyContent="flex-end"
 						>
-							<Text>Stav / Akce</Text>
+							<Text>{t('exports:detail.status')}</Text>
 						</Flex>
 					</Flex>
 				)}
@@ -110,7 +110,7 @@ const ExportDetailItemsTable: FC<Props> = ({ exportDto }) => {
 													);
 												} catch (error) {
 													toast.error(
-														`Při stahování došlo k chybě: ${
+														`${t('exports:download_error')} ${
 															error as unknown as string
 														}`,
 													);

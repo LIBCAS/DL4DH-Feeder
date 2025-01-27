@@ -1,17 +1,21 @@
 {
   "homepage": {
+    "title": "DL4DH Feeder",
     "btn_enter": "Vstoupit do DL4DH Feeder",
     "public_only": "Pouze veřejné",
     "hp_search_placeholder": "Hledejte v DL4DH Feeder",
     "main_search_placeholder": "Vyhledejte v DL4DH Feeder (základ slova nebo filtrujte výsledky)...",
     "about": "Co je DL4DH Feeder?",
+    "about_content": "DL4DH Feeder nabízí výzkumným pracovníkům přehledné grafické rozhraní pro práci s daty uloženými v modulu Kramerius+ i digitální knihovně Kramerius. Umožňuje vyhledání, selekci a následný export digitálních dat (opticky rozpoznaný text a metadata) jak v původní podobě, tak v některém z dalších formátů, umožňujících mimo jiné také efektivní strojové zpracování.",
     "feeds": {
       "visited": "Navštívené",
       "enriched": "Nejnovější obohacené"
     }
   },
   "common": {
+    "does_not_contain": "Neobsahuje",
     "submit": "Odeslat",
+    "unknown": "Neznámy",
     "pagination": {
       "prev_page": "Předchozí stránka",
       "next_page": "Další stránka",
@@ -55,7 +59,8 @@
       "many": "titulů"
     },
     "delete": "Smazat",
-    "save": "Uložit"
+    "save": "Uložit",
+    "no_options": "Žádné možnosti"
   },
   "lang": {
     "cs": "Čeština",
@@ -66,8 +71,10 @@
   "share": {
     "available_from": "Dostupné také z"
   },
-  "page-not-found": {
-    "title": "Stránka nebyla nalezena",
+  "page_not_found": {
+    "title": "Stránka nebyla nalezena (404)",
+    "page": "Stránka",
+    "not_found": "nebyla nalezena",
     "go": "Přejděte na",
     "home": "úvodní stránku"
   },
@@ -126,7 +133,13 @@
     "history": "Historie dotazů",
     "account": "Uživatel",
     "go_to_kramerius": "Přejít do Krameria",
-    "login_request": "Pro přístup k této stránce je nutné se přihlásit."
+    "login_request": "Pro přístup k této stránce je nutné se přihlásit.",
+    "aria_label_sidebar": "Bočné menu"
+  },
+  "view_options": {
+    "tiles": "Zobrazení dlažice",
+    "list": "Zobrazení seznam",
+    "graph": "Zobrazení grafu statistik"
   },
   "searchbar": {
     "main": {
@@ -204,7 +217,15 @@
       "apply": "Použít"
     },
     "query": "Řetězec",
-    "yearsInterval": "Léta"
+    "yearsInterval": "Léta",
+    "search_through": {
+      "tooltip_publications": "Vyhledávat publikace",
+      "tooltip_pages": "Vyhledávat ve stránkách",
+      "modal_warning": "Upozornění",
+      "modal_warning1": "Při vyhledávání ve stránkách bude automaticky zapnutý filtr:",
+      "modal_warning2": "pouze obohacené",
+      "modal_warning3": "publikace."
+    }
   },
   "advanced_search": {
     "title": "Pokročilé vyhledávání",
@@ -289,11 +310,25 @@
       "tooltip_sort_on": "Seřadit od zvolených pro export",
       "tooltip_sort_off": "Zrušit seřazení"
     },
+    "loading_children": "Načítání potomků",
+    "checking_alto_streams": "Kontrola dostupnosti ALTO streamů",
+    "form_response": {
+      "success": "Požadavek na export byl úspěšně uzavřen. Jeho stav můžete zkontrolovat na podstránce Exporty.",
+      "error": "Při zadávaní exportu nastala chyba."
+    },
+    "detail": {
+      "table_title": "Podrobnosti",
+      "publication_name": "Název publikace",
+      "status": "Stav / Akce"
+    },
+    "status": "Stav",
+    "download_error": "Při stahování došlo k chybě:",
     "dialog": {
       "export_publication": "Exportovat publikaci",
       "edit_export_list": "Upravit seznam stránek pro export",
       "all_enriched": "Všechny obohacené",
       "all_alto_available": "ALTO dostupné u všech označených publikací",
+      "no_alto": "Seznam publikací neobsahující ALTO stream",
       "export_name": "Název exportu",
       "format": "Formát",
       "parameters": "Parametry",
@@ -321,11 +356,25 @@
       "tooltip_sort_by": "Řadit dle",
       "download": "Stáhnout",
       "export_name": "Název",
-      "status": "Status",
+      "status": "Stav",
       "created": "Vytvořeno",
       "format": "Formát",
       "action": "Akce",
-      "detail": "Detail exportu publikace"
+      "detail": "Detail exportu publikace",
+      "show_details": "Zobrazit podrobnosti"
+    },
+    "field_options": {
+      "title": "Nadpis",
+      "index": "Číslo strany",
+      "nameTagMetadata": "NameTag - úroveň stránky",
+      "tokens.ti": "Číslo tokenu na stránce",
+      "tokens.c": "Obsah tokenu",
+      "tokens.lm.p": "Číslo tokenu vo vete",
+      "tokens.lm.l": "Lemma",
+      "tokens.lm.u": "UPosTag",
+      "tokens.lm.x": "XPosTag",
+      "tokens.lm.f": "Feats",
+      "tokens.ntm": "NameTag - úroveň tokenu"
     },
     "status_enum": {
       "CREATED": "Vytvořen",
@@ -342,6 +391,12 @@
       "ABANDONED": "Opuštěn",
       "UNKNOWN": "Neznámý",
       "PARTIAL": "Částečně dokončen"
+    },
+    "graph": {
+      "title": "Exportovat graf",
+      "width": "Šířka exportovaného grafu (px)",
+      "height": "Výška exportovaného grafu (px)",
+      "format": "Format"
     }
   },
   "browse": {
@@ -382,7 +437,10 @@
     "count_suffix": "dokumentů"
   },
   "search_history": {
-    "page_title": "Historie dotazů"
+    "page_title": "Historie dotazů",
+    "info_msg_count": "<strong>Upozornění:</strong> Je aktivován filtr z historie dotazů.",
+    "info_msg_count_changed": "Pocet výsledků se od uložení filtru <strong>změnil</strong>. Aktuální počet: <strong>{{currentCount}}</strong>. Počet z historie: <strong>{{historyCount}}</strong>.",
+    "info_msg_count_unchanged": "Počet výsledků se od uložení filtru nezměnil."
   },
   "music": {
     "toolbar": {
@@ -400,12 +458,13 @@
     "metadata_licence": "Zpřítupněno pod licencí"
   },
   "alert": {
-    "warning": "Upozornění",
+    "warning": "Upozornění!",
     "error": "Chyba",
     "no_results_found": "Nebyly nalezeny žádné výsledky. Prosím, zkuste jiný dotaz.",
     "failed_to_load_image": "Obrázek se nepodařilo načíst",
     "failed_to_load_pdf": "Dokument se nepodařilo načíst",
-    "book_no_results": "Nebyly nalezeny žádné výsledky"
+    "book_no_results": "Nebyly nalezeny žádné výsledky",
+    "try_different_query": "Prosím, zkuste jiný dotaz."
   },
   "home": {
     "title": "Digitální knihovna Kramerius",
@@ -524,7 +583,8 @@
     "detail": "Detail záznamu",
     "search_in_set": "Vybrat položky vpravo",
     "search_in_set_right": "Vybrat položky vpravo",
-    "search_in_set_left": "Vybrat položky vlevo"
+    "search_in_set_left": "Vybrat položky vlevo",
+    "single_publication": "Jedna publikace"
   },
   "periodical": {
     "periodicalvolume": "Ročník {{part}}",
@@ -1390,5 +1450,34 @@
       "email": "E-mail",
       "roles": "Role"
     }
+  },
+  "about": {
+    "title": "Informace",
+    "paragraph_1": "Nové softwarové řešení napojené na digitální knihovny, provozované v systému Kramerius, umožňuje vyhledání, selekci a následný export digitálních dat (obrazová data, OCR, metadata) jak v původní podobě, tak v některém z dalších formátů, umožňujících mimo jiné také efektivní strojové zpracování. DL4DH Feeder dokáže nabízet obohacená data a metadata, díky dalším softwarovým součástem vyvinutým v rámci projektu DL4DH, kterými jsou Kramerius+ a TEI converter. DL4DH feeder je určen primárně humanitně orientovaným vědcům, kteří získají možnost vytěžovat data z digitálních knihoven a dále využít výpočetní metody pro výzkum, který je řazen do oblasti digital humanities.",
+    "paragraph_2": "Projekt „DL4DH - vývoj nástrojů pro efektivnější využití a vytěžování dat z digitálních knihoven k posílení výzkumu digital humanities“ byl podpořen Ministerstvem kultury ČR v rámci programu aplikovaného výzkumu NAKI II pod ID DG20P02OVV002 a jeho řešení probíhalo v letech 2020 - 2022.",
+    "kramerius": "Kramerius",
+    "kramerius_plus": "Kramerius+",
+    "dl4dh_feeder": "DL4DH Feeder",
+    "links": "Odkazy",
+    "documentation": "Dokumentace DL4DH Feeder",
+    "information": "Informace o projektu DL4DH",
+    "contact": "Kontakt"
+  },
+  "bibliography": {
+    "internal_parts_choose_different": "Zvolit jinou kapitolu",
+    "internal_parts_parent": "Přejít na celou publikaci",
+    "pages": "Stránky",
+    "show_chapters": "Zobrazit kapitoly",
+    "chapters": "Kapitoly"
+  },
+  "stream_dialog": {
+    "meta_information": "Zobrazit metadata",
+    "stream_not_available": "Stream {{streamName}} není pro {{modelName}} dostupný."
+  },
+  "multiview": {
+    "set_original_filter": "Vrátit původní filtr",
+    "show_original_filter": "Zobrazit původní filtr",
+    "omit_filter": "Nepoužít filtr",
+    "choose_from_list": "Vyberte se seznamu"
   }
 }

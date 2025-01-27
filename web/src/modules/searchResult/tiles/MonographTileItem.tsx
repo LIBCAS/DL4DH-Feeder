@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 import { MdLock } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Flex } from 'components/styled';
 import Text from 'components/styled/Text';
@@ -43,6 +44,7 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 	const nav = useNavigate();
 	const isPeriodical = child.model.includes('periodical');
 	const { exportModeOn, uuidHeap, updateExportHeap } = useBulkExportContext();
+	const { t } = useTranslation('search');
 	const pctx = usePublicationContext2();
 	const url = `/${isPeriodical ? 'periodical' : 'view'}/${child.pid}`;
 	const theme = useTheme();
@@ -166,7 +168,7 @@ const MonographTileItem: React.FC<Props> = ({ child, onSelect }) => {
 						{child.enriched && (
 							<Flex bg="primary" color="white" opacity="0.8" mr={2}>
 								<Text py={1} my={0} px={3} fontSize="sm">
-									Obohacená
+									{t('enrichment.is_enriched')}
 								</Text>
 							</Flex>
 						)}

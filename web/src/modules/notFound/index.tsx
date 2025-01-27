@@ -1,34 +1,31 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { NavButton } from 'components/styled/Button';
 import Text from 'components/styled/Text';
 import { ResponsiveWrapper } from 'components/styled/Wrapper';
 import { Flex } from 'components/styled';
 
-//TODO:
 const NotFound: React.FC = () => {
-	// Page title
-	//usePageTitle('Stránka nenalezena');
-
 	const nav = useNavigate();
 	const { pathname } = useLocation();
-
+	const { t } = useTranslation('page_not_found');
 	return (
 		<ResponsiveWrapper alignItems="flex-start">
 			<Text color="text" fontSize="xl" fontWeight="bold" mt={5} mb={4} as="h2">
-				Stránka nebyla nalezena (404)
+				{t('title')}
 			</Text>
 			<Text>
-				Stránka{' '}
+				{t('page')}
 				<Text as="span" fontWeight="bold">
 					{pathname}
 				</Text>{' '}
-				nebyla nalezena.
+				{t('not_found')}
 			</Text>
 			<Flex alignItems="center">
 				<NavButton variant="primary" mt={3} onClick={() => nav('/')}>
-					Přejděte na úvodní stránku
+					{t('go')} {t('home')}
 				</NavButton>
 			</Flex>
 		</ResponsiveWrapper>

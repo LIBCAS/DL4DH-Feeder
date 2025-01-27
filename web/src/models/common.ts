@@ -7,6 +7,8 @@ export type TableColumn<T> = {
 	visible?: boolean;
 	flex?: number;
 	maxWidth?: number;
+	sortable?: boolean;
+	sortKey?: string;
 	CellComponent?: ({
 		row,
 		...rest

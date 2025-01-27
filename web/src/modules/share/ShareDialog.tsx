@@ -79,7 +79,7 @@ const ShareDialog = () => {
 					<Flex alignItems="center" justifyContent="space-between">
 						<Flex alignItems="center">
 							<Text fontWeight="bold" my={0} mr={1}>
-								Sdílet :
+								{t('share-dialog:title')}
 							</Text>
 							<Tabs
 								tabs={[
@@ -140,7 +140,7 @@ const ShareDialog = () => {
 						</IconButton>
 					</Flex>
 
-					<Text mt={4}>Odkaz pro sdílení</Text>
+					<Text mt={4}>{t('share-dialog:link')}</Text>
 					<Flex alignItems="center" justifyContent="space-between">
 						<Text color="black">{link}</Text>
 
@@ -152,7 +152,7 @@ const ShareDialog = () => {
 							onClick={() => {
 								navigator.clipboard.writeText(link ?? '');
 							}}
-							title="Kopírovat do schránky"
+							title={t('common:copy_to_clipboard')}
 							css={css`
 								&:hover {
 									color: black;
@@ -160,7 +160,7 @@ const ShareDialog = () => {
 							`}
 						>
 							<Flex>
-								<Text mx={2}>Kopírovat do schránky</Text>
+								<Text mx={2}>{t('common:copy_to_clipboard')}</Text>
 							</Flex>
 							<MdCopyAll size={26} />
 						</Button>
@@ -168,7 +168,7 @@ const ShareDialog = () => {
 					<Divider my={3} />
 					<Flex justifyContent="flex-end">
 						<Button variant="text" fontSize="lg" onClick={closeModal}>
-							Zavřít
+							{t('common:close')}
 						</Button>
 					</Flex>
 				</Paper>

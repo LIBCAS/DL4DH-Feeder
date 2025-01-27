@@ -60,6 +60,7 @@ const ViewStream: FC<{
 }> = ({ uuid, stream, mime, contentRef }) => {
 	const response = useStreams(uuid, stream, mime);
 	const [decodeUTF16, setDecodeUTF16] = useState<boolean>(false);
+	const { t } = useTranslation('common');
 	const responseUTF16 = useUnicodeStreams(
 		uuid,
 		'TEXT_OCR',
@@ -159,7 +160,9 @@ const ViewStream: FC<{
 					{response.data ? (
 						<XMLViewer xml={response.data} />
 					) : (
-						'Neobsahuje' + stream
+						<>
+							{t('does_not_contain')} {stream}
+						</>
 					)}
 				</>
 			)}
@@ -268,6 +271,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 		itemStream,
 	);
 	const { t } = useTranslation();
+
 	const ref = useRef<HTMLDivElement>(null);
 	const copyRef = useRef<HTMLDivElement>(null);
 	const contentRef = useRef<string>('');
@@ -375,7 +379,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 					onClick={() => {
 						navigator.clipboard.writeText(contentRef.current ?? '');
 					}}
-					title="Kopírovat do schránky"
+					title={t('common:copy_to_clipboard')}
 					onMouseEnter={() => {
 						if (ref?.current) {
 							ref.current.style.backgroundColor = 'rgba(0,0,0,0.1)';
@@ -400,7 +404,7 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 				>
 					<Flex ref={copyRef}>
 						<Text mx={2} fontSize="lg">
-							Kopírovat do schránky
+							{t('common:copy_to_clipboard')}
 						</Text>
 					</Flex>
 					<MdCopyAll size={26} />
@@ -445,15 +449,18 @@ const StreamsViewer: FC<StreamsViewerProps> = ({ closeModal, sources }) => {
 					</>
 				) : (
 					<Text>
-						Stream <b>{selectedStream?.key ?? '--'}</b> není pro{' '}
-						<b>{t(`model_2p:${modelToText(source.model as ModelsEnum)}`)}</b>{' '}
-						dostupný.
+						{t('stream_dialog:stream_not_available', {
+							streamName: selectedStream?.key ?? '--',
+							modelName: t(
+								`model_2p:${modelToText(source.model as ModelsEnum)}`,
+							),
+						})}
 					</Text>
 				)}
 			</Flex>
 			<Flex width={1} justifyContent="flex-end">
 				<Button variant="primary" onClick={closeModal} mt={2}>
-					Zavřít
+					{t('common:close')}
 				</Button>
 			</Flex>
 		</Paper>
@@ -464,6 +471,7 @@ const MetaStreamsDialog: FC<{ rootId?: string; pageId?: string }> = ({
 	rootId,
 	pageId,
 }) => {
+	const { t } = useTranslation('stream_dialog');
 	const rootDetailResponse = usePublicationDetail(
 		pageId ?? rootId ?? 'pageId_rootId_undefined',
 	);
@@ -486,7 +494,7 @@ const MetaStreamsDialog: FC<{ rootId?: string; pageId?: string }> = ({
 				<IconButton
 					color="primary"
 					onClick={openModal}
-					tooltip="Zobrazit meta informace"
+					tooltip={t('meta_information')}
 				>
 					<MdCode size={24} />
 				</IconButton>

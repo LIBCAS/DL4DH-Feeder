@@ -75,6 +75,7 @@ const menuItems: MenuItem[] = [
 export const HeaderMenu: FC = () => {
 	const { isTablet } = useMobileView();
 	const [sideMenuExpanded, setSideMenuExpanded] = useState(false);
+	const { t } = useTranslation('navbar');
 	return (
 		<Flex ml={1} flexShrink={0} color="headerColor" minHeight={50}>
 			{isTablet ? (
@@ -91,7 +92,7 @@ export const HeaderMenu: FC = () => {
 					<Dialog
 						isOpen={sideMenuExpanded}
 						onDismiss={() => setSideMenuExpanded(false)}
-						aria-label="Bočné menu"
+						aria-label={t('aria_label_sidebar')}
 						css={css`
 							position: fixed;
 							top: 0;
