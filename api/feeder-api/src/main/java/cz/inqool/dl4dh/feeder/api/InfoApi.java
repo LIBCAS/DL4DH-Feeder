@@ -5,6 +5,7 @@ import cz.inqool.dl4dh.feeder.dto.info.FeederInfoDto;
 import cz.inqool.dl4dh.feeder.dto.info.InfoDto;
 import cz.inqool.dl4dh.feeder.dto.info.KrameriusPlusVersionDto;
 import cz.inqool.dl4dh.feeder.dto.info.KrameriusVersionDto;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class InfoApi {
         this.contact = contact;
     }
 
+    @Operation(summary = "Information about the system, version, connected Kramerius+ and Kramerius versions.")
     @GetMapping
     public InfoDto info() {
         Map<Object, Object> krameriusInfo = krameriusPlus.get()

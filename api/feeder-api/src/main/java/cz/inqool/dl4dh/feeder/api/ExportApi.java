@@ -10,6 +10,7 @@ import cz.inqool.dl4dh.feeder.model.ExportItem;
 import cz.inqool.dl4dh.feeder.repository.ExportItemRepository;
 import cz.inqool.dl4dh.feeder.repository.ExportRepository;
 import cz.inqool.dl4dh.feeder.service.ExportService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.api.annotations.ParameterObject;
@@ -50,6 +51,7 @@ public class ExportApi {
         this.itemRepository = itemRepository;
     }
 
+    @Operation(summary = "Download a result from export as a ZIP archive")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/download/{id}", produces="application/zip")
     public ResponseEntity<byte[]> download(@PathVariable Long id, Principal user) {
@@ -60,6 +62,7 @@ public class ExportApi {
         return exportService.download(export);
     }
 
+    @Operation(summary = "Download one item from an export result as a ZIP archive")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/download/{id}/item/{itemId}", produces="application/zip")
     public ResponseEntity<byte[]> download(@PathVariable Long id, @PathVariable UUID itemId, Principal user) {
@@ -71,12 +74,14 @@ public class ExportApi {
         return exportService.downloadItem(item);
     }
 
+    @Operation(summary = "Get all export requests of the user")
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public Page<Export> getAll(Principal user, @ParameterObject @PageableDefault(sort = "created", direction = Sort.Direction.DESC) Pageable p) {
         return exportService.get(user.getName(), p);
     }
 
+    @Operation(summary = "Create a new export request")
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/generate")
     public Export create(@RequestBody ExportRequestCreateDto request, Principal user) {

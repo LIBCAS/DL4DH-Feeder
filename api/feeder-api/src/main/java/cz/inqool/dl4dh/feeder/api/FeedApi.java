@@ -4,6 +4,7 @@ import cz.inqool.dl4dh.feeder.dto.PublicationDto;
 import cz.inqool.dl4dh.feeder.dto.PublicationsListDto;
 import cz.inqool.dl4dh.feeder.dto.kramerius.FeedResponseDto;
 import cz.inqool.dl4dh.feeder.dto.kramerius.SolrQueryWithFacetResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +24,7 @@ public class FeedApi {
     private WebClient kramerius;
     private WebClient solrWebClient;
 
+    @Operation(summary = "Functionality from Kramerius 5. Get the most desirable publications.")
     @GetMapping(value = "/mostdesirable")
     public PublicationsListDto mostDesirable() {
         FeedResponseDto result = kramerius.get()
@@ -36,6 +38,7 @@ public class FeedApi {
         return getPublicationsListDto(result);
     }
 
+    @Operation(summary = "Functionality from Kramerius 5. Get the newest publications in the system.")
     @GetMapping(value = "/newest")
     public PublicationsListDto newest() {
         FeedResponseDto result = kramerius.get()
@@ -49,6 +52,7 @@ public class FeedApi {
         return getPublicationsListDto(result);
     }
 
+    @Operation(summary = "Functionality from Kramerius 5. Depends on the implementation in Kramerius 5.")
     @GetMapping(value = "/custom")
     public PublicationsListDto custom() {
         FeedResponseDto result = kramerius.get()

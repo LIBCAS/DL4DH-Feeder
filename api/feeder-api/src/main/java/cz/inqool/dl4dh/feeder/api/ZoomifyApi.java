@@ -1,5 +1,6 @@
 package cz.inqool.dl4dh.feeder.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class ZoomifyApi {
         this.zoomify = webClient;
     }
 
+    @Operation(summary = "Get ImageProperties.xml file for an item. Needed for rendering a page from a publication")
     @GetMapping(
             value = "/{uuid}/ImageProperties.xml",
             produces = MediaType.APPLICATION_XML_VALUE
@@ -30,6 +32,7 @@ public class ZoomifyApi {
                 .uri("/"+uuid+"/ImageProperties.xml").retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 
+    @Operation(summary = "Download part of a page image")
     @GetMapping(
             value = "/{uuid}/{group}/{coords}.jpg",
             produces = MediaType.IMAGE_JPEG_VALUE

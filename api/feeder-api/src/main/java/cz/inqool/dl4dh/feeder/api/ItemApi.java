@@ -8,6 +8,7 @@ import cz.inqool.dl4dh.feeder.dto.kramerius.SolrQueryWithHighlightResponseDto;
 import cz.inqool.dl4dh.feeder.dto.kramerius.SolrQueryWithFacetResponseDto;
 import cz.inqool.dl4dh.feeder.dto.kramerius.StreamDto;
 import cz.inqool.dl4dh.feeder.service.SearchService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -58,6 +59,7 @@ public class ItemApi {
         this.solrWebClient = webClient;
     }
 
+    @Operation(summary = "Get a publication/item")
     @GetMapping("/{uuid}")
     public @ResponseBody Map<String, Object> item(@PathVariable(value="uuid") String uuid) {
         Map<String, Object> response = kramerius.get()
@@ -77,6 +79,7 @@ public class ItemApi {
         return response;
     }
 
+    @Operation(summary = "Get a thumbnail of the publication/item")
     @GetMapping(
             value = "/{uuid}/thumb",
             produces = MediaType.IMAGE_JPEG_VALUE
@@ -86,6 +89,7 @@ public class ItemApi {
                 .uri("/item/"+uuid+"/thumb").retrieve().bodyToMono(ByteArrayResource.class).block();
     }
 
+    @Operation(summary = "Get subitems, e.g. publications in periodical")
     @GetMapping("/{uuid}/children")
     public @ResponseBody Object children(@PathVariable(value="uuid") String uuid) {
         return kramerius.get()
@@ -93,6 +97,7 @@ public class ItemApi {
     }
 
 
+    @Operation(summary = "Return a hinted words from subitems")
     @GetMapping("/{uuid}/children/search/hint")
     public @ResponseBody
     Set<String> childrenSearchHint(@PathVariable(value="uuid") String uuid, @RequestParam String q, @RequestParam(required = false) NameTagEntityType nameTagType) throws SolrServerException, IOException {
@@ -147,6 +152,7 @@ public class ItemApi {
         return result;
     }
 
+    @Operation(summary = "Search in subitems")
     @GetMapping("/{uuid}/children/search")
     public @ResponseBody Map<String, ChildSearchDto> childrenSearch(@PathVariable(value="uuid") String uuid, @RequestParam String q) throws SolrServerException, IOException {
         Map<String, ChildSearchDto> result = new HashMap<>();
@@ -190,6 +196,7 @@ public class ItemApi {
         return result;
     }
 
+    @Operation(summary = "Get list of available stream of data for a publication/item, e.g. FOXML, SOLR entry, SOLR_PLUS")
     @GetMapping("/{uuid}/streams")
     public @ResponseBody Map<String, StreamDto> streams(@PathVariable(value="uuid") String uuid) {
         Map<String, StreamDto> streams =  kramerius.get()
@@ -220,6 +227,7 @@ public class ItemApi {
         }
     }
 
+    @Operation(summary = "Download a stream of data from the publication/item")
     @GetMapping("/{uuid}/streams/{stream}")
     public @ResponseBody ResponseEntity<ByteArrayResource> streamMods(@PathVariable(value="uuid") String uuid, @PathVariable(value="stream") String stream) {
         // Base url for streams

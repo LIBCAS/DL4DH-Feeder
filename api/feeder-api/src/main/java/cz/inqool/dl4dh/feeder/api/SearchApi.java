@@ -5,6 +5,7 @@ import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
 import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
 import cz.inqool.dl4dh.feeder.model.Filter;
 import cz.inqool.dl4dh.feeder.service.SearchService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
@@ -31,6 +32,7 @@ public class SearchApi {
         this.searchService = searchService;
     }
 
+    @Operation(summary = "Hinting words for a search query")
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> hint(@RequestParam @Schema(description = "Query string") String q, @RequestParam(required = false) NameTagEntityType nameTagType) {
         return searchService.hint(q, nameTagType);
@@ -49,12 +51,14 @@ public class SearchApi {
         return results;
     }
 
+    @Operation(summary = "Get list of collections in the system")
     @GetMapping(value = "/collections")
     public @ResponseBody List<CollectionDto> collections() {
         return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
         }).block();
     }
 
+    @Operation(summary = "Download a pds of publictions")
     @GetMapping(value = "/localPrintPDF", produces = "application/pdf")
     public @ResponseBody ByteArrayResource print(@RequestParam @Schema(example = "uuid:677e4670-694b-11e4-8c6e-001018b5eb5c,uuid:6793a330-694b-11e4-8c6e-001018b5eb5c") String pids, @RequestParam @Schema(defaultValue = "A4") Optional<String> pagesize, @RequestParam @Schema(defaultValue = "FULL") Optional<String> imgop) {
         return krameriusPrint.get().uri(uriBuilder -> uriBuilder.queryParam("pids", pids)

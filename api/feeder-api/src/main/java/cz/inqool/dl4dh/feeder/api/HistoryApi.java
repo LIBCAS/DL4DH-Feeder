@@ -4,6 +4,7 @@ import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.model.Filter;
 import cz.inqool.dl4dh.feeder.repository.FilterRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +27,14 @@ public class HistoryApi {
         this.filterRepository = filterRepository;
     }
 
+    @Operation(summary = "Get all saved historical search items.")
     @PreAuthorize("isAuthenticated()")
     @GetMapping()
     public Page<Filter> getAll(Principal user, @ParameterObject @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable p) {
         return filterRepository.findByUsername(user.getName(), p);
     }
 
+    @Operation(summary = "Get one saved historical search item.")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{id}")
     public Filter getById(Principal user, @PathVariable Long id) {
@@ -42,6 +45,7 @@ public class HistoryApi {
         return filter;
     }
 
+    @Operation(summary = "Delete a saved historical search item")
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping(value = "/{id}")
     public void deleteById(Principal user, @PathVariable Long id) {

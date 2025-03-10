@@ -6,6 +6,7 @@ import cz.inqool.dl4dh.feeder.dto.request.message.MessageCreateDto;
 import cz.inqool.dl4dh.feeder.enums.UserRequestState;
 import cz.inqool.dl4dh.feeder.enums.UserRequestType;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -34,6 +35,7 @@ public class UserRequestApi {
 
     private WebClient krameriusPlus;
 
+    @Operation(summary = "Create a user request")
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRequestDto createUserRequest(@Valid @ModelAttribute UserRequestCreateDto createDto,
@@ -60,6 +62,7 @@ public class UserRequestApi {
 
     }
 
+    @Operation(summary = "Get list of user requests")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Result<UserRequestListDto> userRequest(Principal principal,
@@ -89,6 +92,7 @@ public class UserRequestApi {
                 .retrieve().bodyToMono(new ParameterizedTypeReference<Result<UserRequestListDto>>() {}).block();
     }
 
+    @Operation(summary = "Get a user request detail")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{requestId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserRequestDto> findUserRequest(@PathVariable String requestId, @RequestHeader(value = "Authorization") String token) {
@@ -103,6 +107,7 @@ public class UserRequestApi {
         }
     }
 
+    @Operation(summary = "Download a file from a user request")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{requestId}/file/{fileId}")
     public @ResponseBody ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String requestId,
@@ -129,6 +134,7 @@ public class UserRequestApi {
         return ResponseEntity.ok().contentType(mediaType).body(body);
     }
 
+    @Operation(summary = "Create a new message in a user request")
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{requestId}/message", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createMessage(@PathVariable String requestId,
