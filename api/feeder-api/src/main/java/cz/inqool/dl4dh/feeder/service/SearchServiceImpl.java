@@ -190,6 +190,9 @@ public class SearchServiceImpl implements SearchService {
                     filters.applyFqQueryToUriBuilder(uriBuilder, filterBase, false)
                             .applyEdismaxToUriBuilder(uriBuilder, false);
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
+                    if (!filters.getQuery().isEmpty()) {
+                        uriBuilder.queryParam("q1", filters.getQuery());
+                    }
                     return uriBuilder.queryParam("q", filters.toQuery())
                             .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")

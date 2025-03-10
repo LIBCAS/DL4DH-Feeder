@@ -166,7 +166,7 @@ public class Filter extends AuditModel {
         if (useEdismax()) {
             return query;
         }
-        return !query.isEmpty() ? "dc.title:\""+getQueryEscaped()+"*\"" : "*:*";
+        return !query.isEmpty() ? "_query_:\"{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}\"" : "*:*";
     }
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {
