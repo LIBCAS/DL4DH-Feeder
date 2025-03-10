@@ -38,6 +38,7 @@ public class SearchApi {
         return searchService.hint(q, nameTagType);
     }
 
+    @Operation(summary = "Search publications with many filters, sorting and pagination, e.g. filter by query, models, keywords, authors, publication release date, and many others. Use GET parameter save and field name in request body to save the search as historical saved search query.")
     @PostMapping(value = "")
     public SearchDto search(@RequestBody Filter filters, @RequestParam(required = false, defaultValue = "false") @Schema(description = "Save the search query to user's history", defaultValue = "false", type = "boolean") boolean save, Principal user) {
         SearchDto results = searchService.search(filters);
