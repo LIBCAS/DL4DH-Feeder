@@ -191,10 +191,12 @@ public class SearchServiceImpl implements SearchService {
                             .applyEdismaxToUriBuilder(uriBuilder, false);
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     if (!filters.getQuery().isEmpty()) {
-                        uriBuilder.queryParam("q1", filters.getQuery());
+                        uriBuilder.queryParam("q1", filters.getQuery(), "{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}");
                     }
-                    return uriBuilder.queryParam("q", filters.toQuery())
-                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
+                    else {
+                        uriBuilder.queryParam("q", filters.toQuery());
+                    }
+                    return uriBuilder.queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("f.datum_begin.facet.limit", "-1")
