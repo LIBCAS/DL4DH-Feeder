@@ -278,7 +278,9 @@
    "APPROVED": "Schváleno",
    "PROLONGING": "Prodlužováno",
    "REJECTED": "Odmítnuto",
-   "WAITING": "Čeká"
+   "WAITING": "Čeká",
+   "ENRICHED": "Zpracováno",
+   "OTHER": "Jiné"
   }
  },
  "exports": {
