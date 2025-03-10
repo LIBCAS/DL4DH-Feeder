@@ -166,7 +166,7 @@ public class Filter extends AuditModel {
         if (useEdismax()) {
             return query;
         }
-        return !query.isEmpty() ? "_query_:\"{edison}\"" : "*:*";
+        return !query.isEmpty() ? "_query_:\"{edismax}\"" : "*:*";
     }
 
     public String toFqQuery(List<String> base, boolean includeNameTag) {

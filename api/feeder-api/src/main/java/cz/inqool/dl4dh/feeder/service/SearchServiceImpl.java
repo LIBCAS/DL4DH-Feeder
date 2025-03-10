@@ -190,21 +190,23 @@ public class SearchServiceImpl implements SearchService {
                     filters.applyFqQueryToUriBuilder(uriBuilder, filterBase, false)
                             .applyEdismaxToUriBuilder(uriBuilder, false);
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
-                    if (!filters.getQuery().isEmpty()) {
-                        uriBuilder.queryParam("q1", filters.getQuery(), "{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}");
-                    }
-                    else {
-                        uriBuilder.queryParam("q", filters.toQuery());
-                    }
-                    return uriBuilder.queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
+                    uriBuilder.queryParam("q", filters.toQuery())
+                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("start", filters.getStart())
                             .queryParam("rows", useEnriched ? 0 : filters.getPageSize())
-                            .queryParam("sort", filters.getSort().toSolrSort(false))
-                            .build();
+                            .queryParam("sort", filters.getSort().toSolrSort(false));
+                    if (!filters.getQuery().isEmpty()) {
+                        uriBuilder.queryParam("q1", filters.getQuery());
+                        Map<String, String> urlParams = new HashMap<>();
+                        urlParams.put("edismax", "{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}");
+                        return uriBuilder.build(urlParams);
+                    }
+                    return uriBuilder.build();
+
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
