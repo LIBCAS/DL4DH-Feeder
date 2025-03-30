@@ -49,4 +49,6 @@ public class PublicationDto {
 
     @NotNull
     private boolean enriched;
+
+    private Long occurrences;
 }

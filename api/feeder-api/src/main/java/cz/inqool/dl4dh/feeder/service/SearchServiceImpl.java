@@ -147,9 +147,13 @@ public class SearchServiceImpl implements SearchService {
         boolean useEnriched = filters.useOnlyEnriched();
 
         // Filter only basic types of documents if a page is not selected as a model
-        List<String> filterBase = filters.isSearchThroughPages() ? List.of("fedora.model:page") :
-                List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit");
+        List<String> filterBase = new ArrayList<>(filters.isSearchThroughPages() ? List.of("fedora.model:page") :
+                List.of("fedora.model:monograph", "fedora.model:periodical", "fedora.model:map", "fedora.model:sheetmusic", "fedora.model:monographunit"));
         List<String> facetBase = List.of("keywords", "language", "facet_autor", "model_path", "dostupnost", "collection", "datum_begin");
+        if (!filters.isSearchThroughPages() && !filters.getQuery().isEmpty()) {
+            filterBase.add("fedora.model:page");
+            filterBase.add("fedora.model:article");
+        }
 
         // Get documents from Feeder
         SolrQueryWithFacetResponseDto feederDocuments = feederSolrWebClient.get()
@@ -161,7 +165,8 @@ public class SearchServiceImpl implements SearchService {
                     }
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field", f));
-                    return uriBuilder.queryParam("q", filters.toQuery())
+
+                    uriBuilder.queryParam("q", filters.toQuery())
                             .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
@@ -169,9 +174,24 @@ public class SearchServiceImpl implements SearchService {
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("start", filters.getStart())
-                            .queryParam("rows", useEnriched ? filters.getPageSize() : 0)
-                            .queryParam("sort", filters.getSort().toSolrSort(true))
-                            .build();
+                            .queryParam("rows", useEnriched ? filters.getPageSize() : 0);
+                    if (!filters.getQuery().isEmpty()) {
+                        uriBuilder.queryParam("q1", filters.getQuery())
+                                .queryParam("group", "true")
+                                .queryParam("group.field", "root_pid")
+                                .queryParam("group.ngroups", "true")
+                                .queryParam("group.sort", "score desc")
+                                .queryParam("group.truncate", "true");
+                        Map<String, String> urlParams = new HashMap<>();
+                        // This is a little bit different query than the query for kramerius solr, because feeder solr
+                        // does not contain fields level, text_ocr and mods.shelfLocator
+                        urlParams.put("edismax", "{!edismax qf='dc.title^10 dc.creator^2 keywords' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}");
+                        return uriBuilder.build(urlParams);
+                    }
+                    else {
+                        uriBuilder.queryParam("sort", filters.getSort().toSolrSort(true));
+                    }
+                    return uriBuilder.build();
                 })
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
@@ -197,13 +217,20 @@ public class SearchServiceImpl implements SearchService {
                             .queryParam("f.datum_begin.facet.limit", "-1")
                             .queryParam("f.collection.facet.limit", "-1")
                             .queryParam("start", filters.getStart())
-                            .queryParam("rows", useEnriched ? 0 : filters.getPageSize())
-                            .queryParam("sort", filters.getSort().toSolrSort(false));
+                            .queryParam("rows", useEnriched ? 0 : filters.getPageSize());
                     if (!filters.getQuery().isEmpty()) {
-                        uriBuilder.queryParam("q1", filters.getQuery());
+                        uriBuilder.queryParam("q1", filters.getQuery())
+                                .queryParam("group", "true")
+                                .queryParam("group.field", "root_pid")
+                                .queryParam("group.ngroups", "true")
+                                .queryParam("group.sort", "score desc")
+                                .queryParam("group.truncate", "true");
                         Map<String, String> urlParams = new HashMap<>();
                         urlParams.put("edismax", "{!edismax qf='dc.title^10 dc.creator^2 keywords text_ocr^0.1 mods.shelfLocator' bq='(level:0)^200' bq='(dostupnost:public)^2' bq='(fedora.model:page)^0.1' v=$q1}");
                         return uriBuilder.build(urlParams);
+                    }
+                    else {
+                        uriBuilder.queryParam("sort", filters.getSort().toSolrSort(false));
                     }
                     return uriBuilder.build();
 
@@ -220,6 +247,8 @@ public class SearchServiceImpl implements SearchService {
                 .orElseThrow();
 
         // Use the right results
+        feederDocuments.processGrouped(Long.valueOf(filters.getStart()));
+        krameriusDocuments.processGrouped(Long.valueOf(filters.getStart()));
         SolrQueryWithFacetResponseDto result = useEnriched ? feederDocuments : krameriusDocuments;
 
         // Get PIDs of showing documents and check, if they are already enriched
@@ -260,7 +289,8 @@ public class SearchServiceImpl implements SearchService {
                                         (String) d.get("PID"),
                                         (List<String>) d.get("parent_pid"),
                                         (String) d.get("root_title"),
-                                        enrichedPIDs.contains((String) d.get("PID"))
+                                        enrichedPIDs.contains((String) d.get("PID")),
+                                        (Long) d.getOrDefault("occurrences", null)
                                 )
                         ).collect(Collectors.toList())),
                 facets,

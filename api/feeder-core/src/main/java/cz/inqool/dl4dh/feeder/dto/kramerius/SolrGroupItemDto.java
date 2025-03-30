@@ -10,5 +10,8 @@ import javax.validation.constraints.NotNull;
 public class SolrGroupItemDto {
     @NotNull
     private String groupValue;
+
+    @NotNull
+    private SolrGroupDoclistDto doclist;
 }
 
