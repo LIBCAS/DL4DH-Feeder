@@ -9,6 +9,7 @@ export type PublicationDto = {
 	rootTitle: string;
 	enriched: boolean;
 	parentPid: string[];
+	occurrences: number;
 };
 
 export type PublicationContext = {

@@ -225,23 +225,25 @@ const GenericTileItem: React.FC<Props> = ({
 							flexDirection="column"
 							color="textCommon"
 						>
-							{publication.model.toUpperCase() === 'PAGE' ? (
+							{publication.model.toUpperCase() === 'PAGE' && (
 								<Flex alignItems="center">
 									<FaBookOpen color="primary" />
 									{'  '}
 									<Text ml={2}>{publication.title}</Text>
 								</Flex>
-							) : (
-								<Flex alignItems="center">
-									<MdPerson color="primary" />
-									{'  '}
-									<Cell>
-										{typeof publication.authors === 'object'
-											? publication.authors.map(a => a)
-											: publication.authors}
-									</Cell>
-								</Flex>
 							)}
+							{publication.model.toUpperCase() !== 'PAGE' &&
+								publication.authors && (
+									<Flex alignItems="center">
+										<MdPerson color="primary" />
+										{'  '}
+										<Cell>
+											{typeof publication.authors === 'object'
+												? publication.authors.map(a => a)
+												: publication.authors}
+										</Cell>
+									</Flex>
+								)}
 							<Flex alignItems="center">
 								<MdCalendarToday color="primary" />
 								<Text ml={2}>
@@ -249,6 +251,21 @@ const GenericTileItem: React.FC<Props> = ({
 									{publication.date}
 								</Text>
 							</Flex>
+							{publication.model.toUpperCase() !== 'PAGE' &&
+								publication.occurrences && (
+									<Flex alignItems="center">
+										<Cell>
+											{publication.occurrences}
+											{'  '}
+											{publication.occurrences == 1 && t('search.occurences1')}
+											{publication.occurrences >= 2 &&
+												publication.occurrences <= 4 &&
+												t('search.occurences2to4')}
+											{publication.occurrences >= 5 &&
+												t('search.occurences5andmore')}
+										</Cell>
+									</Flex>
+								)}
 						</Flex>
 
 						<Flex flexGrow={1} />
