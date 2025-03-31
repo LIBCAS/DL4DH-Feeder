@@ -21,6 +21,7 @@ import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import { modelToText, modelToColor } from 'utils/enumsMap';
+import { pluralRules } from '../../../utils';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
@@ -257,12 +258,11 @@ const GenericTileItem: React.FC<Props> = ({
 										<Cell>
 											{publication.occurrences}
 											{'  '}
-											{publication.occurrences == 1 && t('search.occurences1')}
-											{publication.occurrences >= 2 &&
-												publication.occurrences <= 4 &&
-												t('search.occurences2to4')}
-											{publication.occurrences >= 5 &&
-												t('search.occurences5andmore')}
+											{t(
+												`common:n_occurrences:${pluralRules(
+													publication.occurrences,
+												)}`,
+											)}
 										</Cell>
 									</Flex>
 								)}
