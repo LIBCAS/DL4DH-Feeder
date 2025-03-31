@@ -167,7 +167,7 @@ public class SearchServiceImpl implements SearchService {
                     Arrays.stream(NameTagEntityType.ALL.getSolrField().split(",")).forEach(f -> uriBuilder.queryParam("facet.field", f));
 
                     uriBuilder.queryParam("q", filters.toQuery())
-                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
+                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,root_pid,model_path,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("facet.contains.ignoreCase", "true")
@@ -211,7 +211,7 @@ public class SearchServiceImpl implements SearchService {
                             .applyEdismaxToUriBuilder(uriBuilder, false);
                     facetBase.forEach(f -> uriBuilder.queryParam("facet.field", f));
                     uriBuilder.queryParam("q", filters.toQuery())
-                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,parent_pid,datum_str,dnnt-labels")
+                            .queryParam("fl", "PID,dostupnost,fedora.model,dc.creator,dc.title,root_title,root_pid,model_path,parent_pid,datum_str,dnnt-labels")
                             .queryParam("facet", "true")
                             .queryParam("facet.mincount", "1")
                             .queryParam("f.datum_begin.facet.limit", "-1")

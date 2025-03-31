@@ -27,8 +27,9 @@ public class SolrQueryWithFacetResponseDto extends SolrQueryResponseDto {
                     .map(g -> {
                         Map<String, Object> doc = new HashMap<>(g.getDoclist().getDocs().stream().findFirst().get());
                         doc.put("occurrences", g.getDoclist().getNumFound());
-                        doc.put("fedora.model", doc.getOrDefault("model_path", "").toString().split("/")[0]);
-                        doc.put("PID", doc.get("root_pid"));
+                        doc.put("fedora.model", doc.getOrDefault("model_path", doc.getOrDefault("fedora.model", "")).toString().split("/")[0]);
+                        doc.put("PID", doc.getOrDefault("root_pid", doc.get("PID")));
+                        doc.put("dc.title", doc.getOrDefault("root_title", doc.get("dc.title")));
                         return doc;
                     })
                     .collect(Collectors.toList()));
