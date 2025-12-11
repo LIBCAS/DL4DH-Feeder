@@ -1,6 +1,8 @@
 import { useQueries, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
+import XML from 'xml2js';
+import { IIIFInfo } from 'ol/format';
 
 import { api, infiniteMainSearchEndpoint, REFETCH_INTERVAL } from 'api';
 
@@ -151,15 +153,58 @@ export const useThumbnails = (pages: PublicationChild[], toIndex: number) =>
 		})),
 	);
 
-export const useImageProperties = (uuid: string) =>
+export type ImageInfo = {
+	image: {
+		type: string;
+	};
+};
+
+export type ImageProps = {
+	width: number;
+	height: number;
+	type: string;
+	iiifInfo?: IIIFInfo;
+};
+
+export const useImageProperties = (uuid: string, isKramerius7: boolean) =>
 	useQuery(
 		['imageProperties', uuid],
-		() =>
-			api()
-				.get('zoomify/' + uuid + '/ImageProperties.xml', {
-					headers: { accept: 'application/xml' },
+		(): Promise<ImageProps> => {
+			if (!isKramerius7) {
+				return api()
+					.get('zoomify/' + uuid + '/ImageProperties.xml', {
+						headers: { accept: 'application/xml' },
+					})
+					.text()
+					.then(value => {
+						return XML.parseStringPromise(value ?? '').then(parsedXML => {
+							const imgWidth = parseInt(
+								parsedXML?.IMAGE_PROPERTIES.$.WIDTH ?? '0',
+							);
+							const imgHeight = parseInt(
+								parsedXML?.IMAGE_PROPERTIES.$.HEIGHT ?? '0',
+							);
+							return {
+								width: imgWidth,
+								height: imgHeight,
+								type: 'zoomify',
+							} as ImageProps;
+						});
+					});
+			}
+			return api()
+				.get('item/' + uuid + '/info', {
+					headers: { accept: 'application/json' },
 				})
-				.text(),
+				.json<ImageInfo>()
+				.then(value => {
+					return {
+						width: 0,
+						height: 0,
+						type: value?.image?.type ?? 'tiles',
+					};
+				});
+		},
 		{
 			staleTime: Infinity,
 			refetchOnWindowFocus: false,

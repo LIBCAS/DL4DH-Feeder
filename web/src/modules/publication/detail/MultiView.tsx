@@ -26,16 +26,23 @@ import PublicationSidePanel from './PublicationSidePanel';
 import PriavatePublicationInfo from './PriavatePublicationInfo';
 import useProcessPublication from './useProcessPublication';
 import PubPageNotFound from './PubPageNotFound';
+import EmptyPublicationInfo from './EmptyPublicationInfo';
 
 //http://localhost:3000/view/uuid:0bec6e50-11e1-11eb-a4cf-005056827e52?page=uuid:18617fd7-cc78-4042-95aa-c7e7ce6363aa
 //TODO:cleanup
 const MultiView = () => {
 	const { getApropriateIds } = useParseUrlIdsAndParams();
 	const zoomRef = useRef<HTMLDivElement | null>(null);
-	const { pageId: pageIdLeft, fulltext: fulltextLeft } =
-		getApropriateIds('left');
-	const { pageId: pageIdRight, fulltext: fulltextRight } =
-		getApropriateIds('right');
+	const {
+		id: idLeft,
+		pageId: pageIdLeft,
+		fulltext: fulltextLeft,
+	} = getApropriateIds('left');
+	const {
+		id: idRight,
+		pageId: pageIdRight,
+		fulltext: fulltextRight,
+	} = getApropriateIds('right');
 
 	const processedLeft = useProcessPublication('left');
 	const processedRight = useProcessPublication('right');
@@ -123,9 +130,19 @@ const MultiView = () => {
 												<Loader />
 											) : (
 												<>
-													{leftPublic ? (
-														<ZoomifyView id={pageIdLeft} />
+													{((processedLeft.publicationChildren ?? []).length ==
+														0 &&
+														!processedLeft.currentPage?.uuid) ||
+													processedLeft.publication?.type ==
+														'application/pdf' ? (
+														<EmptyPublicationInfo
+															publication={idLeft}
+															isMultiView
+														/>
 													) : (
+														<ZoomifyView id={pageIdLeft} />
+													)}
+													{!leftPublic && (
 														<PriavatePublicationInfo isMultiView />
 													)}
 												</>
@@ -154,9 +171,19 @@ const MultiView = () => {
 												<Loader />
 											) : (
 												<>
-													{rightPublic ? (
-														<ZoomifyView id={pageIdRight} />
+													{((processedRight.publicationChildren ?? []).length ==
+														0 &&
+														!processedRight.currentPage?.uuid) ||
+													processedRight.publication?.type ==
+														'application/pdf' ? (
+														<EmptyPublicationInfo
+															publication={idRight}
+															isMultiView
+														/>
 													) : (
+														<ZoomifyView id={pageIdRight} />
+													)}
+													{!rightPublic && (
 														<PriavatePublicationInfo isMultiView />
 													)}
 												</>

@@ -1,5 +1,7 @@
 package cz.inqool.dl4dh.feeder.enums;
 
+import cz.inqool.dl4dh.feeder.service.KrameriusSolrFieldsService;
+
 public enum FiltersSortEnum {
     TITLE_ASC,
     CREATED_DESC,
@@ -9,28 +11,28 @@ public enum FiltersSortEnum {
     PAGE_TITLE_ASC,
     PAGE_LAST_ENRICHED;
 
-    public String toSolrSort(boolean kplus) {
+    public String toSolrSort(boolean kplus, KrameriusSolrFieldsService solrFields) {
         switch (this) {
             case TITLE_ASC:
-                return "title_sort asc";
+                return solrFields.titleSort()+" asc";
 
             case PAGE_TITLE_ASC:
-                return "root_title asc";
+                return solrFields.rootTitle()+" asc";
 
             case CREATED_DESC:
-                return "created_date desc";
+                return solrFields.created()+" desc";
 
             case DATE_ASC:
-                return "datum_begin asc";
+                return solrFields.dateFrom()+" asc";
 
             case DATE_DESC:
-                return "datum_end desc, datum_begin desc";
+                return solrFields.dateTo()+" desc, "+solrFields.dateFrom()+" desc";
 
             case LAST_ENRICHED:
-                return kplus ? "import_date desc, title_sort asc" : null;
+                return kplus ? "import_date desc, "+solrFields.titleSort()+" asc" : null;
 
             case PAGE_LAST_ENRICHED:
-                return kplus ? "import_date desc, root_title asc" : null;
+                return kplus ? "import_date desc, "+solrFields.rootTitle()+" asc" : null;
 
             default:
                 return null;

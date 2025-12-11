@@ -5,7 +5,6 @@
 
 	<modules>
 		<module>feeder-api</module>
-		<module>feeder-core</module>
 	</modules>
 
 	<parent>
@@ -23,7 +22,7 @@
 	<description/>
 
 	<properties>
-		<revision>1.6.1</revision>
+		<revision>1.7.0</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j2.version>2.16.0</log4j2.version>
@@ -37,12 +36,6 @@
 		<dependencies>
 			<dependency>
 				<artifactId>feeder-api</artifactId>
-				<groupId>cz.inqool.dl4dh</groupId>
-				<version>${revision}</version>
-			</dependency>
-
-			<dependency>
-				<artifactId>feeder-core</artifactId>
 				<groupId>cz.inqool.dl4dh</groupId>
 				<version>${revision}</version>
 			</dependency>

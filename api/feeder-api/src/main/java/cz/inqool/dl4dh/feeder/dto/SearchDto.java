@@ -1,7 +1,7 @@
 package cz.inqool.dl4dh.feeder.dto;
 
-import cz.inqool.dl4dh.feeder.dto.openapi.OpenAPIAvailableFilters;
-import cz.inqool.dl4dh.feeder.dto.openapi.OpenAPIAvailableNameTagFilters;
+import cz.inqool.dl4dh.feeder.openapi.OpenAPIAvailableFilters;
+import cz.inqool.dl4dh.feeder.openapi.OpenAPIAvailableNameTagFilters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

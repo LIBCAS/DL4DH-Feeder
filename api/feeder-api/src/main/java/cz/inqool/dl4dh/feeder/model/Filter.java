@@ -2,6 +2,7 @@ package cz.inqool.dl4dh.feeder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.inqool.dl4dh.feeder.enums.*;
+import cz.inqool.dl4dh.feeder.service.KrameriusSolrFieldsService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -85,6 +86,9 @@ public class Filter extends AuditModel {
     @Schema(example = "1", description = "Filter availableNameTagFilters response values")
     private String nameTagFacet = "";
 
+    @Schema(example = "0", description = "Show facets in the response")
+    private Boolean returnFacets  = true;
+
     // Pagination
     @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
     private Integer start = 0;
@@ -133,92 +137,97 @@ public class Filter extends AuditModel {
         return advancedFilterField != null && !advancedFilterField.equals(AdvancedFilterFieldEnum.NONE) && !query.isEmpty();
     }
 
-    public Filter applyEdismaxToUriBuilder(UriBuilder uriBuilder, boolean includeNameTag) {
+    public Filter applyEdismaxToUriBuilder(UriBuilder uriBuilder, boolean includeNameTag, KrameriusSolrFieldsService solrFields) {
         if (this.useEdismax()) {
             uriBuilder.queryParam("defType", "edismax")
-                    .queryParam("qf", this.getEdismaxFields(includeNameTag));
+                    .queryParam("qf", this.getEdismaxFields(includeNameTag, solrFields));
         }
         return this;
     }
 
-    public Filter applyFqQueryToUriBuilder(UriBuilder uriBuilder, List<String> base, boolean includeNameTag) {
-        if (!this.toFqQuery(base, includeNameTag).isEmpty()) {
+    public Filter applyFqQueryToUriBuilder(UriBuilder uriBuilder, List<String> base, boolean includeNameTag, KrameriusSolrFieldsService solrFields, List<String> publicPolicies) {
+        if (!this.toFqQuery(base, includeNameTag, solrFields, publicPolicies).isEmpty()) {
             uriBuilder
-                    .queryParam("fq", this.toFqQuery(base, includeNameTag));
+                    .queryParam("fq", this.toFqQuery(base, includeNameTag, solrFields, publicPolicies));
         }
         return this;
     }
 
     @JsonIgnore
-    public String getEdismaxFields(boolean includeNameTag) {
+    public String getEdismaxFields(boolean includeNameTag, KrameriusSolrFieldsService solrFields) {
         if (advancedFilterField == null) {
             return "";
         }
         if (includeNameTag) {
-            return advancedFilterField.getSolrField();
+            return advancedFilterField.getSolrFieldWithKField(solrFields);
         }
-        return Arrays.stream(advancedFilterField.getSolrField().split(" "))
+        return Arrays.stream(advancedFilterField.getSolrFieldWithKField(solrFields).split(" "))
                 .filter(f -> !f.startsWith("nameTag."))
                 .collect(Collectors.joining(" "));
     }
 
-    public String toQuery() {
+    public String toQuery(KrameriusSolrFieldsService solrFields) {
         if (useEdismax()) {
             return query;
         }
         return !query.isEmpty() ? "_query_:\"{edismax}\"" : "*:*";
     }
 
-    public String toFqQuery(List<String> base, boolean includeNameTag) {
+    public String toFqQuery(List<String> base, boolean includeNameTag, KrameriusSolrFieldsService solrFields, List<String> publicPolicies) {
         List<List<String>> list = new ArrayList<>();
         if (base != null && !base.isEmpty()) {
             list.add(base);
         }
 
-        if (availability != AvailabilityEnum.ALL) {
-            list.add(List.of("dostupnost:" + availability.toString().toLowerCase()));
+        if (availability == AvailabilityEnum.PUBLIC) {
+            list.add(publicPolicies.stream().map(p -> solrFields.accessibility()+":"+p)
+                    .collect(Collectors.toList()));
+        }
+        else if (availability == AvailabilityEnum.PRIVATE) {
+            list.add(List.of("NOT("+publicPolicies.stream().map(p -> solrFields.accessibility()+":"+p)
+                    .collect(Collectors.joining(" OR "))+")"));
         }
 
         if (!models.isEmpty()) {
             // If the user is searching through pages, we have to filter through model_path to filter parent's model
             // model_path is a string with multiple values with delimiter
-            boolean useBaseModel = (base != null && base.contains("fedora.model:page"));
-            String modelPrefix = useBaseModel ? "model_path" : "fedora.model";
+            boolean useBaseModel = (base != null && base.contains(solrFields.model()+":page"));
+            String modelPrefix = useBaseModel ? solrFields.modelPath() : solrFields.model();
             list.add(models.stream().map(v -> {
                 if (v == DocumentModelEnum.MONOGRAPH) {
-                    return modelPrefix+":monograph OR "+modelPrefix+":monographunit";
+                    return "("+modelPrefix+":monograph OR "+modelPrefix+":monographunit)";
                 }
                 return modelPrefix+":" + v.toString().toLowerCase();
             }).map(v -> (useBaseModel ? v+"*" : v)).collect(Collectors.toList()));
         }
 
         if (!keywords.isEmpty()) {
-            list.add(keywords.stream().map(v -> "keywords:\""+v.replaceAll("\"","\\\\\"")+"\"")
+            list.add(keywords.stream().map(v -> solrFields.keywords()+":\""+v.replaceAll("\"","\\\\\"")+"\"")
                     .collect(Collectors.toList()));
         }
 
         if (!authors.isEmpty()) {
-            list.add(authors.stream().map(v -> "dc.creator:\""+v.replaceAll("\"","\\\\\"")+"\"")
+            list.add(authors.stream().map(v -> solrFields.author()+":\""+v.replaceAll("\"","\\\\\"")+"\"")
                     .collect(Collectors.toList()));
         }
 
         if (!languages.isEmpty()) {
-            list.add(languages.stream().map(v -> "language:\""+v.replaceAll("\"","\\\\\"")+"\"")
+            list.add(languages.stream().map(v -> solrFields.language()+":\""+v.replaceAll("\"","\\\\\"")+"\"")
                     .collect(Collectors.toList()));
         }
 
         if (!collections.isEmpty()) {
-            list.add(collections.stream().map(v -> "collection:\""+v.replaceAll("\"","\\\\\"")+"\"")
+            list.add(collections.stream().map(v -> solrFields.collection()+":\""+v.replaceAll("\"","\\\\\"")+"\"")
                     .collect(Collectors.toList()));
         }
 
         if (from != null || to != null) {
             List<String> yearList = new ArrayList<>();
             if (from != null) {
-                yearList.add("datum_begin:["+ from +" TO *]");
+                yearList.add(solrFields.dateYearFrom()+":["+ from +" TO *]");
             }
             if (to != null) {
-                yearList.add("datum_begin:[* TO "+ to +"]");
+                yearList.add(solrFields.dateYearFrom()+":[* TO "+ to +"]");
             }
             list.add(List.of(String.join(" AND ", yearList)));
         }
@@ -229,6 +238,21 @@ public class Filter extends AuditModel {
             }
         }
 
-        return list.stream().map(v -> "("+String.join(" OR ", v)+")").collect(Collectors.joining(" AND "));
+        return list.stream().map(v -> v.size() == 1 ? v.get(0) : "("+String.join(" OR ", v)+")").collect(Collectors.joining(" AND "));
+    }
+
+    public Filter pageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+        return this;
+    }
+
+    public Filter returnFacets(Boolean returnFacets) {
+        this.returnFacets = returnFacets;
+        return this;
+    }
+
+    public Filter availability(AvailabilityEnum availability) {
+        this.availability = availability;
+        return this;
     }
 }

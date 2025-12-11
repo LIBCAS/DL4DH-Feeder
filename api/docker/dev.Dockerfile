@@ -7,7 +7,6 @@ RUN apk add --update maven openjdk11 \
 
 ADD pom.xml /root/pom.xml
 COPY feeder-api/ /root/feeder-api/
-COPY feeder-core/ /root/feeder-core/
 
 RUN  \
      --mount=type=cache,id=maven,target=/root/.m2 \

@@ -51,4 +51,11 @@ public class PublicationDto {
     private boolean enriched;
 
     private Long occurrences;
+
+    public static String convertK7Accessibility(Object accessibility, List<String> publicPolicies) {
+        if (accessibility instanceof String) {
+            return (String) accessibility;
+        }
+        return (accessibility instanceof List && ((List<?>) accessibility).stream().anyMatch(publicPolicies::contains)) ? "public" : "private";
+    }
 }

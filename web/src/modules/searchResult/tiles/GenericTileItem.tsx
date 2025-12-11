@@ -21,7 +21,9 @@ import { useBulkExportContext } from 'hooks/useBulkExport';
 import { useSearchThroughContext } from 'hooks/useSearchThroughContext';
 
 import { modelToText, modelToColor } from 'utils/enumsMap';
+
 import { pluralRules } from '../../../utils';
+import { useSearchContext } from '../../../hooks/useSearchContext';
 
 const Cell = styled(Text)`
 	text-overflow: ellipsis;
@@ -60,12 +62,15 @@ const GenericTileItem: React.FC<Props> = ({
 
 	const push = useNavigate();
 	const { t } = useTranslation('search');
+	const { state } = useSearchContext();
 	const isPeriodical = publication.model.includes('periodical');
 	const isPage = publication.model.includes('page') || variant === 'pages';
 	const url = `/${
 		// eslint-disable-next-line no-nested-ternary
 		isPage ? 'uuid' : isPeriodical ? 'periodical' : 'view'
-	}/${publication.pid}`;
+	}/${publication.pid}${
+		state.searchQuery?.query ? '?fulltext=' + state.searchQuery?.query : ''
+	}`;
 	const isSelected =
 		!disableExportMode && exportModeOn && uuidHeap[publication.pid]?.selected;
 

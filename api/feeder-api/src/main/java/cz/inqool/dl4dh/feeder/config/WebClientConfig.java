@@ -1,5 +1,6 @@
 package cz.inqool.dl4dh.feeder.config;
 
+import cz.inqool.dl4dh.feeder.dto.info.InfoDto;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -23,7 +24,7 @@ import javax.net.ssl.SSLException;
 @Slf4j
 public class WebClientConfig {
 
-    private static final int MAX_MEMORY_SIZE = 16777216;
+    private static final int MAX_MEMORY_SIZE = 67108864;
 
     private WebClient.Builder prepareBuilder(String url) throws SSLException {
         SslContext sslContext = SslContextBuilder
@@ -44,8 +45,8 @@ public class WebClientConfig {
                 })
                 .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
                             configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
-                            configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder(MimeTypeUtils.TEXT_XML, MimeTypeUtils.TEXT_PLAIN)); })
-                        .build());
+                            configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder(MimeTypeUtils.TEXT_XML, MimeTypeUtils.TEXT_PLAIN));
+                        }).build());
     }
 
     private ExchangeFilterFunction logRequest() {
@@ -66,8 +67,13 @@ public class WebClientConfig {
     }
 
     @Bean(name = "krameriusWebClient")
-    public WebClient webClientKramerius(@Value("${system.kramerius.api}") String krameriusApi) throws SSLException {
-        return getWebClient(krameriusApi+"/api/v5.0");
+    public WebClient webClientKramerius(@Value("${system.kramerius.api}") String krameriusApi, InfoDto config) throws SSLException {
+        return getWebClient(krameriusApi+"/api" + (config.isVersion7() ? "/client/v7.0" : "/v5.0"));
+    }
+
+    @Bean(name = "krameriusIIIFClient")
+    public WebClient webClientIIIF(@Value("${system.kramerius.api}") String krameriusApi) throws SSLException {
+        return getWebClient(krameriusApi+"/iiif");
     }
 
     @Bean(name = "krameriusZoomifyWebClient")

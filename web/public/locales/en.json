@@ -459,7 +459,9 @@
     "failed_to_load_image": "Failed to load the image",
     "failed_to_load_pdf": "Failed to load the document",
     "book_no_results": "No results found",
-    "try_different_query": "Please, try a different query."
+    "try_different_query": "Please, try a different query.",
+		"pdf_publication": "The PDF publication cannot be viewed in the DL4DH Feeder tool. To view the publication, please go to the website",
+		"empty_publication": "This publication does not contain any pages or subtitles."
   },
   "home": {
     "title": "Digital library Kramerius",

@@ -454,7 +454,9 @@
   "failed_to_load_image": "Obrázek se nepodařilo načíst",
   "failed_to_load_pdf": "Dokument se nepodařilo načíst",
   "book_no_results": "Nebyly nalezeny žádné výsledky",
-  "try_different_query": "Prosím, zkuste jiný dotaz."
+  "try_different_query": "Prosím, zkuste jiný dotaz.",
+	 "pdf_publication": "Zobrazení PDF publikace není v nástroji DL4DH Feeder možné. Pro zobrazení publikace přejděte na stránky",
+	 "empty_publication": "Tato publikace neobsahuje žádné stránky ani podtituly."
  },
  "home": {
   "title": "Digitální knihovna Kramerius",

@@ -98,22 +98,32 @@ const PeriodicalTileItem: React.FC<Props> = ({
 					flexDirection="column"
 					alignItems="center"
 				>
-					{child.details?.year && (
+					{child.model == 'page' && (
 						<Text mb={2} color="primary" fontWeight="bold">
-							{child.details.year}
+							{child.title}
 						</Text>
 					)}
 
-					{child.details?.date && (
-						<Text mb={2} color="primary" fontWeight="bold">
-							{child.details.date}
-						</Text>
-					)}
+					{child.model != 'page' && (
+						<>
+							{child.details?.year && (
+								<Text mb={2} color="primary" fontWeight="bold">
+									{child.details.year}
+								</Text>
+							)}
 
-					{child.details?.title && (
-						<Text mb={2} color="primary" fontWeight="bold">
-							{child.details.title}
-						</Text>
+							{child.details?.date && (
+								<Text mb={2} color="primary" fontWeight="bold">
+									{child.details.date}
+								</Text>
+							)}
+
+							{child.details?.title && (
+								<Text mb={2} color="primary" fontWeight="bold">
+									{child.details.title}
+								</Text>
+							)}
+						</>
 					)}
 				</Flex>
 				<Flex

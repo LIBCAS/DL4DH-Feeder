@@ -21,12 +21,13 @@ import PublicationSidePanel from './PublicationSidePanel';
 import PriavatePublicationInfo from './PriavatePublicationInfo';
 import useProcessPublication from './useProcessPublication';
 import PubPageNotFound from './PubPageNotFound';
+import EmptyPublicationInfo from './EmptyPublicationInfo';
 
 const PublicationDetail = () => {
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const { getApropriateIds } = useParseUrlIdsAndParams();
 
-	const { pageId, fulltext } = getApropriateIds();
+	const { id, pageId, fulltext } = getApropriateIds();
 
 	const processed = useProcessPublication();
 	const { isMobile } = useMobileView();
@@ -95,11 +96,14 @@ const PublicationDetail = () => {
 											<Loader />
 										) : (
 											<>
-												{isPublic ? (
-													<ZoomifyView id={pageId} />
+												{((processed.publicationChildren ?? []).length == 0 &&
+													!processed.currentPage?.uuid) ||
+												processed.publication?.type == 'application/pdf' ? (
+													<EmptyPublicationInfo publication={id} />
 												) : (
-													<PriavatePublicationInfo />
+													<ZoomifyView id={pageId} />
 												)}
+												{!isPublic && <PriavatePublicationInfo />}
 											</>
 										)}
 									</>

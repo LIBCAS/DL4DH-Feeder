@@ -86,7 +86,7 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"lint:prettier": "./node_modules/.bin/prettier --write ./src/**/*.{ts,tsx}",
-		"lint:es": "./node_modules/.bin/eslint ./src/**/*.{ts,tsx}",
+		"lint:es": "./node_modules/.bin/eslint --fix ./src/**/*.{ts,tsx}",
 		"lint:css": "./node_modules/.bin/stylelint ./src/**/*.{ts,tsx}",
 		"lint:ts": "./node_modules/.bin/tsc",
 		"lint:all": "yarn lint:prettier && yarn lint:es && yarn lint:ts && yarn lint:css"
@@ -97,7 +97,7 @@
 			"react-app/jest"
 		]
 	},
-	"proxy": "https://feeder.dev.inqool.cz/",
+	"proxy": "https://feeder-test.lib.cas.cz/",
 	"lint-staged": {
 		"{src/**,.storybook,.}/*.{js,jsx,ts,tsx,json,md}": [
 			"prettier --write",

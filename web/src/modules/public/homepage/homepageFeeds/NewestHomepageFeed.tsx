@@ -15,7 +15,7 @@ const NewestHomepageFeed = () => {
 	const { data, isLoading, hasMore, count } = useSearchPublications({
 		start: (page - 1) * pageLimit,
 		pageSize: pageLimit,
-		availability: 'PUBLIC',
+		// availability: 'PUBLIC',
 		query: '',
 		enrichment: 'ENRICHED',
 		sort: 'LAST_ENRICHED',

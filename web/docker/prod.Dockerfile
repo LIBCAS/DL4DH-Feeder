@@ -5,6 +5,8 @@ FROM node:15-alpine AS builder
 WORKDIR /build
 
 ARG REACT_APP_KEYCLOAK_URL
+ARG REACT_APP_KEYCLOAK_CLIENTID
+ARG REACT_APP_KEYCLOAK_REALM
 
 # Switch to yarn 2
 #RUN yarn set version 3.1.1

@@ -1,6 +1,7 @@
 package cz.inqool.dl4dh.feeder.service;
 
-import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
+import cz.inqool.dl4dh.feeder.dto.info.InfoDto;
+import cz.inqool.dl4dh.feeder.kramerius.CollectionDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,9 +16,14 @@ import java.util.*;
 public class CollectionServiceImpl implements CollectionService {
     private static final Logger log = LoggerFactory.getLogger(CollectionServiceImpl.class);
     private WebClient krameriusSolr;
+    private InfoDto info;
 
     @Cacheable(value = "collections")
     public List<CollectionDto> getCollections() {
+        if (info.isVersion7()) {
+            return Collections.emptyList();
+        }
+
         log.debug("Loading collections from Kramerius into cache");
         return krameriusSolr.get().uri("/vc").retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
@@ -29,5 +35,10 @@ public class CollectionServiceImpl implements CollectionService {
     @Resource(name = "krameriusWebClient")
     public void setWebClient(WebClient webClient) {
         this.krameriusSolr = webClient;
+    }
+
+    @Resource(name = "krameriusInfo")
+    public void setInfo(InfoDto info) {
+        this.info = info;
     }
 }

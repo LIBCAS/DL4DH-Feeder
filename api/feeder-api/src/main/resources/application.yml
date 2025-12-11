@@ -43,6 +43,8 @@ springdoc:
 system:
   kramerius:
     api: https://www.ndk.cz/search
+    publicPolicies: 'public'
+#    publicPolicies: 'public,knav_public_contract'
   kramerius-plus:
     api: https://dl4dh.inqool.cz/api
     secret: kramerius-plus

@@ -1,10 +1,8 @@
 package cz.inqool.dl4dh.feeder.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.inqool.dl4dh.feeder.dto.krameriusplus.export.ExportRequestCreateDto;
+import cz.inqool.dl4dh.feeder.krameriusplus.export.ExportRequestCreateDto;
 import cz.inqool.dl4dh.feeder.exception.AccessDeniedException;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
-import cz.inqool.dl4dh.feeder.dto.export.ExportRequestDto;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.model.ExportItem;
 import cz.inqool.dl4dh.feeder.repository.ExportItemRepository;
@@ -14,19 +12,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
 import java.security.Principal;
 import java.util.UUID;
 

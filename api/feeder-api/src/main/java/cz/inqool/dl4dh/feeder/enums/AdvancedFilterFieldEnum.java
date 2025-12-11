@@ -1,5 +1,6 @@
 package cz.inqool.dl4dh.feeder.enums;
 
+import cz.inqool.dl4dh.feeder.service.KrameriusSolrFieldsService;
 import lombok.Getter;
 
 @Getter
@@ -38,6 +39,19 @@ public enum AdvancedFilterFieldEnum {
     NONE("");
 
     private final String solrField;
+
+    public String getSolrFieldWithKField(KrameriusSolrFieldsService service) {
+        switch (solrField) {
+            case "dc.title":
+                return service.title();
+            case "dc.creator":
+                return service.author();
+            case "keywords":
+                return service.keywords();
+        }
+        if (this.equals(ALL_BASIC_METADATA)) return service.title() + "^10 "+ service.author() + "^2 " + service.keywords();
+        return this.solrField;
+    }
 
     AdvancedFilterFieldEnum(String solrField) {
         this.solrField = solrField;

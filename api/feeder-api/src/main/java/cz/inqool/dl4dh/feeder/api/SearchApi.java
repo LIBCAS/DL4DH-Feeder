@@ -2,12 +2,12 @@ package cz.inqool.dl4dh.feeder.api;
 
 import cz.inqool.dl4dh.feeder.dto.*;
 import cz.inqool.dl4dh.feeder.enums.NameTagEntityType;
-import cz.inqool.dl4dh.feeder.dto.kramerius.CollectionDto;
+import cz.inqool.dl4dh.feeder.kramerius.CollectionDto;
 import cz.inqool.dl4dh.feeder.model.Filter;
+import cz.inqool.dl4dh.feeder.service.CollectionService;
 import cz.inqool.dl4dh.feeder.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,17 +25,18 @@ import java.util.*;
 public class SearchApi {
 
     private final SearchService searchService;
-    private WebClient kramerius;
+    private final CollectionService collectionService;
     private WebClient krameriusPrint;
 
-    public SearchApi(SearchService searchService) {
+    public SearchApi(SearchService searchService, CollectionService collectionService) {
         this.searchService = searchService;
+        this.collectionService = collectionService;
     }
 
     @Operation(summary = "Hinting words for a search query")
     @PostMapping(value = "/hint", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> hint(@RequestParam @Schema(description = "Query string") String q, @RequestParam(required = false) NameTagEntityType nameTagType) {
-        return searchService.hint(q, nameTagType);
+    public List<String> hint(@RequestParam @Schema(description = "Query string") String q, @RequestParam @Schema(description = "Hint only public publications") String publicOnly, @RequestParam(required = false) NameTagEntityType nameTagType) {
+        return searchService.hint(q, nameTagType, publicOnly != null && (publicOnly.isEmpty() || publicOnly.equalsIgnoreCase("1")));
     }
 
     @Operation(summary = "Search publications with many filters, sorting and pagination, e.g. filter by query, models, keywords, authors, publication release date, and many others. Use GET parameter save and field name in request body to save the search as historical saved search query.")
@@ -55,8 +56,7 @@ public class SearchApi {
     @Operation(summary = "Get list of collections in the system")
     @GetMapping(value = "/collections")
     public @ResponseBody List<CollectionDto> collections() {
-        return kramerius.get().uri("/vc").retrieve().bodyToMono(new ParameterizedTypeReference<List<CollectionDto>>() {
-        }).block();
+        return collectionService.getCollections();
     }
 
     @Operation(summary = "Download a pds of publictions")
@@ -66,11 +66,6 @@ public class SearchApi {
                 .queryParam("pagesize", pagesize.orElse("A4"))
                 .queryParam("imgop", imgop.orElse("FULL"))
                 .build()).retrieve().bodyToMono(ByteArrayResource.class).block();
-    }
-
-    @Resource(name = "krameriusWebClient")
-    public void setWebClient(WebClient webClient) {
-        this.kramerius = webClient;
     }
 
     @Resource(name = "krameriusPrintWebClient")

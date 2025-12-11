@@ -1,7 +1,7 @@
 package cz.inqool.dl4dh.feeder.dto.export;
 
-import cz.inqool.dl4dh.feeder.dto.krameriusplus.export.params.ParamsDto;
-import cz.inqool.dl4dh.feeder.dto.krameriusplus.export.params.TeiParams;
+import cz.inqool.dl4dh.feeder.krameriusplus.export.params.ParamsDto;
+import cz.inqool.dl4dh.feeder.krameriusplus.export.params.TeiParams;
 import cz.inqool.dl4dh.feeder.model.Export;
 import lombok.Getter;
 import lombok.Setter;

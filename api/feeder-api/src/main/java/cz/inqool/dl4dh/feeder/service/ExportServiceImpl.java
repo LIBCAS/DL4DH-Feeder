@@ -2,10 +2,11 @@ package cz.inqool.dl4dh.feeder.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.inqool.dl4dh.feeder.api.ExportApi;
 import cz.inqool.dl4dh.feeder.dto.export.ExportRequestDto;
-import cz.inqool.dl4dh.feeder.dto.kramerius.KrameriusItemDto;
-import cz.inqool.dl4dh.feeder.dto.krameriusplus.export.ExportRequestCreateDto;
+import cz.inqool.dl4dh.feeder.dto.info.InfoDto;
+import cz.inqool.dl4dh.feeder.kramerius.KrameriusItemDto;
+import cz.inqool.dl4dh.feeder.kramerius.SolrResponseDto;
+import cz.inqool.dl4dh.feeder.krameriusplus.export.ExportRequestCreateDto;
 import cz.inqool.dl4dh.feeder.exception.ResourceNotFoundException;
 import cz.inqool.dl4dh.feeder.model.Export;
 import cz.inqool.dl4dh.feeder.model.ExportItem;
@@ -47,9 +48,12 @@ public class ExportServiceImpl implements ExportService {
 
     private final ObjectMapper objectMapper;
 
-    public ExportServiceImpl(ExportRepository exportRepository, ObjectMapper objectMapper) {
+    private final InfoDto info;
+
+    public ExportServiceImpl(ExportRepository exportRepository, ObjectMapper objectMapper, InfoDto info) {
         this.exportRepository = exportRepository;
         this.objectMapper = objectMapper;
+        this.info = info;
     }
 
     @Override
@@ -75,11 +79,20 @@ public class ExportServiceImpl implements ExportService {
             if (name == null || name.isEmpty()) {
                 if (exportRequest.getPublicationIds().size() == 1) {
                     String publicationId = exportRequest.getPublicationIds().stream().findFirst().get();
-                    KrameriusItemDto publication = kramerius.get()
-                            .uri("/item/"+publicationId).retrieve().bodyToMono(KrameriusItemDto.class).block();
-                    name = publication.getTitle();
+                    if (info.isVersion7()) {
+                        SolrResponseDto publication = kramerius.get()
+                                .uri("/search?q=pid:\"" + publicationId + "\"").retrieve().bodyToMono(SolrResponseDto.class).block();
+                        if (publication != null && publication.getDocs() != null && publication.getDocs().size() > 0) {
+                            name = publication.getDocs().stream().findFirst().get().getOrDefault("title.search", "").toString();
+                        }
+                    }
+                    else {
+                        KrameriusItemDto publication = kramerius.get()
+                                .uri("/q/"+publicationId).retrieve().bodyToMono(KrameriusItemDto.class).block();
+                        name = publication.getTitle();
+                    }
                 }
-                else {
+                if (name == null  || name.isEmpty()) {
                     Date date = Calendar.getInstance().getTime();
                     DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-hhmmss");
                     name = "export-"+dateFormat.format(date);

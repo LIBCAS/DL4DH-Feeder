@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from '@emotion/core';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { TFunction, useTranslation } from 'react-i18next';
 
 import { Box, Flex } from 'components/styled';
@@ -12,6 +12,11 @@ import { UserRequestDto, UserRequestPartDto } from 'models/user-requests';
 import { TableColumn } from 'models/common';
 
 import { usePublicationDetail } from 'api/publicationsApi';
+
+import Checkbox from '../../../components/form/checkbox/Checkbox';
+import ModalDialog from '../../../components/modal';
+import { ExportForm } from '../../export/BulkExportDialog';
+import { useBulkExportContext } from '../../../hooks/useBulkExport';
 
 const columns: TableColumn<UserRequestPartDto>[] = [
 	{
@@ -74,10 +79,30 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 	detail,
 }) => {
 	const { t } = useTranslation();
-	const data = detail.parts.map(p => ({
-		...p,
-		id: p.publicationId,
-	}));
+	const exportCtx = useBulkExportContext();
+
+	useEffect(() => {
+		if (exportCtx.updateExportHeap) {
+			const heap = {};
+			detail.parts.forEach(p => {
+				heap[p.publicationId] = {
+					selected: true,
+					title: '',
+					enriched: false,
+					policy: '',
+					model: 'publication',
+				};
+			});
+			exportCtx.updateExportHeap(heap);
+		}
+	}, [exportCtx, detail.parts]);
+
+	const [data, setData] = useState(
+		detail.parts.map(p => ({
+			...p,
+			id: p.publicationId,
+		})),
+	);
 	return (
 		<Box
 			p={3}
@@ -112,6 +137,7 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 									label={col.label ? t(col.label) : ''}
 								/>
 							))}
+						<HeaderCell key={`toexport`} flex={1} label="Export" />
 					</Flex>
 				)}
 				renderRow={row => (
@@ -132,7 +158,7 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 							.filter(c => c.visible)
 							.map(({ CellComponent, datakey, dataMapper, flex }) => {
 								if (CellComponent) {
-									return CellComponent({ row });
+									return CellComponent({ row, data, setData });
 								} else {
 									return (
 										<Box flex={flex}>
@@ -145,9 +171,48 @@ export const UserRequestDetailParts: FC<{ detail: UserRequestDto }> = ({
 									);
 								}
 							})}
+						<Box flex={1}>
+							<Checkbox
+								label=""
+								checked={exportCtx.uuidHeap[row.publicationId]?.selected}
+								onChange={e => {
+									exportCtx.updateExportHeap?.(p => ({
+										...p,
+										[row.publicationId]: {
+											selected: e.target.checked,
+											title: '',
+											enriched: false,
+											policy: '',
+											model: 'publication',
+										},
+									}));
+								}}
+								// onChange={e => {
+								// 	const newData = data.map(d => {
+								// 		if (d.publicationId === row.publicationId) {
+								// 			d.toExport = e.target.checked;
+								// 		}
+								// 		return d;
+								// 	});
+								// 	setData(newData);
+								// }}
+							/>
+						</Box>
 					</Flex>
 				)}
 			></ClassicTable>
+			<Flex my={1} alignItems="center" justifyContent="flex-end" mt={2}>
+				<ModalDialog
+					label="Info"
+					control={openModal => (
+						<Button variant="primary" ml={3} onClick={openModal}>
+							{t('exports:export_dialog_button')}
+						</Button>
+					)}
+				>
+					{closeModal => <ExportForm closeModal={closeModal} />}
+				</ModalDialog>
+			</Flex>
 		</Box>
 	);
 };

@@ -96,11 +96,7 @@ const QuerySearchInput: FC<Props> = ({
 			const fhints = hintApi
 				? await hintApi(q).catch(r => console.log(r))
 				: await api()
-						.post(`search/hint?q=${q}`, {
-							body: JSON.stringify({
-								availability: publicOnly ? 'PUBLIC' : 'ALL',
-							}),
-						})
+						.post(`search/hint?q=${q}&publicOnly=${publicOnly ? '1' : '0'}`)
 						.json<string[]>()
 						.catch(r => console.log(r));
 			setHintLoading(false);

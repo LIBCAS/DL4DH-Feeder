@@ -11,4 +11,8 @@ public class InfoDto {
     private FeederInfoDto feeder;
     private KrameriusPlusVersionDto krameriusPlus;
     private KrameriusVersionDto kramerius;
+
+    public boolean isVersion7() {
+        return kramerius.getVersion() != null && kramerius.getVersion().startsWith("7");
+    }
 }

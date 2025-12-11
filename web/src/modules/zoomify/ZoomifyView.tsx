@@ -14,7 +14,10 @@ import VectorSource from 'ol/source/Vector';
 import Zoomify from 'ol/source/Zoomify';
 import View from 'ol/View';
 import { useSearchParams } from 'react-router-dom';
-import XML from 'xml2js';
+import Layer from 'ol/layer/Layer';
+import { IIIF } from 'ol/source';
+import { IIIFInfo } from 'ol/format';
+import { ImageInformationResponse } from 'ol/format/IIIFInfo';
 
 import { Box } from 'components/styled';
 import { Wrapper } from 'components/styled/Wrapper';
@@ -22,13 +25,16 @@ import { Wrapper } from 'components/styled/Wrapper';
 import { Loader } from 'modules/loader';
 import { usePublicationContext2 } from 'modules/publication/ctx/pubContext';
 
-import { useImageProperties } from 'api/publicationsApi';
+import { ImageProps, useImageProperties } from 'api/publicationsApi';
 
 import useViewport from 'hooks/useViewport';
 import { useMultiviewContext } from 'hooks/useMultiviewContext';
 import { useFullscreenContext } from 'hooks/useFullscreenContext';
 
 import { INIT_HEADER_HEIGHT } from 'utils/useHeaderHeight';
+
+import { useInfoApi } from '../../api/infoApi';
+import { api } from '../../api';
 
 import { getBestFitResolution } from './zoomifyUtils';
 import ZoomifyToolbar from './ZoomifyToolbar';
@@ -45,21 +51,10 @@ const ZOOMIFY_URL = window.location.origin + '/api/zoomify';
 export const mapRef: { current: Map | null } = { current: null };
 export const mapRefOfSecond: { current: Map | null } = { current: null };
 
-type ImageProps = {
-	IMAGE_PROPERTIES: {
-		$: {
-			HEIGHT: string;
-			WIDTH: string;
-		};
-	};
-};
-
 const MapWrapper: FC<{
 	imgId?: string;
-	isLoading?: boolean;
-	imgWidth: number;
-	imgHeight: number;
-}> = ({ imgId, imgWidth, imgHeight }) => {
+	imgProps: ImageProps;
+}> = ({ imgId, imgProps }) => {
 	const mapElement = useRef<HTMLDivElement>(null);
 	const map = useRef<Map | null>(null);
 	const [dragBoxMode, setDragBoxMode] = useState(false);
@@ -84,16 +79,44 @@ const MapWrapper: FC<{
 	const zoomifyUrl = `${ZOOMIFY_URL}/${imgId}/`;
 
 	useEffect(() => {
-		const source = new Zoomify({
-			url: zoomifyUrl,
-			size: [imgWidth, imgHeight],
-			tilePixelRatio: 1,
-			crossOrigin: 'anonymous',
-			tierSizeCalculation: 'truncated',
-			imageSmoothing: true,
-			//zDirection: -1, // Ensure we get a tile with the screen resolution or higher
-			//extent: [0, -imgHeight, imgWidth, 0],
-		});
+		const imgWidth = imgProps.width;
+		const imgHeight = imgProps.height;
+		const imgType = imgProps.type;
+		let layer: Layer;
+		let extent: Array<number> | Extent | undefined;
+
+		if (imgType == 'image/jpeg') {
+			extent = [0, -imgHeight, imgWidth, 0];
+			const staticFullSource = new Static({
+				url: `api/item/${imgId}/image`,
+				imageExtent: extent,
+			});
+
+			layer = new ImageLayer({ source: staticFullSource });
+		} else if (imgType == 'zoomify') {
+			const source = new Zoomify({
+				url: zoomifyUrl,
+				size: [imgWidth, imgHeight],
+				tilePixelRatio: 1,
+				crossOrigin: 'anonymous',
+				tierSizeCalculation: 'truncated',
+				imageSmoothing: true,
+			});
+			extent = source?.getTileGrid()?.getExtent();
+			layer = new TileLayer({ source: source });
+		} else if (imgType == 'tiles') {
+			const options = imgProps.iiifInfo?.getTileSourceOptions();
+			if (options === undefined || options.version === undefined) {
+				console.log('Data seems to be no valid IIIF image information.');
+				return;
+			}
+			const iiifTileSource = new IIIF(options);
+			layer = new TileLayer({ source: iiifTileSource });
+			extent = iiifTileSource.getTileGrid()?.getExtent();
+		} else {
+			console.log('Unknown type ' + imgProps.type);
+			return;
+		}
 
 		const staticSource = new Static({
 			url: `api/item/${imgId}/thumb`,
@@ -101,11 +124,6 @@ const MapWrapper: FC<{
 			imageExtent: [0, -imgHeight, imgWidth, 0],
 		});
 		const staticLayer = new ImageLayer({ source: staticSource });
-
-		const extent = source?.getTileGrid()?.getExtent();
-		const layer = new TileLayer({
-			source: source,
-		});
 
 		const vectorLayer = new VectorLayer({
 			source: new VectorSource(),
@@ -125,7 +143,7 @@ const MapWrapper: FC<{
 			maxTilesLoading: 500,
 			controls: [],
 			view: new View({
-				//resolutions: layer?.getSource()?.getTileGrid()?.getResolutions(),
+				// resolutions: resolution,
 				extent: extent,
 				constrainOnlyCenter: true,
 				maxResolution:
@@ -136,15 +154,7 @@ const MapWrapper: FC<{
 			}),
 		});
 		map.current?.getView().fit(extent as Extent);
-	}, [
-		imgId,
-		imgWidth,
-		imgHeight,
-		fulltext,
-		zoomifyUrl,
-		screenWidth,
-		screenHeight,
-	]);
+	}, [imgId, fulltext, zoomifyUrl, screenWidth, screenHeight, imgProps]);
 
 	useEffect(() => {
 		if (highlightPolygons?.length ?? 0 > 0) {
@@ -178,8 +188,8 @@ const MapWrapper: FC<{
 		>
 			{altoDialogOpen.open && (
 				<AltoDialog
-					width={imgWidth}
-					height={imgHeight}
+					width={imgProps.width}
+					height={imgProps.height}
 					box={altoDialogOpen.box}
 					uuid={imgId ?? ''}
 					onClose={() => {
@@ -227,7 +237,9 @@ const MapWrapper: FC<{
 const ZoomifyView: FC<{
 	id?: string;
 }> = ({ id }) => {
-	const imgProps = useImageProperties(id ?? '');
+	const info = useInfoApi();
+	const isKramerius7 = (info.data?.kramerius.version ?? '5').startsWith('7');
+	const imgProps = useImageProperties(id ?? '', isKramerius7);
 	const { sidePanel } = useMultiviewContext();
 	const { fullscreen } = useFullscreenContext();
 
@@ -235,7 +247,7 @@ const ZoomifyView: FC<{
 
 	const counter = useRef(0);
 
-	const [parsedXML, setParsedXML] = useState<ImageProps>();
+	const [imageProps, setImageProps] = useState<ImageProps>();
 	const pbctx = usePublicationContext2();
 
 	const textMode = isSecond
@@ -243,9 +255,45 @@ const ZoomifyView: FC<{
 		: pbctx.ocrMode?.left === 'ocr' ?? false;
 
 	useEffect(() => {
-		XML.parseString(imgProps.data ?? '', (err, result) => setParsedXML(result));
+		if (imgProps?.data?.type == 'image/jpeg') {
+			const img = new Image();
+			img.onload = () => {
+				setImageProps({
+					width: img.width,
+					height: img.height,
+					type: 'image/jpeg',
+				});
+			};
+			img.onerror = error => {
+				console.log(error);
+			};
+			img.src = `api/item/${id}/image`;
+		} else if (imgProps?.data?.type == 'tiles') {
+			api()
+				.get('item/' + id + '/iiif', {
+					headers: { accept: 'application/json' },
+				})
+				.json<ImageInformationResponse>()
+				.then(value => {
+					if (
+						Object.prototype.hasOwnProperty.call(value, 'id') &&
+						Object.prototype.hasOwnProperty.call(value, '@id')
+					) {
+						value.id = value['@id'];
+					}
+					const iiifInfo = new IIIFInfo(value);
+					setImageProps({
+						width: iiifInfo.imageInfo.width,
+						height: iiifInfo.imageInfo.height,
+						type: 'tiles',
+						iiifInfo: iiifInfo,
+					});
+				});
+		} else {
+			setImageProps(imgProps.data);
+		}
 		counter.current++;
-	}, [imgProps.data, id]);
+	}, [imgProps.data, isKramerius7, id]);
 
 	if (!id) {
 		return <Loader />;
@@ -253,23 +301,22 @@ const ZoomifyView: FC<{
 	if (imgProps.isLoading) {
 		return <Loader color="primary" size={70} />;
 	}
-
-	const imgWidth = parseInt(parsedXML?.IMAGE_PROPERTIES.$.WIDTH ?? '0');
-	const imgHeight = parseInt(parsedXML?.IMAGE_PROPERTIES.$.HEIGHT ?? '0');
+	if (imageProps === undefined) {
+		return <Loader color="primary" size={70} />;
+	}
 
 	return (
 		<Wrapper
 			width="100%"
 			height={`calc(100vh - ${fullscreen ? 0 : INIT_HEADER_HEIGHT}px)`}
 		>
-			{textMode ? (
-				<OcrView uuid={id} />
-			) : (
+			{textMode && <OcrView uuid={id} />}
+			{/*{!textMode && isKramerius7 && imgProps.data}*/}
+			{!textMode && imageProps && (
 				<MapWrapper
 					key={id + counter.current}
 					imgId={id}
-					imgWidth={imgWidth}
-					imgHeight={imgHeight}
+					imgProps={imageProps}
 				/>
 			)}
 		</Wrapper>

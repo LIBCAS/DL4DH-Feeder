@@ -22,7 +22,7 @@ const Homepage: FC = () => {
 	const [publicOnly, setPublicOnly] = useState<boolean>(true);
 	const nav = useNavigate();
 	const { t } = useTranslation('homepage');
-	const [query, setQuery] = useState('');
+	const [query, setQuery] = useState('availability=PUBLIC');
 	const theme = useTheme();
 
 	const info = useInfoApi();
@@ -73,6 +73,7 @@ const Homepage: FC = () => {
 							`}
 						>
 							<QuerySearchInput
+								publicOnly={publicOnly}
 								onQueryUpdate={q => {
 									const formatted = `${q ? `query=${q}` : ''}${
 										publicOnly ? `${q ? '&' : ''}availability=PUBLIC` : ''

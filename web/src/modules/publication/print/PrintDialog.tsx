@@ -25,7 +25,7 @@ type FormProps = {
 	closeModal: () => void;
 };
 
-const PRINT_LIMIT = 90;
+const PRINT_LIMIT = 20;
 
 const PrintForm: FC<FormProps> = ({ closeModal }) => {
 	const { getChildren } = usePublicationContext2();

@@ -22,6 +22,7 @@ export type PublicationDetail = {
 	model: string;
 	datanode: boolean;
 	pid: string;
+	type: string;
 	root_pid: string;
 	root_title: string;
 	title: string;
