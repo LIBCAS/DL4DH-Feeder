@@ -318,7 +318,9 @@
   "dialog": {
    "export_publication": "Exportovat publikaci",
    "edit_export_list": "Upravit seznam stránek pro export",
-   "all_enriched": "Všechny obohacené",
+	 "all_enriched": "Všechny obohacené",
+	 "not_all_public": "Výběr obsahuje neveřejné publikace", 
+	 "create_new_request": "Vytvořit novou žádost o přístup",
    "all_alto_available": "ALTO dostupné u všech označených publikací",
    "no_alto": "Seznam publikací neobsahující ALTO stream",
    "export_name": "Název exportu",
