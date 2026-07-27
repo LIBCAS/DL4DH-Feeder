@@ -18,10 +18,10 @@ const About = () => {
 	const [error, setError] = useState(null);
 
 	const { t, i18n } = useTranslation('export');
-	const fileName = 'about-'+i18n.language+'.html';
+	const fileName = '/pages/'+i18n.language+'/about.html';
 
 	useEffect(() => {
-		fetch(`/pages/${fileName}`)
+		fetch(fileName)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(t('download_error'));

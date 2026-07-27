@@ -22,12 +22,18 @@ const Homepage: FC = () => {
 	const [publicOnly, setPublicOnly] = useState<boolean>(true);
 	const nav = useNavigate();
 	const { t } = useTranslation('homepage');
-	const [query, setQuery] = useState('availability=PUBLIC');
+	const [query, setQuery] = useState('');
 	const theme = useTheme();
 
 	const info = useInfoApi();
 	const libName = info.data?.kramerius.name ?? '';
 	const logo = info.data?.kramerius.logo ?? undefined;
+
+	const searchPath = () => {
+		return `/search${query ? `?query=${query}` : ''}${
+			publicOnly ? `${query ? '&' : '?'}availability=PUBLIC` : ''
+		}`;
+	};
 
 	return (
 		<ResponsiveWrapper bg="white" px={1} mx={0}>
@@ -75,12 +81,9 @@ const Homepage: FC = () => {
 							<QuerySearchInput
 								publicOnly={publicOnly}
 								onQueryUpdate={q => {
-									const formatted = `${q ? `query=${q}` : ''}${
-										publicOnly ? `${q ? '&' : ''}availability=PUBLIC` : ''
-									}`;
-									setQuery(formatted);
+									setQuery(q);
 								}}
-								onQuerySubmit={() => nav(`/search${query ? `?${query}` : ''}`)}
+								onQuerySubmit={() => nav(searchPath())}
 								placeholder={t('search:search_in_publication')}
 								onQueryClear={() => setQuery('')}
 								externalState
@@ -96,11 +99,7 @@ const Homepage: FC = () => {
 							/>
 						</Flex>
 					</Flex>
-					<NavLinkButton
-						mt={4}
-						to={`/search${query ? `?${query}` : ''}`}
-						variant="primary"
-					>
+					<NavLinkButton mt={4} to={searchPath()} variant="primary">
 						{t('btn_enter')}
 						<Flex ml={2}>
 							<MdArrowForward size={22} />

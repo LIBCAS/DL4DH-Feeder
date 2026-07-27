@@ -27,6 +27,7 @@ const MultiView = React.lazy(
 const Periodical = React.lazy(() => import('modules/publication/periodical'));
 const Browse = React.lazy(() => import('modules/browse'));
 const About = React.lazy(() => import('modules/about'));
+const Manual = React.lazy(() => import('modules/manual'));
 const ExportsDashboard = React.lazy(
 	() => import('modules/export/ExportsDashboard'),
 );
@@ -87,6 +88,14 @@ const AppRoutes: React.FC = () => {
 				element={
 					<React.Suspense fallback={<Loader />}>
 						<About />
+					</React.Suspense>
+				}
+			/>
+			<Route
+				path="/manual"
+				element={
+					<React.Suspense fallback={<Loader />}>
+						<Manual />
 					</React.Suspense>
 				}
 			/>
