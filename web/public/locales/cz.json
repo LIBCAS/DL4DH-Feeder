@@ -118,7 +118,8 @@
  "navbar": {
   "collections": "Sbírky",
   "browse": "Procházet",
-  "about": "Informace",
+  "about": "Informace", 
+	"manual": "Návod",
   "faq": "FAQ",
   "impressum": "Impressum",
   "back": "Zpět na předchozí stránku",

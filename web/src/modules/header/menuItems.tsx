@@ -45,6 +45,11 @@ const menuItems: MenuItem[] = [
 		label: 'about',
 		order: 2,
 	},
+	{
+		to: '/manual',
+		label: 'manual',
+		order: 3,
+	},
 
 	{
 		href: 'HOOK',
